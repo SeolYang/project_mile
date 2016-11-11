@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{ae657049-f45f-4fe9-b6ca-304b9c4cb6c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core">
+      <UniqueIdentifier>{291eb8ff-ae69-42ec-961c-5f9b51976b16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\Private">
+      <UniqueIdentifier>{fae2e48c-230e-4209-a6d7-fb7756dd4eed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\Public">
+      <UniqueIdentifier>{89eea5d0-ae70-429d-bc70-68e1a2b4cff1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\Public\Math">
+      <UniqueIdentifier>{93839bac-5e38-4ef5-aaba-0cc48d7cab13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\Private\Math">
+      <UniqueIdentifier>{94958686-07cb-40ed-ab37-c5abcb3ef24d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\Public\Misc">
+      <UniqueIdentifier>{9eddcba8-50db-4f74-8f5b-2333ad50f92d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core\Public\Container">
+      <UniqueIdentifier>{6a05a8cc-a633-42e9-97f9-d39c516ee358}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Source\Mile\Core\Public\Mile.h">
+      <Filter>Source\Core\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\Core\Public\Math\MileMath.h">
+      <Filter>Source\Core\Public\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\Core\Public\Misc\Char.h">
+      <Filter>Source\Core\Public\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\Core\Public\Math\Vector3.h">
+      <Filter>Source\Core\Public\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\Core\Public\Math\Vector4.h">
+      <Filter>Source\Core\Public\Math</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Source\Mile\Core\Private\Math\MileMath.cpp">
+      <Filter>Source\Core\Private\Math</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
