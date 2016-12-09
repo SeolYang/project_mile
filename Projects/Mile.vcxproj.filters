@@ -5,47 +5,47 @@
       <UniqueIdentifier>{ae657049-f45f-4fe9-b6ca-304b9c4cb6c4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Core">
-      <UniqueIdentifier>{291eb8ff-ae69-42ec-961c-5f9b51976b16}</UniqueIdentifier>
+      <UniqueIdentifier>{173c9e97-ebf2-42b9-8a1d-dbbf6476fdd5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Core\Private">
-      <UniqueIdentifier>{fae2e48c-230e-4209-a6d7-fb7756dd4eed}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Core\Public">
-      <UniqueIdentifier>{89eea5d0-ae70-429d-bc70-68e1a2b4cff1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Core\Public\Math">
-      <UniqueIdentifier>{93839bac-5e38-4ef5-aaba-0cc48d7cab13}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Core\Private\Math">
-      <UniqueIdentifier>{94958686-07cb-40ed-ab37-c5abcb3ef24d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Core\Public\Misc">
-      <UniqueIdentifier>{9eddcba8-50db-4f74-8f5b-2333ad50f92d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Core\Public\Container">
-      <UniqueIdentifier>{6a05a8cc-a633-42e9-97f9-d39c516ee358}</UniqueIdentifier>
+    <Filter Include="Source\Math">
+      <UniqueIdentifier>{6d6d4f40-0a9b-4cfa-9356-0f06f85384f2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Source\Mile\Core\Public\Mile.h">
-      <Filter>Source\Core\Public</Filter>
+    <ClInclude Include="..\Source\Mile\Mile.h">
+      <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Mile\Core\Public\Math\MileMath.h">
-      <Filter>Source\Core\Public\Math</Filter>
+    <ClInclude Include="..\Source\Mile\Math\MileMath.h">
+      <Filter>Source\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Mile\Core\Public\Misc\Char.h">
-      <Filter>Source\Core\Public\Misc</Filter>
+    <ClInclude Include="..\Source\Mile\Math\Vector4.h">
+      <Filter>Source\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Mile\Core\Public\Math\Vector3.h">
-      <Filter>Source\Core\Public\Math</Filter>
+    <ClInclude Include="..\Source\Mile\Core\MileChar.h">
+      <Filter>Source\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Mile\Core\Public\Math\Vector4.h">
-      <Filter>Source\Core\Public\Math</Filter>
+    <ClInclude Include="..\Source\Mile\Core\Allocator.h">
+      <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\Math\Vector.h">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\Core\Memory.h">
+      <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\Core\StackAllocator.h">
+      <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\Core\ProxyAllocator.h">
+      <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\Core\DefaultAllocator.h">
+      <Filter>Source\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Source\Mile\Core\Private\Math\MileMath.cpp">
-      <Filter>Source\Core\Private\Math</Filter>
+    <ClCompile Include="..\Source\Mile\Core\Vector.cpp">
+      <Filter>Source\Math</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

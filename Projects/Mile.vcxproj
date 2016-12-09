@@ -10,6 +10,21 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Source\Mile\Core\Allocator.h" />
+    <ClInclude Include="..\Source\Mile\Core\DefaultAllocator.h" />
+    <ClInclude Include="..\Source\Mile\Core\Memory.h" />
+    <ClInclude Include="..\Source\Mile\Core\MileChar.h" />
+    <ClInclude Include="..\Source\Mile\Core\ProxyAllocator.h" />
+    <ClInclude Include="..\Source\Mile\Core\StackAllocator.h" />
+    <ClInclude Include="..\Source\Mile\Math\MileMath.h" />
+    <ClInclude Include="..\Source\Mile\Math\Vector.h" />
+    <ClInclude Include="..\Source\Mile\Math\Vector4.h" />
+    <ClInclude Include="..\Source\Mile\Mile.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Source\Mile\Core\Vector.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -61,7 +76,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MILE_BUILD;_DEBUG;_WINDOWS;_USRDLL;MILE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Source\Mile\Core\Public\Misc;$(SolutionDir)..\Source\Mile\Core\Private\Math;$(SolutionDir)..\Source\Mile\Core\Public\Math;$(SolutionDir)..\Source\Mile\Core\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Source\Mile\;$(SolutionDir)..\Source\Mile\Core;$(SolutionDir)..\Source\Mile\Math;$(SolutionDir)..\Source\Mile\Misc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -78,7 +93,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MILE_BUILD;NDEBUG;_WINDOWS;_USRDLL;MILE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Source\Mile\Core\Public\Misc;$(SolutionDir)..\Source\Mile\Core\Private\Math;$(SolutionDir)..\Source\Mile\Core\Public\Math;$(SolutionDir)..\Source\Mile\Core\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Source\Mile\;$(SolutionDir)..\Source\Mile\Core;$(SolutionDir)..\Source\Mile\Math;$(SolutionDir)..\Source\Mile\Misc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -88,16 +103,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="..\Source\Mile\Core\Public\Math\MileMath.h" />
-    <ClInclude Include="..\Source\Mile\Core\Public\Math\Vector3.h" />
-    <ClInclude Include="..\Source\Mile\Core\Public\Math\Vector4.h" />
-    <ClInclude Include="..\Source\Mile\Core\Public\Mile.h" />
-    <ClInclude Include="..\Source\Mile\Core\Public\Misc\Char.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\Source\Mile\Core\Private\Math\MileMath.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

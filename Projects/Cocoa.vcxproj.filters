@@ -4,14 +4,5 @@
     <Filter Include="Source">
       <UniqueIdentifier>{a8ff50b6-4c91-424b-9803-15d5dd3c26c1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Editor">
-      <UniqueIdentifier>{dd4ebf7f-9502-4370-9f41-462467f08891}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Editor\Private">
-      <UniqueIdentifier>{8ab3b2ee-3e81-4616-9c1d-9ab639e5e9fe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Editor\Public">
-      <UniqueIdentifier>{bee7f572-31a0-4045-a123-2ee2dee62982}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
 </Project>
