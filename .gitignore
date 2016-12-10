@@ -33,3 +33,8 @@
 *.opendb
 *.suo
 *.log
+*.tlog
+*.pdb
+Builds/Debug/MileCore.exp
+Builds/Debug/MileCore.ilk
+Builds/Intermediate/Mile/Debug/vc140.idb

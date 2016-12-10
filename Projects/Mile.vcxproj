@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Mile\Core\Allocator.h" />
+    <ClInclude Include="..\Source\Mile\Core\Array.h" />
     <ClInclude Include="..\Source\Mile\Core\DefaultAllocator.h" />
     <ClInclude Include="..\Source\Mile\Core\Memory.h" />
     <ClInclude Include="..\Source\Mile\Core\MileChar.h" />

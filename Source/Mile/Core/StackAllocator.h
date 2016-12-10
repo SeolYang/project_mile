@@ -4,12 +4,17 @@
 namespace Mile
 {
 	template<uint64 SIZE_BYTES>
-	class MILE_API StackAllocator : public Allocator
+	class MILE_API MStackAllocator : public MAllocator
 	{
 	public:
-		explicit StackAllocator( ) :
+		explicit MStackAllocator( ) :
 			Top( 0 )
 		{
+		}
+
+		virtual ~MStackAllocator( )
+		{
+			ASSERT_MSG( Top != 0, "Stack Allocator has memory leak!" );
 		}
 
 		virtual void* Allocate( uint64 SizeBytes ) override

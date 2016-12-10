@@ -4,10 +4,14 @@
 
 namespace Mile
 {
-	class MILE_API Allocator
+	class MILE_API MAllocator
 	{
 	public:
-		explicit Allocator( )
+		explicit MAllocator( )
+		{
+		}
+
+		virtual ~MAllocator( )
 		{
 		}
 
