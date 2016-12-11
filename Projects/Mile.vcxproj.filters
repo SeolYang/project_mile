@@ -45,16 +45,10 @@
     <ClInclude Include="..\Source\Mile\Core\Array.h">
       <Filter>Source\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Mile\Application.h">
-      <Filter>Source</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\Mile\Core\Vector.cpp">
       <Filter>Source\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Mile\Application.cpp">
-      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
