@@ -18,6 +18,7 @@
     <ClInclude Include="..\Source\Mile\Core\MileChar.h" />
     <ClInclude Include="..\Source\Mile\Core\ProxyAllocator.h" />
     <ClInclude Include="..\Source\Mile\Core\StackAllocator.h" />
+    <ClInclude Include="..\Source\Mile\Core\Timer.h" />
     <ClInclude Include="..\Source\Mile\Math\MileMath.h" />
     <ClInclude Include="..\Source\Mile\Math\Vector.h" />
     <ClInclude Include="..\Source\Mile\Math\Vector4.h" />

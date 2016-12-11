@@ -13,7 +13,6 @@ namespace Mile
 	public:
 		virtual void* Allocate( uint64 Size ) override
 		{
-            TEXT( )
 			return malloc( Size );
 		}
 

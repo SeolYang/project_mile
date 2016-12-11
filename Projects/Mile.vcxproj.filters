@@ -45,6 +45,9 @@
     <ClInclude Include="..\Source\Mile\Core\Array.h">
       <Filter>Source\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\Mile\Core\Timer.h">
+      <Filter>Source\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\Mile\Core\Vector.cpp">
