@@ -3,16 +3,16 @@
 
 namespace Mile
 {
-	class MILE_API MProxyAllocator : public MAllocator
+	class MILE_API ProxyAllocator : public Allocator
 	{
 	public:
-		MProxyAllocator( MAllocator& TargetAllocator ) :
+        ProxyAllocator( Allocator& TargetAllocator ) :
 			Source( TargetAllocator ),
 			NumAllocations( 0 )
 		{
 		}
 
-		virtual ~MProxyAllocator( )
+		virtual ~ProxyAllocator( )
 		{
 			ASSERT_MSG( NumAllocations == 0, "Memory leak detected!" );
 		}
@@ -62,7 +62,7 @@ namespace Mile
 		}
 
 	private:
-		MAllocator&				Source;
+		Allocator&				Source;
 		std::atomic<uint32>		NumAllocations;
 
 	};

@@ -1,5 +1,6 @@
 #pragma once
 #include "Allocator.h"
+#include "MileChar.h"
 
 namespace Mile
 {
@@ -12,6 +13,7 @@ namespace Mile
 	public:
 		virtual void* Allocate( uint64 Size ) override
 		{
+            TEXT( )
 			return malloc( Size );
 		}
 

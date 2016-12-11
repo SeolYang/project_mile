@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <string>
+#include <winnt.h>
 
 #define MILE_LIBRARYEXPORT __declspec(dllexport)
 #define MILE_LIBRARYIMPORT __declspec(dllimport)
@@ -21,6 +22,9 @@
 #define ALGIN_4			  MS_ALIGN(4)
 #define ALGIN_8			  MS_ALIGN(8)
 #define ALGIN_16          MS_ALIGN(16)
+#define ALGIN_32          MS_ALIGN(32)
+#define ALGIN_64          MS_ALIGN(64)
+#define ALGIN_128         MS_ALIGN(128)
 
 #ifndef ASSERT
 #ifdef _DEBUG

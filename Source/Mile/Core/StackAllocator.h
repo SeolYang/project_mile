@@ -4,15 +4,15 @@
 namespace Mile
 {
 	template<uint64 SIZE_BYTES>
-	class MILE_API MStackAllocator : public MAllocator
+	class MILE_API StackAllocator : public Allocator
 	{
 	public:
-		explicit MStackAllocator( ) :
+		explicit StackAllocator( ) :
 			Top( 0 )
 		{
 		}
 
-		virtual ~MStackAllocator( )
+		virtual ~StackAllocator( )
 		{
 			ASSERT_MSG( Top != 0, "Stack Allocator has memory leak!" );
 		}

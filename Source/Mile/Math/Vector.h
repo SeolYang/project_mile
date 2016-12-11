@@ -6,7 +6,7 @@ namespace Mile
 	/**
 	* 3차원 공간상의 위치 또는 방향을 나타내는 벡터 클래스.
 	*/
-	struct MILE_API ALGIN_16 MVector
+	struct MILE_API ALGIN_16 Vector
 	{
 	public:
 		/** 벡터의 X 성분. */
@@ -17,13 +17,13 @@ namespace Mile
 		float Z;
 
 	public:
-		static const MVector One;
-		static const MVector Zero;
-		static const MVector Up;
-		static const MVector Left;
+		static const Vector One;
+		static const Vector Zero;
+		static const Vector Up;
+		static const Vector Left;
 
 	public:
-		MVector( )
+		Vector( )
 		{
 		}
 
@@ -34,7 +34,7 @@ namespace Mile
 		* @param InY Y 좌표.
 		* @param InZ Z 좌표.
 		*/
-		explicit MVector( float InX, float InY, float InZ )
+		explicit Vector( float InX, float InY, float InZ )
 			: X( InX ), Y( InY ), Z( InZ )
 		{
 		}
@@ -44,9 +44,9 @@ namespace Mile
 		*
 		* @param Rhs 더할 벡터
 		*/
-		MVector operator+( const MVector& Rhs )
+		Vector operator+( const Vector& Rhs )
 		{
-			return MVector( X + Rhs.X, Y + Rhs.Y, Z + Rhs.Z );
+			return Vector( X + Rhs.X, Y + Rhs.Y, Z + Rhs.Z );
 		}
 
 		/**
@@ -54,9 +54,9 @@ namespace Mile
 		*
 		* @param Rhs 뺄 벡터.
 		*/
-		MVector operator-( const MVector& Rhs )
+		Vector operator-( const Vector& Rhs )
 		{
-			return MVector( X - Rhs.X, Y - Rhs.Y, Z - Rhs.Z );
+			return Vector( X - Rhs.X, Y - Rhs.Y, Z - Rhs.Z );
 		}
 
 		/**
@@ -64,9 +64,9 @@ namespace Mile
 		*
 		* @param Rhs 곱할 벡터.
 		*/
-		MVector operator*( const MVector& Rhs )
+		Vector operator*( const Vector& Rhs )
 		{
-			return MVector( X * Rhs.X, Y * Rhs.Y, Z * Rhs.Z );
+			return Vector( X * Rhs.X, Y * Rhs.Y, Z * Rhs.Z );
 		}
 
 		/**
@@ -74,9 +74,9 @@ namespace Mile
 		*
 		* @param Rhs 곱할 실수.
 		*/
-		MVector operator*( float Rhs )
+		Vector operator*( float Rhs )
 		{
-			return MVector( X * Rhs, Y * Rhs, Z * Rhs );
+			return Vector( X * Rhs, Y * Rhs, Z * Rhs );
 		}
 
 		/**
@@ -84,9 +84,9 @@ namespace Mile
 		*
 		* @param Rhs 나눌 벡터.
 		*/
-		MVector operator/( const MVector& Rhs )
+		Vector operator/( const Vector& Rhs )
 		{
-			return MVector( X / Rhs.X, Y / Rhs.Y, Z / Rhs.Z );
+			return Vector( X / Rhs.X, Y / Rhs.Y, Z / Rhs.Z );
 		}
 
 		/**
@@ -94,10 +94,10 @@ namespace Mile
 		*
 		* @param Rhs 나누어줄 실수.
 		*/
-		MVector operator/( float Rhs )
+		Vector operator/( float Rhs )
 		{
 			float InvRhs = 1.0f / Rhs;
-			return MVector( X * InvRhs, Y * InvRhs, Z * InvRhs );
+			return Vector( X * InvRhs, Y * InvRhs, Z * InvRhs );
 		}
 
 		/**
@@ -105,7 +105,7 @@ namespace Mile
 		*
 		* @param Rhs 더할 벡터.
 		*/
-		MVector operator+=( const MVector& Rhs )
+		Vector operator+=( const Vector& Rhs )
 		{
 			X += Rhs.X;
 			Y += Rhs.Y;
@@ -118,7 +118,7 @@ namespace Mile
 		*
 		* @param Rhs 뺄 벡터.
 		*/
-		MVector operator-=( const MVector& Rhs )
+		Vector operator-=( const Vector& Rhs )
 		{
 			X -= Rhs.X;
 			Y -= Rhs.Y;
@@ -131,7 +131,7 @@ namespace Mile
 		*
 		* @param Rhs 곱할 벡터.
 		*/
-		MVector operator*=( const MVector& Rhs )
+		Vector operator*=( const Vector& Rhs )
 		{
 			X *= Rhs.X;
 			Y *= Rhs.Y;
@@ -144,7 +144,7 @@ namespace Mile
 		*
 		* @param Rhs 곱할 실수.
 		*/
-		MVector operator*=( float Rhs )
+		Vector operator*=( float Rhs )
 		{
 			X *= Rhs;
 			Y *= Rhs;
@@ -157,7 +157,7 @@ namespace Mile
 		*
 		* @param Rhs 나누어줄 벡터.
 		*/
-		MVector operator/=( const MVector& Rhs )
+		Vector operator/=( const Vector& Rhs )
 		{
 			X /= Rhs.X;
 			Y /= Rhs.Y;
@@ -170,7 +170,7 @@ namespace Mile
 		*
 		* @param Rhs 나누어줄 실수.
 		*/
-		MVector operator/=( float Rhs )
+		Vector operator/=( float Rhs )
 		{
 			float InvRhs = 1.0f / Rhs;
 			X *= InvRhs;
@@ -182,9 +182,9 @@ namespace Mile
 		/**
 		* 자신의 역원(Inverse Element)를 구함.
 		*/
-		MVector operator-( )
+		Vector operator-( )
 		{
-			return MVector( -X, -Y, -Z );
+			return Vector( -X, -Y, -Z );
 		}
 
 		/**
@@ -192,7 +192,7 @@ namespace Mile
 		*
 		* @param Rhs 비교할 3차원 벡터.
 		*/
-		bool operator==( const MVector& Rhs )
+		bool operator==( const Vector& Rhs )
 		{
 			return ( X == Rhs.X ) && ( Y == Rhs.Y ) && ( Z == Rhs.Z );
 		}
@@ -202,7 +202,7 @@ namespace Mile
 		*
 		* @param Rhs 비교할 3차원 벡터.
 		*/
-		bool operator!=( const MVector& Rhs )
+		bool operator!=( const Vector& Rhs )
 		{
 			return ( X != Rhs.X ) && ( Y != Rhs.Y ) && ( Z != Rhs.Z );
 		}
@@ -212,7 +212,7 @@ namespace Mile
 		*
 		* @param Rhs 내적연산을할 3차원 벡터.
 		*/
-		float operator|( const MVector& Rhs )
+		float operator|( const Vector& Rhs )
 		{
 			return this->DotProduct( Rhs );
 		}
@@ -222,7 +222,7 @@ namespace Mile
 		*
 		* @param Rhs 외적연산을할 3차원 벡터(우항).
 		*/
-		MVector operator^( const MVector& Rhs )
+		Vector operator^( const Vector& Rhs )
 		{
 			return this->CrossProduct( Rhs );
 		}
@@ -230,13 +230,13 @@ namespace Mile
 		/**
 		* 정규화된 벡터를 반환함. (자기자신에게 영향을 끼치지 않음.)
 		*/
-		MVector Normalized( ) const
+		Vector Normalized( ) const
 		{
 			float X = this->X;
 			float Y = this->Y;
 			float Z = this->Z;
 			float InvLength = 1.0f / Math::Sqrt( ( X * X ) + ( Y * Y ) + ( Z * Z ) );
-			return MVector( X * InvLength, Y * InvLength, Z * InvLength );
+			return Vector( X * InvLength, Y * InvLength, Z * InvLength );
 		}
 
 		/**
@@ -339,7 +339,7 @@ namespace Mile
 		*
 		* @param Rhs 내적 연산을할 3차원 벡터.
 		*/
-		float DotProduct( const MVector& Rhs )
+		float DotProduct( const Vector& Rhs )
 		{
 			return ( X * Rhs.X ) + ( Y * Rhs.Y ) + ( Z * Rhs.Z );
 		}
@@ -349,20 +349,20 @@ namespace Mile
 		*
 		* @param Rhs 외적 연산을할 3차원 벡터.
 		*/
-		MVector CrossProduct( const MVector& Rhs )
+		Vector CrossProduct( const Vector& Rhs )
 		{
 			float NewX = ( Y * Rhs.Z ) - ( Z * Rhs.Z );
 			float NewY = ( Z * Rhs.X ) - ( X * Rhs.Z );
 			float NewZ = ( X * Rhs.Y ) - ( Y * Rhs.X );
-			return MVector( NewX, NewY, NewZ );
+			return Vector( NewX, NewY, NewZ );
 		}
 
 		/**
 		* 각 성분의 절대값을 성분으로가지는 벡터를 반환함.
 		*/
-		MVector GetAbs( ) const
+		Vector GetAbs( ) const
 		{
-			return MVector( Math::Abs( X ), Math::Abs( Y ), Math::Abs( Z ) );
+			return Vector( Math::Abs( X ), Math::Abs( Y ), Math::Abs( Z ) );
 		}
 
 		/**

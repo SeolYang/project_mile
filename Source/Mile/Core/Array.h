@@ -8,25 +8,25 @@ namespace Mile
     * 동적 크기를가지는 배열 클래스
     */
     template < class T >
-    class MArray final
+    class Array final
     {
     public:
-        MArray( ) = delete;
-        explicit MArray( MAllocator& Source ) :
+        Array( ) = delete;
+        explicit Array( Allocator& Source ) :
             Allocator( Source ),
             Data( nullptr ), Capacity( 0 ), Size( 0 )
         {
 
         }
 
-        explicit MArray( const MArray& Source ) :
+        explicit Array( const Array& Source ) :
             Allocator( Source.Allocator ),
             Data( nullptr ), Capacity( 0 ), Size( 0 )
         {
             ( *this ) = Source;
         }
 
-        MArray& operator=( const MArray& RHS )
+        Array& operator=( const Array& RHS )
         {
             if ( Capacity != 0 )
             {
@@ -45,7 +45,7 @@ namespace Mile
             );
         }
 
-        MArray& operator=( MArray&& RHS )
+        Array& operator=( Array&& RHS )
         {
             if ( Capacity != 0 )
             {
@@ -173,9 +173,9 @@ namespace Mile
         }
 
     public:
-        static void Swap( MArray& Target1, MArray& Target2 )
+        static void Swap( Array& Target1, Array& Target2 )
         {
-            MAllocator& TempAllocator = Target2.Allocator;
+            Allocator& TempAllocator = Target2.Allocator;
             T* TempDataAddress = Target2.Data;
             uint64 TempCapacity = Target2.Capacity;
             uint64 TempSize = Target2.Size;
@@ -199,7 +199,7 @@ namespace Mile
         }
 
     private:
-        MAllocator&		Allocator;
+        Allocator&		Allocator;
         T*				Data;
 
         /**
