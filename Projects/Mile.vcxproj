@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Source\Mile\Application.h" />
     <ClInclude Include="..\Source\Mile\Core\Allocator.h" />
     <ClInclude Include="..\Source\Mile\Core\Array.h" />
     <ClInclude Include="..\Source\Mile\Core\DefaultAllocator.h" />
@@ -24,6 +25,7 @@
     <ClInclude Include="..\Source\Mile\Mile.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Source\Mile\Application.cpp" />
     <ClCompile Include="..\Source\Mile\Core\Vector.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
