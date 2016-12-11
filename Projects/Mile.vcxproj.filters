@@ -53,5 +53,8 @@
     <ClCompile Include="..\Source\Mile\Core\Vector.cpp">
       <Filter>Source\Math</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\Mile\Core\Timer.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

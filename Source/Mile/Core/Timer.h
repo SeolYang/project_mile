@@ -13,17 +13,17 @@ namespace Mile
     private:
         static void OnBegin( )
         {
-            BeginApplication = high_resolution_clock::now( );
+            BeginApplication = std::chrono::high_resolution_clock::now( );
         }
 
         static void PreUpdate( )
         {
-            BeforeFrame = high_resolution_clock::now( );
+            BeforeFrame = std::chrono::high_resolution_clock::now( );
         }
 
         static void PostUpdate( )
         {
-            AfterFrame = high_resolution_clock::now( );
+            AfterFrame = std::chrono::high_resolution_clock::now( );
         }
 
     private:

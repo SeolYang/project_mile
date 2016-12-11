@@ -25,6 +25,7 @@
     <ClInclude Include="..\Source\Mile\Mile.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Source\Mile\Core\Timer.cpp" />
     <ClCompile Include="..\Source\Mile\Core\Vector.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -5,7 +5,10 @@
 
 #include <iostream>
 #include <string>
-#include <winnt.h>
+
+#undef WIN32_MEAN_AND_LEAN
+#define WIN32_MEAN_AND_LEAN
+#include <Windows.h>
 
 #define MILE_LIBRARYEXPORT __declspec(dllexport)
 #define MILE_LIBRARYIMPORT __declspec(dllimport)
