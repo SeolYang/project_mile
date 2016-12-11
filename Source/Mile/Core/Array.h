@@ -1,6 +1,5 @@
 #pragma once
 #include "Mile.h"
-#include "Allocator.h"
 
 namespace Mile
 {
@@ -12,16 +11,18 @@ namespace Mile
     {
     public:
         Array( ) = delete;
-        explicit Array( Allocator& Source ) :
-            Allocator( Source ),
-            Data( nullptr ), Capacity( 0 ), Size( 0 )
+        explicit Array( ) :
+            Data( nullptr ),
+            Capacity( 0 ),
+            Size( 0 )
         {
 
         }
 
         explicit Array( const Array& Source ) :
-            Allocator( Source.Allocator ),
-            Data( nullptr ), Capacity( 0 ), Size( 0 )
+            Data( nullptr ),
+            Capacity( 0 ),
+            Size( 0 )
         {
             ( *this ) = Source;
         }
@@ -30,11 +31,10 @@ namespace Mile
         {
             if ( Capacity != 0 )
             {
-                Allocator.Deallocate( Data );
+                free( Data );
                 Data = nullptr;
             }
 
-            Allocator = RHS.Allocator;
             Capactiy = RHS.Capacity;
             Size = RHS.Size;
             Reserve( Capacity );
@@ -49,11 +49,10 @@ namespace Mile
         {
             if ( Capacity != 0 )
             {
-                Allocator.Deallocate( Data );
+                free( Data );
                 Data = nullptr;
             }
 
-            Allocator = RHS.Allocator;
             Capacity = RHS.Capacity;
             Size = RHS.Size;
             Data = RHS.Data;
@@ -127,11 +126,10 @@ namespace Mile
         {
             if ( NewCapacity > Capacity )
             {
-                T* NewAddress = (T*)Allocator.Allocate( NewCapacity * sizeof( T ) );
-
+                T* NewAddress = static_Cast<T*>( malloc( NewCapacity * sizeof( T ) ) );
                 memcpy( NewAddress, Data, sizeof( T ) * Size );
 
-                Allocator.Deallocate( Data );
+                free( Data );
 
                 Data = NewAddress;
                 Capacity = NewCapacity;
@@ -175,17 +173,14 @@ namespace Mile
     public:
         static void Swap( Array& Target1, Array& Target2 )
         {
-            Allocator& TempAllocator = Target2.Allocator;
             T* TempDataAddress = Target2.Data;
             uint64 TempCapacity = Target2.Capacity;
             uint64 TempSize = Target2.Size;
 
-            Target2.Allocator = Target1.Allocator;
             Target2.Data = Target1.Data;
             Target2.Capacity = Target1.Capacity;
             Target2.Size = Target1.Size;
 
-            Target1.Allocator = TempAllocator;
             Target1.Data = TempDataAddress;
             Target1.Capacity = TempCapacity;
             Target2.Size = TempSize;
@@ -199,7 +194,6 @@ namespace Mile
         }
 
     private:
-        Allocator&		Allocator;
         T*				Data;
 
         /**

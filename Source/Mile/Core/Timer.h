@@ -7,31 +7,36 @@ namespace Mile
     class MILE_API Timer final
     {
     public:
-        static float GetDeltaTime( );
-        static float GetRunningTime( );
+        Timer( );
+        ~Timer( );
+
+        void Update( );
+        void Reset( );
+
+        float GetRuntime( ) const;
+        float GetDeltaTime( ) const;
+        uint64 GetFrameCount( ) const;
+        uint64 GetFPS( )  const;
+        uint64 GetMaxFPS( ) const;
+        float GetScaledDeltaTime( ) const;
+
+        float GetTimeScale( ) const;
+        void SetTimeScale( float Scale );
 
     private:
-        static void OnBegin( )
-        {
-            BeginApplication = std::chrono::high_resolution_clock::now( );
-        }
+        uint64 TicksPerSec;
 
-        static void PreUpdate( )
-        {
-            BeforeFrame = std::chrono::high_resolution_clock::now( );
-        }
+        uint64 StartupTicks;
+        uint64 LastTicks;
+        uint64 CurrentTicks;
+        uint64 OneSecElasedTicks;
 
-        static void PostUpdate( )
-        {
-            AfterFrame = std::chrono::high_resolution_clock::now( );
-        }
+        float DeltaTime;
+        uint64 FrameCount;
+        uint64 FPS;
+        uint64 MaxFPS;
 
-    private:
-        using TimePoint = std::chrono::high_resolution_clock::time_point;
-        static TimePoint BeginApplication;
-
-        static TimePoint BeforeFrame;
-        static TimePoint AfterFrame;
+        float TimeScale;
 
     };
 }
