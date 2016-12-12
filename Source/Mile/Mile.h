@@ -10,6 +10,8 @@
 #define WIN32_MEAN_AND_LEAN
 #include <Windows.h>
 
+#include <memory>
+
 #define MILE_LIBRARYEXPORT __declspec(dllexport)
 #define MILE_LIBRARYIMPORT __declspec(dllimport)
 

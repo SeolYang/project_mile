@@ -19,6 +19,12 @@ namespace Mile
 
         }
 
+        explicit Array( uint64 Capacity ) :
+            Array( )
+        {
+            Reserve( Capacity );
+        }
+
         explicit Array( const Array& Source ) :
             Data( nullptr ),
             Capacity( 0 ),
@@ -33,11 +39,11 @@ namespace Mile
             {
                 free( Data );
                 Data = nullptr;
+                Capacity = 0;
             }
 
-            Capactiy = RHS.Capacity;
             Size = RHS.Size;
-            Reserve( Capacity );
+            Reserve( RHS.Capacity );
             memcpy(
                 Data,
                 RHS.Data,
