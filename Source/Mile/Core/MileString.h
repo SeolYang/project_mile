@@ -21,6 +21,8 @@ namespace Mile
         MString operator+( const MString& RHS ) const;
         MString& operator+=( const MString& RHS );
 
+        MChar& operator[]( uint64 Index );
+
         operator std::wstring( ) const;
 
         MString SubStr( uint64 Offset, uint64 Count ) const;

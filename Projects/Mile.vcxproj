@@ -37,6 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\Mile\Application\Application.cpp" />
+    <ClCompile Include="..\Source\Mile\Core\MileString.cpp" />
     <ClCompile Include="..\Source\Mile\Core\Timer.cpp" />
     <ClCompile Include="..\Source\Mile\Core\Vector.cpp" />
   </ItemGroup>

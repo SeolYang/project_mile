@@ -6,9 +6,9 @@ namespace Mile
     std::unique_ptr<Application> Application::AppInstance = nullptr;
 
     Application::Application( ) :
-        AppTimer( nullptr ), bLoop( true )
+        bLoop( true )
     {
-        AppInstance = std::make_unique<Application>( this );
+        AppInstance.reset( this );
 
         AppTimer = std::make_unique<Timer>( );
         AppTimer->Update( );

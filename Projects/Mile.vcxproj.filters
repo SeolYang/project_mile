@@ -80,5 +80,8 @@
     <ClCompile Include="..\Source\Mile\Core\Timer.cpp">
       <Filter>Source\Utility</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\Mile\Core\MileString.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

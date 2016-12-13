@@ -94,50 +94,50 @@ namespace Mile
         * 문자를 대문자로 변환함.
         * @param Char 변환할 문자.
         */
-        inline CharType ToUpper( CharType Char );
+        inline CharType ToUpper( );
         /**
         * 문자를 소문자로 변환함.
         * @param Char 변환할 문자.
         */
-        inline CharType ToLower( CharType Char );
+        inline CharType ToLower( );
         /**
         * 문자가 대문자인지 검사함.
         * @param Char 검사할 문자.
         */
-        inline bool IsUpper( CharType Char );
+        inline bool IsUpper( );
         /**
         * 문자가 소문자인지 검사함.
         * @param Char 검사할 문자.
         */
-        inline bool IsLower( CharType Char );
+        inline bool IsLower( );
         /**
         * 문자가 알파벳인지 검사함.
         * @param Char 검사할 문자.
         */
-        inline bool IsAlpha( CharType Char );
+        inline bool IsAlpha( );
         /**
         * 문자가 구두점인지 검사함.
         * @param Char 검사할 문자.
         */
-        inline bool IsPunct( CharType Char );
+        inline bool IsPunct( );
         /**
         * 문자가 알파벳 또는 숫자인지 검사함.
         * @param Char 검사할 문자.
         */
-        inline bool IsAlnum( CharType Char );
+        inline bool IsAlnum( );
         /**
         * 문자가 10진수인지 검사함.
         * @param Char 검사할 문자.
         */
-        inline bool IsDigit( CharType Char );
+        inline bool IsDigit( );
 
         /**
         * 문자가 밑줄인지 검사함.
         * @param Char 검사할 문자.
         */
-        inline bool IsUnderscore( CharType Char )
+        inline bool IsUnderscore(  )
         {
-            return Char == LITERAL( CharType, '_' );
+            return Character == LITERAL( CharType, '_' );
         }
 
     public:
@@ -146,99 +146,99 @@ namespace Mile
     };
 
     template <>
-    inline BaseChar<WIDECHAR>::CharType BaseChar<WIDECHAR>::ToUpper( CharType Char )
+    inline BaseChar<WIDECHAR>::CharType BaseChar<WIDECHAR>::ToUpper( )
     {
-        towupper( Char );
+        towupper( Character );
     }
 
     template <>
-    inline BaseChar<WIDECHAR>::CharType BaseChar<WIDECHAR>::ToLower( CharType Char )
+    inline BaseChar<WIDECHAR>::CharType BaseChar<WIDECHAR>::ToLower( )
     {
-        towlower( Char );
+        towlower( Character );
     }
 
     template <>
-    inline bool BaseChar<WIDECHAR>::IsUpper( CharType Char )
+    inline bool BaseChar<WIDECHAR>::IsUpper( )
     {
-        return static_cast<bool>( iswupper( Char ) );
+        return static_cast<bool>( iswupper( Character ) );
     }
 
     template <>
-    inline bool BaseChar<WIDECHAR>::IsLower( CharType Char )
+    inline bool BaseChar<WIDECHAR>::IsLower( )
     {
-        return static_cast<bool>( iswlower( Char ) );
+        return static_cast<bool>( iswlower( Character ) );
     }
 
     template <>
-    inline bool BaseChar<WIDECHAR>::IsAlpha( CharType Char )
+    inline bool BaseChar<WIDECHAR>::IsAlpha( )
     {
-        return static_cast<bool>( iswalpha( Char ) );
+        return static_cast<bool>( iswalpha( Character ) );
     }
 
     template <>
-    inline bool BaseChar<WIDECHAR>::IsPunct( CharType Char )
+    inline bool BaseChar<WIDECHAR>::IsPunct( )
     {
-        return static_cast<bool>( iswpunct( Char ) );
+        return static_cast<bool>( iswpunct( Character ) );
     }
 
     template <>
-    inline bool BaseChar<WIDECHAR>::IsAlnum( CharType Char )
+    inline bool BaseChar<WIDECHAR>::IsAlnum( )
     {
-        return static_cast<bool>( iswalnum( Char ) );
+        return static_cast<bool>( iswalnum( Character ) );
     }
 
     template <>
-    inline bool BaseChar<WIDECHAR>::IsDigit( CharType Char )
+    inline bool BaseChar<WIDECHAR>::IsDigit( )
     {
-        return static_cast<bool>( iswdigit( Char ) );
+        return static_cast<bool>( iswdigit( Character ) );
     }
 
     template <>
-    inline BaseChar<ANSICHAR>::CharType BaseChar<ANSICHAR>::ToUpper( CharType Char )
+    inline BaseChar<ANSICHAR>::CharType BaseChar<ANSICHAR>::ToUpper( )
     {
-        toupper( Char );
+        toupper( Character );
     }
 
     template <>
-    inline BaseChar<ANSICHAR>::CharType BaseChar<ANSICHAR>::ToLower( CharType Char )
+    inline BaseChar<ANSICHAR>::CharType BaseChar<ANSICHAR>::ToLower( )
     {
-        tolower( Char );
+        tolower( Character );
     }
 
     template <>
-    inline bool BaseChar<ANSICHAR>::IsUpper( CharType Char )
+    inline bool BaseChar<ANSICHAR>::IsUpper( )
     {
-        return static_cast<bool>( isupper( Char ) );
+        return static_cast<bool>( isupper( Character ) );
     }
 
     template <>
-    inline bool BaseChar<ANSICHAR>::IsLower( CharType Char )
+    inline bool BaseChar<ANSICHAR>::IsLower( )
     {
-        return static_cast<bool>( islower( Char ) );
+        return static_cast<bool>( islower( Character ) );
     }
 
     template <>
-    inline bool BaseChar<ANSICHAR>::IsAlpha( CharType Char )
+    inline bool BaseChar<ANSICHAR>::IsAlpha( )
     {
-        return static_cast<bool>( isalpha( Char ) );
+        return static_cast<bool>( isalpha( Character ) );
     }
 
     template <>
-    inline bool BaseChar<ANSICHAR>::IsPunct( CharType Char )
+    inline bool BaseChar<ANSICHAR>::IsPunct( )
     {
-        return static_cast<bool>( ispunct( Char ) );
+        return static_cast<bool>( ispunct( Character ) );
     }
 
     template <>
-    inline bool BaseChar<ANSICHAR>::IsAlnum( CharType Char )
+    inline bool BaseChar<ANSICHAR>::IsAlnum( )
     {
-        return static_cast<bool>( isalnum( Char ) );
+        return static_cast<bool>( isalnum( Character ) );
     }
 
     template <>
-    inline bool BaseChar<ANSICHAR>::IsDigit( CharType Char )
+    inline bool BaseChar<ANSICHAR>::IsDigit( )
     {
-        return static_cast<bool>( isdigit( Char ) );
+        return static_cast<bool>( isdigit( Character ) );
     }
 
     /** Mile Engine(API)의 기본 문자타입 */
