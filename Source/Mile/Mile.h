@@ -9,8 +9,12 @@
 #undef WIN32_MEAN_AND_LEAN
 #define WIN32_MEAN_AND_LEAN
 #include <Windows.h>
-
 #include <memory>
+
+/** Data structures */
+#include <vector>
+#include <stack>
+#include <queue>
 
 #define MILE_LIBRARYEXPORT __declspec(dllexport)
 #define MILE_LIBRARYIMPORT __declspec(dllimport)
@@ -55,23 +59,22 @@
 
 namespace Mile
 {
-	/** 부호없는 기본 타입 */
-	using uint8 = unsigned char;
-	using uint16 = unsigned short int;
-	using uint32 = unsigned int;
-	using uint64 = unsigned long long;
+    /** 부호없는 기본 타입 */
+    using uint8 = unsigned char;
+    using uint16 = unsigned short int;
+    using uint32 = unsigned int;
+    using uint64 = unsigned long long;
 
-	/** 부호있는 기본 타입 */
-	using int8 = signed char;
-	using int16 = signed short int;
-	using int32 = signed int;
-	using int64 = signed long long;
+    /** 부호있는 기본 타입 */
+    using int8 = signed char;
+    using int16 = signed short int;
+    using int32 = signed int;
+    using int64 = signed long long;
 
-	/** 문자 타입 */
-	using ANSICHAR = char;
-	using WIDECHAR = wchar_t;
-	using MCHAR = WIDECHAR;
+    /** 문자 타입 */
+    using ANSICHAR = char;
+    using WIDECHAR = wchar_t;
 
-	template<typename Ty>
-	class TypeDisplayer;
+    template<typename Ty>
+    class TypeDisplayer;
 }

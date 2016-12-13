@@ -44,6 +44,52 @@ namespace Mile
     {
         using CharType = T;
     public:
+        BaseChar( )
+        {
+        }
+
+        BaseChar( CharType Char ) :
+            Character( Char )
+        {
+        }
+
+        BaseChar& operator=( const BaseChar& Value )
+        {
+            Character = Value.Character;
+            return ( *this );
+        }
+
+        BaseChar& operator=( CharType Value )
+        {
+            Character = Value;
+            return ( *this );
+        }
+
+        bool operator==( CharType Value ) const
+        {
+            return ( Character == Value );
+        }
+
+        bool operator!=( CharType Value ) const
+        {
+            return ( Character != Value );
+        }
+
+        bool operator==( const BaseChar& Value ) const
+        {
+            return ( Character == Value.Character );
+        }
+
+        bool operator!=( const BaseChar& Value ) const
+        {
+            return ( Character == Value.Character );
+        }
+
+        operator CharType( ) const
+        {
+            return Character;
+        }
+
         /**
         * 문자를 대문자로 변환함.
         * @param Char 변환할 문자.
@@ -95,48 +141,6 @@ namespace Mile
         }
 
     public:
-        BaseChar( CharType Char ) :
-            Character( Char )
-        {
-        }
-
-        BaseChar& operator=( const BaseChar& Value )
-        {
-            Character = Value.Character;
-        }
-
-        BaseChar& operator=( CharType Value )
-        {
-            Character = Value;
-            return ( *this );
-        }
-
-        bool operator==( CharType Value ) const
-        {
-            return ( Character == Value );
-        }
-
-        bool operator!=( CharType Value ) const
-        {
-            return ( Character != Value );
-        }
-
-        bool operator==( const BaseChar& Value ) const
-        {
-            return ( Character == Value.Character );
-        }
-
-        bool operator!=( const BaseChar& Value ) const
-        {
-            return ( Character == Value.Character );
-        }
-
-        operator CharType( )
-        {
-            return Character;
-        }
-
-    public:
         CharType Character;
 
     };
@@ -156,37 +160,37 @@ namespace Mile
     template <>
     inline bool BaseChar<WIDECHAR>::IsUpper( CharType Char )
     {
-        return iswupper( Char );
+        return static_cast<bool>( iswupper( Char ) );
     }
 
     template <>
     inline bool BaseChar<WIDECHAR>::IsLower( CharType Char )
     {
-        return iswlower( Char );
+        return static_cast<bool>( iswlower( Char ) );
     }
 
     template <>
     inline bool BaseChar<WIDECHAR>::IsAlpha( CharType Char )
     {
-        return iswalpha( Char );
+        return static_cast<bool>( iswalpha( Char ) );
     }
 
     template <>
     inline bool BaseChar<WIDECHAR>::IsPunct( CharType Char )
     {
-        return iswpunct( Char );
+        return static_cast<bool>( iswpunct( Char ) );
     }
 
     template <>
     inline bool BaseChar<WIDECHAR>::IsAlnum( CharType Char )
     {
-        return iswalnum( Char );
+        return static_cast<bool>( iswalnum( Char ) );
     }
 
     template <>
     inline bool BaseChar<WIDECHAR>::IsDigit( CharType Char )
     {
-        return iswdigit( Char );
+        return static_cast<bool>( iswdigit( Char ) );
     }
 
     template <>
@@ -204,37 +208,37 @@ namespace Mile
     template <>
     inline bool BaseChar<ANSICHAR>::IsUpper( CharType Char )
     {
-        return isupper( Char );
+        return static_cast<bool>( isupper( Char ) );
     }
 
     template <>
     inline bool BaseChar<ANSICHAR>::IsLower( CharType Char )
     {
-        return islower( Char );
+        return static_cast<bool>( islower( Char ) );
     }
 
     template <>
     inline bool BaseChar<ANSICHAR>::IsAlpha( CharType Char )
     {
-        return isalpha( Char );
+        return static_cast<bool>( isalpha( Char ) );
     }
 
     template <>
     inline bool BaseChar<ANSICHAR>::IsPunct( CharType Char )
     {
-        return ispunct( Char );
+        return static_cast<bool>( ispunct( Char ) );
     }
 
     template <>
     inline bool BaseChar<ANSICHAR>::IsAlnum( CharType Char )
     {
-        return isalnum( Char );
+        return static_cast<bool>( isalnum( Char ) );
     }
 
     template <>
     inline bool BaseChar<ANSICHAR>::IsDigit( CharType Char )
     {
-        return isdigit( Char );
+        return static_cast<bool>( isdigit( Char ) );
     }
 
     /** Mile Engine(API)의 기본 문자타입 */

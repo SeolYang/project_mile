@@ -3,7 +3,6 @@
 
 namespace Mile
 {
-    class Allocator;
     class Timer;
     class Application
     {
@@ -11,8 +10,14 @@ namespace Mile
         Application( );
         virtual ~Application( );
 
+        static Application& GetInstance( );
+
     private:
-        Timer* MainTimer;
+        static std::unique_ptr<Application> AppInstance;
+
+    private:
+        bool                   bLoop;
+        std::unique_ptr<Timer> AppTimer;
 
     };
 }

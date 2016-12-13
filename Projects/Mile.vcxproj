@@ -5,26 +5,38 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="EditorDebug|x64">
+      <Configuration>EditorDebug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="EditorRelease|x64">
+      <Configuration>EditorRelease</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Source\Mile\Core\Allocator.h" />
-    <ClInclude Include="..\Source\Mile\Core\Array.h" />
-    <ClInclude Include="..\Source\Mile\Core\DefaultAllocator.h" />
-    <ClInclude Include="..\Source\Mile\Core\Memory.h" />
+    <ClInclude Include="..\Source\Mile\Application\Application.h" />
+    <ClInclude Include="..\Source\Mile\Components\ActorComponent.h" />
+    <ClInclude Include="..\Source\Mile\Components\SceneComponent.h" />
     <ClInclude Include="..\Source\Mile\Core\MileChar.h" />
-    <ClInclude Include="..\Source\Mile\Core\ProxyAllocator.h" />
-    <ClInclude Include="..\Source\Mile\Core\StackAllocator.h" />
+    <ClInclude Include="..\Source\Mile\Core\MileString.h" />
     <ClInclude Include="..\Source\Mile\Core\Timer.h" />
+    <ClInclude Include="..\Source\Mile\GameFramework\Actor.h" />
+    <ClInclude Include="..\Source\Mile\GameFramework\GameMode.h" />
+    <ClInclude Include="..\Source\Mile\GameFramework\Level.h" />
+    <ClInclude Include="..\Source\Mile\GameFramework\World.h" />
+    <ClInclude Include="..\Source\Mile\Math\Matrix.h" />
     <ClInclude Include="..\Source\Mile\Math\MileMath.h" />
     <ClInclude Include="..\Source\Mile\Math\Vector.h" />
     <ClInclude Include="..\Source\Mile\Math\Vector4.h" />
     <ClInclude Include="..\Source\Mile\Mile.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Source\Mile\Application\Application.cpp" />
     <ClCompile Include="..\Source\Mile\Core\Timer.cpp" />
     <ClCompile Include="..\Source\Mile\Core\Vector.cpp" />
   </ItemGroup>
@@ -36,17 +48,30 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EditorRelease|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -56,7 +81,13 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='EditorRelease|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -66,7 +97,19 @@
     <IntDir>$(SolutionDir)..\Builds\Intermediate\Mile\$(Configuration)\</IntDir>
     <TargetName>MileCore</TargetName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)..\Builds\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\Builds\Intermediate\Mile\$(Configuration)\</IntDir>
+    <TargetName>MileCore</TargetName>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)..\Builds\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\Builds\Intermediate\Mile\$(Configuration)\</IntDir>
+    <TargetName>MileCore</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EditorRelease|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Builds\Intermediate\Mile\$(Configuration)\</IntDir>
@@ -79,7 +122,22 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MILE_BUILD;_DEBUG;_WINDOWS;_USRDLL;MILE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Source\Mile\;$(SolutionDir)..\Source\Mile\Core;$(SolutionDir)..\Source\Mile\Math;$(SolutionDir)..\Source\Mile\Misc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Source\Mile\;$(SolutionDir)..\Source\Mile\Core;$(SolutionDir)..\Source\Mile\Math;$(SolutionDir)..\Source\Mile\Utility;$(SolutionDir)..\Source\Mile\Application;$(SolutionDir)..\Source\Mile\GameFramework;$(SolutionDir)..\Source\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>MILE_EDITOR;MILE_BUILD;_DEBUG;_WINDOWS;_USRDLL;MILE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Source\Mile\;$(SolutionDir)..\Source\Mile\Core;$(SolutionDir)..\Source\Mile\Math;$(SolutionDir)..\Source\Mile\Utility;$(SolutionDir)..\Source\Mile\Application;$(SolutionDir)..\Source\Mile\GameFramework;$(SolutionDir)..\Source\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -96,7 +154,26 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MILE_BUILD;NDEBUG;_WINDOWS;_USRDLL;MILE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Source\Mile\;$(SolutionDir)..\Source\Mile\Core;$(SolutionDir)..\Source\Mile\Math;$(SolutionDir)..\Source\Mile\Misc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Source\Mile\;$(SolutionDir)..\Source\Mile\Core;$(SolutionDir)..\Source\Mile\Math;$(SolutionDir)..\Source\Mile\Utility;$(SolutionDir)..\Source\Mile\Application;$(SolutionDir)..\Source\Mile\GameFramework;$(SolutionDir)..\Source\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='EditorRelease|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>MILE_EDITOR;MILE_BUILD;NDEBUG;_WINDOWS;_USRDLL;MILE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Source\Mile\;$(SolutionDir)..\Source\Mile\Core;$(SolutionDir)..\Source\Mile\Math;$(SolutionDir)..\Source\Mile\Utility;$(SolutionDir)..\Source\Mile\Application;$(SolutionDir)..\Source\Mile\GameFramework;$(SolutionDir)..\Source\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>

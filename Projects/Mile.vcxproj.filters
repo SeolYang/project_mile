@@ -10,6 +10,18 @@
     <Filter Include="Source\Math">
       <UniqueIdentifier>{6d6d4f40-0a9b-4cfa-9356-0f06f85384f2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Application">
+      <UniqueIdentifier>{bd7e0694-42a3-4dc4-bcad-0dfe9bdce92d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Utility">
+      <UniqueIdentifier>{75dc9eca-dd14-4894-ae9f-4c29100ecf01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Components">
+      <UniqueIdentifier>{f25757ff-1eae-43eb-867c-37db2e31e95a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\GameFramework">
+      <UniqueIdentifier>{d86d3e16-0f5f-4bce-865a-4eaf0d2acecd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\Mile\Mile.h">
@@ -24,28 +36,37 @@
     <ClInclude Include="..\Source\Mile\Core\MileChar.h">
       <Filter>Source\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Mile\Core\Allocator.h">
-      <Filter>Source\Core</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Mile\Math\Vector.h">
       <Filter>Source\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Mile\Core\Memory.h">
-      <Filter>Source\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Mile\Core\StackAllocator.h">
-      <Filter>Source\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Mile\Core\ProxyAllocator.h">
-      <Filter>Source\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Mile\Core\DefaultAllocator.h">
-      <Filter>Source\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Mile\Core\Array.h">
-      <Filter>Source\Core</Filter>
+    <ClInclude Include="..\Source\Mile\Application\Application.h">
+      <Filter>Source\Application</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Mile\Core\Timer.h">
+      <Filter>Source\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\Components\ActorComponent.h">
+      <Filter>Source\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\Components\SceneComponent.h">
+      <Filter>Source\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\GameFramework\Actor.h">
+      <Filter>Source\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\GameFramework\World.h">
+      <Filter>Source\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\GameFramework\Level.h">
+      <Filter>Source\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\GameFramework\GameMode.h">
+      <Filter>Source\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\Math\Matrix.h">
+      <Filter>Source\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\Core\MileString.h">
       <Filter>Source\Core</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,8 +74,11 @@
     <ClCompile Include="..\Source\Mile\Core\Vector.cpp">
       <Filter>Source\Math</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\Mile\Application\Application.cpp">
+      <Filter>Source\Application</Filter>
+    </ClCompile>
     <ClCompile Include="..\Source\Mile\Core\Timer.cpp">
-      <Filter>Source\Core</Filter>
+      <Filter>Source\Utility</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
