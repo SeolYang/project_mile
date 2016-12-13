@@ -21,7 +21,11 @@ namespace Mile
         MString operator+( const MString& RHS ) const;
         MString& operator+=( const MString& RHS );
 
-        MChar& operator[]( uint64 Index );
+        inline MChar& operator[]( uint64 Index )
+        {
+            ASSERT_MSG( Data.size( ) <= Index, "Out of range!" );
+            return ( Data[Index] );
+        }
 
         operator std::wstring( ) const;
 

@@ -62,12 +62,6 @@ namespace Mile
         return ( *this );
     }
 
-    MChar& MString::operator[]( uint64 Index )
-    {
-        ASSERT_MSG( Data.size( ) <= Index, "Out of range!" );
-        return ( Data[Index] );
-    }
-
     MString::operator std::wstring( ) const
     {
         std::wstring OutStr;
