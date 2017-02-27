@@ -9,13 +9,23 @@ namespace Mile
     {
     public:
         Actor( const MString& Name ) :
-            Name( Name ), RootComponent( std::make_unique<SceneComponent>( ) )
+            Name( Name ), RootComponent( nullptr )
         {
         }
 
+        virtual void Tick( float DeltaTime ) { }
+        virtual void TickActor( float DeltaTime ) final;
+
+    public:
+        bool bIsTick;
+
     protected:
         MString Name;
-        std::unique_ptr<SceneComponent> RootComponent;
+        SceneComponent* RootComponent;
+
+    private:
+        std::vector<ActorComponent*> OwnedComponent;
+        std::vector<Actor*> Children;
 
     };
 }

@@ -8,6 +8,14 @@ namespace Mile
     */
     class MILE_API SceneComponent : public ActorComponent
     {
+    public:
+        SceneComponent( Actor* Owner ) :
+            ActorComponent( Owner )
+        {
+        }
+
+    private:
+        std::vector<SceneComponent*> Children;
 
     };
 }

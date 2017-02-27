@@ -83,5 +83,9 @@
     <ClCompile Include="..\Source\Mile\Core\MileString.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\Mile\Components\ActorComponent.cpp">
+      <Filter>Source\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Mile\GameFramework\Actor.cpp" />
   </ItemGroup>
 </Project>
