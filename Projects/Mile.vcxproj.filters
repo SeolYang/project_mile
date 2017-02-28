@@ -13,9 +13,6 @@
     <Filter Include="Sources\Application">
       <UniqueIdentifier>{bd7e0694-42a3-4dc4-bcad-0dfe9bdce92d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Utility">
-      <UniqueIdentifier>{75dc9eca-dd14-4894-ae9f-4c29100ecf01}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Components">
       <UniqueIdentifier>{f25757ff-1eae-43eb-867c-37db2e31e95a}</UniqueIdentifier>
     </Filter>
@@ -24,73 +21,73 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Source\Mile\Mile.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Mile\Math\MileMath.h">
-      <Filter>Sources\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Mile\Math\Vector4.h">
-      <Filter>Sources\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Mile\Core\MileChar.h">
-      <Filter>Sources\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Mile\Math\Vector.h">
-      <Filter>Sources\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Mile\Application\Application.h">
+    <ClInclude Include="..\Sources\Mile\Application\Application.h">
       <Filter>Sources\Application</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Mile\Core\Timer.h">
-      <Filter>Sources\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Mile\Components\ActorComponent.h">
+    <ClInclude Include="..\Sources\Mile\Components\Component.h">
       <Filter>Sources\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Mile\GameFramework\Actor.h">
+    <ClInclude Include="..\Sources\Mile\Components\ActorComponent.h">
+      <Filter>Sources\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Core\MileString.h">
+      <Filter>Sources\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Core\Object.h">
+      <Filter>Sources\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Core\Timer.h">
+      <Filter>Sources\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Core\MileChar.h">
+      <Filter>Sources\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Mile\GameFramework\Actor.h">
       <Filter>Sources\GameFramework</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Mile\GameFramework\World.h">
+    <ClInclude Include="..\Sources\Mile\GameFramework\GameMode.h">
       <Filter>Sources\GameFramework</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Mile\GameFramework\Level.h">
+    <ClInclude Include="..\Sources\Mile\GameFramework\Level.h">
       <Filter>Sources\GameFramework</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Mile\GameFramework\GameMode.h">
+    <ClInclude Include="..\Sources\Mile\GameFramework\World.h">
       <Filter>Sources\GameFramework</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Mile\Math\Matrix.h">
+    <ClInclude Include="..\Sources\Mile\Math\Vector.h">
       <Filter>Sources\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Mile\Core\MileString.h">
-      <Filter>Sources\Core</Filter>
+    <ClInclude Include="..\Sources\Mile\Math\Vector4.h">
+      <Filter>Sources\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Mile\Components\Component.h">
-      <Filter>Sources\Components</Filter>
+    <ClInclude Include="..\Sources\Mile\Math\Matrix.h">
+      <Filter>Sources\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Mile\Core\Object.h">
-      <Filter>Sources\Core</Filter>
+    <ClInclude Include="..\Sources\Mile\Math\MileMath.h">
+      <Filter>Sources\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Mile.h">
+      <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Source\Mile\Core\Vector.cpp">
-      <Filter>Sources\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Mile\Application\Application.cpp">
+    <ClCompile Include="..\Sources\Mile\Application\Application.cpp">
       <Filter>Sources\Application</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Mile\Core\Timer.cpp">
-      <Filter>Sources\Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Mile\Core\MileString.cpp">
-      <Filter>Sources\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Mile\Components\ActorComponent.cpp">
+    <ClCompile Include="..\Sources\Mile\Components\ActorComponent.cpp">
       <Filter>Sources\Components</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Mile\GameFramework\Actor.cpp">
+    <ClCompile Include="..\Sources\Mile\Core\Timer.cpp">
+      <Filter>Sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Mile\Core\MileString.cpp">
+      <Filter>Sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Mile\GameFramework\Actor.cpp">
       <Filter>Sources\GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Mile\Math\Vector.cpp">
+      <Filter>Sources\Math</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
