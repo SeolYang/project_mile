@@ -1,18 +1,34 @@
 #pragma once
 #include "Mile.h"
+#include "MileString.h"
 
 namespace Mile
 {
-    class Component;
+    /*
+    * @todo: 기본 능력 확장 ( 직렬화, UUID, RTTI, 메모리관리<고민해보기> ) 
+    */
     class MILE_API Object
     {
     public:
-        Object( ){}
+        inline Object( const MString& NewName = MString( TEXT("") ), bool IsValid = true ) :
+            Name( NewName ),
+            bIsValid( IsValid )
+        {
+        }
+
+        void SetName( const MString& NewName )
+        {
+            Name = NewName;
+        }
+
+        MString GetName( ) const
+        {
+            return Name;
+        }
 
     private:
-        bool bIsValid;
-
-        std::vector<Component*> Components;
+        MString                      Name;
+        bool                         bIsValid;
 
     };
 }

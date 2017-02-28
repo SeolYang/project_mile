@@ -1,23 +1,39 @@
 #pragma once
-#include "MileString.h"
 #include "Object.h"
 
 namespace Mile
 {
     class ActorComponent;
+    class SceneComponent;
     class Actor : public Object
     {
+        using ComponentList = std::vector<ActorComponent*>;
     public:
-        Actor( const MString& Name ) :
-            Name( Name ), RootComponent( nullptr )
+        Actor( const MString& NewName ) :
+            bIsTick( false ),
+            bIsChangedAtComponents( true ),
+            Object( NewName )
         {
         }
 
-        virtual void TickActor( float DeltaTime ) final;
+        void PostTick( float DeltaTime );
+        void TickActor( float DeltaTime );
+        virtual void Tick( float DeltaTime ) { UNUSED_PARAM( DeltaTime ); }
 
-    protected:
-        MString Name;
-        ActorComponent* RootComponent;
+        void AttachComponent( ActorComponent* Target );
+        bool DetachComponent( const ActorComponent* Target );
+
+        void AttachRootComponent( SceneComponent* Target );
+        bool DetachRootComponent( );
+        SceneComponent* GetRootComponent( ) const;
+
+    private:
+        ComponentList       Components;
+        SceneComponent*     RootComponent;
+
+    public:
+        bool                bIsTick;
+        bool                bIsChangedAtComponents;
 
     };
 }

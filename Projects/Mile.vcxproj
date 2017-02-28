@@ -21,7 +21,7 @@
   <ItemGroup>
     <ClInclude Include="..\Sources\Mile\Application\Application.h" />
     <ClInclude Include="..\Sources\Mile\Components\ActorComponent.h" />
-    <ClInclude Include="..\Sources\Mile\Components\Component.h" />
+    <ClInclude Include="..\Sources\Mile\Components\SceneComponent.h" />
     <ClInclude Include="..\Sources\Mile\Core\MileChar.h" />
     <ClInclude Include="..\Sources\Mile\Core\MileString.h" />
     <ClInclude Include="..\Sources\Mile\Core\Object.h" />
@@ -32,13 +32,16 @@
     <ClInclude Include="..\Sources\Mile\GameFramework\World.h" />
     <ClInclude Include="..\Sources\Mile\Math\Matrix.h" />
     <ClInclude Include="..\Sources\Mile\Math\MileMath.h" />
+    <ClInclude Include="..\Sources\Mile\Math\Transform.h" />
     <ClInclude Include="..\Sources\Mile\Math\Vector.h" />
     <ClInclude Include="..\Sources\Mile\Math\Vector4.h" />
     <ClInclude Include="..\Sources\Mile\Mile.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Sources\Mile\Application\Application.cpp" />
+    <ClCompile Include="..\Sources\Mile\Application\Entry.cpp" />
     <ClCompile Include="..\Sources\Mile\Components\ActorComponent.cpp" />
+    <ClCompile Include="..\Sources\Mile\Components\SceneComponent.cpp" />
     <ClCompile Include="..\Sources\Mile\Core\MileString.cpp" />
     <ClCompile Include="..\Sources\Mile\Core\Timer.cpp" />
     <ClCompile Include="..\Sources\Mile\GameFramework\Actor.cpp" />
@@ -64,7 +67,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -130,7 +133,7 @@
       <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -145,7 +148,7 @@
       <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -162,7 +165,7 @@
       <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
@@ -181,7 +184,7 @@
       <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>

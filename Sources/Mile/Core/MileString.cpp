@@ -31,6 +31,12 @@ namespace Mile
         ( *this ) = InStr;
     }
 
+    MString& MString::operator=( const MString& RHS )
+    {
+        Data = RHS.Data;
+        return ( *this );
+    }
+
     MString& MString::operator=( MString&& RHS )
     {
         Data = std::move( RHS.Data );

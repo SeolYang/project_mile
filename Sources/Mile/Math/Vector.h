@@ -1,4 +1,5 @@
 #pragma once
+#include "Object.h"
 #include "MileMath.h"
 
 namespace Mile
@@ -6,7 +7,7 @@ namespace Mile
 	/**
 	* 3차원 공간상의 위치 또는 방향을 나타내는 벡터 클래스.
 	*/
-	struct MILE_API ALGIN_16 Vector
+	struct MILE_API ALGIN_16 Vector : public Object
 	{
 	public:
 		/** 벡터의 X 성분. */

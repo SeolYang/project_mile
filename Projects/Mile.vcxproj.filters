@@ -24,9 +24,6 @@
     <ClInclude Include="..\Sources\Mile\Application\Application.h">
       <Filter>Sources\Application</Filter>
     </ClInclude>
-    <ClInclude Include="..\Sources\Mile\Components\Component.h">
-      <Filter>Sources\Components</Filter>
-    </ClInclude>
     <ClInclude Include="..\Sources\Mile\Components\ActorComponent.h">
       <Filter>Sources\Components</Filter>
     </ClInclude>
@@ -69,6 +66,12 @@
     <ClInclude Include="..\Sources\Mile\Mile.h">
       <Filter>Sources</Filter>
     </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Components\SceneComponent.h">
+      <Filter>Sources\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Math\Transform.h">
+      <Filter>Sources\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Sources\Mile\Application\Application.cpp">
@@ -88,6 +91,12 @@
     </ClCompile>
     <ClCompile Include="..\Sources\Mile\Math\Vector.cpp">
       <Filter>Sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Mile\Application\Entry.cpp">
+      <Filter>Sources\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Mile\Components\SceneComponent.cpp">
+      <Filter>Sources\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
