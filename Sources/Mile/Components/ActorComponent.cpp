@@ -6,11 +6,7 @@ namespace Mile
     void ActorComponent::SetOwner( Actor* NewOwner )
     {
         DetachFromOwner( );
-        if ( NewOwner != nullptr )
-        {
-            Owner = NewOwner;
-            Owner->AttachComponent( this );
-        }
+        Owner = NewOwner;
     }
 
     void ActorComponent::DetachFromOwner( )

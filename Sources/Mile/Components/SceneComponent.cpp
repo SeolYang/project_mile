@@ -6,11 +6,7 @@ namespace Mile
     {
         if ( Target != nullptr )
         {
-            if ( Target->IsRegistered( ) )
-            {
-                Target->SetParent( this );
-            }
-
+            Target->SetParent( this );
             Target->OnAttachPost( );
             Components.push_back( Target );
         }
@@ -37,9 +33,9 @@ namespace Mile
         if ( NewParent != nullptr )
         {
             SetOwner( NewParent->GetOwner( ) );
-            Parent = NewParent;
-            Parent->AttachComponent( this );
         }
+
+        Parent = NewParent;
     }
 
     void SceneComponent::DetachFromParent( )
@@ -47,6 +43,7 @@ namespace Mile
         if ( Parent != nullptr )
         {
             Parent->DetachComponent( this );
+            DetachFromOwner( );
         }
     }
 }

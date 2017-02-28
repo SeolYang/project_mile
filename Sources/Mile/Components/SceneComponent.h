@@ -35,6 +35,13 @@ namespace Mile
             return Parent;
         }
 
+    protected:
+        virtual void OnDetachPost( ) override
+        {
+            ActorComponent::OnDetachPost( );
+            Parent = nullptr;
+        }
+
     private:
         void DetachFromParent( );
 

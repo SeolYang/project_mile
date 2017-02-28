@@ -19,7 +19,6 @@ namespace Mile
         {
         }
 
-        /* @todo: 이미 Owner가 유효한 상태에서 호출시 인수인계 작업 구현 */
         void SetOwner( Actor* NewOwner );
         Actor* GetOwner( ) const
         {
@@ -34,15 +33,16 @@ namespace Mile
         }
 
     protected:
-        void OnAttachPost( )
+        virtual void OnAttachPost( )
         {
             bIsRegistered = true;
             OnAttach( );
         }
 
-        void OnDetachPost( )
+        virtual void OnDetachPost( )
         {
             bIsRegistered = false;
+            Owner = nullptr;
             OnDetach( );
         }
 
