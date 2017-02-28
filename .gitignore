@@ -40,3 +40,5 @@ Builds/Debug/MileCore.ilk
 Builds/Intermediate/Mile/Debug/vc140.idb
 *.exp
 *.ipch
+*.iobj
+*.ipdb

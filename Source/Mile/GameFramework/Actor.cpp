@@ -1,15 +1,13 @@
 #include "Actor.h"
+#include "ActorComponent.h"
 
 namespace Mile
 {
     void Actor::TickActor( float DeltaTime )
     {
-        if ( bIsTick )
+        if ( RootComponent != nullptr )
         {
-            for ( auto Child : Children )
-            {
-                Child->TickActor( DeltaTime );
-            }
+            RootComponent->Tick( DeltaTime );
         }
     }
 }

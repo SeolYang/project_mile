@@ -1,11 +1,11 @@
 #pragma once
-#include "Mile.h"
 #include "MileString.h"
-#include "SceneComponent.h"
+#include "Object.h"
 
 namespace Mile
 {
-    class Actor
+    class ActorComponent;
+    class Actor : public Object
     {
     public:
         Actor( const MString& Name ) :
@@ -13,19 +13,11 @@ namespace Mile
         {
         }
 
-        virtual void Tick( float DeltaTime ) { }
         virtual void TickActor( float DeltaTime ) final;
-
-    public:
-        bool bIsTick;
 
     protected:
         MString Name;
-        SceneComponent* RootComponent;
-
-    private:
-        std::vector<ActorComponent*> OwnedComponent;
-        std::vector<Actor*> Children;
+        ActorComponent* RootComponent;
 
     };
 }

@@ -48,9 +48,6 @@
     <ClInclude Include="..\Source\Mile\Components\ActorComponent.h">
       <Filter>Source\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Mile\Components\SceneComponent.h">
-      <Filter>Source\Components</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\Mile\GameFramework\Actor.h">
       <Filter>Source\GameFramework</Filter>
     </ClInclude>
@@ -67,6 +64,12 @@
       <Filter>Source\Math</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Mile\Core\MileString.h">
+      <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\Components\Component.h">
+      <Filter>Source\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Mile\Core\Object.h">
       <Filter>Source\Core</Filter>
     </ClInclude>
   </ItemGroup>
@@ -86,6 +89,8 @@
     <ClCompile Include="..\Source\Mile\Components\ActorComponent.cpp">
       <Filter>Source\Components</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Mile\GameFramework\Actor.cpp" />
+    <ClCompile Include="..\Source\Mile\GameFramework\Actor.cpp">
+      <Filter>Source\GameFramework</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

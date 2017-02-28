@@ -41,7 +41,7 @@ namespace Mile
     {
         Data.clear( );
 
-        int Size = InStr.size( );
+        size_t Size = InStr.size( );
         Data.resize( Size );
         for ( int Index = 0; Index < Size; ++Index )
         {
@@ -66,7 +66,7 @@ namespace Mile
     {
         std::wstring OutStr;
         
-        int Size = Data.size( );
+        size_t Size = Data.size( );
         OutStr.resize( Size );
         for ( int Index = 0; Index < Size; ++Index )
         {
