@@ -10,7 +10,7 @@ namespace Mile
     class MILE_API Object
     {
     public:
-        inline Object( const MString& NewName = MString( TEXT("") ), bool IsValid = true ) :
+        inline Object( const MString& NewName = MString( TEXT("UNKNOWN") ), bool IsValid = true ) :
             Name( NewName ),
             bIsValid( IsValid )
         {

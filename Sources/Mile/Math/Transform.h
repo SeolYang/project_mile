@@ -1,6 +1,5 @@
 #pragma once
 #include "Vector.h"
-#include "Object.h"
 
 namespace Mile
 {
@@ -12,7 +11,7 @@ namespace Mile
     * @todo: 계산된 변환행렬을 저장후 dirty 마크가 되있지않다면 저장된 
     *         변환행렬을 반환. (강제적으로 dirty 마킹 가능)
     */
-    struct MILE_API Transform : public Object
+    struct MILE_API Transform
     {
     public:
         inline Transform( ) :
