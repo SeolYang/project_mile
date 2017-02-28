@@ -126,7 +126,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MILE_BUILD;_DEBUG;_WINDOWS;_USRDLL;MILE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Source\Mile\;$(SolutionDir)..\Source\Mile\Core;$(SolutionDir)..\Source\Mile\Math;$(SolutionDir)..\Source\Mile\Utility;$(SolutionDir)..\Source\Mile\Application;$(SolutionDir)..\Source\Mile\GameFramework;$(SolutionDir)..\Source\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Sources\Mile\;$(SolutionDir)..\Sources\Mile\Core;$(SolutionDir)..\Sources\Mile\Math;$(SolutionDir)..\Sources\Mile\Utility;$(SolutionDir)..\Sources\Mile\Application;$(SolutionDir)..\Sources\Mile\GameFramework;$(SolutionDir)..\Sources\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -141,7 +141,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MILE_EDITOR;MILE_BUILD;_DEBUG;_WINDOWS;_USRDLL;MILE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Source\Mile\;$(SolutionDir)..\Source\Mile\Core;$(SolutionDir)..\Source\Mile\Math;$(SolutionDir)..\Source\Mile\Utility;$(SolutionDir)..\Source\Mile\Application;$(SolutionDir)..\Source\Mile\GameFramework;$(SolutionDir)..\Source\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Sources\Mile\;$(SolutionDir)..\Sources\Mile\Core;$(SolutionDir)..\Sources\Mile\Math;$(SolutionDir)..\Sources\Mile\Utility;$(SolutionDir)..\Sources\Mile\Application;$(SolutionDir)..\Sources\Mile\GameFramework;$(SolutionDir)..\Sources\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -158,7 +158,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MILE_BUILD;NDEBUG;_WINDOWS;_USRDLL;MILE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Source\Mile\;$(SolutionDir)..\Source\Mile\Core;$(SolutionDir)..\Source\Mile\Math;$(SolutionDir)..\Source\Mile\Utility;$(SolutionDir)..\Source\Mile\Application;$(SolutionDir)..\Source\Mile\GameFramework;$(SolutionDir)..\Source\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Sources\Mile\;$(SolutionDir)..\Sources\Mile\Core;$(SolutionDir)..\Sources\Mile\Math;$(SolutionDir)..\Sources\Mile\Utility;$(SolutionDir)..\Sources\Mile\Application;$(SolutionDir)..\Sources\Mile\GameFramework;$(SolutionDir)..\Sources\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -177,7 +177,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MILE_EDITOR;MILE_BUILD;NDEBUG;_WINDOWS;_USRDLL;MILE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Source\Mile\;$(SolutionDir)..\Source\Mile\Core;$(SolutionDir)..\Source\Mile\Math;$(SolutionDir)..\Source\Mile\Utility;$(SolutionDir)..\Source\Mile\Application;$(SolutionDir)..\Source\Mile\GameFramework;$(SolutionDir)..\Source\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Sources\Mile\;$(SolutionDir)..\Sources\Mile\Core;$(SolutionDir)..\Sources\Mile\Math;$(SolutionDir)..\Sources\Mile\Utility;$(SolutionDir)..\Sources\Mile\Application;$(SolutionDir)..\Sources\Mile\GameFramework;$(SolutionDir)..\Sources\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
