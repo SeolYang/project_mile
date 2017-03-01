@@ -2,48 +2,35 @@
 
 namespace Mile
 {
-    void SceneComponent::AttachComponent( SceneComponent* Target )
+    bool SceneComponent::AttachTo( SceneComponent* NewParent )
     {
-        if ( Target != nullptr )
+        bool bIsValidAttachment =
+            NewParent != nullptr && ParentPrivate != NewParent;
+        if ( bIsValidAttachment )
         {
-            Target->SetParent( this );
-            Target->OnAttachPost( );
-            Components.push_back( Target );
-        }
-    }
-
-    bool SceneComponent::DetachComponent( const SceneComponent* Target )
-    {
-        if ( Target != nullptr )
-        {
-            for ( auto Itr = Components.begin( ); ( *Itr ) != Target; ++Itr )
-            {
-                ( *Itr )->OnDetachPost( );
-                Components.erase( Itr );
-                return true;
-            }
+            DetachFromComponent( );
+            ParentPrivate = NewParent;
+            ParentPrivate->GetAttachedComponents( ).push_back( this );
+            return true;
         }
 
         return false;
     }
 
-    void SceneComponent::SetParent( SceneComponent* NewParent )
+    void SceneComponent::DetachFromComponent( )
     {
-        DetachFromParent( );
-        if ( NewParent != nullptr )
+        bool bIsValidDetachment =
+            ParentPrivate != nullptr;
+        if ( bIsValidDetachment )
         {
-            SetOwner( NewParent->GetOwner( ) );
-        }
-
-        Parent = NewParent;
-    }
-
-    void SceneComponent::DetachFromParent( )
-    {
-        if ( Parent != nullptr )
-        {
-            Parent->DetachComponent( this );
-            DetachFromOwner( );
+            for ( auto FoundComponent = ParentPrivate->GetAttachedComponents( ).begin( );
+                ( *FoundComponent ) != this;
+                ++FoundComponent )
+            {
+                ParentPrivate->GetAttachedComponents( ).erase( FoundComponent );
+                ParentPrivate = nullptr;
+                break;
+            }
         }
     }
 }

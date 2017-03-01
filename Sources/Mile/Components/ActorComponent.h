@@ -11,49 +11,23 @@ namespace Mile
     {
         friend Actor;
     public:
-        ActorComponent( const MString& NewName, Actor* NewOwner ) :
-            Owner( NewOwner ),
-            bIsRegistered( true ),
+        ActorComponent( const MString& NewName ) :
             bIsTick( false ),
+            OwnerPrivate( nullptr ),
             Object( NewName )
         {
         }
 
-        void SetOwner( Actor* NewOwner );
-        Actor* GetOwner( ) const
+        void SetOwner( Actor* Owner );
+        FORCEINLINE Actor* GetOwner( ) const
         {
-            return Owner;
+            return OwnerPrivate;
         }
 
         virtual void TickComponent( float DeltaTime ) {}
 
-        FORCEINLINE bool IsRegistered( ) const
-        {
-            return bIsRegistered;
-        }
-
-    protected:
-        virtual void OnAttachPost( )
-        {
-            bIsRegistered = true;
-            OnAttach( );
-        }
-
-        virtual void OnDetachPost( )
-        {
-            bIsRegistered = false;
-            Owner = nullptr;
-            OnDetach( );
-        }
-
-        virtual void OnAttach( ) {}
-        virtual void OnDetach( ) {}
-
-        void DetachFromOwner( );
-
     private:
-        bool bIsRegistered;
-        Actor* Owner;
+        Actor* OwnerPrivate;
 
     public:
         bool    bIsTick;

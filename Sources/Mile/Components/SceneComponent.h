@@ -11,8 +11,8 @@ namespace Mile
     {
         using ComponentList = std::vector<SceneComponent*>;
     public:
-        SceneComponent( const MString& NewName, Actor* NewOwner ) :
-            ActorComponent( NewName, NewOwner )
+        SceneComponent( const MString& NewName ) :
+            ActorComponent( NewName )
         {
         }
 
@@ -26,28 +26,19 @@ namespace Mile
             return Transform;
         }
 
-        void AttachComponent( SceneComponent* Target );
-        bool DetachComponent( const SceneComponent* Target );
+        FORCEINLINE ComponentList& GetAttachedComponents( ) { return Components; }
 
-        void SetParent( SceneComponent* NewParent );
+        bool AttachTo( SceneComponent* NewParent );
+        void DetachFromComponent( );
+
         SceneComponent* GetParent( ) const
         {
-            return Parent;
+            return ParentPrivate;
         }
-
-    protected:
-        virtual void OnDetachPost( ) override
-        {
-            ActorComponent::OnDetachPost( );
-            Parent = nullptr;
-        }
-
-    private:
-        void DetachFromParent( );
 
     private:
         Transform Transform;
-        SceneComponent* Parent;
+        SceneComponent* ParentPrivate;
         ComponentList Components;
 
     };
