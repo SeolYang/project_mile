@@ -21,19 +21,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Sources\Mile\Application\Application.h">
-      <Filter>Sources\Application</Filter>
-    </ClInclude>
     <ClInclude Include="..\Sources\Mile\Components\ActorComponent.h">
       <Filter>Sources\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\Sources\Mile\Core\MileString.h">
-      <Filter>Sources\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Mile\Core\Object.h">
-      <Filter>Sources\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Mile\Core\Timer.h">
       <Filter>Sources\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Sources\Mile\Core\MileChar.h">
@@ -72,16 +63,25 @@
     <ClInclude Include="..\Sources\Mile\Math\Transform.h">
       <Filter>Sources\Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Application\Win32Window.h">
+      <Filter>Sources\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Application\MileWindow.h">
+      <Filter>Sources\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Core\MileTimer.h">
+      <Filter>Sources\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Core\MileObject.h">
+      <Filter>Sources\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Application\MileApplication.h">
+      <Filter>Sources\Application</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Sources\Mile\Application\Application.cpp">
-      <Filter>Sources\Application</Filter>
-    </ClCompile>
     <ClCompile Include="..\Sources\Mile\Components\ActorComponent.cpp">
       <Filter>Sources\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Mile\Core\Timer.cpp">
-      <Filter>Sources\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Sources\Mile\Core\MileString.cpp">
       <Filter>Sources\Core</Filter>
@@ -97,6 +97,18 @@
     </ClCompile>
     <ClCompile Include="..\Sources\Mile\Components\SceneComponent.cpp">
       <Filter>Sources\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Mile\Application\MileWindow.cpp">
+      <Filter>Sources\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Mile\Application\Win32Window.cpp">
+      <Filter>Sources\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Mile\Core\MileTimer.cpp">
+      <Filter>Sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Mile\Application\MileApplication.cpp">
+      <Filter>Sources\Application</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

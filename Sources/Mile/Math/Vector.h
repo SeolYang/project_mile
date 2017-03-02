@@ -1,5 +1,4 @@
 #pragma once
-#include "Object.h"
 #include "MileMath.h"
 
 namespace Mile

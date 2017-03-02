@@ -7,10 +7,10 @@ namespace Mile
     /*
     * @todo: 기본 능력 확장 ( 직렬화, UUID, RTTI, 메모리관리<고민해보기> ) 
     */
-    class MILE_API Object
+    class MILE_API MileObject
     {
     public:
-        inline Object( const MString& NewName = MString( TEXT("UNKNOWN") ), bool IsValid = true ) :
+        inline MileObject( const MString& NewName = MString( TEXT("UNKNOWN") ), bool IsValid = true ) :
             Name( NewName ),
             bIsValid( IsValid )
         {

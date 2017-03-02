@@ -1,14 +1,13 @@
 #pragma once
-#include <chrono>
 #include "Mile.h"
 
 namespace Mile
 {
-    class MILE_API Timer final
+    class MILE_API MileTimer final
     {
     public:
-        Timer( );
-        ~Timer( );
+        MileTimer( );
+        ~MileTimer( );
 
         void Update( );
         void Reset( );

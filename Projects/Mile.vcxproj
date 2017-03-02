@@ -19,13 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Sources\Mile\Application\Application.h" />
+    <ClInclude Include="..\Sources\Mile\Application\MileApplication.h" />
+    <ClInclude Include="..\Sources\Mile\Application\Win32Window.h" />
+    <ClInclude Include="..\Sources\Mile\Application\MileWindow.h" />
     <ClInclude Include="..\Sources\Mile\Components\ActorComponent.h" />
     <ClInclude Include="..\Sources\Mile\Components\SceneComponent.h" />
     <ClInclude Include="..\Sources\Mile\Core\MileChar.h" />
     <ClInclude Include="..\Sources\Mile\Core\MileString.h" />
-    <ClInclude Include="..\Sources\Mile\Core\Object.h" />
-    <ClInclude Include="..\Sources\Mile\Core\Timer.h" />
+    <ClInclude Include="..\Sources\Mile\Core\MileObject.h" />
+    <ClInclude Include="..\Sources\Mile\Core\MileTimer.h" />
     <ClInclude Include="..\Sources\Mile\GameFramework\Actor.h" />
     <ClInclude Include="..\Sources\Mile\GameFramework\GameMode.h" />
     <ClInclude Include="..\Sources\Mile\GameFramework\Level.h" />
@@ -38,12 +40,14 @@
     <ClInclude Include="..\Sources\Mile\Mile.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Sources\Mile\Application\Application.cpp" />
+    <ClCompile Include="..\Sources\Mile\Application\MileApplication.cpp" />
     <ClCompile Include="..\Sources\Mile\Application\Entry.cpp" />
+    <ClCompile Include="..\Sources\Mile\Application\MileWindow.cpp" />
+    <ClCompile Include="..\Sources\Mile\Application\Win32Window.cpp" />
     <ClCompile Include="..\Sources\Mile\Components\ActorComponent.cpp" />
     <ClCompile Include="..\Sources\Mile\Components\SceneComponent.cpp" />
     <ClCompile Include="..\Sources\Mile\Core\MileString.cpp" />
-    <ClCompile Include="..\Sources\Mile\Core\Timer.cpp" />
+    <ClCompile Include="..\Sources\Mile\Core\MileTimer.cpp" />
     <ClCompile Include="..\Sources\Mile\GameFramework\Actor.cpp" />
     <ClCompile Include="..\Sources\Mile\Math\Vector.cpp" />
   </ItemGroup>

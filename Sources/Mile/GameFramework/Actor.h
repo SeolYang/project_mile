@@ -1,11 +1,11 @@
 #pragma once
-#include "Object.h"
+#include "MileObject.h"
 
 namespace Mile
 {
     class ActorComponent;
     class SceneComponent;
-    class MILE_API Actor : public Object
+    class MILE_API Actor : public MileObject
     {
         using ComponentList = std::vector<ActorComponent*>;
     public:
@@ -13,7 +13,7 @@ namespace Mile
             bIsTick( false ),
             bIsChangedAtComponents( true ),
             ParentPrivate( nullptr ),
-            Object( NewName )
+            MileObject( NewName )
         {
         }
 

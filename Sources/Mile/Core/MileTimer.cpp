@@ -1,9 +1,10 @@
-#include "Timer.h"
+#include "MileTimer.h"
+#include <chrono>
 using namespace std::chrono;
 
 namespace Mile
 {
-    Timer::Timer( ) :
+    MileTimer::MileTimer( ) :
         DeltaTime( 0.0f ), TimeScale( 1.0f )
     {
         QueryPerformanceFrequency( (LARGE_INTEGER*)&TicksPerSec );
@@ -12,11 +13,11 @@ namespace Mile
         OneSecElasedTicks = CurrentTicks;
     }
 
-    Timer::~Timer( )
+    MileTimer::~MileTimer( )
     {
     }
 
-    void Timer::Update( )
+    void MileTimer::Update( )
     {
         LastTicks = CurrentTicks;
         QueryPerformanceCounter( (LARGE_INTEGER*)&CurrentTicks );
@@ -42,50 +43,50 @@ namespace Mile
         }
     }
 
-    void Timer::Reset( )
+    void MileTimer::Reset( )
     {
         FPS = 0;
         MaxFPS = 0;
         FrameCount = 0;
     }
 
-    float Timer::GetRuntime( ) const
+    float MileTimer::GetRuntime( ) const
     {
         return ( static_cast<float>
             ( CurrentTicks - StartupTicks ) / TicksPerSec );
     }
 
-    float Timer::GetDeltaTime( ) const
+    float MileTimer::GetDeltaTime( ) const
     {
         return DeltaTime;
     }
 
-    uint64 Timer::GetFrameCount( ) const
+    uint64 MileTimer::GetFrameCount( ) const
     {
         return FrameCount;
     }
 
-    uint64 Timer::GetFPS( ) const
+    uint64 MileTimer::GetFPS( ) const
     {
         return FPS;
     }
 
-    uint64 Timer::GetMaxFPS( ) const
+    uint64 MileTimer::GetMaxFPS( ) const
     {
         return MaxFPS;
     }
 
-    float Timer::GetScaledDeltaTime( ) const
+    float MileTimer::GetScaledDeltaTime( ) const
     {
         return ( TimeScale * DeltaTime );
     }
 
-    float Timer::GetTimeScale( ) const
+    float MileTimer::GetTimeScale( ) const
     {
         return TimeScale;
     }
 
-    void Timer::SetTimeScale( float Scale )
+    void MileTimer::SetTimeScale( float Scale )
     {
         TimeScale = Scale;
     }
