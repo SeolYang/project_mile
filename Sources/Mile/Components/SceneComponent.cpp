@@ -11,12 +11,7 @@ namespace Mile
             DetachFromComponent( );
             ParentPrivate = NewParent;
             ParentPrivate->AddAttachedComponent( this );
-            std::wcout << TEXT( "Scene Component has attached to " ) << ( std::wstring )ParentPrivate->GetName( ) << TEXT( ".\n" );
             return true;
-        }
-        else
-        {
-            std::wcout << TEXT( "Is not able to attach." ) << std::endl;
         }
 
         return false;
@@ -30,18 +25,17 @@ namespace Mile
         {
             if ( ParentPrivate->RemoveAttachedComponent( this ) )
             {
-                std::wcout << TEXT( "Scene Component has detached from " ) << ( std::wstring )ParentPrivate->GetName( ) << TEXT( ".\n" );
                 ParentPrivate = nullptr;
             }
         }
     }
 
-    void SceneComponent::AddAttachedComponent( SceneComponent * Component )
+    void SceneComponent::AddAttachedComponent( SceneComponent* Component )
     {
         Components.push_back( Component );
     }
 
-    bool SceneComponent::RemoveAttachedComponent( SceneComponent * Component )
+    bool SceneComponent::RemoveAttachedComponent( SceneComponent* Component )
     {
         for ( auto FoundComponent = Components.begin( );
             ( *FoundComponent ) != this;
