@@ -38,12 +38,17 @@ namespace Mile
     bool SceneComponent::RemoveAttachedComponent( SceneComponent* Component )
     {
         for ( auto FoundComponent = Components.begin( );
-            ( *FoundComponent ) != this;
+            FoundComponent != Components.end( );
             ++FoundComponent )
         {
-            Components.erase( FoundComponent );
-            return true;
+            if ( ( *FoundComponent ) == Component )
+            {
+                Components.erase( FoundComponent );
+                return true;
+            }
         }
+
+        return false;
     }
 
 }

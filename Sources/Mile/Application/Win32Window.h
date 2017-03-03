@@ -10,8 +10,8 @@ namespace Mile
     {
     public:
         Win32Window( const MString& NewTitle, 
-            uint64 NewWidth = 800, 
-            uint64 NewHeight = 600,
+            uint32 NewWidth = 800,
+            uint32 NewHeight = 600,
             EWindowMode NewWindowMode = EWindowMode::Windowed) :
             Handle( nullptr ),
             MileWindow(
@@ -25,7 +25,7 @@ namespace Mile
 
         virtual bool Initialize( ) override;
         virtual void DeInitialize( ) override;
-        virtual void OnResize( uint64 NewWidth, uint64 NewHeight ) override;
+        virtual void OnResize( uint32 NewWidth, uint32 NewHeight ) override;
         virtual void OnWindowModeChange( EWindowMode NewWindowMode ) override;
 
     private:

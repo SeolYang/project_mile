@@ -3,11 +3,11 @@
 
 namespace Mile
 {
-    void ActorComponent::SetOwner( Actor* Owner )
+    void ActorComponent::SetOwner( Actor* Owner, bool bIsDetachBeforeSetNewOwner )
     {
-        if ( OwnerPrivate != nullptr )
+        if ( ( OwnerPrivate != nullptr ) && bIsDetachBeforeSetNewOwner )
         {
-            OwnerPrivate->RemoveComponent( this );
+            OwnerPrivate->DetachComponent( this );
         }
 
         OwnerPrivate = Owner;

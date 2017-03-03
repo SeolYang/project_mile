@@ -18,7 +18,7 @@ namespace Mile
         {
         }
 
-        void SetOwner( Actor* Owner );
+        void SetOwner( Actor* Owner, bool bIsDetachBeforeSetNewOwner = true );
         FORCEINLINE Actor* GetOwner( ) const
         {
             return OwnerPrivate;

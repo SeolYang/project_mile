@@ -4,29 +4,41 @@
 
 namespace Mile
 {
-    void Actor::AddComponent( ActorComponent* Component )
+    void Actor::AttachComponent( ActorComponent* Component )
     {
         bool bIsValidComponent =
-            Component != nullptr && Component->GetOwner( ) != this;
+            Component != nullptr && ( Component->GetOwner( ) != this );
+
+        if ( Component->GetOwner( ) == this )
+        {
+            std::cout << " Is Already attached to actor." << std::endl;
+        }
+
         if ( bIsValidComponent )
         {
+            std::wcout << Component->GetName( ).operator std::wstring( ) << TEXT( " is attached to " ) << GetName( ).operator std::wstring() << std::endl;
             Component->SetOwner( this );
             Components.push_back( Component );
         }
     }
 
-    void Actor::RemoveComponent( ActorComponent* Component )
+    void Actor::DetachComponent( ActorComponent* Component )
     {
-        bool bIsValidComponent = 
-            Component != nullptr && Component->GetOwner( ) == this;
+        bool bIsValidComponent =
+            ( Component != nullptr ) && ( Component->GetOwner( ) == this );
         if ( bIsValidComponent )
         {
             for ( auto FoundComponent = Components.begin( );
-                ( *FoundComponent ) != Component; ++FoundComponent )
+                FoundComponent != Components.end( );
+                ++FoundComponent )
             {
-                ( *FoundComponent )->SetOwner( nullptr );
-                Components.erase( FoundComponent );
-                break;
+                if ( ( *FoundComponent ) == Component )
+                {
+                    Components.erase( FoundComponent );
+                    Component->SetOwner( nullptr, false );
+                    std::wcout << Component->GetName( ).operator std::wstring( ) << TEXT( " has dettached." ) << std::endl;
+                    return;
+                }
             }
         }
     }

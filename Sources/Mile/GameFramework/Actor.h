@@ -19,8 +19,8 @@ namespace Mile
 
         virtual void Tick( float DeltaTime ) { UNUSED_PARAM( DeltaTime ); }
 
-        void AddComponent( ActorComponent* Component );
-        void RemoveComponent( ActorComponent* Component );
+        void AttachComponent( ActorComponent* Component );
+        void DetachComponent( ActorComponent* Component );
 
         bool AttachToComponent( SceneComponent* Parent );
         void DetachFromComponent( );

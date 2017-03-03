@@ -106,7 +106,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\Builds\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Builds\Intermediate\Mile\$(Configuration)\</IntDir>
-    <TargetName>MileCore</TargetName>
+    <TargetName>Mile</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -132,7 +132,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>MILE_BUILD;_DEBUG;_WINDOWS;_USRDLL;MILE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;MILE_BUILD;DEBUG;_WINDOWS;_USRDLL;MILE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)..\Sources\Mile\;$(SolutionDir)..\Sources\Mile\Core;$(SolutionDir)..\Sources\Mile\Math;$(SolutionDir)..\Sources\Mile\Utility;$(SolutionDir)..\Sources\Mile\Application;$(SolutionDir)..\Sources\Mile\GameFramework;$(SolutionDir)..\Sources\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>

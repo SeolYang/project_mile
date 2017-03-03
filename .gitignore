@@ -42,3 +42,5 @@ Builds/Intermediate/Mile/Debug/vc140.idb
 *.ipch
 *.iobj
 *.ipdb
+*.ilk
+*.idb

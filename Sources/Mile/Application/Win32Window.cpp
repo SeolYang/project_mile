@@ -36,8 +36,8 @@ namespace Mile
         RegisterClass( &WinClass );
 
         /* 화면모드에 따른 적절한 처리하기 */
-        uint64 Width = GetWidth( );
-        uint64 Height = GetHeight( );
+        uint32 Width = GetWidth( );
+        uint32 Height = GetHeight( );
         Handle = CreateWindow(
             Title.c_str( ), Title.c_str( ),
             WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_VISIBLE,
@@ -46,7 +46,7 @@ namespace Mile
 
         if ( Handle == nullptr )
         {
-            ASSERT_MSG( (true), TEXT( "Win32Window failed to initialize." ) )
+            ASSERT_MSG( ( true ), TEXT( "Win32Window failed to initialize." ) );
             return false;
         }
 
@@ -58,7 +58,7 @@ namespace Mile
         /* @todo: 할당 해제 작업 */
     }
 
-    void Win32Window::OnResize( uint64 NewWidth, uint64 NewHeight )
+    void Win32Window::OnResize( uint32 NewWidth, uint32 NewHeight )
     {
         /* @todo: 윈도우 메세지 콜백 후 필요한 내용들 추가적으로 처리. */
     }

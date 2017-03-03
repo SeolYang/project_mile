@@ -18,8 +18,8 @@ namespace Mile
     {
     public:
         MileWindow( const MString& NewTitle,
-            uint64 NewWidth,
-            uint64 NewHeight,
+            uint32 NewWidth,
+            uint32 NewHeight,
             EWindowMode NewWindowMode ) :
             Title( NewTitle ),
             Width( NewWidth ), Height( NewHeight ),
@@ -32,24 +32,24 @@ namespace Mile
 
         MString GetTitle( ) const { return Title; }
 
-        FORCEINLINE uint64 GetWidth( ) const { return Width; }
-        FORCEINLINE uint64 GetHeight( ) const { return Height; }
+        FORCEINLINE uint32 GetWidth( ) const { return Width; }
+        FORCEINLINE uint32 GetHeight( ) const { return Height; }
 
         FORCEINLINE EWindowMode GetWindowMode( ) const { return WindowMode; }
 
-        void Resize( uint64 NewWidth, uint64 NewHeight );
+        void Resize( uint32 NewWidth, uint32 NewHeight );
         void SetWindowMode( EWindowMode NewWindowMode );
 
         virtual bool Initialize( ) = 0;
         virtual void DeInitialize( ) = 0;
-        virtual void OnResize( uint64 NewWidth, uint64 NewHeight ) = 0;
+        virtual void OnResize( uint32 NewWidth, uint32 NewHeight ) = 0;
         virtual void OnWindowModeChange( EWindowMode NewWindowMode ) = 0;
 
     private:
         MString Title;
 
-        uint64 Width;
-        uint64 Height;
+        uint32 Width;
+        uint32 Height;
 
         EWindowMode WindowMode;
 

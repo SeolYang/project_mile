@@ -2,7 +2,7 @@
 
 namespace Mile
 {
-    void MileWindow::Resize( uint64 NewWidth, uint64 NewHeight )
+    void MileWindow::Resize( uint32 NewWidth, uint32 NewHeight )
     {
         OnResize( NewWidth, NewHeight );
         Width = NewWidth;
