@@ -20,7 +20,7 @@ namespace Mile
         std::unique_ptr<MileTimer> Timer;
 
     private:
-        static std::unique_ptr<MileApplication> Instance;
+        static MileApplication* Instance;
 
     };
 }

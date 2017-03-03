@@ -1,5 +1,24 @@
 #include "Win32Window.h"
 
+/* @testcode */
+LRESULT CALLBACK WinProc( HWND Handle, UINT Msg, WPARAM WParam, LPARAM LParam )
+{
+    switch ( Msg )
+    {
+    case WM_DESTROY:
+    case WM_CLOSE:
+        PostQuitMessage( 0 );
+        return 0;
+
+    case WM_SIZE:
+
+        break;
+    }
+
+    return DefWindowProc( Handle, Msg, WParam, LParam );
+}
+/*************/
+
 namespace Mile
 {
     bool Win32Window::Initialize( )
@@ -9,7 +28,7 @@ namespace Mile
         /* 여기서 Win32 초기화 */
         WNDCLASS WinClass = { NULL };
         WinClass.style = CS_OWNDC;
-        //WinClass.lpfnWndProc = ...;
+        WinClass.lpfnWndProc = &WinProc;
 
         /* 나중에 DirectX 에서 커스텀 커서 지원하기 */
         WinClass.hCursor = LoadCursor( nullptr, IDC_ARROW );

@@ -13,6 +13,7 @@ namespace Mile
             uint64 NewWidth = 800, 
             uint64 NewHeight = 600,
             EWindowMode NewWindowMode = EWindowMode::Windowed) :
+            Handle( nullptr ),
             MileWindow(
                 NewTitle,
                 NewWidth, NewHeight,

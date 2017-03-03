@@ -12,6 +12,7 @@ namespace Mile
         using ComponentList = std::vector<SceneComponent*>;
     public:
         SceneComponent( const MString& NewName ) :
+            ParentPrivate( nullptr ),
             ActorComponent( NewName )
         {
         }
@@ -26,8 +27,6 @@ namespace Mile
             return Transform;
         }
 
-        FORCEINLINE ComponentList& GetAttachedComponents( ) { return Components; }
-
         bool AttachTo( SceneComponent* NewParent );
         void DetachFromComponent( );
 
@@ -35,6 +34,10 @@ namespace Mile
         {
             return ParentPrivate;
         }
+
+    protected:
+        void AddAttachedComponent( SceneComponent* Component );
+        bool RemoveAttachedComponent( SceneComponent* Component );
 
     private:
         Transform Transform;

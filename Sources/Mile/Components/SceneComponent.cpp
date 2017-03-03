@@ -5,13 +5,18 @@ namespace Mile
     bool SceneComponent::AttachTo( SceneComponent* NewParent )
     {
         bool bIsValidAttachment =
-            NewParent != nullptr && ParentPrivate != NewParent;
+            NewParent != nullptr && ParentPrivate != NewParent && NewParent->GetParent( ) != this;
         if ( bIsValidAttachment )
         {
             DetachFromComponent( );
             ParentPrivate = NewParent;
-            ParentPrivate->GetAttachedComponents( ).push_back( this );
+            ParentPrivate->AddAttachedComponent( this );
+            std::wcout << TEXT( "Scene Component has attached to " ) << ( std::wstring )ParentPrivate->GetName( ) << TEXT( ".\n" );
             return true;
+        }
+        else
+        {
+            std::wcout << TEXT( "Is not able to attach." ) << std::endl;
         }
 
         return false;
@@ -23,14 +28,28 @@ namespace Mile
             ParentPrivate != nullptr;
         if ( bIsValidDetachment )
         {
-            for ( auto FoundComponent = ParentPrivate->GetAttachedComponents( ).begin( );
-                ( *FoundComponent ) != this;
-                ++FoundComponent )
+            if ( ParentPrivate->RemoveAttachedComponent( this ) )
             {
-                ParentPrivate->GetAttachedComponents( ).erase( FoundComponent );
+                std::wcout << TEXT( "Scene Component has detached from " ) << ( std::wstring )ParentPrivate->GetName( ) << TEXT( ".\n" );
                 ParentPrivate = nullptr;
-                break;
             }
         }
     }
+
+    void SceneComponent::AddAttachedComponent( SceneComponent * Component )
+    {
+        Components.push_back( Component );
+    }
+
+    bool SceneComponent::RemoveAttachedComponent( SceneComponent * Component )
+    {
+        for ( auto FoundComponent = Components.begin( );
+            ( *FoundComponent ) != this;
+            ++FoundComponent )
+        {
+            Components.erase( FoundComponent );
+            return true;
+        }
+    }
+
 }
