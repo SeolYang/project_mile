@@ -37,6 +37,8 @@ namespace Mile
         bool AttachTo( SceneComponent* NewParent );
         void DetachFromComponent( );
 
+        virtual void SetOwnerRecursively( Actor* NewOwner, bool bIsDetachBeforeSetNewOwner = true ) override;
+
         SceneComponent* GetParent( ) const
         {
             return ParentPrivate;
@@ -45,9 +47,6 @@ namespace Mile
     protected:
         void AddAttachedComponent( SceneComponent* Component );
         bool RemoveAttachedComponent( SceneComponent* Component );
-
-    private:
-        void SetOwnerRecursively( Actor* NewOwner, bool bIsDetachBeforeSetNewOwner = true );
 
     private:
         Transform Transform;

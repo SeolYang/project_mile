@@ -34,6 +34,7 @@ namespace Mile
         ActorComponent& operator=( ActorComponent&& MovedObject ) = delete;
 
         void SetOwner( Actor* Owner, bool bIsDetachBeforeSetNewOwner = true );
+        virtual void SetOwnerRecursively( Actor* NewOwner, bool bIsDetachBeforeSetNewOwner = true );
         FORCEINLINE Actor* GetOwner( ) const
         {
             return OwnerPrivate;

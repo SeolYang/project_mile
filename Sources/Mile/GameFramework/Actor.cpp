@@ -9,15 +9,10 @@ namespace Mile
         bool bIsValidComponent =
             Component != nullptr && ( Component->GetOwner( ) != this );
 
-        if ( Component->GetOwner( ) == this )
-        {
-            std::cout << " Is Already attached to actor." << std::endl;
-        }
-
         if ( bIsValidComponent )
         {
             std::wcout << Component->GetName( ).operator std::wstring( ) << TEXT( " is attached to " ) << GetName( ).operator std::wstring() << std::endl;
-            Component->SetOwner( this );
+            Component->SetOwnerRecursively( this );
             Components.push_back( Component );
         }
     }

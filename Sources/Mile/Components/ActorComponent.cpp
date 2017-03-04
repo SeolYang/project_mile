@@ -12,4 +12,9 @@ namespace Mile
 
         OwnerPrivate = Owner;
     }
+
+    void ActorComponent::SetOwnerRecursively( Actor* Owner, bool bIsDetachBeforeSetNewOwner )
+    {
+        SetOwner( Owner, bIsDetachBeforeSetNewOwner );
+    }
 }
