@@ -47,6 +47,9 @@ namespace Mile
         bool RemoveAttachedComponent( SceneComponent* Component );
 
     private:
+        void SetOwnerRecursively( Actor* NewOwner, bool bIsDetachBeforeSetNewOwner = true );
+
+    private:
         Transform Transform;
         SceneComponent* ParentPrivate;
         ComponentList Components;
