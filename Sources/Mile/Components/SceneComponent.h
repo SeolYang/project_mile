@@ -17,6 +17,13 @@ namespace Mile
         {
         }
 
+        SceneComponent( SceneComponent&& MovedObject ) :
+            ParentPrivate( nullptr ),
+            ActorComponent( std::move( MovedObject ) )
+        {
+            AttachTo( MovedObject.GetParent( ) );
+        }
+
         void SetTransform( const Transform& NewTransform )
         {
             Transform = NewTransform;

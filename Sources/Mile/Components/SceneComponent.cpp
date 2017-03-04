@@ -11,6 +11,13 @@ namespace Mile
             DetachFromComponent( );
             ParentPrivate = NewParent;
             ParentPrivate->AddAttachedComponent( this );
+
+            auto ParentOwner = ParentPrivate->GetOwner( );
+            auto Owner = this->GetOwner( );
+            if ( ParentOwner != Owner )
+            {
+                SetOwner( ParentOwner );
+            }
             return true;
         }
 
@@ -26,6 +33,7 @@ namespace Mile
             if ( ParentPrivate->RemoveAttachedComponent( this ) )
             {
                 ParentPrivate = nullptr;
+                SetOwner( nullptr );
             }
         }
     }

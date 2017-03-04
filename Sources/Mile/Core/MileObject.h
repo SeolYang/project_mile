@@ -16,6 +16,12 @@ namespace Mile
         {
         }
 
+        MileObject( MileObject&& MovedObject ) :
+            Name( std::move( MovedObject.Name ) ),
+            bIsValid( MovedObject.bIsValid )
+        {
+        }
+
         void SetName( const MString& NewName )
         {
             Name = NewName;

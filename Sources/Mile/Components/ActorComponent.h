@@ -14,9 +14,23 @@ namespace Mile
         ActorComponent( const MString& NewName ) :
             bIsTick( false ),
             OwnerPrivate( nullptr ),
+            TickPriority( 0 ),
             MileObject( NewName )
         {
         }
+
+        ActorComponent( ActorComponent&& MovedObject ) :
+            OwnerPrivate( MovedObject.OwnerPrivate ),
+            bIsTick( MovedObject.bIsTick ),
+            TickPriority( MovedObject.TickPriority )
+        {
+            this->SetOwner( MovedObject.GetOwner( ) );
+            MovedObject.SetOwner( nullptr );
+            MovedObject.bIsTick = false;
+            MovedObject.TickPriority = UINT64_MAX;
+        }
+
+        ActorComponent& operator=( ActorComponent&& MovedObject ) = delete;
 
         void SetOwner( Actor* Owner, bool bIsDetachBeforeSetNewOwner = true );
         FORCEINLINE Actor* GetOwner( ) const
