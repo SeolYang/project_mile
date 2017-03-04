@@ -12,9 +12,6 @@ namespace Mile
             ParentPrivate = NewParent;
             ParentPrivate->AddAttachedComponent( this );
 
-            std::wcout << GetName( ).operator std::wstring( )
-                << TEXT( " attach to " ) << ParentPrivate->GetName( ).operator std::wstring( ) << std::endl;
-
             auto ParentOwner = ParentPrivate->GetOwner( );
             auto Owner = this->GetOwner( );
             if ( ParentOwner != Owner )
@@ -43,18 +40,18 @@ namespace Mile
 
     void SceneComponent::AddAttachedComponent( SceneComponent* Component )
     {
-        Components.push_back( Component );
+        Children.push_back( Component );
     }
 
     bool SceneComponent::RemoveAttachedComponent( SceneComponent* Component )
     {
-        for ( auto FoundComponent = Components.begin( );
-            FoundComponent != Components.end( );
+        for ( auto FoundComponent = Children.begin( );
+            FoundComponent != Children.end( );
             ++FoundComponent )
         {
             if ( ( *FoundComponent ) == Component )
             {
-                Components.erase( FoundComponent );
+                Children.erase( FoundComponent );
                 return true;
             }
         }
@@ -65,8 +62,8 @@ namespace Mile
     void SceneComponent::SetOwnerRecursively( Actor* NewOwner, bool bIsDetachBeforeSetNewOwner )
     {
         this->SetOwner( NewOwner, bIsDetachBeforeSetNewOwner );
-        for ( auto Child = Components.begin( );
-            Child != Components.end( );
+        for ( auto Child = Children.begin( );
+            Child != Children.end( );
             ++Child )
         {
             ( *Child )->SetOwnerRecursively( NewOwner, bIsDetachBeforeSetNewOwner );

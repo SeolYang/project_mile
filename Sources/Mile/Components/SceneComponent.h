@@ -52,7 +52,7 @@ namespace Mile
     private:
         Transform Transform;
         SceneComponent* ParentPrivate;
-        ComponentList Components;
+        ComponentList Children;
 
     };
 }
