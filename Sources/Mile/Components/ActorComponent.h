@@ -22,7 +22,8 @@ namespace Mile
         ActorComponent( ActorComponent&& MovedObject ) :
             OwnerPrivate( MovedObject.OwnerPrivate ),
             bIsTick( MovedObject.bIsTick ),
-            TickPriority( MovedObject.TickPriority )
+            TickPriority( MovedObject.TickPriority ),
+            MileObject( std::move( MovedObject ) )
         {
             this->SetOwner( MovedObject.GetOwner( ) );
             MovedObject.SetOwner( nullptr );
