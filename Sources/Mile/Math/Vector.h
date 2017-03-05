@@ -4,7 +4,7 @@
 namespace Mile
 {
 	/**
-	* 3차원 공간상의 위치 또는 방향을 나타내는 벡터 클래스.
+	* 3차원 공간상의 위치 또는 방향을 나타내는 벡터 구조체.
 	*/
 	struct MILE_API ALGIN_16 Vector
 	{

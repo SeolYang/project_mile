@@ -49,6 +49,7 @@
     <ClCompile Include="..\Sources\Mile\Core\MileString.cpp" />
     <ClCompile Include="..\Sources\Mile\Core\MileTimer.cpp" />
     <ClCompile Include="..\Sources\Mile\GameFramework\Actor.cpp" />
+    <ClCompile Include="..\Sources\Mile\Math\Matrix.cpp" />
     <ClCompile Include="..\Sources\Mile\Math\Vector.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

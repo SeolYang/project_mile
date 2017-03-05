@@ -71,7 +71,6 @@ namespace Mile
         Vector Translation;
         Vector Rotation;
         Vector Scale;
-        //Matrix PastMatrix;
 
     };
 }

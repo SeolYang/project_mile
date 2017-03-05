@@ -110,5 +110,8 @@
     <ClCompile Include="..\Sources\Mile\Application\MileApplication.cpp">
       <Filter>Sources\Application</Filter>
     </ClCompile>
+    <ClCompile Include="..\Sources\Mile\Math\Matrix.cpp">
+      <Filter>Sources\Math</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
