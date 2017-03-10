@@ -1,4 +1,5 @@
-#include "Matrix.h"
+#include "MileApplication.h"
+#include "Win32Window.h"
 using namespace Mile;
 
 #ifdef _DEBUG
@@ -13,9 +14,8 @@ int main( int Argc, char* Argv[], char* Envp[] )
 
     setlocale( LC_ALL, "" );
 
-    Matrix Mat1 = Matrix::Identity;
-    Matrix Mat2 = Matrix::Identity;
-    Matrix ResultMat = Mat1 * Mat2;
+
+
     /** @todo: Replace to Application end code */
     return 0;
 }

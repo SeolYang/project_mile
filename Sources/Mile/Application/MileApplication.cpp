@@ -22,4 +22,14 @@ namespace Mile
         ASSERT_MSG( ( Instance == nullptr ), TEXT( "Application instance is unavaliable!" ) );
         return ( *Instance );
     }
+
+    MileWindow& MileApplication::GetWindow( ) const
+    {
+        return ( *Window );
+    }
+
+    MileTimer & MileApplication::GetTimer( ) const
+    {
+        return ( *Timer );
+    }
 }

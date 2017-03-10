@@ -14,6 +14,8 @@ namespace Mile
         virtual void Excute( ) = 0;
 
         static MileApplication& GetInstance( );
+        MileWindow& GetWindow( ) const;
+        MileTimer& GetTimer( ) const;
 
     private:
         std::unique_ptr<MileWindow> Window;
