@@ -12,14 +12,31 @@ namespace Mile
     public:
         inline MileObject( const MString& NewName = MString( TEXT("UNKNOWN") ), bool IsValid = true ) :
             Name( NewName ),
-            bIsValid( IsValid )
+            bIsValid( IsValid ),
+            ObjectID( NumOfAllocatedObject )
         {
+            ++NumOfAllocatedObject;
+            ++ObjectCounting;
+        }
+
+        MileObject( const MileObject& CopiedObject ) :
+            Name( CopiedObject.Name ),
+            bIsValid( CopiedObject.bIsValid ),
+            ObjectID( NumOfAllocatedObject )
+        {
+            ++NumOfAllocatedObject;
+            ++ObjectCounting;
         }
 
         MileObject( MileObject&& MovedObject ) :
             Name( std::move( MovedObject.Name ) ),
             bIsValid( MovedObject.bIsValid )
         {
+        }
+
+        virtual ~MileObject( )
+        {
+            --ObjectCounting;
         }
 
         void SetName( const MString& NewName )
@@ -32,7 +49,16 @@ namespace Mile
             return Name;
         }
 
+        uint64 GetObjectID( ) const
+        {
+            return ObjectID;
+        }
+
     private:
+        static uint64                NumOfAllocatedObject;
+        static uint64                ObjectCounting;
+        /* ObjectID 는 이때까지 만들어진 Object의 갯수로 할당됨. */
+        uint64                       ObjectID;
         MString                      Name;
         bool                         bIsValid;
 
