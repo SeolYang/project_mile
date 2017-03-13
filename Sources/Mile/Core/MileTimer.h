@@ -6,8 +6,10 @@ namespace Mile
     class MILE_API MileTimer final
     {
     public:
-        MileTimer( );
         ~MileTimer( );
+
+        static MileTimer& GetInstance( );
+        bool DestroyInstance( );
 
         void Update( );
         void Reset( );
@@ -23,6 +25,10 @@ namespace Mile
         void SetTimeScale( float Scale );
 
     private:
+        MileTimer( );
+
+    private:
+        static MileTimer* Instance;
         uint64 TicksPerSec;
 
         uint64 StartupTicks;

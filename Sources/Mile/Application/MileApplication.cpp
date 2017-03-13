@@ -9,8 +9,6 @@ namespace Mile
     MileApplication::MileApplication( std::unique_ptr<MileWindow> NewTargetWindow ) :
         Window( std::move( NewTargetWindow ) )
     {
-        Timer = std::make_unique<MileTimer>( );
-        Timer->Update( );
     }
 
     MileApplication::~MileApplication( )
@@ -26,10 +24,5 @@ namespace Mile
     MileWindow& MileApplication::GetWindow( ) const
     {
         return ( *Window );
-    }
-
-    MileTimer & MileApplication::GetTimer( ) const
-    {
-        return ( *Timer );
     }
 }

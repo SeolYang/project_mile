@@ -4,6 +4,7 @@ using namespace std::chrono;
 
 namespace Mile
 {
+    MileTimer* MileTimer::Instance = nullptr;
     MileTimer::MileTimer( ) :
         DeltaTime( 0.0f ), TimeScale( 1.0f )
     {
@@ -15,6 +16,28 @@ namespace Mile
 
     MileTimer::~MileTimer( )
     {
+    }
+
+    MileTimer& MileTimer::GetInstance( )
+    {
+        if ( Instance == nullptr )
+        {
+            Instance = new MileTimer( );
+        }
+
+        return ( *Instance );
+    }
+
+    bool MileTimer::DestroyInstance( )
+    {
+        if ( Instance != nullptr )
+        {
+            delete Instance;
+            Instance = nullptr;
+            return true;
+        }
+
+        return false;
     }
 
     void MileTimer::Update( )

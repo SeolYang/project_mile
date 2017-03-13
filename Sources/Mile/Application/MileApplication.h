@@ -15,11 +15,9 @@ namespace Mile
 
         static MileApplication& GetInstance( );
         MileWindow& GetWindow( ) const;
-        MileTimer& GetTimer( ) const;
 
     private:
         std::unique_ptr<MileWindow> Window;
-        std::unique_ptr<MileTimer> Timer;
 
     private:
         static MileApplication* Instance;
