@@ -40,12 +40,10 @@ namespace Mile
             return OwnerPrivate;
         }
 
-        virtual void TickComponent( float DeltaTime ) {}
+        virtual void Tick( float DeltaTime ) { UNUSED_PARAM( DeltaTime ); }
 
     private:
         Actor* OwnerPrivate;
-
-    public:
         bool    bIsTick;
         uint64  TickPriority;
 
