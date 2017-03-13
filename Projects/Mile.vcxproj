@@ -22,6 +22,7 @@
     <ClInclude Include="..\Sources\Mile\Application\MileApplication.h" />
     <ClInclude Include="..\Sources\Mile\Application\Win32Window.h" />
     <ClInclude Include="..\Sources\Mile\Application\MileWindow.h" />
+    <ClInclude Include="..\Sources\Mile\Application\WinProc.h" />
     <ClInclude Include="..\Sources\Mile\Components\ActorComponent.h" />
     <ClInclude Include="..\Sources\Mile\Components\SceneComponent.h" />
     <ClInclude Include="..\Sources\Mile\Core\MileChar.h" />
@@ -30,8 +31,8 @@
     <ClInclude Include="..\Sources\Mile\Core\MileTimer.h" />
     <ClInclude Include="..\Sources\Mile\GameFramework\Actor.h" />
     <ClInclude Include="..\Sources\Mile\GameFramework\GameMode.h" />
-    <ClInclude Include="..\Sources\Mile\GameFramework\Level.h" />
-    <ClInclude Include="..\Sources\Mile\GameFramework\World.h" />
+    <ClInclude Include="..\Sources\Mile\GameFramework\MileWorld.h" />
+    <ClInclude Include="..\Sources\Mile\GameFramework\TickManager.h" />
     <ClInclude Include="..\Sources\Mile\Math\Matrix.h" />
     <ClInclude Include="..\Sources\Mile\Math\MileMath.h" />
     <ClInclude Include="..\Sources\Mile\Math\Transform.h" />
@@ -44,11 +45,15 @@
     <ClCompile Include="..\Sources\Mile\Application\Entry.cpp" />
     <ClCompile Include="..\Sources\Mile\Application\MileWindow.cpp" />
     <ClCompile Include="..\Sources\Mile\Application\Win32Window.cpp" />
+    <ClCompile Include="..\Sources\Mile\Application\WinProc.cpp" />
     <ClCompile Include="..\Sources\Mile\Components\ActorComponent.cpp" />
     <ClCompile Include="..\Sources\Mile\Components\SceneComponent.cpp" />
+    <ClCompile Include="..\Sources\Mile\Core\MileObject.cpp" />
     <ClCompile Include="..\Sources\Mile\Core\MileString.cpp" />
     <ClCompile Include="..\Sources\Mile\Core\MileTimer.cpp" />
     <ClCompile Include="..\Sources\Mile\GameFramework\Actor.cpp" />
+    <ClCompile Include="..\Sources\Mile\GameFramework\MileWorld.cpp" />
+    <ClCompile Include="..\Sources\Mile\GameFramework\TickManager.cpp" />
     <ClCompile Include="..\Sources\Mile\Math\Matrix.cpp" />
     <ClCompile Include="..\Sources\Mile\Math\Vector.cpp" />
   </ItemGroup>

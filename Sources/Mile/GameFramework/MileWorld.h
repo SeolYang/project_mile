@@ -5,7 +5,7 @@ namespace Mile
 {
     class Actor;
     class MileGameMode;
-    class MILE_API MileWorld : public MileObject final
+    class MILE_API MileWorld final : public MileObject
     {
     public:
         void AddActor( Actor* Actor );

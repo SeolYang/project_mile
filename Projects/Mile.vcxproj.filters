@@ -36,12 +36,6 @@
     <ClInclude Include="..\Sources\Mile\GameFramework\GameMode.h">
       <Filter>Sources\GameFramework</Filter>
     </ClInclude>
-    <ClInclude Include="..\Sources\Mile\GameFramework\Level.h">
-      <Filter>Sources\GameFramework</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Mile\GameFramework\World.h">
-      <Filter>Sources\GameFramework</Filter>
-    </ClInclude>
     <ClInclude Include="..\Sources\Mile\Math\Vector.h">
       <Filter>Sources\Math</Filter>
     </ClInclude>
@@ -78,6 +72,15 @@
     <ClInclude Include="..\Sources\Mile\Application\MileApplication.h">
       <Filter>Sources\Application</Filter>
     </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Application\WinProc.h">
+      <Filter>Sources\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Mile\GameFramework\MileWorld.h">
+      <Filter>Sources\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Mile\GameFramework\TickManager.h">
+      <Filter>Sources\GameFramework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Sources\Mile\Components\ActorComponent.cpp">
@@ -112,6 +115,18 @@
     </ClCompile>
     <ClCompile Include="..\Sources\Mile\Math\Matrix.cpp">
       <Filter>Sources\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Mile\Application\WinProc.cpp">
+      <Filter>Sources\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Mile\GameFramework\MileWorld.cpp">
+      <Filter>Sources\GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Mile\Core\MileObject.cpp">
+      <Filter>Sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Mile\GameFramework\TickManager.cpp">
+      <Filter>Sources\GameFramework</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
