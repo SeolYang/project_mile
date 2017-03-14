@@ -31,10 +31,12 @@ namespace Mile
         void RemoveEvent( uint64 ObjectID );
         void ModifyPriority( uint64 ObjectID, uint64 Priority );
 
+        void Tick(float DeltaTime);
+
     private:
         TickManager( );
 
-        void OrderingPriority( uint64 AddedPriority );
+        void OrderingPriority( uint64 AddedPriority, bool ForceOrdering = false );
         bool IsAlreadyAdded( uint64 ObjectID ) const;
 
     private:

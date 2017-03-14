@@ -54,6 +54,11 @@ namespace Mile
             return ObjectID;
         }
 
+        static uint64 GetObjectCount()
+        {
+            return ObjectCounting;
+        }
+
     private:
         static uint64                NumOfAllocatedObject;
         static uint64                ObjectCounting;

@@ -92,7 +92,7 @@ namespace Mile
         case true:
             if ( !bIsTickFuncRegistered )
             {
-                Manager.AddEvent( std::bind( this->Tick, std::placeholders::_1 ), GetObjectID( ), TickPriority );
+                Manager.AddEvent( std::bind( &Actor::Tick, this, std::placeholders::_1 ), GetObjectID( ), TickPriority );
                 bIsTickFuncRegistered = true;
             }
 

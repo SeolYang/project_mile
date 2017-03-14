@@ -62,6 +62,16 @@ namespace Mile
                 Object.Priority = Priority;
             }
         }
+
+        OrderingPriority(Priority, true);
+    }
+
+    void TickManager::Tick(float DeltaTime)
+    {
+        for (auto TickObject : Container)
+        {
+            TickObject.Func(DeltaTime);
+        }
     }
 
     bool TickManager::DestroyInstance( )
@@ -76,9 +86,9 @@ namespace Mile
         return false;
     }
 
-    void TickManager::OrderingPriority( uint64 AddedPriority )
+    void TickManager::OrderingPriority( uint64 AddedPriority, bool ForceOrdering)
     {
-        if ( RecentAddedPriority != AddedPriority )
+        if ( (RecentAddedPriority != AddedPriority) || ForceOrdering )
         {
             RecentAddedPriority = AddedPriority;
             

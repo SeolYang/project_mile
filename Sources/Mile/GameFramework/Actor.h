@@ -1,5 +1,6 @@
 #pragma once
 #include "MileObject.h"
+#include <iostream>
 
 namespace Mile
 {
@@ -19,7 +20,8 @@ namespace Mile
         {
         }
 
-        virtual void Tick( float DeltaTime ) { UNUSED_PARAM( DeltaTime ); }
+        /* Test code */
+        virtual void Tick(float DeltaTime) { UNUSED_PARAM(DeltaTime); std::cout << "Anyway is tick " << GetObjectID() << std::endl; }
 
         void AttachComponent( ActorComponent* Component );
         void DetachComponent( ActorComponent* Component );
