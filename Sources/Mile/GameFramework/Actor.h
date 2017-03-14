@@ -11,8 +11,10 @@ namespace Mile
     public:
         Actor( const MString& NewName ) :
             bIsTick( false ),
+            bIsTickFuncRegistered( false ),
             bIsChangedAtComponents( true ),
             ParentPrivate( nullptr ),
+            TickPriority( 0 ),
             MileObject( NewName )
         {
         }
@@ -34,13 +36,21 @@ namespace Mile
 
         FORCEINLINE Actor* GetParent( ) { return ParentPrivate; }
 
+        void SetIsTick( bool bNewIsTick );
+        FORCEINLINE bool IsTick( ) const { return bIsTick; }
+
+        void SetTickPriority( uint64 NewTickPriority );
+        FORCEINLINE uint64 GetTickPriority( ) const { return TickPriority; }
+
     private:
         ComponentList       Components;
         SceneComponent*     RootComponent;
         Actor*              ParentPrivate;
+        bool                bIsTick;
+        bool                bIsTickFuncRegistered;
+        uint64              TickPriority;
 
     public:
-        bool                bIsTick;
         bool                bIsChangedAtComponents;
 
     };
