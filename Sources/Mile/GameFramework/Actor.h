@@ -20,8 +20,7 @@ namespace Mile
         {
         }
 
-        /* Test code */
-        virtual void Tick(float DeltaTime) { UNUSED_PARAM(DeltaTime); std::cout << "Anyway is tick " << GetObjectID() << std::endl; }
+        virtual void Tick(float DeltaTime) { UNUSED_PARAM(DeltaTime); }
 
         void AttachComponent( ActorComponent* Component );
         void DetachComponent( ActorComponent* Component );
