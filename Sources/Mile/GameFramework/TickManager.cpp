@@ -53,6 +53,17 @@ namespace Mile
         }
     }
 
+    void TickManager::ModifyPriority( uint64 ObjectID, uint64 Priority )
+    {
+        for ( auto& Object : Container )
+        {
+            if ( Object.ObjectID == ObjectID )
+            {
+                Object.Priority = Priority;
+            }
+        }
+    }
+
     bool TickManager::DestroyInstance( )
     {
         if ( Instance != nullptr )

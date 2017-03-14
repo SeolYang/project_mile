@@ -29,6 +29,7 @@ namespace Mile
 
         void AddEvent( TickFuncType Func, uint64 ObjectID, uint64 Priority = 0 );
         void RemoveEvent( uint64 ObjectID );
+        void ModifyPriority( uint64 ObjectID, uint64 Priority );
 
     private:
         TickManager( );
