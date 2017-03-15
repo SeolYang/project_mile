@@ -15,7 +15,7 @@ int main( int Argc, char* Argv[], char* Envp[] )
 #endif
 
     setlocale( LC_ALL, "" );
-    
+
     /** @todo: Replace to Application end code */
     return 0;
 }

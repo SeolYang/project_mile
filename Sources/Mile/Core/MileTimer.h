@@ -1,15 +1,12 @@
 #pragma once
-#include "Mile.h"
+#include "MileObject.h"
 
 namespace Mile
 {
-    class MILE_API MileTimer final
+    class MILE_API MileTimer final : public MileObject
     {
     public:
         ~MileTimer( );
-
-        static MileTimer& GetInstance( );
-        bool DestroyInstance( );
 
         void Update( );
         void Reset( );
@@ -25,10 +22,9 @@ namespace Mile
         void SetTimeScale( float Scale );
 
     private:
-        MileTimer( );
+        MileTimer( const class MString& NewName );
 
     private:
-        static MileTimer* Instance;
         uint64 TicksPerSec;
 
         uint64 StartupTicks;
