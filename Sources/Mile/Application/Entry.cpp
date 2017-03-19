@@ -1,4 +1,4 @@
-#include "MileApplication.h"
+#include "Application.h"
 #include "Win32Window.h"
 #include "TickManager.h"
 #include "Actor.h"
@@ -8,7 +8,7 @@ using namespace Mile;
 #define new new(_CLIENT_BLOCK, __FILE__, __LINE__)
 #endif
 
-int main( int Argc, char* Argv[], char* Envp[] )
+int main( int Argc, char* Argv[ ], char* Envp[ ] )
 {
 #ifdef _DEBUG
     _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );

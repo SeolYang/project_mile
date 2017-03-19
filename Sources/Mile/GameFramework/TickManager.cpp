@@ -6,7 +6,8 @@ namespace Mile
     TickManager* TickManager::Instance = nullptr;
 
     TickManager::TickManager( ) :
-        RecentAddedPriority( 0 )
+        RecentAddedPriority( 0 ),
+        Object( MString( TEXT( "TickManager" ) ) )
     {
     }
 
@@ -41,9 +42,9 @@ namespace Mile
 
     void TickManager::RemoveEvent( uint64 ObjectID )
     {
-        for( auto TickObject = Container.begin( );
-            TickObject != Container.end( );
-            ++TickObject )
+        for ( auto TickObject = Container.begin( );
+              TickObject != Container.end( );
+              ++TickObject )
         {
             if ( ( *TickObject ).ObjectID == ObjectID )
             {
@@ -63,14 +64,14 @@ namespace Mile
             }
         }
 
-        OrderingPriority(Priority, true);
+        OrderingPriority( Priority, true );
     }
 
-    void TickManager::Tick(float DeltaTime)
+    void TickManager::Tick( float DeltaTime )
     {
-        for (auto TickObject : Container)
+        for ( auto TickObject : Container )
         {
-            TickObject.Func(DeltaTime);
+            TickObject.Func( DeltaTime );
         }
     }
 
@@ -86,14 +87,14 @@ namespace Mile
         return false;
     }
 
-    void TickManager::OrderingPriority( uint64 AddedPriority, bool ForceOrdering)
+    void TickManager::OrderingPriority( uint64 AddedPriority, bool ForceOrdering )
     {
-        if ( (RecentAddedPriority != AddedPriority) || ForceOrdering )
+        if ( ( RecentAddedPriority != AddedPriority ) || ForceOrdering )
         {
             RecentAddedPriority = AddedPriority;
-            
+
             std::sort( Container.begin( ), Container.end( ),
-                [ ]( TickFunction Left, TickFunction Right )->bool
+                       [ ]( TickFunction Left, TickFunction Right )->bool
             {
                 return ( Left.Priority > Right.Priority );
             } );
@@ -102,7 +103,7 @@ namespace Mile
 
     bool TickManager::IsAlreadyAdded( uint64 ObjectID ) const
     {
-        for( const auto Object : Container )
+        for ( const auto Object : Container )
         {
             if ( Object.ObjectID == ObjectID )
             {

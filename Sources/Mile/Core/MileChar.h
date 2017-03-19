@@ -135,7 +135,7 @@ namespace Mile
         * 문자가 밑줄인지 검사함.
         * @param Char 검사할 문자.
         */
-        inline bool IsUnderscore(  )
+        inline bool IsUnderscore( )
         {
             return Character == LITERAL( CharType, '_' );
         }
@@ -160,37 +160,37 @@ namespace Mile
     template <>
     inline bool BaseChar<WIDECHAR>::IsUpper( )
     {
-        return static_cast<bool>( iswupper( Character ) );
+        return static_cast< bool >( iswupper( Character ) );
     }
 
     template <>
     inline bool BaseChar<WIDECHAR>::IsLower( )
     {
-        return static_cast<bool>( iswlower( Character ) );
+        return static_cast< bool >( iswlower( Character ) );
     }
 
     template <>
     inline bool BaseChar<WIDECHAR>::IsAlpha( )
     {
-        return static_cast<bool>( iswalpha( Character ) );
+        return static_cast< bool >( iswalpha( Character ) );
     }
 
     template <>
     inline bool BaseChar<WIDECHAR>::IsPunct( )
     {
-        return static_cast<bool>( iswpunct( Character ) );
+        return static_cast< bool >( iswpunct( Character ) );
     }
 
     template <>
     inline bool BaseChar<WIDECHAR>::IsAlnum( )
     {
-        return static_cast<bool>( iswalnum( Character ) );
+        return static_cast< bool >( iswalnum( Character ) );
     }
 
     template <>
     inline bool BaseChar<WIDECHAR>::IsDigit( )
     {
-        return static_cast<bool>( iswdigit( Character ) );
+        return static_cast< bool >( iswdigit( Character ) );
     }
 
     template <>
@@ -208,37 +208,37 @@ namespace Mile
     template <>
     inline bool BaseChar<ANSICHAR>::IsUpper( )
     {
-        return static_cast<bool>( isupper( Character ) );
+        return static_cast< bool >( isupper( Character ) );
     }
 
     template <>
     inline bool BaseChar<ANSICHAR>::IsLower( )
     {
-        return static_cast<bool>( islower( Character ) );
+        return static_cast< bool >( islower( Character ) );
     }
 
     template <>
     inline bool BaseChar<ANSICHAR>::IsAlpha( )
     {
-        return static_cast<bool>( isalpha( Character ) );
+        return static_cast< bool >( isalpha( Character ) );
     }
 
     template <>
     inline bool BaseChar<ANSICHAR>::IsPunct( )
     {
-        return static_cast<bool>( ispunct( Character ) );
+        return static_cast< bool >( ispunct( Character ) );
     }
 
     template <>
     inline bool BaseChar<ANSICHAR>::IsAlnum( )
     {
-        return static_cast<bool>( isalnum( Character ) );
+        return static_cast< bool >( isalnum( Character ) );
     }
 
     template <>
     inline bool BaseChar<ANSICHAR>::IsDigit( )
     {
-        return static_cast<bool>( isdigit( Character ) );
+        return static_cast< bool >( isdigit( Character ) );
     }
 
     /** Mile Engine(API)의 기본 문자타입 */

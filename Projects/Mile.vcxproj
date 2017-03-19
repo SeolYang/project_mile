@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Sources\Mile\Application\MileApplication.h" />
+    <ClInclude Include="..\Sources\Mile\Application\Application.h" />
     <ClInclude Include="..\Sources\Mile\Application\Win32Window.h" />
     <ClInclude Include="..\Sources\Mile\Application\MileWindow.h" />
     <ClInclude Include="..\Sources\Mile\Application\WinProc.h" />
@@ -41,7 +41,7 @@
     <ClInclude Include="..\Sources\Mile\Mile.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Sources\Mile\Application\MileApplication.cpp" />
+    <ClCompile Include="..\Sources\Mile\Application\Application.cpp" />
     <ClCompile Include="..\Sources\Mile\Application\Entry.cpp" />
     <ClCompile Include="..\Sources\Mile\Application\MileWindow.cpp" />
     <ClCompile Include="..\Sources\Mile\Application\Win32Window.cpp" />

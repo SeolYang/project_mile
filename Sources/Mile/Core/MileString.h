@@ -25,7 +25,7 @@ namespace Mile
         inline MChar& operator[]( uint64 Index )
         {
             ASSERT_MSG( Data.size( ) <= Index, "Out of range!" );
-            return ( Data[Index] );
+            return ( Data[ Index ] );
         }
 
         operator std::wstring( ) const;

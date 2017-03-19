@@ -6,7 +6,7 @@ namespace Mile
 {
     class ActorComponent;
     class SceneComponent;
-    class MILE_API Actor : public MileObject
+    class MILE_API Actor : public Mile::Object
     {
         using ComponentList = std::vector<ActorComponent*>;
     public:
@@ -16,11 +16,11 @@ namespace Mile
             bIsChangedAtComponents( true ),
             ParentPrivate( nullptr ),
             TickPriority( 0 ),
-            MileObject( NewName )
+            Object( NewName )
         {
         }
 
-        virtual void Tick(float DeltaTime) { UNUSED_PARAM(DeltaTime); }
+        virtual void Tick( float DeltaTime ) { UNUSED_PARAM( DeltaTime ); }
 
         void AttachComponent( ActorComponent* Component );
         void DetachComponent( ActorComponent* Component );

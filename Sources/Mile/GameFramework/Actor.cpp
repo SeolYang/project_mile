@@ -12,7 +12,7 @@ namespace Mile
 
         if ( bIsValidComponent )
         {
-            std::wcout << Component->GetName( ).operator std::wstring( ) << TEXT( " is attached to " ) << GetName( ).operator std::wstring() << std::endl;
+            std::wcout << Component->GetName( ).operator std::wstring( ) << TEXT( " is attached to " ) << GetName( ).operator std::wstring( ) << std::endl;
             Component->SetOwnerRecursively( this );
             Components.push_back( Component );
         }
@@ -25,8 +25,8 @@ namespace Mile
         if ( bIsValidComponent )
         {
             for ( auto FoundComponent = Components.begin( );
-                FoundComponent != Components.end( );
-                ++FoundComponent )
+                  FoundComponent != Components.end( );
+                  ++FoundComponent )
             {
                 if ( ( *FoundComponent ) == Component )
                 {

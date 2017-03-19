@@ -19,7 +19,7 @@ namespace Mile
     /**
     * Tick 이벤트를 관리하는 매니저 클래스
     */
-    class TickManager final : public MileObject
+    class TickManager final : public Mile::Object
     {
     public:
         ~TickManager( );
@@ -31,7 +31,7 @@ namespace Mile
         void RemoveEvent( uint64 ObjectID );
         void ModifyPriority( uint64 ObjectID, uint64 Priority );
 
-        void Tick(float DeltaTime);
+        void Tick( float DeltaTime );
 
     private:
         TickManager( );

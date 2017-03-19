@@ -51,7 +51,7 @@ namespace Mile
         Data.resize( Size );
         for ( int Index = 0; Index < Size; ++Index )
         {
-            Data[Index] = InStr[Index];
+            Data[ Index ] = InStr[ Index ];
         }
 
         return ( *this );
@@ -71,12 +71,12 @@ namespace Mile
     MString::operator std::wstring( ) const
     {
         std::wstring OutStr;
-        
+
         size_t Size = Data.size( );
         OutStr.resize( Size );
         for ( int Index = 0; Index < Size; ++Index )
         {
-            OutStr[Index] = Data[Index];
+            OutStr[ Index ] = Data[ Index ];
         }
 
         return OutStr;

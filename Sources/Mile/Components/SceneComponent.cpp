@@ -46,8 +46,8 @@ namespace Mile
     bool SceneComponent::RemoveAttachedComponent( SceneComponent* Component )
     {
         for ( auto FoundComponent = Children.begin( );
-            FoundComponent != Children.end( );
-            ++FoundComponent )
+              FoundComponent != Children.end( );
+              ++FoundComponent )
         {
             if ( ( *FoundComponent ) == Component )
             {
@@ -63,8 +63,8 @@ namespace Mile
     {
         this->SetOwner( NewOwner, bIsDetachBeforeSetNewOwner );
         for ( auto Child = Children.begin( );
-            Child != Children.end( );
-            ++Child )
+              Child != Children.end( );
+              ++Child )
         {
             ( *Child )->SetOwnerRecursively( NewOwner, bIsDetachBeforeSetNewOwner );
         }

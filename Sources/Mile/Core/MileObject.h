@@ -5,12 +5,12 @@
 namespace Mile
 {
     /*
-    * @todo: 기본 능력 확장 ( 직렬화, UUID, RTTI, 메모리관리<고민해보기> ) 
+    * @todo: 기본 능력 확장 ( 직렬화, UUID, RTTI, 메모리관리<고민해보기> )
     */
-    class MILE_API MileObject
+    class MILE_API Object
     {
     public:
-        inline MileObject( const MString& NewName = MString( TEXT("UNKNOWN") ), bool IsValid = true ) :
+        inline Object( const MString& NewName = MString( TEXT( "UNKNOWN" ) ), bool IsValid = true ) :
             Name( NewName ),
             bIsValid( IsValid ),
             ObjectID( NumOfAllocatedObject )
@@ -19,7 +19,7 @@ namespace Mile
             ++ObjectCounting;
         }
 
-        MileObject( const MileObject& CopiedObject ) :
+        Object( const Object& CopiedObject ) :
             Name( CopiedObject.Name ),
             bIsValid( CopiedObject.bIsValid ),
             ObjectID( NumOfAllocatedObject )
@@ -28,13 +28,13 @@ namespace Mile
             ++ObjectCounting;
         }
 
-        MileObject( MileObject&& MovedObject ) :
+        Object( Object&& MovedObject ) :
             Name( std::move( MovedObject.Name ) ),
             bIsValid( MovedObject.bIsValid )
         {
         }
 
-        virtual ~MileObject( )
+        virtual ~Object( )
         {
             --ObjectCounting;
         }
@@ -54,7 +54,7 @@ namespace Mile
             return ObjectID;
         }
 
-        static uint64 GetObjectCount()
+        static uint64 GetObjectCount( )
         {
             return ObjectCounting;
         }

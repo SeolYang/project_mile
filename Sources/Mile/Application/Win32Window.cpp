@@ -5,7 +5,7 @@ namespace Mile
 {
     bool Win32Window::Initialize( )
     {
-        std::wstring Title = static_cast<std::wstring>( GetTitle( ) );
+        std::wstring Title = static_cast< std::wstring >( GetTitle( ) );
 
         /* 여기서 Win32 초기화 */
         WNDCLASS WinClass = { NULL };
