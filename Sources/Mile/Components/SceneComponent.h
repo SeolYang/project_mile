@@ -29,8 +29,22 @@ namespace Mile
             Transform = NewTransform;
         }
 
-        Transform& GetTransform( )
+        Transform GetTransform( ETransformRelation Relation = ETransformRelation::Relative )
         {
+            switch ( Relation )
+            {
+            case ETransformRelation::Absolute:
+                return Transform;
+                break;
+
+            case ETransformRelation::Relative:
+                if ( ParentPrivate != nullptr )
+                {
+                    return ( Transform + ParentPrivate->GetTransform( Relation ) );
+                }
+                break;
+            }
+
             return Transform;
         }
 
@@ -42,6 +56,66 @@ namespace Mile
         SceneComponent* GetParent( ) const
         {
             return ParentPrivate;
+        }
+
+        Vector GetPosition( ETransformRelation Relation = ETransformRelation::Relative ) const
+        {
+            Vector AbsolutePosition = Transform.GetPosition( );
+            switch ( Relation )
+            {
+            case ETransformRelation::Absolute:
+                return AbsolutePosition;
+                break;
+
+            case ETransformRelation::Relative:
+                if ( ParentPrivate != nullptr )
+                {
+                    return ( AbsolutePosition + ParentPrivate->GetPosition( Relation ) );
+                }
+
+                return AbsolutePosition;
+                break;
+            }
+        }
+
+        Vector GetRotation( ETransformRelation Relation = ETransformRelation::Relative ) const
+        {
+            Vector AbsoluteRotation = Transform.GetRotation( );
+            switch ( Relation )
+            {
+            case ETransformRelation::Absolute:
+                return AbsoluteRotation;
+                break;
+
+            case ETransformRelation::Relative:
+                if ( ParentPrivate != nullptr )
+                {
+                    return ( AbsoluteRotation + ParentPrivate->GetRotation( Relation ) );
+                }
+
+                return AbsoluteRotation;
+                break;
+            }
+        }
+
+        Vector GetScale( ETransformRelation Relation = ETransformRelation::Relative ) const
+        {
+            Vector AbsoluteScale = Transform.GetScale( );
+            switch ( Relation )
+            {
+            case ETransformRelation::Absolute:
+                return AbsoluteScale;
+                break;
+
+            case ETransformRelation::Relative:
+                if ( ParentPrivate != nullptr )
+                {
+                    return ( AbsoluteScale + ParentPrivate->GetScale( Relation ) );
+                }
+
+                return AbsoluteScale;
+                break;
+            }
         }
 
     protected:

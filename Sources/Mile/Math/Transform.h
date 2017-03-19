@@ -3,6 +3,12 @@
 
 namespace Mile
 {
+    enum class ETransformRelation
+    {
+        Relative,
+        Absolute
+    };
+
     /**
     * 위치, 회전, 크기 정보를 포함하고 이를 이용한 여러가지 연산을
     * 지원해주는 구조체이다.
@@ -18,12 +24,22 @@ namespace Mile
         {
         }
 
-        inline Transform( const Vector& InPosition, const Vector& InRotation, const Vector& InScale ) :
-            bIsDirty( true ),
+        inline Transform( const Vector& InPosition, const Vector& InRotation, const Vector& InScale, bool InbIsDirty = true ) :
+            bIsDirty( InbIsDirty ),
             Position( InPosition ),
             Rotation( InRotation ),
             Scale( InScale )
         {
+        }
+
+        Transform& operator=( const Transform& T )
+        {
+            Position = T.Position;
+            Rotation = T.Rotation;
+            Scale = T.Scale;
+            bIsDirty = true;
+
+            return ( *this );
         }
 
         Transform operator-( ) const
@@ -33,7 +49,10 @@ namespace Mile
 
         Transform operator+( const Transform& T ) const
         {
-            return Transform( Position + T.Position, Rotation + T.Rotation, Scale + T.Scale );
+            return Transform( Position + T.Position,
+                              Rotation + T.Rotation,
+                              Scale + T.Scale,
+                              bIsDirty | T.bIsDirty );
         }
 
         Transform operator-( const Transform& T ) const
@@ -43,12 +62,18 @@ namespace Mile
 
         Transform operator*( const Transform& T ) const
         {
-            return Transform( Position * T.Position, Rotation * T.Rotation, Scale * T.Scale );
+            return Transform( Position * T.Position,
+                              Rotation * T.Rotation, 
+                              Scale * T.Scale,
+                              bIsDirty | T.bIsDirty );
         }
 
         Transform operator/( const Transform& T ) const
         {
-            return Transform( Position / T.Position, Rotation / T.Rotation, Scale / T.Scale );
+            return Transform( Position / T.Position,
+                              Rotation / T.Rotation, 
+                              Scale / T.Scale,
+                              bIsDirty | T.bIsDirty );
         }
 
         Transform& operator+=( const Transform& T )
@@ -56,6 +81,7 @@ namespace Mile
             Position += T.Position;
             Rotation += T.Rotation;
             Scale += T.Scale;
+            bIsDirty = true;
 
             return ( *this );
         }
@@ -70,6 +96,7 @@ namespace Mile
             Position *= T.Position;
             Rotation *= T.Rotation;
             Scale *= T.Scale;
+            bIsDirty = true;
 
             return ( *this );
         }
@@ -79,6 +106,7 @@ namespace Mile
             Position /= T.Position;
             Rotation /= T.Rotation;
             Scale /= T.Scale;
+            bIsDirty = true;
 
             return ( *this );
         }
