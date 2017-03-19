@@ -40,7 +40,7 @@ namespace Mile
     * 문자형의 래퍼(Wrapper)로 여러가지 추가 기능들을 제공하여준다.
     */
     template <typename T>
-    struct BaseChar
+    struct MILE_API BaseChar
     {
         using CharType = T;
     public:
@@ -148,13 +148,13 @@ namespace Mile
     template <>
     inline BaseChar<WIDECHAR>::CharType BaseChar<WIDECHAR>::ToUpper( )
     {
-        towupper( Character );
+        return towupper( Character );
     }
 
     template <>
     inline BaseChar<WIDECHAR>::CharType BaseChar<WIDECHAR>::ToLower( )
     {
-        towlower( Character );
+        return towlower( Character );
     }
 
     template <>
@@ -196,13 +196,13 @@ namespace Mile
     template <>
     inline BaseChar<ANSICHAR>::CharType BaseChar<ANSICHAR>::ToUpper( )
     {
-        toupper( Character );
+        return toupper( Character );
     }
 
     template <>
     inline BaseChar<ANSICHAR>::CharType BaseChar<ANSICHAR>::ToLower( )
     {
-        tolower( Character );
+        return tolower( Character );
     }
 
     template <>

@@ -3,7 +3,7 @@
 
 namespace Mile
 {
-    enum class ETransformRelation
+    enum class MILE_API ETransformRelation
     {
         Relative,
         Absolute

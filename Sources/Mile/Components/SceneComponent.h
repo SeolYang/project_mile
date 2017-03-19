@@ -33,6 +33,7 @@ namespace Mile
         {
             switch ( Relation )
             {
+            default:
             case ETransformRelation::Absolute:
                 return Transform;
                 break;
@@ -63,6 +64,7 @@ namespace Mile
             Vector AbsolutePosition = Transform.GetPosition( );
             switch ( Relation )
             {
+            default:
             case ETransformRelation::Absolute:
                 return AbsolutePosition;
                 break;
@@ -83,6 +85,7 @@ namespace Mile
             Vector AbsoluteRotation = Transform.GetRotation( );
             switch ( Relation )
             {
+            default:
             case ETransformRelation::Absolute:
                 return AbsoluteRotation;
                 break;
@@ -103,6 +106,7 @@ namespace Mile
             Vector AbsoluteScale = Transform.GetScale( );
             switch ( Relation )
             {
+            default:
             case ETransformRelation::Absolute:
                 return AbsoluteScale;
                 break;

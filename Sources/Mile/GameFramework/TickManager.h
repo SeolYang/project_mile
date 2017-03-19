@@ -7,7 +7,7 @@ namespace Mile
 {
     using TickFuncType = std::function<void( float )>;
     /* 높은 값일수록 더 높은 우선순위를 가짐. */
-    struct TickFunction
+    struct MILE_API TickFunction
     {
         TickFuncType Func;
         uint64 ObjectID;
@@ -19,7 +19,7 @@ namespace Mile
     /**
     * Tick 이벤트를 관리하는 매니저 클래스
     */
-    class TickManager final : public Mile::Object
+    class MILE_API TickManager final : public Mile::Object
     {
     public:
         ~TickManager( );

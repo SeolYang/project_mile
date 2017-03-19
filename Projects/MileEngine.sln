@@ -17,10 +17,10 @@ Global
 		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.EditorDebug|x64.Build.0 = EditorDebug|x64
 		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.EditorRelease|x64.ActiveCfg = EditorRelease|x64
 		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.EditorRelease|x64.Build.0 = EditorRelease|x64
-		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.GameDebug|x64.ActiveCfg = Debug|x64
-		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.GameDebug|x64.Build.0 = Debug|x64
-		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.GameRelease|x64.ActiveCfg = Release|x64
-		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.GameRelease|x64.Build.0 = Release|x64
+		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.GameDebug|x64.ActiveCfg = GameDebug|x64
+		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.GameDebug|x64.Build.0 = GameDebug|x64
+		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.GameRelease|x64.ActiveCfg = GameDebug|x64
+		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.GameRelease|x64.Build.0 = GameDebug|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

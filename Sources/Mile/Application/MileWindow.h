@@ -4,7 +4,7 @@
 
 namespace Mile
 {
-    enum class EWindowMode
+    enum class MILE_API EWindowMode
     {
         Windowed,
         FullWindowed,
