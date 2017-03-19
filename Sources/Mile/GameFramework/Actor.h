@@ -1,5 +1,6 @@
 #pragma once
 #include "MileObject.h"
+#include "Transform.h"
 #include <iostream>
 
 namespace Mile
@@ -42,6 +43,10 @@ namespace Mile
 
         void SetTickPriority( uint64 NewTickPriority );
         FORCEINLINE uint64 GetTickPriority( ) const { return TickPriority; }
+
+        Vector GetPosition( ETransformRelation Relation = ETransformRelation::Relative );
+        Vector GetRotation( ETransformRelation Relation = ETransformRelation::Relative );
+        Vector GetScale( ETransformRelation Relation = ETransformRelation::Relative );
 
     private:
         ComponentList       Components;

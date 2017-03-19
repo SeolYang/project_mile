@@ -12,7 +12,6 @@ namespace Mile
 
         if ( bIsValidComponent )
         {
-            std::wcout << Component->GetName( ).operator std::wstring( ) << TEXT( " is attached to " ) << GetName( ).operator std::wstring( ) << std::endl;
             Component->SetOwnerRecursively( this );
             Components.push_back( Component );
         }
@@ -32,7 +31,6 @@ namespace Mile
                 {
                     Components.erase( FoundComponent );
                     Component->SetOwner( nullptr, false );
-                    std::wcout << Component->GetName( ).operator std::wstring( ) << TEXT( " has dettached." ) << std::endl;
                     return;
                 }
             }
@@ -117,6 +115,36 @@ namespace Mile
         }
 
         TickPriority = NewTickPriority;
+    }
+
+    Vector Actor::GetPosition( ETransformRelation Relation )
+    {
+        if ( RootComponent != nullptr )
+        {
+            return RootComponent->GetPosition( Relation );
+        }
+
+        return Vector( );
+    }
+
+    Vector Actor::GetRotation( ETransformRelation Relation )
+    {
+        if ( RootComponent != nullptr )
+        {
+            return RootComponent->GetRotation( Relation );
+        }
+
+        return Vector( );
+    }
+
+    Vector Actor::GetScale( ETransformRelation Relation )
+    {
+        if ( RootComponent != nullptr )
+        {
+            RootComponent->GetScale( Relation );
+        }
+
+        return Vector( );
     }
 
 }
