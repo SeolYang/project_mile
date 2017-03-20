@@ -7,11 +7,13 @@ namespace Mile
 {
     class ActorComponent;
     class SceneComponent;
+    class MileWorld;
     class MILE_API Actor : public Mile::Object
     {
         using ComponentList = std::vector<ActorComponent*>;
     public:
-        Actor( const MString& NewName ) :
+        Actor( const MString& NewName, MileWorld& NewWorld ) :
+            World( NewWorld ),
             bIsChangedAtComponents( true ),
             ParentPrivate( nullptr ),
             Object( NewName )
@@ -40,7 +42,10 @@ namespace Mile
         Vector GetRotation( ETransformRelation Relation = ETransformRelation::Relative );
         Vector GetScale( ETransformRelation Relation = ETransformRelation::Relative );
 
+        FORCEINLINE MileWorld& GetWorld( ) { return World; }
+
     private:
+        MileWorld&          World;
         ComponentList       Components;
         SceneComponent*     RootComponent;
         Actor*              ParentPrivate;

@@ -7,7 +7,7 @@ namespace Mile
     class MileWorld;
     class MILE_API GameMode : public Mile::Object
     {
-        FORCEINLINE GameMode( const MString& NewName, MileWorld* NewWorld ) :
+        FORCEINLINE GameMode( const MString& NewName, MileWorld& NewWorld ) :
             World( NewWorld ),
             Object( NewName )
         {
@@ -15,32 +15,21 @@ namespace Mile
 
         void GameBegin( )
         {
-            if ( World != nullptr )
-            {
-                World->OnGameBegin( );
-            }
+            World.OnGameBegin( );
         }
 
         void GameEnd( )
         {
-            if ( World != nullptr )
-            {
-                World->OnGameEnd( );
-            }
+            World.OnGameEnd( );
         }
 
         FORCEINLINE MileWorld& GetWorld( ) const
         {
-            return ( *World );
-        }
-
-        void SetWorld( MileWorld* NewWorld )
-        {
-            World = NewWorld;
+            return ( World );
         }
 
     private:
-        MileWorld* World;
+        MileWorld& World;
 
     };
 }
