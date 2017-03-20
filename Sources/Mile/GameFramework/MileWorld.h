@@ -10,6 +10,9 @@ namespace Mile
     public:
         void AddActor( Actor* Actor );
 
+        void OnGameBegin( );
+        void OnGameEnd( );
+
     private:
         MileGameMode* GameMode;
         std::vector<Actor*> Actors;

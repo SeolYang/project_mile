@@ -18,6 +18,9 @@ namespace Mile
         {
         }
 
+        virtual void OnGameBegin( ){ }
+        virtual void OnGameEnd( ){ }
+
         void AttachComponent( ActorComponent* Component );
         void DetachComponent( ActorComponent* Component );
 
