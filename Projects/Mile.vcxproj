@@ -110,25 +110,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GameDebug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)..\Builds\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\Builds\Mile\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Builds\Intermediate\Mile\$(Configuration)\</IntDir>
     <TargetName>Mile</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)..\Builds\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\Builds\Mile\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Builds\Intermediate\Mile\$(Configuration)\</IntDir>
     <TargetName>MileCore</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GameRelease|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\Builds\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\Builds\Mile\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Builds\Intermediate\Mile\$(Configuration)\</IntDir>
     <TargetName>MileCore</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EditorRelease|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\Builds\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\Builds\Mile\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Builds\Intermediate\Mile\$(Configuration)\</IntDir>
     <TargetName>MileCore</TargetName>
   </PropertyGroup>

@@ -1,7 +1,6 @@
 #include "Actor.h"
 #include "ActorComponent.h"
 #include "SceneComponent.h"
-#include "TickManager.h"
 
 namespace Mile
 {
@@ -80,41 +79,6 @@ namespace Mile
             return true;
         }
         return false;
-    }
-
-    void Actor::SetIsTick( bool bNewIsTick )
-    {
-        TickManager& Manager = TickManager::GetInstance( );
-        switch ( bNewIsTick )
-        {
-        case true:
-            if ( !bIsTickFuncRegistered )
-            {
-                Manager.AddEvent( std::bind( &Actor::Tick, this, std::placeholders::_1 ), GetObjectID( ), TickPriority );
-                bIsTickFuncRegistered = true;
-            }
-
-            break;
-
-        case false:
-            if ( bIsTickFuncRegistered )
-            {
-                Manager.RemoveEvent( GetObjectID( ) );
-                bIsTickFuncRegistered = false;
-            }
-
-            break;
-        }
-    }
-
-    void Actor::SetTickPriority( uint64 NewTickPriority )
-    {
-        if ( bIsTickFuncRegistered )
-        {
-            TickManager::GetInstance( ).ModifyPriority( GetObjectID( ), NewTickPriority );
-        }
-
-        TickPriority = NewTickPriority;
     }
 
     Vector Actor::GetPosition( ETransformRelation Relation )

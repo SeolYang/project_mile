@@ -13,7 +13,10 @@ namespace Mile
         inline Object( const MString& NewName = MString( TEXT( "UNKNOWN" ) ), bool IsValid = true ) :
             Name( NewName ),
             bIsValid( IsValid ),
-            ObjectID( NumOfAllocatedObject )
+            ObjectID( NumOfAllocatedObject ),
+            bIsTick( false ),
+            bIsTickFuncRegistered( false ),
+            TickPriority( 0 )
         {
             ++NumOfAllocatedObject;
             ++ObjectCounting;
@@ -59,6 +62,14 @@ namespace Mile
             return ObjectCounting;
         }
 
+        virtual void Tick( float DeltaTime ) { UNUSED_PARAM( DeltaTime ); }
+
+        void SetIsTick( bool bNewIsTick );
+        FORCEINLINE bool IsTick( ) const { return bIsTick; }
+
+        void SetTickPriority( uint64 NewTickPriority );
+        FORCEINLINE uint64 GetTickPriority( ) const { return TickPriority; }
+
     private:
         static uint64                NumOfAllocatedObject;
         static uint64                ObjectCounting;
@@ -66,6 +77,10 @@ namespace Mile
         uint64                       ObjectID;
         MString                      Name;
         bool                         bIsValid;
+
+        bool                bIsTick;
+        bool                bIsTickFuncRegistered;
+        uint64              TickPriority;
 
     };
 }

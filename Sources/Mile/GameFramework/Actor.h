@@ -12,16 +12,11 @@ namespace Mile
         using ComponentList = std::vector<ActorComponent*>;
     public:
         Actor( const MString& NewName ) :
-            bIsTick( false ),
-            bIsTickFuncRegistered( false ),
             bIsChangedAtComponents( true ),
             ParentPrivate( nullptr ),
-            TickPriority( 0 ),
             Object( NewName )
         {
         }
-
-        virtual void Tick( float DeltaTime ) { UNUSED_PARAM( DeltaTime ); }
 
         void AttachComponent( ActorComponent* Component );
         void DetachComponent( ActorComponent* Component );
@@ -38,12 +33,6 @@ namespace Mile
 
         FORCEINLINE Actor* GetParent( ) { return ParentPrivate; }
 
-        void SetIsTick( bool bNewIsTick );
-        FORCEINLINE bool IsTick( ) const { return bIsTick; }
-
-        void SetTickPriority( uint64 NewTickPriority );
-        FORCEINLINE uint64 GetTickPriority( ) const { return TickPriority; }
-
         Vector GetPosition( ETransformRelation Relation = ETransformRelation::Relative );
         Vector GetRotation( ETransformRelation Relation = ETransformRelation::Relative );
         Vector GetScale( ETransformRelation Relation = ETransformRelation::Relative );
@@ -52,10 +41,7 @@ namespace Mile
         ComponentList       Components;
         SceneComponent*     RootComponent;
         Actor*              ParentPrivate;
-        bool                bIsTick;
-        bool                bIsTickFuncRegistered;
-        uint64              TickPriority;
-
+        
     public:
         bool                bIsChangedAtComponents;
 
