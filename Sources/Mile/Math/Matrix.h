@@ -52,6 +52,7 @@ namespace Mile
         static Matrix CreateRotationYaw( float Rad );
         static Matrix CreateRotation( float Roll, float Pitch, float Yaw );
         static Matrix CreateRotation( const Vector& Rotation );
+        static Matrix CreateTransform( const class Transform& Transform );
 
     public:
         /* M[ROW][COLUMN] */

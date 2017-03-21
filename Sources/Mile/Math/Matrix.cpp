@@ -1,5 +1,6 @@
 #include "Matrix.h"
 #include "Vector.h"
+#include "Transform.h"
 
 namespace Mile
 {
@@ -212,5 +213,12 @@ namespace Mile
     Matrix Matrix::CreateRotation( const Vector& Rotation )
     {
         return CreateRotation( Rotation.Z, Rotation.X, Rotation.Y );
+    }
+
+    Matrix Matrix::CreateTransform( const Transform & Transform )
+    {
+        return ( CreateScale( Transform.GetScale( ) ) ) *
+            ( CreateRotation( Transform.GetRotation( ) ) ) *
+            ( CreateTranslation( Transform.GetPosition( ) ) );
     }
 }
