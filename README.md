@@ -22,4 +22,4 @@ Mile Engine is a Game Engine to develope high-performance 3D Simulator and Game.
 
 # License
 -------------------------------------
-This software is provided under the **Beerware License**. (It would be better if you write about the copyright holders on it.)
+This software is provided under the **MIT License**.
