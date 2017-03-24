@@ -1,9 +1,10 @@
 # MileEngine
 -------------------------------------
-Mile Engine is a Game Engine to develope high-performance 3D Simulator and Game. It is written in C++11 and DirectX 11.
+Mile Engine is a Game Engine to develope high-performance 3D Simulator and Game. It is written in C++11.
 
 # Features
 -------------------------------------
+- ARiA
 - Deferred/Forward Rendering
 - Multi-Thread Rendering
 - Exclusive Physics Engine
@@ -21,4 +22,4 @@ Mile Engine is a Game Engine to develope high-performance 3D Simulator and Game.
 
 # License
 -------------------------------------
-This software is provided under the **Beerware License**. (It would be better if you write about the copyright holders on it.)
+This software is provided under the **MIT License**.
