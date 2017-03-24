@@ -81,6 +81,9 @@
     <ClInclude Include="..\Sources\Mile\Application\Application.h">
       <Filter>Sources\Application</Filter>
     </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Core\MileLog.h">
+      <Filter>Sources\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Sources\Mile\Components\ActorComponent.cpp">
@@ -94,9 +97,6 @@
     </ClCompile>
     <ClCompile Include="..\Sources\Mile\Math\Vector.cpp">
       <Filter>Sources\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Mile\Application\Entry.cpp">
-      <Filter>Sources\Application</Filter>
     </ClCompile>
     <ClCompile Include="..\Sources\Mile\Components\SceneComponent.cpp">
       <Filter>Sources\Components</Filter>
@@ -127,6 +127,12 @@
     </ClCompile>
     <ClCompile Include="..\Sources\Mile\Application\Application.cpp">
       <Filter>Sources\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Mile\Application\GameEntry.cpp">
+      <Filter>Sources\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Mile\Core\MileLog.cpp">
+      <Filter>Sources\Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -4,6 +4,7 @@
 namespace Mile
 {
     struct Vector;
+    struct Transform;
     /**
     * 4x4 행렬을 나타내는 행렬 구조체
     * 수학에서의 곱을 따름
@@ -52,7 +53,7 @@ namespace Mile
         static Matrix CreateRotationYaw( float Rad );
         static Matrix CreateRotation( float Roll, float Pitch, float Yaw );
         static Matrix CreateRotation( const Vector& Rotation );
-        static Matrix CreateTransform( const class Transform& Transform );
+        static Matrix CreateTransform( const Transform& Transform );
 
     public:
         /* M[ROW][COLUMN] */

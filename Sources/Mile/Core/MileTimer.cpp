@@ -1,5 +1,4 @@
 #include "MileTimer.h"
-#include <chrono>
 using namespace std::chrono;
 
 namespace Mile

@@ -26,6 +26,7 @@
     <ClInclude Include="..\Sources\Mile\Components\ActorComponent.h" />
     <ClInclude Include="..\Sources\Mile\Components\SceneComponent.h" />
     <ClInclude Include="..\Sources\Mile\Core\MileChar.h" />
+    <ClInclude Include="..\Sources\Mile\Core\MileLog.h" />
     <ClInclude Include="..\Sources\Mile\Core\MileString.h" />
     <ClInclude Include="..\Sources\Mile\Core\MileObject.h" />
     <ClInclude Include="..\Sources\Mile\Core\MileTimer.h" />
@@ -42,12 +43,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Sources\Mile\Application\Application.cpp" />
-    <ClCompile Include="..\Sources\Mile\Application\Entry.cpp" />
+    <ClCompile Include="..\Sources\Mile\Application\GameEntry.cpp" />
     <ClCompile Include="..\Sources\Mile\Application\MileWindow.cpp" />
     <ClCompile Include="..\Sources\Mile\Application\Win32Window.cpp" />
     <ClCompile Include="..\Sources\Mile\Application\WinProc.cpp" />
     <ClCompile Include="..\Sources\Mile\Components\ActorComponent.cpp" />
     <ClCompile Include="..\Sources\Mile\Components\SceneComponent.cpp" />
+    <ClCompile Include="..\Sources\Mile\Core\MileLog.cpp" />
     <ClCompile Include="..\Sources\Mile\Core\MileObject.cpp" />
     <ClCompile Include="..\Sources\Mile\Core\MileString.cpp" />
     <ClCompile Include="..\Sources\Mile\Core\MileTimer.cpp" />
@@ -65,26 +67,26 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GameDebug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GameRelease|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EditorRelease|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
