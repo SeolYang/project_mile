@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Sources\Mile\Application\Application.h" />
+    <ClInclude Include="..\Sources\Mile\Application\MileInputSystem.h" />
     <ClInclude Include="..\Sources\Mile\Application\Win32Window.h" />
     <ClInclude Include="..\Sources\Mile\Application\MileWindow.h" />
     <ClInclude Include="..\Sources\Mile\Application\WinProc.h" />
@@ -44,6 +45,7 @@
   <ItemGroup>
     <ClCompile Include="..\Sources\Mile\Application\Application.cpp" />
     <ClCompile Include="..\Sources\Mile\Application\GameEntry.cpp" />
+    <ClCompile Include="..\Sources\Mile\Application\MileInputSystem.cpp" />
     <ClCompile Include="..\Sources\Mile\Application\MileWindow.cpp" />
     <ClCompile Include="..\Sources\Mile\Application\Win32Window.cpp" />
     <ClCompile Include="..\Sources\Mile\Application\WinProc.cpp" />
