@@ -1,7 +1,6 @@
 #pragma once
 #include "MileObject.h"
-#include <vector>
-#include <functional>
+
 
 namespace Mile
 {
@@ -22,10 +21,13 @@ namespace Mile
     class MILE_API TickManager final : public Mile::Object
     {
     public:
+        TickManager( const TickManager& ) = delete;
         ~TickManager( );
 
+        TickManager& operator=( const TickManager& ) = delete;
+
         static TickManager& GetInstance( );
-        bool DestroyInstance( );
+        static bool DestroyInstance( );
 
         void AddEvent( TickFuncType Func, uint64 ObjectID, uint64 Priority = 0 );
         void RemoveEvent( uint64 ObjectID );

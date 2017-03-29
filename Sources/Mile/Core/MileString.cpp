@@ -68,6 +68,31 @@ namespace Mile
         return ( *this );
     }
 
+    bool MString::operator==( const MString& RHS ) const
+    {
+        return ( Data == RHS.Data );
+    }
+
+    bool MString::operator<( const MString& RHS ) const
+    {
+        return ( Data < RHS.Data );
+    }
+
+    bool MString::operator<=( const MString& RHS ) const
+    {
+        return ( Data <= RHS.Data );
+    }
+
+    bool MString::operator>( const MString& RHS ) const
+    {
+        return ( Data > RHS.Data );
+    }
+
+    bool MString::operator>=( const MString& RHS ) const
+    {
+        return ( Data >= RHS.Data );
+    }
+
     MString::operator std::wstring( ) const
     {
         std::wstring OutStr;

@@ -40,13 +40,16 @@ namespace Mile
     class MILE_API Logger : public Mile::Object
     {
     public:
+        Logger( const Logger& ) = delete;
         ~Logger( )
         {
             Flush( );
         }
 
+        Logger& operator=( const Logger& ) = delete;
+
         static Logger& GetInstance( );
-        bool DestroyInstance( );
+        static bool DestroyInstance( );
 
         void Log( LogType Type, const MString& Message );
         void Log( const MString& Message );

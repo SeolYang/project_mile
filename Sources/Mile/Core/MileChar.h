@@ -85,6 +85,26 @@ namespace Mile
             return ( Character == Value.Character );
         }
 
+        bool operator<( const BaseChar& Value ) const
+        {
+            return ( Character < Value.Character );
+        }
+
+        bool operator>( const BaseChar& Value ) const
+        {
+            return ( Character > Value.Character );
+        }
+
+        bool operator<=( const BaseChar& Value ) const
+        {
+            return ( Character <= Value.Character );
+        }
+
+        bool operator>=( const BaseChar& Value ) const
+        {
+            return ( Charater >= Value.Character );
+        }
+
         operator CharType( ) const
         {
             return Character;

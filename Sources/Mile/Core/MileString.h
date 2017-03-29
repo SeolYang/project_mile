@@ -22,6 +22,12 @@ namespace Mile
         MString operator+( const MString& RHS ) const;
         MString& operator+=( const MString& RHS );
 
+        bool operator==( const MString& RHS ) const;
+        bool operator<( const MString& RHS ) const;
+        bool operator<=( const MString& RHS ) const;
+        bool operator>( const MString& RHS ) const;
+        bool operator>=( const MString& RHS ) const;
+
         inline MChar& operator[]( uint64 Index )
         {
             ASSERT_MSG( Data.size( ) <= Index, "Out of range!" );

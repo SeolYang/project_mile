@@ -11,6 +11,7 @@
 #include <Windows.h>
 #include <memory>
 #include <chrono>
+#include <functional>
 #include <ctime>
 
 /** Data structures */
