@@ -87,6 +87,9 @@
     <ClInclude Include="..\Sources\Mile\Application\MileInputSystem.h">
       <Filter>Sources\Application</Filter>
     </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Core\MileManager.hpp">
+      <Filter>Sources\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Sources\Mile\Components\ActorComponent.cpp">

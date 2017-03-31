@@ -2,34 +2,10 @@
 
 namespace Mile
 {
-    InputSystem* InputSystem::Instance = nullptr;
-
     InputSystem::~InputSystem( )
     {
         UnmapAllAction( );
         UnmapAllAxis( );
-    }
-
-    InputSystem& InputSystem::GetInstance( )
-    {
-        if ( Instance == nullptr )
-        {
-            Instance = new InputSystem( );
-        }
-
-        return ( *Instance );
-    }
-
-    bool InputSystem::DestroyInstance( )
-    {
-        if ( Instance != nullptr )
-        {
-            delete Instance;
-            Instance = nullptr;
-            return true;
-        }
-        
-        return true;
     }
 
     void InputSystem::MapAction( const MString& KeyName, SActionMappingSetting Setting )

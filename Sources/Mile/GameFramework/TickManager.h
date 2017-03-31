@@ -1,6 +1,5 @@
 #pragma once
-#include "MileObject.h"
-
+#include "MileManager.hpp"
 
 namespace Mile
 {
@@ -18,16 +17,13 @@ namespace Mile
     /**
     * Tick 이벤트를 관리하는 매니저 클래스
     */
-    class MILE_API TickManager final : public Mile::Object
+    class MILE_API TickManager final : public Mile::Manager<TickManager>
     {
+        friend Manager;
+
     public:
         TickManager( const TickManager& ) = delete;
-        ~TickManager( );
-
         TickManager& operator=( const TickManager& ) = delete;
-
-        static TickManager& GetInstance( );
-        static bool DestroyInstance( );
 
         void AddEvent( TickFuncType Func, uint64 ObjectID, uint64 Priority = 0 );
         void RemoveEvent( uint64 ObjectID );
@@ -37,12 +33,12 @@ namespace Mile
 
     private:
         TickManager( );
+        ~TickManager( );
 
         void OrderingPriority( uint64 AddedPriority, bool ForceOrdering = false );
         bool IsAlreadyAdded( uint64 ObjectID ) const;
 
     private:
-        static TickManager* Instance;
         ContainerType Container;
         uint64 RecentAddedPriority;
 

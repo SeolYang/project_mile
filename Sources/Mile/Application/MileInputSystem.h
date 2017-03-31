@@ -1,6 +1,5 @@
 #pragma once
-#include "Mile.h"
-#include "MileObject.h"
+#include "MileManager.hpp"
 #include "MileString.h"
 #include <map>
 
@@ -114,16 +113,14 @@ namespace Mile
 
     };
 
-    class MILE_API InputSystem : public Mile::Object
+    class MILE_API InputSystem : public Mile::Manager<InputSystem>
     {
+        friend Manager;
+
     public:
         InputSystem( const InputSystem& ) = delete;
-        ~InputSystem( );
-
         InputSystem& operator=( const InputSystem& ) = delete;
 
-        static InputSystem& GetInstance( );
-        static bool DestroyInstance( );
 
         //bool RegisterDevice( InputDevice* );
 
@@ -152,13 +149,13 @@ namespace Mile
         bool IsBindedAxis( const MString& KeyName ) const;
 
     private:
-        InputSystem( ) : Object( MString( TEXT( "MainInputSystem" ) ) )
+        InputSystem( ) : Mile::Manager<InputSystem>( MString( TEXT( "MainInputSystem" ) ) )
         {
         }
 
-    private:
-        static InputSystem* Instance;
+        ~InputSystem( );
 
+    private:
         std::map<MString, SActionMappingSetting> ActionMappings;
         std::map<EInputKey, SActionBindingSetting> ActionPressedBind;
         std::map<EInputKey, SActionBindingSetting> ActionReleasedBind;

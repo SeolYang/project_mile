@@ -28,6 +28,7 @@
     <ClInclude Include="..\Sources\Mile\Components\SceneComponent.h" />
     <ClInclude Include="..\Sources\Mile\Core\MileChar.h" />
     <ClInclude Include="..\Sources\Mile\Core\MileLog.h" />
+    <ClInclude Include="..\Sources\Mile\Core\MileManager.hpp" />
     <ClInclude Include="..\Sources\Mile\Core\MileString.h" />
     <ClInclude Include="..\Sources\Mile\Core\MileObject.h" />
     <ClInclude Include="..\Sources\Mile\Core\MileTimer.h" />

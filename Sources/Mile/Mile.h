@@ -19,6 +19,7 @@
 #include <forward_list>
 #include <stack>
 #include <queue>
+#include <map>
 
 #define MILE_LIBRARYEXPORT __declspec(dllexport)
 #define MILE_LIBRARYIMPORT __declspec(dllimport)

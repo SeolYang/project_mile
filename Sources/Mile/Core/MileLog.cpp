@@ -2,29 +2,6 @@
 
 namespace Mile
 {
-    Logger* Logger::Instance = nullptr;
-
-    Logger& Logger::GetInstance( )
-    {
-        if ( Instance == nullptr )
-        {
-            Instance = new Logger( );
-        }
-
-        return ( *Instance );
-    }
-
-    bool Logger::DestroyInstance( )
-    {
-        if ( Instance != nullptr )
-        {
-            delete Instance;
-            Instance = nullptr;
-        }
-
-        return ( Instance == nullptr );
-    }
-
     void Logger::Log( LogType Type, const MString& Message )
     {
         std::chrono::system_clock::time_point Now = std::chrono::system_clock::now( );

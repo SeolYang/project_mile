@@ -1,7 +1,5 @@
 #pragma once
-#include "Mile.h"
-#include "MileObject.h"
-#include "MileString.h"
+#include "MileManager.hpp"
 #include "MileTimer.h"
 
 namespace Mile
@@ -37,19 +35,13 @@ namespace Mile
 
     };
 
-    class MILE_API Logger : public Mile::Object
+    class MILE_API Logger : public Mile::Manager<Logger>
     {
+        friend Manager;
+
     public:
         Logger( const Logger& ) = delete;
-        ~Logger( )
-        {
-            Flush( );
-        }
-
         Logger& operator=( const Logger& ) = delete;
-
-        static Logger& GetInstance( );
-        static bool DestroyInstance( );
 
         void Log( LogType Type, const MString& Message );
         void Log( const MString& Message );
@@ -62,12 +54,16 @@ namespace Mile
         void Flush( );
 
     private:
-        Logger( ) : Object( MString( TEXT( "Logger" ) ) )
+        Logger( ) : Mile::Manager<Logger>( MString( TEXT( "Logger" ) ) )
         {
         }
 
+        ~Logger( )
+        {
+            Flush( );
+        }
+
     private:
-        static Logger* Instance;
         std::vector<Mile::Log> Logs;
 
     };

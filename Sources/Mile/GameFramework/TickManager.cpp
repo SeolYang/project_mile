@@ -3,27 +3,16 @@
 
 namespace Mile
 {
-    TickManager* TickManager::Instance = nullptr;
 
     TickManager::TickManager( ) :
         RecentAddedPriority( 0 ),
-        Object( MString( TEXT( "TickManager" ) ) )
+        Mile::Manager<TickManager>( MString( TEXT( "TickManager" ) ) )
     {
     }
 
     TickManager::~TickManager( )
     {
         Container.clear( );
-    }
-
-    TickManager& TickManager::GetInstance( )
-    {
-        if ( Instance == nullptr )
-        {
-            Instance = new TickManager( );
-        }
-
-        return ( *Instance );
     }
 
     void TickManager::AddEvent( TickFuncType Func, uint64 ObjectID, uint64 Priority )
@@ -73,18 +62,6 @@ namespace Mile
         {
             TickObject.Func( DeltaTime );
         }
-    }
-
-    bool TickManager::DestroyInstance( )
-    {
-        if ( Instance != nullptr )
-        {
-            delete Instance;
-            Instance = nullptr;
-            return true;
-        }
-
-        return false;
     }
 
     void TickManager::OrderingPriority( uint64 AddedPriority, bool ForceOrdering )

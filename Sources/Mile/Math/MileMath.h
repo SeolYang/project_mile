@@ -1,6 +1,5 @@
 #pragma once
 #include "Mile.h"
-#include <cmath>
 
 namespace Mile
 {
