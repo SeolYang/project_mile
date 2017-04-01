@@ -8,111 +8,102 @@ namespace Mile
         UnmapAllAxis( );
     }
 
-    void InputSystem::MapAction( const MString& KeyName, SActionMappingSetting Setting )
+    void InputSystem::MapAction( const MString& MappingKey, SActionMappingProperty Property )
     {
-        ActionMappings[ KeyName ] = Setting;
+        ActionMap[ MappingKey ].first.push_back( Property );
     }
 
-    void InputSystem::UnmapAction( const MString& KeyName )
+    void InputSystem::UnmapAction( const MString& MappingKey )
     {
-        ActionMappings.erase( KeyName );
+        ActionMap.erase( MappingKey );
+    }
+
+    void InputSystem::UnmapActionKey( const MString& MappingKey, EInputKey Key )
+    {
+        ActionPropertyListType PropertyList = ActionMap[ MappingKey ].first;
+        auto FoundItr = std::find_if( PropertyList.begin( ), PropertyList.end( ),
+                      [ Key ]( SActionMappingProperty Itr )->bool { return ( Itr.Key == Key ); } );
+        PropertyList.erase( FoundItr );
     }
 
     void InputSystem::UnmapAllAction( )
     {
-        ActionMappings.clear( );
-        UnbindAllAction( );
+        ActionMap.clear( );
     }
 
-    SActionMappingSetting InputSystem::GetActionMappingSetting( const MString& KeyName ) const
+    bool InputSystem::IsMappedAction( const MString& MappingKey ) const
     {
-        if ( IsMappedAction( KeyName ) )
-        {
-            return ( *( ActionMappings.find( KeyName ) ) ).second;
-        }
-
-        return SActionMappingSetting( );
+        return ( ActionMap.find( MappingKey ) != ActionMap.end( ) );
     }
 
-    bool InputSystem::IsMappedAction( const MString& KeyName ) const
+    void InputSystem::MapAxis( const MString& MappingKey, SAxisMappingProperty Property )
     {
-        return ( ( ActionMappings.find( KeyName ) != ActionMappings.end( ) ) );
+        AxisMap[ MappingKey ].first.push_back( Property );
     }
 
-    void InputSystem::MapAxis( const MString& KeyName, SAxisMappingSetting Setting )
+    void InputSystem::UnmapAxis( const MString& MappingKey )
     {
-        AxisMappings[ KeyName ] = Setting;
+        AxisMap.erase( MappingKey );
     }
 
-    void InputSystem::UnmapAxis( const MString& KeyName )
+    void InputSystem::UnmapAxisKey( const MString& MappingKey, EInputKey Key )
     {
-        AxisMappings.erase( KeyName );
+        AxisPropertyListType PropertyList = AxisMap[ MappingKey ].first;
+        auto FoundItr = std::find_if( PropertyList.begin( ), PropertyList.end( ),
+                                     [ Key ]( SAxisMappingProperty Itr )->bool { return ( Itr.Key == Key ); } );
+        PropertyList.erase( FoundItr );
     }
 
     void InputSystem::UnmapAllAxis( )
     {
-        AxisMappings.clear( );
-        UnbindAllAxis( );
+        AxisMap.clear( );
     }
 
-    SAxisMappingSetting InputSystem::GetAxisMappingSetting( const MString& KeyName ) const
+    bool InputSystem::IsMappedAxis( const MString& MappingKey ) const
     {
-        if ( IsMappedAxis( KeyName ) )
+        return ( AxisMap.find( MappingKey ) != AxisMap.end( ) );
+    }
+
+    void InputSystem::BindAction( const MString& MappingKey, EActionInputEvent InputEvent, ActionEventDelegate Delegate )
+    {
+        if ( IsMappedAction( MappingKey ) )
         {
-            return ( *( AxisMappings.find( KeyName ) ) ).second;
-        }
-
-        return SAxisMappingSetting( );
-    }
-
-    bool InputSystem::IsMappedAxis( const MString& KeyName ) const
-    {
-        return ( AxisMappings.find( KeyName ) != AxisMappings.end( ) );
-    }
-
-    void InputSystem::BindAction( const MString& KeyName, EActionInputEvent InputEvent, ActionEventDelegate Delegate )
-    {
-        if ( IsMappedAction( KeyName ) )
-        {
-            SActionMappingSetting MappingSetting = GetActionMappingSetting( KeyName );
-            SActionBindingSetting BindingSetting = SActionBindingSetting( MappingSetting, Delegate );
-
+            // ActionMap has pair of delegate.
+            // First delegate for Pressed Event
+            // Second delegate for Released Event
             switch ( InputEvent )
             {
             case EActionInputEvent::IE_Pressed:
-                ActionPressedBind[ MappingSetting.Key ] = BindingSetting;
+                ActionMap[ MappingKey ].second.first = Delegate;
                 break;
 
             case EActionInputEvent::IE_Released:
-                ActionReleasedBind[ MappingSetting.Key ] = BindingSetting;
+                ActionMap[ MappingKey ].second.second = Delegate;
                 break;
 
             case EActionInputEvent::IE_Any:
-                ActionPressedBind[ MappingSetting.Key ] = BindingSetting;
-                ActionReleasedBind[ MappingSetting.Key ] = BindingSetting;
+                ActionMap[ MappingKey ].second.first = ActionMap[ MappingKey ].second.second = Delegate;
                 break;
             }
         }
     }
 
-    void InputSystem::UnbindAction( const MString& KeyName, EActionInputEvent InputEvent )
+    void InputSystem::UnbindAction( const MString& MappingKey, EActionInputEvent InputEvent )
     {
-        if ( IsMappedAction( KeyName ) )
+        if ( IsMappedAction( MappingKey ) )
         {
-            SActionMappingSetting MappingSetting = GetActionMappingSetting( KeyName );
             switch ( InputEvent )
             {
             case EActionInputEvent::IE_Pressed:
-                ActionPressedBind.erase( MappingSetting.Key );
+                ActionMap[ MappingKey ].second.first = nullptr;
                 break;
 
             case EActionInputEvent::IE_Released:
-                ActionReleasedBind.erase( MappingSetting.Key );
+                ActionMap[ MappingKey ].second.second = nullptr;
                 break;
 
             case EActionInputEvent::IE_Any:
-                ActionPressedBind.erase( MappingSetting.Key );
-                ActionReleasedBind.erase( MappingSetting.Key );
+                ActionMap[ MappingKey ].second.second = nullptr;
                 break;
             }
         }
@@ -123,74 +114,83 @@ namespace Mile
         switch ( InputEvent )
         {
         case EActionInputEvent::IE_Pressed:
-            ActionPressedBind.clear( );
+            for ( auto& MappedAction : ActionMap )
+            {
+                ( MappedAction.second.second ).first = nullptr;
+            }
             break;
 
         case EActionInputEvent::IE_Released:
-            ActionReleasedBind.clear( );
+            for ( auto& MappedAction : ActionMap )
+            {
+                ( MappedAction.second.second ).second = nullptr;
+            }
             break;
 
         default:
         case EActionInputEvent::IE_Any:
-            ActionPressedBind.clear( );
-            ActionReleasedBind.clear( );
+            for ( auto& MappedAction : ActionMap )
+            {
+                ( MappedAction.second.second ).first = nullptr;
+                ( MappedAction.second.second ).second = nullptr;
+            }
             break;
         }
 
     }
 
-    bool InputSystem::IsBindedAction( const MString& KeyName, EActionInputEvent InputEvent ) const
+    bool InputSystem::IsBindedAction( const MString& MappingKey, EActionInputEvent InputEvent ) const
     {
-        if ( IsMappedAction( KeyName ) )
+        if ( IsMappedAction( MappingKey ) )
         {
-            SActionMappingSetting MappingSetting = GetActionMappingSetting( KeyName );
             switch ( InputEvent )
             {
             case EActionInputEvent::IE_Pressed:
-                return ( ActionPressedBind.find( MappingSetting.Key ) != ActionPressedBind.end( ) );
+                return ( (ActionMap.find( MappingKey )->second.second).first != nullptr );
 
             case EActionInputEvent::IE_Released:
-                return ( ActionReleasedBind.find( MappingSetting.Key ) != ActionPressedBind.end( ) );
+                return ( (ActionMap.find( MappingKey )->second.second).second != nullptr );
 
+            default:
             case EActionInputEvent::IE_Any:
-                bool bIsPressedBind = ( ActionPressedBind.find( MappingSetting.Key ) != ActionPressedBind.end( ) );
-                bool bIsReleasedBind = ( ActionReleasedBind.find( MappingSetting.Key ) != ActionPressedBind.end( ) );
-                return ( bIsPressedBind && bIsReleasedBind );
+                bool bIsPressedBinded = ( ( ActionMap.find( MappingKey )->second.second ).first != nullptr );
+                bool bIsReleasedBinded = ( ( ActionMap.find( MappingKey )->second.second ).second != nullptr );
+                return ( bIsPressedBinded && bIsReleasedBinded );
             }
         }
 
         return false;
     }
 
-    void InputSystem::BindAxis( const MString& KeyName, AxisEventDelegate Delegate )
+    void InputSystem::BindAxis( const MString& MappingKey, AxisEventDelegate Delegate )
     {
-        if ( IsMappedAxis( KeyName ) )
+        if ( IsMappedAxis( MappingKey ) )
         {
-            SAxisMappingSetting MappingSetting = GetAxisMappingSetting( KeyName );
-            AxisBind[ MappingSetting.Key ] = SAxisBindingSetting( MappingSetting, Delegate );
+            AxisMap[ MappingKey ].second = Delegate;
         }
     }
 
-    void InputSystem::UnbindAxis( const MString& KeyName )
+    void InputSystem::UnbindAxis( const MString& MappingKey )
     {
-        if ( IsMappedAxis( KeyName ) )
+        if ( IsMappedAxis( MappingKey ) )
         {
-            SAxisMappingSetting MappingSetting = GetAxisMappingSetting( KeyName );
-            AxisBind.erase( MappingSetting.Key );
+            AxisMap[ MappingKey ].second = nullptr;
         }
     }
 
     void InputSystem::UnbindAllAxis( )
     {
-        AxisBind.clear( );
+        for ( auto& MappedAxis : AxisMap )
+        {
+            ( MappedAxis.second ).second = nullptr;
+        }
     }
 
-    bool InputSystem::IsBindedAxis( const MString& KeyName ) const
+    bool InputSystem::IsBindedAxis( const MString& MappingKey ) const
     {
-        if ( IsMappedAxis( KeyName ) )
+        if ( IsMappedAxis( MappingKey ) )
         {
-            SAxisMappingSetting MappingSetting = GetAxisMappingSetting( KeyName );
-            return ( AxisBind.find( MappingSetting.Key ) != AxisBind.end( ) );
+            return ( (AxisMap.find( MappingKey )->second).second != nullptr );
         }
 
         return false;

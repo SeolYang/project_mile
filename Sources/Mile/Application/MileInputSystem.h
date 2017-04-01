@@ -3,9 +3,12 @@
 #include "MileString.h"
 #include <map>
 
+// 하나의 Mapping Key는 여러개의 Input Key를 Mapping 할 수 있음.
+// 하나의 Mapping Key는 하나의 Delegate를 Bind 할 수 있음.
+// Input Key는 이미 Mapping 되어 있어도 다른 Mapping Key에 Mapping 시킬 수 잇음.
+// Input Key-Mapping Key Container, Mapping Key-Delegate Container
 namespace Mile
 {
-    /* Axis -> Has Scale, Action -> nothing **/
     enum class EActionInputEvent
     {
         IE_Pressed,
@@ -18,16 +21,16 @@ namespace Mile
         IK_None
     };
 
-    struct MILE_API SKeyMappingSetting
+    struct MILE_API SKeyMappingProperty
     {
     public:
-        SKeyMappingSetting( ) : 
+        SKeyMappingProperty( ) : 
             Key( EInputKey::IK_None )
         {
 
         }
 
-        SKeyMappingSetting( EInputKey Key ) :
+        SKeyMappingProperty( EInputKey Key ) :
             Key( Key )
         {
         }
@@ -37,16 +40,16 @@ namespace Mile
 
     };
 
-    struct MILE_API SActionMappingSetting : public SKeyMappingSetting
+    struct MILE_API SActionMappingProperty : public SKeyMappingProperty
     {
     public:
-        SActionMappingSetting( ) :
-            SKeyMappingSetting( )
+        SActionMappingProperty( ) :
+            SKeyMappingProperty( )
         {
         }
 
-        SActionMappingSetting( EInputKey Key ) :
-            SKeyMappingSetting( Key )
+        SActionMappingProperty( EInputKey Key ) :
+            SKeyMappingProperty( Key )
         {
         }
 
@@ -54,17 +57,17 @@ namespace Mile
 
     };
 
-    struct MILE_API SAxisMappingSetting : public SKeyMappingSetting
+    struct MILE_API SAxisMappingProperty : public SKeyMappingProperty
     {
     public:
-        SAxisMappingSetting( ) :
-            Scale( 0.0f ), SKeyMappingSetting( )
+        SAxisMappingProperty( ) :
+            Scale( 0.0f ), SKeyMappingProperty( )
         {
         }
 
-        SAxisMappingSetting( EInputKey Key, float Scale ) :
+        SAxisMappingProperty( EInputKey Key, float Scale ) :
             Scale( Scale ),
-            SKeyMappingSetting( Key )
+            SKeyMappingProperty( Key )
         {
         }
 
@@ -74,45 +77,11 @@ namespace Mile
     };
 
     using ActionEventDelegate = std::function<void( void )>;
-    struct MILE_API SActionBindingSetting
-    {
-    public:
-        SActionBindingSetting( )
-        {
-        }
-
-        SActionBindingSetting( SActionMappingSetting MappingSetting, ActionEventDelegate Delegate ) :
-            MappingSetting( MappingSetting ),
-            Delegate( Delegate )
-        {
-        }
-
-    public:
-        SActionMappingSetting MappingSetting;
-        ActionEventDelegate Delegate;
-
-    };
-
     using AxisEventDelegate = std::function<void( float )>;
-    struct MILE_API SAxisBindingSetting
-    {
-    public:
-        SAxisBindingSetting( )
-        {
-        }
 
-        SAxisBindingSetting( SAxisMappingSetting MappigSetting, AxisEventDelegate Delegate ) :
-            MappingSetting( MappingSetting ),
-            Delegate( Delegate )
-        {
-        }
-        
-    public:
-        SAxisMappingSetting MappingSetting;
-        AxisEventDelegate Delegate;
-
-    };
-
+    // Keyboard = always 1.0 scale
+    // Mouse click button => always 1.0 scale
+    // Game Controller => -1.0 ~ 1.0 (vector) scale
     class MILE_API InputSystem : public Mile::Manager<InputSystem>
     {
         friend Manager;
@@ -121,32 +90,29 @@ namespace Mile
         InputSystem( const InputSystem& ) = delete;
         InputSystem& operator=( const InputSystem& ) = delete;
 
-
         //bool RegisterDevice( InputDevice* );
 
-        void MapAction( const MString& KeyName, SActionMappingSetting Setting );
-        void UnmapAction( const MString& KeyName );
+        void MapAction( const MString& MappingKey, SActionMappingProperty Property );
+        void UnmapAction( const MString& MappingKey );
+        void UnmapActionKey( const MString& MappingKey, EInputKey Key );
         void UnmapAllAction( );
+        bool IsMappedAction( const MString& MappingKey ) const;
 
-        SActionMappingSetting GetActionMappingSetting( const MString& KeyName ) const;
-        bool IsMappedAction( const MString& KeyName ) const;
-
-        void MapAxis( const MString& KeyName, SAxisMappingSetting Setting );
-        void UnmapAxis( const MString& KeyName );
+        void MapAxis( const MString& MappingKey, SAxisMappingProperty Property );
+        void UnmapAxis( const MString& MappingKey );
+        void UnmapAxisKey( const MString& MappingKey, EInputKey Key );
         void UnmapAllAxis( );
+        bool IsMappedAxis( const MString& MappingKey ) const;
 
-        SAxisMappingSetting GetAxisMappingSetting( const MString& KeyName ) const;
-        bool IsMappedAxis( const MString& KeyName ) const;
-
-        void BindAction( const MString& KeyName, EActionInputEvent InputEvent, ActionEventDelegate Delegate );
-        void UnbindAction( const MString& KeyName, EActionInputEvent InputEvent );
+        void BindAction( const MString& MappingKey, EActionInputEvent InputEvent, ActionEventDelegate Delegate );
+        void UnbindAction( const MString& MappingKey, EActionInputEvent InputEvent );
         void UnbindAllAction( EActionInputEvent InputEvent = EActionInputEvent::IE_Any );
-        bool IsBindedAction( const MString& KeyName, EActionInputEvent InputEvent ) const;
+        bool IsBindedAction( const MString& MappingKey, EActionInputEvent InputEvent ) const;
 
-        void BindAxis( const MString& KeyName, AxisEventDelegate Delegate );
-        void UnbindAxis( const MString& KeyName );
+        void BindAxis( const MString& MappingKey, AxisEventDelegate Delegate );
+        void UnbindAxis( const MString& MappingKey );
         void UnbindAllAxis( );
-        bool IsBindedAxis( const MString& KeyName ) const;
+        bool IsBindedAxis( const MString& MappingKey ) const;
 
     private:
         InputSystem( ) : Mile::Manager<InputSystem>( MString( TEXT( "MainInputSystem" ) ) )
@@ -156,13 +122,17 @@ namespace Mile
         ~InputSystem( );
 
     private:
-        std::map<MString, SActionMappingSetting> ActionMappings;
-        std::map<EInputKey, SActionBindingSetting> ActionPressedBind;
-        std::map<EInputKey, SActionBindingSetting> ActionReleasedBind;
+        // <Mapping Key, pair<vector<ActionKeyProperty>, pair<PressedDelegate, ReleasedDelegate>>>
+        // ActionKeyProperty -> Key and some combination
+        // <Mapping Key, pair<vector<AxisKeyProperty>, Delegate>>
+        // AxisKeyProperty -> Key and some sclae scala value.
+        using ActionPropertyListType = std::vector<SActionMappingProperty>;
+        using AxisPropertyListType = std::vector<SAxisMappingProperty>;
+        using ActionMapType = std::map<MString, std::pair<ActionPropertyListType, std::pair<ActionEventDelegate, ActionEventDelegate>>>;
+        using AxisMapType = std::map<MString, std::pair<AxisPropertyListType, AxisEventDelegate>>;
+        ActionMapType ActionMap;
+        AxisMapType AxisMap;
 
-        std::map<MString, SAxisMappingSetting> AxisMappings;
-        std::map<EInputKey, SAxisBindingSetting> AxisBind;
-        
     };
 
 }
