@@ -24,7 +24,7 @@ namespace Mile
     struct MILE_API SKeyMappingProperty
     {
     public:
-        SKeyMappingProperty( ) : 
+        SKeyMappingProperty( ) :
             Key( EInputKey::IK_None )
         {
 
@@ -79,9 +79,6 @@ namespace Mile
     using ActionEventDelegate = std::function<void( void )>;
     using AxisEventDelegate = std::function<void( float )>;
 
-    // Keyboard = always 1.0 scale
-    // Mouse click button => always 1.0 scale
-    // Game Controller => -1.0 ~ 1.0 (vector) scale
     class MILE_API InputSystem : public Mile::Manager<InputSystem>
     {
         friend Manager;
@@ -123,9 +120,7 @@ namespace Mile
 
     private:
         // <Mapping Key, pair<vector<ActionKeyProperty>, pair<PressedDelegate, ReleasedDelegate>>>
-        // ActionKeyProperty -> Key and some combination
         // <Mapping Key, pair<vector<AxisKeyProperty>, Delegate>>
-        // AxisKeyProperty -> Key and some sclae scala value.
         using ActionPropertyListType = std::vector<SActionMappingProperty>;
         using AxisPropertyListType = std::vector<SAxisMappingProperty>;
         using ActionMapType = std::map<MString, std::pair<ActionPropertyListType, std::pair<ActionEventDelegate, ActionEventDelegate>>>;

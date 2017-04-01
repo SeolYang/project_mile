@@ -22,7 +22,7 @@ namespace Mile
     {
         ActionPropertyListType PropertyList = ActionMap[ MappingKey ].first;
         auto FoundItr = std::find_if( PropertyList.begin( ), PropertyList.end( ),
-                      [ Key ]( SActionMappingProperty Itr )->bool { return ( Itr.Key == Key ); } );
+                                      [ Key ]( SActionMappingProperty Itr )->bool { return ( Itr.Key == Key ); } );
         PropertyList.erase( FoundItr );
     }
 
@@ -50,7 +50,7 @@ namespace Mile
     {
         AxisPropertyListType PropertyList = AxisMap[ MappingKey ].first;
         auto FoundItr = std::find_if( PropertyList.begin( ), PropertyList.end( ),
-                                     [ Key ]( SAxisMappingProperty Itr )->bool { return ( Itr.Key == Key ); } );
+                                      [ Key ]( SAxisMappingProperty Itr )->bool { return ( Itr.Key == Key ); } );
         PropertyList.erase( FoundItr );
     }
 
@@ -146,10 +146,10 @@ namespace Mile
             switch ( InputEvent )
             {
             case EActionInputEvent::IE_Pressed:
-                return ( (ActionMap.find( MappingKey )->second.second).first != nullptr );
+                return ( ( ActionMap.find( MappingKey )->second.second ).first != nullptr );
 
             case EActionInputEvent::IE_Released:
-                return ( (ActionMap.find( MappingKey )->second.second).second != nullptr );
+                return ( ( ActionMap.find( MappingKey )->second.second ).second != nullptr );
 
             default:
             case EActionInputEvent::IE_Any:
@@ -190,7 +190,7 @@ namespace Mile
     {
         if ( IsMappedAxis( MappingKey ) )
         {
-            return ( (AxisMap.find( MappingKey )->second).second != nullptr );
+            return ( ( AxisMap.find( MappingKey )->second ).second != nullptr );
         }
 
         return false;

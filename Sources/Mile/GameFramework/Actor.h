@@ -20,8 +20,8 @@ namespace Mile
         {
         }
 
-        virtual void OnGameBegin( ){ }
-        virtual void OnGameEnd( ){ }
+        virtual void OnGameBegin( ) { }
+        virtual void OnGameEnd( ) { }
 
         void AttachComponent( ActorComponent* Component );
         void DetachComponent( ActorComponent* Component );
@@ -49,7 +49,7 @@ namespace Mile
         ComponentList       Components;
         SceneComponent*     RootComponent;
         Actor*              ParentPrivate;
-        
+
     public:
         bool                bIsChangedAtComponents;
 
