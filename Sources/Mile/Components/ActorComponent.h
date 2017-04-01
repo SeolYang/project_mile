@@ -16,9 +16,7 @@ namespace Mile
         * @param NewName 설정될 오브젝트 이름
         */
         ActorComponent( const MString& NewName ) :
-            bIsTick( false ),
             OwnerPrivate( nullptr ),
-            TickPriority( 0 ),
             Object( NewName )
         {
         }
@@ -29,14 +27,10 @@ namespace Mile
         */
         ActorComponent( ActorComponent&& MovedObject ) :
             OwnerPrivate( MovedObject.OwnerPrivate ),
-            bIsTick( MovedObject.bIsTick ),
-            TickPriority( MovedObject.TickPriority ),
             Object( std::move( MovedObject ) )
         {
             this->SetOwner( MovedObject.GetOwner( ) );
             MovedObject.SetOwner( nullptr );
-            MovedObject.bIsTick = false;
-            MovedObject.TickPriority = UINT64_MAX;
         }
 
         /**
@@ -69,16 +63,8 @@ namespace Mile
             return OwnerPrivate;
         }
 
-        /**
-        * 매 프레임마다 호출되는 메소드
-        * @param DeltaTime 프레임과 프레임사이에 흐른 시간
-        */
-        virtual void Tick( float DeltaTime ) { UNUSED_PARAM( DeltaTime ); }
-
     private:
         Actor* OwnerPrivate;
-        bool    bIsTick;
-        uint64  TickPriority;
 
     };
 }

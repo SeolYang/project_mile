@@ -25,16 +25,25 @@ namespace Mile
         Object( const Object& CopiedObject ) :
             Name( CopiedObject.Name ),
             bIsValid( CopiedObject.bIsValid ),
-            ObjectID( NumOfAllocatedObject )
+            ObjectID( NumOfAllocatedObject ),
+            bIsTick( CopiedObject.bIsTick ),
+            bIsTickFuncRegistered( false ),
+            TickPriority( CopiedObject.TickPriority )
         {
+            SetIsTick( bIsTick );
             ++NumOfAllocatedObject;
             ++ObjectCounting;
         }
 
         Object( Object&& MovedObject ) :
             Name( std::move( MovedObject.Name ) ),
-            bIsValid( MovedObject.bIsValid )
+            bIsValid( MovedObject.bIsValid ),
+            bIsTick( MovedObject.bIsTick ),
+            bIsTickFuncRegistered( MovedObject.bIsTickFuncRegistered ),
+            TickPriority( MovedObject.TickPriority )
         {
+            MovedObject.SetIsTick( false );
+            this->SetIsTick( bIsTick );
         }
 
         virtual ~Object( )
@@ -62,6 +71,10 @@ namespace Mile
             return ObjectCounting;
         }
 
+        /**
+        * 매 프레임마다 호출되는 메소드
+        * @param DeltaTime 프레임과 프레임사이에 흐른 시간
+        */
         virtual void Tick( float DeltaTime ) { UNUSED_PARAM( DeltaTime ); }
 
         void SetIsTick( bool bNewIsTick );
@@ -78,9 +91,9 @@ namespace Mile
         MString                      Name;
         bool                         bIsValid;
 
-        bool                bIsTick;
-        bool                bIsTickFuncRegistered;
-        uint64              TickPriority;
+        bool                         bIsTick;
+        bool                         bIsTickFuncRegistered;
+        uint64                       TickPriority;
 
     };
 }
