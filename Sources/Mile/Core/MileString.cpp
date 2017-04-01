@@ -31,6 +31,11 @@ namespace Mile
         ( *this ) = InStr;
     }
 
+    MString::MString( const wchar_t* InStr ) :
+        MString( std::wstring( InStr ) )
+    {
+    }
+
     MString& MString::operator=( const MString& RHS )
     {
         Data = RHS.Data;
@@ -55,6 +60,11 @@ namespace Mile
         }
 
         return ( *this );
+    }
+
+    MString& MString::operator=( const wchar_t* InStr )
+    {
+        return ( ( *this ) = std::wstring( InStr ) );
     }
 
     MString MString::operator+( const MString& RHS ) const

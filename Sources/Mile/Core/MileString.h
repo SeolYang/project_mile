@@ -14,10 +14,12 @@ namespace Mile
         MString( const DataType& InStr );
         MString( DataType&& InStr );
         MString( const std::wstring& InStr );
+        MString( const wchar_t* InStr );
 
         MString& operator=( const MString& RHS );
         MString& operator=( MString&& RHS );
         MString& operator=( const std::wstring& InStr );
+        MString& operator=( const wchar_t* InStr );
 
         MString operator+( const MString& RHS ) const;
         MString& operator+=( const MString& RHS );
