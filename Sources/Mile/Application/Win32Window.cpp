@@ -10,7 +10,7 @@ namespace Mile
         /* 여기서 Win32 초기화 */
         WNDCLASS WinClass = { NULL };
         WinClass.style = CS_OWNDC;
-        WinClass.lpfnWndProc = &WinProc;
+        WinClass.lpfnWndProc = WinProc;
 
         /* 나중에 DirectX 에서 커스텀 커서 지원하기 */
         WinClass.hCursor = LoadCursor( nullptr, IDC_ARROW );
