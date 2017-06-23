@@ -20,21 +20,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Sources\Mile\Application\Application.h" />
-    <ClInclude Include="..\Sources\Mile\Application\MileInputSystem.h" />
+    <ClInclude Include="..\Sources\Mile\Application\InputSystem.h" />
     <ClInclude Include="..\Sources\Mile\Application\Win32Window.h" />
     <ClInclude Include="..\Sources\Mile\Application\MileWindow.h" />
     <ClInclude Include="..\Sources\Mile\Application\WinProc.h" />
     <ClInclude Include="..\Sources\Mile\Components\ActorComponent.h" />
     <ClInclude Include="..\Sources\Mile\Components\SceneComponent.h" />
     <ClInclude Include="..\Sources\Mile\Core\MileChar.h" />
-    <ClInclude Include="..\Sources\Mile\Core\MileLog.h" />
+    <ClInclude Include="..\Sources\Mile\Core\Log.h" />
     <ClInclude Include="..\Sources\Mile\Core\MileManager.hpp" />
     <ClInclude Include="..\Sources\Mile\Core\MileString.h" />
     <ClInclude Include="..\Sources\Mile\Core\MileObject.h" />
-    <ClInclude Include="..\Sources\Mile\Core\MileTimer.h" />
+    <ClInclude Include="..\Sources\Mile\Core\Timer.h" />
     <ClInclude Include="..\Sources\Mile\GameFramework\Actor.h" />
-    <ClInclude Include="..\Sources\Mile\GameFramework\GameMode.h" />
-    <ClInclude Include="..\Sources\Mile\GameFramework\MileWorld.h" />
     <ClInclude Include="..\Sources\Mile\GameFramework\TickManager.h" />
     <ClInclude Include="..\Sources\Mile\Math\Matrix.h" />
     <ClInclude Include="..\Sources\Mile\Math\MileMath.h" />
@@ -46,18 +44,17 @@
   <ItemGroup>
     <ClCompile Include="..\Sources\Mile\Application\Application.cpp" />
     <ClCompile Include="..\Sources\Mile\Application\GameEntry.cpp" />
-    <ClCompile Include="..\Sources\Mile\Application\MileInputSystem.cpp" />
+    <ClCompile Include="..\Sources\Mile\Application\InputSystem.cpp" />
     <ClCompile Include="..\Sources\Mile\Application\MileWindow.cpp" />
     <ClCompile Include="..\Sources\Mile\Application\Win32Window.cpp" />
     <ClCompile Include="..\Sources\Mile\Application\WinProc.cpp" />
     <ClCompile Include="..\Sources\Mile\Components\ActorComponent.cpp" />
     <ClCompile Include="..\Sources\Mile\Components\SceneComponent.cpp" />
-    <ClCompile Include="..\Sources\Mile\Core\MileLog.cpp" />
+    <ClCompile Include="..\Sources\Mile\Core\Log.cpp" />
     <ClCompile Include="..\Sources\Mile\Core\MileObject.cpp" />
     <ClCompile Include="..\Sources\Mile\Core\MileString.cpp" />
-    <ClCompile Include="..\Sources\Mile\Core\MileTimer.cpp" />
+    <ClCompile Include="..\Sources\Mile\Core\Timer.cpp" />
     <ClCompile Include="..\Sources\Mile\GameFramework\Actor.cpp" />
-    <ClCompile Include="..\Sources\Mile\GameFramework\MileWorld.cpp" />
     <ClCompile Include="..\Sources\Mile\GameFramework\TickManager.cpp" />
     <ClCompile Include="..\Sources\Mile\Math\Matrix.cpp" />
     <ClCompile Include="..\Sources\Mile\Math\Vector.cpp" />
@@ -118,24 +115,28 @@
     <OutDir>$(SolutionDir)..\Builds\Mile\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Builds\Intermediate\Mile\$(Configuration)\</IntDir>
     <TargetName>Mile</TargetName>
+    <LibraryPath>$(SolutionDir)..\Library\Rumia\Libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\Builds\Mile\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Builds\Intermediate\Mile\$(Configuration)\</IntDir>
     <TargetName>MileCore</TargetName>
+    <LibraryPath>$(SolutionDir)..\Library\Rumia\Libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GameRelease|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\Builds\Mile\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Builds\Intermediate\Mile\$(Configuration)\</IntDir>
     <TargetName>MileCore</TargetName>
+    <LibraryPath>$(SolutionDir)..\Library\Rumia\Libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EditorRelease|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\Builds\Mile\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Builds\Intermediate\Mile\$(Configuration)\</IntDir>
     <TargetName>MileCore</TargetName>
+    <LibraryPath>$(SolutionDir)..\Library\Rumia\Libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GameDebug|x64'">
     <ClCompile>
@@ -144,12 +145,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MILE_GAME;_DEBUG;MILE_BUILD;DEBUG;_WINDOWS;_USRDLL;MILE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Sources\Mile\;$(SolutionDir)..\Sources\Mile\Core;$(SolutionDir)..\Sources\Mile\Math;$(SolutionDir)..\Sources\Mile\Utility;$(SolutionDir)..\Sources\Mile\Application;$(SolutionDir)..\Sources\Mile\GameFramework;$(SolutionDir)..\Sources\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Library\Rumia\Include;$(SolutionDir)..\Sources\Mile\;$(SolutionDir)..\Sources\Mile\Core;$(SolutionDir)..\Sources\Mile\Math;$(SolutionDir)..\Sources\Mile\Utility;$(SolutionDir)..\Sources\Mile\Application;$(SolutionDir)..\Sources\Mile\GameFramework;$(SolutionDir)..\Sources\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Rumia_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'">
@@ -159,12 +161,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MILE_EDITOR;MILE_BUILD;_DEBUG;_WINDOWS;_USRDLL;MILE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Sources\Mile\;$(SolutionDir)..\Sources\Mile\Core;$(SolutionDir)..\Sources\Mile\Math;$(SolutionDir)..\Sources\Mile\Utility;$(SolutionDir)..\Sources\Mile\Application;$(SolutionDir)..\Sources\Mile\GameFramework;$(SolutionDir)..\Sources\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Library\Rumia\Include;$(SolutionDir)..\Sources\Mile\;$(SolutionDir)..\Sources\Mile\Core;$(SolutionDir)..\Sources\Mile\Math;$(SolutionDir)..\Sources\Mile\Utility;$(SolutionDir)..\Sources\Mile\Application;$(SolutionDir)..\Sources\Mile\GameFramework;$(SolutionDir)..\Sources\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Rumia_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GameRelease|x64'">
@@ -176,7 +179,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MILE_GAME;MILE_BUILD;NDEBUG;_WINDOWS;_USRDLL;MILE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Sources\Mile\;$(SolutionDir)..\Sources\Mile\Core;$(SolutionDir)..\Sources\Mile\Math;$(SolutionDir)..\Sources\Mile\Utility;$(SolutionDir)..\Sources\Mile\Application;$(SolutionDir)..\Sources\Mile\GameFramework;$(SolutionDir)..\Sources\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Library\Rumia\Include;$(SolutionDir)..\Sources\Mile\;$(SolutionDir)..\Sources\Mile\Core;$(SolutionDir)..\Sources\Mile\Math;$(SolutionDir)..\Sources\Mile\Utility;$(SolutionDir)..\Sources\Mile\Application;$(SolutionDir)..\Sources\Mile\GameFramework;$(SolutionDir)..\Sources\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -184,6 +187,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Rumia.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='EditorRelease|x64'">
@@ -195,7 +199,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MILE_EDITOR;MILE_BUILD;NDEBUG;_WINDOWS;_USRDLL;MILE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Sources\Mile\;$(SolutionDir)..\Sources\Mile\Core;$(SolutionDir)..\Sources\Mile\Math;$(SolutionDir)..\Sources\Mile\Utility;$(SolutionDir)..\Sources\Mile\Application;$(SolutionDir)..\Sources\Mile\GameFramework;$(SolutionDir)..\Sources\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Library\Rumia\Include;$(SolutionDir)..\Sources\Mile\;$(SolutionDir)..\Sources\Mile\Core;$(SolutionDir)..\Sources\Mile\Math;$(SolutionDir)..\Sources\Mile\Utility;$(SolutionDir)..\Sources\Mile\Application;$(SolutionDir)..\Sources\Mile\GameFramework;$(SolutionDir)..\Sources\Mile\Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/experimental:module %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -203,6 +207,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Rumia.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

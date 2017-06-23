@@ -33,9 +33,6 @@
     <ClInclude Include="..\Sources\Mile\GameFramework\Actor.h">
       <Filter>Sources\GameFramework</Filter>
     </ClInclude>
-    <ClInclude Include="..\Sources\Mile\GameFramework\GameMode.h">
-      <Filter>Sources\GameFramework</Filter>
-    </ClInclude>
     <ClInclude Include="..\Sources\Mile\Math\Vector.h">
       <Filter>Sources\Math</Filter>
     </ClInclude>
@@ -63,17 +60,11 @@
     <ClInclude Include="..\Sources\Mile\Application\MileWindow.h">
       <Filter>Sources\Application</Filter>
     </ClInclude>
-    <ClInclude Include="..\Sources\Mile\Core\MileTimer.h">
-      <Filter>Sources\Core</Filter>
-    </ClInclude>
     <ClInclude Include="..\Sources\Mile\Core\MileObject.h">
       <Filter>Sources\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Sources\Mile\Application\WinProc.h">
       <Filter>Sources\Application</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Mile\GameFramework\MileWorld.h">
-      <Filter>Sources\GameFramework</Filter>
     </ClInclude>
     <ClInclude Include="..\Sources\Mile\GameFramework\TickManager.h">
       <Filter>Sources\GameFramework</Filter>
@@ -81,14 +72,17 @@
     <ClInclude Include="..\Sources\Mile\Application\Application.h">
       <Filter>Sources\Application</Filter>
     </ClInclude>
-    <ClInclude Include="..\Sources\Mile\Core\MileLog.h">
-      <Filter>Sources\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Mile\Application\MileInputSystem.h">
-      <Filter>Sources\Application</Filter>
-    </ClInclude>
     <ClInclude Include="..\Sources\Mile\Core\MileManager.hpp">
       <Filter>Sources\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Core\Timer.h">
+      <Filter>Sources\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Core\Log.h">
+      <Filter>Sources\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Application\InputSystem.h">
+      <Filter>Sources\Application</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -113,17 +107,11 @@
     <ClCompile Include="..\Sources\Mile\Application\Win32Window.cpp">
       <Filter>Sources\Application</Filter>
     </ClCompile>
-    <ClCompile Include="..\Sources\Mile\Core\MileTimer.cpp">
-      <Filter>Sources\Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\Sources\Mile\Math\Matrix.cpp">
       <Filter>Sources\Math</Filter>
     </ClCompile>
     <ClCompile Include="..\Sources\Mile\Application\WinProc.cpp">
       <Filter>Sources\Application</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Mile\GameFramework\MileWorld.cpp">
-      <Filter>Sources\GameFramework</Filter>
     </ClCompile>
     <ClCompile Include="..\Sources\Mile\Core\MileObject.cpp">
       <Filter>Sources\Core</Filter>
@@ -137,10 +125,13 @@
     <ClCompile Include="..\Sources\Mile\Application\GameEntry.cpp">
       <Filter>Sources\Application</Filter>
     </ClCompile>
-    <ClCompile Include="..\Sources\Mile\Core\MileLog.cpp">
+    <ClCompile Include="..\Sources\Mile\Core\Timer.cpp">
       <Filter>Sources\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\Sources\Mile\Application\MileInputSystem.cpp">
+    <ClCompile Include="..\Sources\Mile\Core\Log.cpp">
+      <Filter>Sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Mile\Application\InputSystem.cpp">
       <Filter>Sources\Application</Filter>
     </ClCompile>
   </ItemGroup>

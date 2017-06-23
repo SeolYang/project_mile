@@ -1,6 +1,6 @@
 #pragma once
 #include "MileManager.hpp"
-#include "MileTimer.h"
+#include "Timer.h"
 
 namespace Mile
 {

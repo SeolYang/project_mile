@@ -2,7 +2,7 @@
 #include "Application.h"
 #include "Win32Window.h"
 #include "TickManager.h"
-#include "MileInputSystem.h"
+#include "InputSystem.h"
 #include "Actor.h"
 using namespace Mile;
 

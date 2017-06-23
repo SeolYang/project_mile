@@ -1,6 +1,6 @@
 #include "Application.h"
 #include "MileWindow.h"
-#include "MileTimer.h"
+#include "Timer.h"
 
 namespace Mile
 {
