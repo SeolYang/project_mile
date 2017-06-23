@@ -4,6 +4,7 @@
 namespace Mile
 {
 
+    /* @TODO Memory manager **/
     TickManager::TickManager( ) :
         RecentAddedPriority( 0 ),
         Mile::Manager<TickManager>( MString( TEXT( "TickManager" ) ) )
@@ -12,7 +13,7 @@ namespace Mile
 
     TickManager::~TickManager( )
     {
-        Container.clear( );
+        Container.Clear( );
     }
 
     void TickManager::AddEvent( TickFuncType Func, uint64 ObjectID, uint64 Priority )
@@ -23,7 +24,7 @@ namespace Mile
             FuncObject.Func = Func;
             FuncObject.ObjectID = ObjectID;
             FuncObject.Priority = Priority;
-            Container.push_back( FuncObject );
+            Container.Push( FuncObject );
 
             OrderingPriority( Priority );
         }
@@ -37,7 +38,7 @@ namespace Mile
         {
             if ( ( *TickObject ).ObjectID == ObjectID )
             {
-                Container.erase( TickObject );
+                Container.Erase( TickObject );
                 return;
             }
         }

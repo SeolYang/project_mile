@@ -1,5 +1,6 @@
 #pragma once
 #include "MileManager.hpp"
+#include "Rumia/Array.h"
 
 namespace Mile
 {
@@ -12,7 +13,7 @@ namespace Mile
         uint64 Priority;
     };
 
-    using ContainerType = std::vector<TickFunction>;
+    using ContainerType = Rumia::Array<TickFunction>;
 
     /**
     * Tick 이벤트를 관리하는 매니저 클래스
