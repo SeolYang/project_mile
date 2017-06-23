@@ -48,7 +48,7 @@ namespace Rumia
                 return ( *this );
             }
 
-            T& operator*( ) override
+            T& operator*( )
             {
                 return ( m_currentNode->m_data );
             }
@@ -76,6 +76,11 @@ namespace Rumia
         };
 
     public:
+        ForwardList( ) :
+            ForwardList( TAllocator( ) )
+        {
+        }
+
         ForwardList( TAllocator& allocator ) :
             m_allocator( allocator ),
             m_root( nullptr ),

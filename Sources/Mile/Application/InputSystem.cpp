@@ -1,4 +1,5 @@
 #include "InputSystem.h"
+#include <algorithm>
 
 namespace Mile
 {

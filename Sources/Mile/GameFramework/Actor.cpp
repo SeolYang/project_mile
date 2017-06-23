@@ -12,7 +12,7 @@ namespace Mile
         if ( bIsValidComponent )
         {
             Component->SetOwnerRecursively( this );
-            Components.push_back( Component );
+            Components.Push( Component );
         }
     }
 
@@ -28,7 +28,7 @@ namespace Mile
             {
                 if ( ( *FoundComponent ) == Component )
                 {
-                    Components.erase( FoundComponent );
+                    Components.Erase( FoundComponent );
                     Component->SetOwner( nullptr, false );
                     return;
                 }

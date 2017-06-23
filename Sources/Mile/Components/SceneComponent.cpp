@@ -40,7 +40,7 @@ namespace Mile
 
     void SceneComponent::AddAttachedComponent( SceneComponent* Component )
     {
-        Children.push_back( Component );
+        Children.Push( Component );
     }
 
     bool SceneComponent::RemoveAttachedComponent( SceneComponent* Component )
@@ -51,7 +51,7 @@ namespace Mile
         {
             if ( ( *FoundComponent ) == Component )
             {
-                Children.erase( FoundComponent );
+                Children.Erase( FoundComponent );
                 return true;
             }
         }

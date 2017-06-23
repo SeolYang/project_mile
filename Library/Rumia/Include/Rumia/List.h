@@ -58,7 +58,7 @@ namespace Rumia
                 return ( *this );
             }
 
-            T& operator*( ) override
+            T& operator*( )
             {
                 return ( m_currentNode->m_data );
             }
@@ -88,6 +88,10 @@ namespace Rumia
         using reverse_iterator = ReverseIterator<T, iterator>;
 
     public:
+        List( ) : List( TAllocator( ) )
+        {
+        }
+
         List( TAllocator& allocator ) :
             m_allocator(allocator), 
             m_root( nullptr ),

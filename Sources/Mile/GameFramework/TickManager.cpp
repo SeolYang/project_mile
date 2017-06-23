@@ -1,5 +1,4 @@
 #include "TickManager.h"
-#include <algorithm>
 
 namespace Mile
 {
@@ -71,19 +70,20 @@ namespace Mile
         {
             RecentAddedPriority = AddedPriority;
 
-            std::sort( Container.begin( ), Container.end( ),
-                       [ ]( TickFunction Left, TickFunction Right )->bool
-            {
-                return ( Left.Priority > Right.Priority );
-            } );
+            //@TODO: Implement own sorting algorithm
+            //std::sort( Container.begin( ), Container.end( ),
+            //           [ ]( TickFunction Left, TickFunction Right )->bool
+            //{
+            //    return ( Left.Priority > Right.Priority );
+            //} );
         }
     }
 
     bool TickManager::IsAlreadyAdded( uint64 ObjectID ) const
     {
-        for ( const auto Object : Container )
+        for ( auto Itr = Container.cbegin( ); Itr != Container.cend( ); ++Itr )
         {
-            if ( Object.ObjectID == ObjectID )
+            if ( (*Itr).ObjectID == ObjectID )
             {
                 return true;
             }

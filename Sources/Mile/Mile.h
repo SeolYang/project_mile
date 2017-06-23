@@ -15,10 +15,6 @@
 #include <ctime>
 
 /** Data structures */
-#include <vector>
-#include <forward_list>
-#include <stack>
-#include <queue>
 #include <map>
 
 #define MILE_LIBRARYEXPORT __declspec(dllexport)

@@ -16,7 +16,6 @@ namespace Rumia
 
         virtual ~Iterator( ) { }
 
-        virtual Ty& operator*( ) = 0;
         virtual Ty& operator*( ) const = 0;
 
     protected:

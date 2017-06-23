@@ -1,6 +1,7 @@
 #pragma once
 #include "ActorComponent.h"
 #include "Transform.h"
+#include "Rumia/Array.h"
 
 namespace Mile
 {
@@ -9,7 +10,7 @@ namespace Mile
     */
     class MILE_API SceneComponent : public ActorComponent
     {
-        using ComponentList = std::vector<SceneComponent*>;
+        using ComponentList = Rumia::Array<SceneComponent*>;
     public:
         SceneComponent( const MString& NewName ) :
             ParentPrivate( nullptr ),

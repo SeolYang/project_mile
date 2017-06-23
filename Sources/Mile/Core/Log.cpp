@@ -8,7 +8,7 @@ namespace Mile
         std::time_t NowTime = std::chrono::system_clock::to_time_t( Now );
         MString Time{ _wctime( &NowTime ) };
 
-        Logs.push_back( Mile::Log( Type, Message, Time ) );
+        Logs.Push( Mile::Log( Type, Message, Time ) );
     }
 
     void Logger::Log( const MString& Message )
@@ -38,7 +38,7 @@ namespace Mile
 
     void Logger::Clear( )
     {
-        Logs.clear( );
+        Logs.Clear( );
     }
 
     void Logger::Flush( )

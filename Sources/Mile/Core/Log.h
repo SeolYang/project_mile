@@ -1,6 +1,7 @@
 #pragma once
 #include "MileManager.hpp"
 #include "Timer.h"
+#include "Rumia/Array.h"
 
 namespace Mile
 {
@@ -16,6 +17,11 @@ namespace Mile
     struct MILE_API Log
     {
     public:
+        Log( ) : 
+            Log( LogType::Log, MString( TEXT("") ), MString( TEXT("")))
+        {
+        }
+
         Log( LogType Type, const MString& Message, const MString& Time ) :
             Type( Type ), Message( Message ), Time( Time )
         {
@@ -64,7 +70,7 @@ namespace Mile
         }
 
     private:
-        std::vector<Mile::Log> Logs;
+        Rumia::Array<Mile::Log> Logs;
 
     };
 }

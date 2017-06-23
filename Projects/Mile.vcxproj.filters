@@ -19,6 +19,9 @@
     <Filter Include="Sources\GameFramework">
       <UniqueIdentifier>{d86d3e16-0f5f-4bce-865a-4eaf0d2acecd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Rumia">
+      <UniqueIdentifier>{528f3ddf-b713-4cd5-8a50-35d04c6a439e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Sources\Mile\Components\ActorComponent.h">
@@ -83,6 +86,33 @@
     </ClInclude>
     <ClInclude Include="..\Sources\Mile\Application\InputSystem.h">
       <Filter>Sources\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\Iterator.h">
+      <Filter>Sources\Rumia</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\List.h">
+      <Filter>Sources\Rumia</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\Pair.h">
+      <Filter>Sources\Rumia</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\ReverseIterator.h">
+      <Filter>Sources\Rumia</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\Tuple.h">
+      <Filter>Sources\Rumia</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\Allocator.h">
+      <Filter>Sources\Rumia</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\Array.h">
+      <Filter>Sources\Rumia</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\DefaultAllocator.h">
+      <Filter>Sources\Rumia</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\ForwardList.h">
+      <Filter>Sources\Rumia</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

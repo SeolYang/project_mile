@@ -15,8 +15,9 @@ namespace Rumia
         class iterator : public Rumia::Iterator<T, Array>
         {
         public:
+            friend Array;
             iterator( ContainerType& container, size_t index, bool bIsDummy = false ) :
-                Iterator<T, Array>(container), m_position( index ), m_bIsDummy( bIsDummy )
+                Rumia::Iterator<T, Array>( container ), m_position( index ), m_bIsDummy( bIsDummy )
             {
             }
 
@@ -51,7 +52,12 @@ namespace Rumia
                 return ( *this );
             }
 
-            virtual T& operator*( ) override
+            iterator operator-( const iterator& rhs ) const
+            {
+                return iterator( this->m_container, this->m_position - rhs.m_position );
+            }
+
+            virtual T& operator*( )
             {
                 return m_container[ m_position ];
             }
@@ -106,9 +112,103 @@ namespace Rumia
 
         };
 
+        class const_iterator : public Rumia::Iterator<T, const Array>
+        {
+        public:
+            friend Array;
+            const_iterator( ContainerType& container, size_t index, bool bIsDummy = false ) :
+                Rumia::Iterator<T, const Array>( container ), m_position( index ), m_bIsDummy( bIsDummy )
+            {
+            }
+
+            ~const_iterator( ) { }
+
+            const_iterator& operator++( )
+            {
+                if ( m_position == ( m_container.GetSize( ) - 1 ) && !m_bIsDummy )
+                {
+                    m_bIsDummy = true;
+                }
+                else
+                {
+                    ++m_position;
+                    m_bIsDummy = false;
+                }
+                return ( *this );
+            }
+
+            const_iterator& operator--( )
+            {
+                if ( m_position == 0 && !m_bIsDummy )
+                {
+                    m_bIsDummy = true;
+                }
+                else
+                {
+                    --m_position;
+                    m_bIsDummy = false;
+                }
+
+                return ( *this );
+            }
+
+            virtual T& operator*( ) const override
+            {
+                return m_container[ m_position ];
+            }
+
+            bool operator==( const const_iterator& rhs ) const
+            {
+                return ( &m_container == &rhs.m_container ) &&
+                    ( m_position == rhs.m_position ) &&
+                    ( m_bIsDummy == rhs.m_bIsDummy );
+            }
+
+            bool operator!=( const const_iterator& rhs ) const
+            {
+                return ( &m_container != &rhs.m_container ) ||
+                    ( m_position != rhs.m_position ) ||
+                    ( m_bIsDummy != rhs.m_bIsDummy );
+            }
+
+            bool operator>( const const_iterator& rhs ) const
+            {
+                return ( &m_container == &rhs.m_container ) &&
+                    ( m_position > rhs.m_position );
+            }
+
+            bool operator<( const const_iterator& rhs ) const
+            {
+                return ( &m_container == &rhs.m_container ) &&
+                    ( m_position < rhs.m_position );
+            }
+
+            bool operator>=( const const_iterator& rhs ) const
+            {
+                return ( &m_container == &rhs.m_container ) &&
+                    ( m_position >= rhs.m_position );
+            }
+
+            bool operator<=( const const_iterator& rhs ) const
+            {
+                return ( &m_container == &rhs.m_container ) &&
+                    ( m_position <= rhs.m_position );
+            }
+
+        private:
+            size_t m_position;
+
+            bool m_bIsDummy;
+        };
+
         using reverse_iterator = ReverseIterator<T, iterator>;
 
     public:
+        Array( size_t initCapacity = 2 ) :
+            Array( TAllocator( ), initCapacity )
+        {
+        }
+
         Array( TAllocator& allocator, size_t initCapacity = 2 ) :
             m_allocator( allocator ),
             m_elements( nullptr ), m_capacity( 0 ), m_size( 0 )
@@ -317,13 +417,12 @@ namespace Rumia
             return m_size;
         }
 
-        template <typename Ty>
-        void Erase( Ty&& element )
+        void Erase( const T& element )
         {
-            size_t foundIndex = IndexOf( std::forward<Ty>( element ) );
+            size_t foundIndex = IndexOf( element );
             if ( foundIndex != m_size )
             {
-                EraseAt( foundIndex  );
+                EraseAt( foundIndex );
             }
         }
 
@@ -368,6 +467,16 @@ namespace Rumia
             return iterator( ( *this ), m_size - 1, bIsDummy );
         }
 
+        const_iterator cbegin( bool bIsDummy = false ) const
+        {
+            return const_iterator( ( *this ), 0, bIsDummy );
+        }
+
+        const_iterator cend( bool bIsDummy = true ) const
+        {
+            return const_iterator( ( *this ), m_size - 1, bIsDummy );
+        }
+
         reverse_iterator rbegin( bool bIsDummy = false )
         {
             return reverse_iterator( end( bIsDummy ) );
@@ -388,11 +497,18 @@ namespace Rumia
         {
             if ( IsFull( ) )
             {
-                Reserve( m_capacity * CapacityExtendScale );
+                if ( m_capacity > 0 )
+                {
+                    Reserve( m_capacity * CapacityExtendScale );
+                }
+                else
+                {
+                    Reserve( 2 );
+                }
             }
         }
 
-        inline bool IsOutOfRange( size_t index )
+        inline bool IsOutOfRange( size_t index ) const
         {
             return ( index >= m_size );
         }

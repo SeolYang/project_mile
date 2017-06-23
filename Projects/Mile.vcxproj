@@ -19,6 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\Allocator.h" />
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\Array.h" />
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\DefaultAllocator.h" />
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\ForwardList.h" />
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\Iterator.h" />
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\List.h" />
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\Pair.h" />
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\ReverseIterator.h" />
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\Tuple.h" />
     <ClInclude Include="..\Sources\Mile\Application\Application.h" />
     <ClInclude Include="..\Sources\Mile\Application\InputSystem.h" />
     <ClInclude Include="..\Sources\Mile\Application\Win32Window.h" />

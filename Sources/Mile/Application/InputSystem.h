@@ -1,8 +1,11 @@
 #pragma once
 #include "MileManager.hpp"
 #include "MileString.h"
+#include "Rumia/Array.h"
+#include <vector>
 #include <map>
 
+// @TODO: Perfectly replace std::vector to Rumia::Array
 // 하나의 Mapping Key는 여러개의 Input Key를 Mapping 할 수 있음.
 // 하나의 Mapping Key는 하나의 Delegate를 Bind 할 수 있음.
 // Input Key는 이미 Mapping 되어 있어도 다른 Mapping Key에 Mapping 시킬 수 잇음.

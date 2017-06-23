@@ -1,7 +1,8 @@
 #pragma once
+#include <iostream>
 #include "MileObject.h"
 #include "Transform.h"
-#include <iostream>
+#include "Rumia/Array.h"
 
 namespace Mile
 {
@@ -10,7 +11,7 @@ namespace Mile
     class MileWorld;
     class MILE_API Actor : public Mile::Object
     {
-        using ComponentList = std::vector<ActorComponent*>;
+        using ComponentList = Rumia::Array<ActorComponent*>;
     public:
         Actor( const MString& NewName, MileWorld& NewWorld ) :
             World( NewWorld ),
