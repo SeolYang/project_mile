@@ -1,4 +1,4 @@
-#include "MileLog.h"
+#include "Log.h"
 
 namespace Mile
 {

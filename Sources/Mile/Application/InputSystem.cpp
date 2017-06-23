@@ -1,4 +1,4 @@
-#include "MileInputSystem.h"
+#include "InputSystem.h"
 
 namespace Mile
 {
