@@ -1,15 +1,20 @@
 #pragma once
 #include "Mile.h"
 #include "MileString.h"
+#include "Rumia/DefaultAllocator.h"
 
 namespace Mile
 {
-    /*
-    * @todo: 기본 능력 확장 ( 직렬화, UUID, RTTI, 메모리관리<고민해보기> )
-    */
     class MILE_API Object
     {
     public:
+        template <typename Ty, typename TAllocator = Rumia::DefaultAllocator, typename... Args >
+        static Ty* NewObject( TAllocator& Allocator, Args&&... Params )
+        {
+            return RUMIA_NEW( Allocator, Ty, Params );
+        }
+
+    protected:
         inline Object( const MString& NewName = MString( TEXT( "UNKNOWN" ) ), bool IsValid = true ) :
             Name( NewName ),
             bIsValid( IsValid ),
@@ -35,6 +40,7 @@ namespace Mile
             ++ObjectCounting;
         }
 
+    public:
         Object( Object&& MovedObject ) :
             Name( std::move( MovedObject.Name ) ),
             bIsValid( MovedObject.bIsValid ),

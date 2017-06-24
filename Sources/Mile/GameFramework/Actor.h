@@ -12,7 +12,8 @@ namespace Mile
     class MILE_API Actor : public Mile::Object
     {
         using ComponentList = Rumia::Array<ActorComponent*>;
-    public:
+
+    protected:
         Actor( const MString& NewName, MileWorld& NewWorld ) :
             World( NewWorld ),
             bIsChangedAtComponents( true ),
@@ -21,6 +22,7 @@ namespace Mile
         {
         }
 
+    public:
         virtual void OnGameBegin( ) { }
         virtual void OnGameEnd( ) { }
 

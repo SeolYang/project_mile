@@ -10,7 +10,7 @@ namespace Mile
     class MILE_API ActorComponent : public Mile::Object
     {
         friend Actor;
-    public:
+    protected:
         /**
         * ActorComponent의 기본 생성자
         * @param NewName 설정될 오브젝트 이름
@@ -40,6 +40,7 @@ namespace Mile
         */
         ActorComponent& operator=( ActorComponent&& MovedObject ) = delete;
 
+    public:
         /**
         * ActorComponent가 붙어있는 주체(주인)을 설정한다.
         * @param Owner 새로 주인으로 설정할 액터

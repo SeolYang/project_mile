@@ -11,13 +11,14 @@ namespace Mile
     class MILE_API SceneComponent : public ActorComponent
     {
         using ComponentList = Rumia::Array<SceneComponent*>;
-    public:
+    protected:
         SceneComponent( const MString& NewName ) :
             ParentPrivate( nullptr ),
             ActorComponent( NewName )
         {
         }
 
+    public:
         SceneComponent( SceneComponent&& MovedObject ) :
             ParentPrivate( nullptr ),
             ActorComponent( std::move( MovedObject ) )
