@@ -5,7 +5,7 @@
 namespace Mile
 {
     template <class Ty>
-    class MILE_API Manager : public Object
+    class MILE_API Manager
     {
     public:
         static Ty& Instance( )
@@ -31,7 +31,7 @@ namespace Mile
         }
 
     protected:
-        explicit Manager( const MString& Name ) : Mile::Object( Name )
+        explicit Manager( )
         {
         }
 

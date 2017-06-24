@@ -60,7 +60,7 @@ namespace Mile
         void Flush( );
 
     private:
-        Logger( ) : Mile::Manager<Logger>( MString( TEXT( "Logger" ) ) )
+        Logger( ) : Mile::Manager<Logger>( )
         {
         }
 

@@ -115,7 +115,7 @@ namespace Mile
         bool IsBindedAxis( const MString& MappingKey ) const;
 
     private:
-        InputSystem( ) : Mile::Manager<InputSystem>( MString( TEXT( "MainInputSystem" ) ) )
+        InputSystem( ) : Mile::Manager<InputSystem>( )
         {
         }
 

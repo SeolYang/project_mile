@@ -2,11 +2,9 @@
 
 namespace Mile
 {
-
-    /* @TODO Memory manager **/
     TickManager::TickManager( ) :
         RecentAddedPriority( 0 ),
-        Mile::Manager<TickManager>( MString( TEXT( "TickManager" ) ) )
+        Mile::Manager<TickManager>( )
     {
     }
 
