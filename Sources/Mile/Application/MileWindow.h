@@ -14,7 +14,7 @@ namespace Mile
     /**
     * 창을 나타내는 클래스
     */
-    class MILE_API Window : public Mile::Object
+    class MILE_API Window
     {
     public:
 
@@ -30,8 +30,7 @@ namespace Mile
             uint32 NewHeight,
             EWindowMode NewWindowMode ) :
             Width( NewWidth ), Height( NewHeight ),
-            WindowMode( NewWindowMode ),
-            Object( NewTitle )
+            WindowMode( NewWindowMode )
         {
         }
 
