@@ -23,7 +23,7 @@ namespace Mile
             FuncObject.Func = Func;
             FuncObject.ObjectID = ObjectID;
             FuncObject.Priority = Priority;
-            Container.Push( FuncObject );
+            Container.PushBack( FuncObject );
 
             OrderingPriority( Priority );
         }

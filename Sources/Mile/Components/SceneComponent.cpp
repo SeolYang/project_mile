@@ -40,7 +40,7 @@ namespace Mile
 
     void SceneComponent::AddAttachedComponent( SceneComponent* Component )
     {
-        Children.Push( Component );
+        Children.PushBack( Component );
     }
 
     bool SceneComponent::RemoveAttachedComponent( SceneComponent* Component )

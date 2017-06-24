@@ -12,7 +12,7 @@ namespace Mile
         if ( bIsValidComponent )
         {
             Component->SetOwnerRecursively( this );
-            Components.Push( Component );
+            Components.PushBack( Component );
         }
     }
 
