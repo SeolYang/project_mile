@@ -17,8 +17,13 @@ int main( int Argc, char* Argv[ ], char* Envp[ ] )
     _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 #endif
 
-    MString Str = TEXT( "Test" );
-    std::cout << ( Str == MString( TEXT( "Test" ) ) ) << std::endl;
+    //MString Str = TEXT( "Test" );
+    //std::cout << ( Str == MString( TEXT( "Test" ) ) ) << std::endl;
+    
+    auto Window = std::make_unique<Win32Window>( TEXT( "Test" ) );
+    Window->Initialize( );
+    Application app{ std::move(Window) };
+    app.Excute( );
 
     return 0;
 }
