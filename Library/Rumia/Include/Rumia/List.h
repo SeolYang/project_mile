@@ -85,6 +85,52 @@ namespace Rumia
 
         };
 
+        class const_iterator : public Rumia::Iterator<T, const List>
+        {
+        public:
+            const_iterator( ContainerType& container, Node<T>* currentNode ) :
+                Iterator<T, const List>( container ), m_currentNode( currentNode )
+            {
+            }
+
+            ~const_iterator( ) { }
+
+            const_iterator& operator++( )
+            {
+                assert( m_currentNode != nullptr );
+                m_currentNode = m_currentNode->m_next;
+                return ( *this );
+            }
+
+            const_iterator& operator--( )
+            {
+                assert( m_currentNode != nullptr );
+                m_currentNode = m_currentNode->m_prev;
+                return ( *this );
+            }
+
+            T& operator*( ) const override
+            {
+                return ( m_currentNode->m_data );
+            }
+
+            bool operator==( const const_iterator& rhs ) const
+            {
+                return ( &m_container == &rhs.m_container ) &&
+                    ( m_currentNode == rhs.m_currentNode );
+            }
+
+            bool operator!=( const const_iterator& rhs ) const
+            {
+                return ( &m_container != &rhs.m_container ) ||
+                    ( m_currentNode != rhs.m_currentNode );
+            }
+
+        private:
+            Node<T>* m_currentNode;
+
+        };
+
         using reverse_iterator = ReverseIterator<T, iterator>;
 
     public:
@@ -222,6 +268,69 @@ namespace Rumia
             return std::move( data );
         }
 
+        iterator Find( const T& element )
+        {
+            for ( Node<T>* node = m_root; node != nullptr; node = node->m_next )
+            {
+                if ( node->m_data == element )
+                {
+                    return iterator( ( *this ), node );
+                }
+            }
+
+            return ( this->end( ) );
+        }
+
+        const_iterator Find( const T& element ) const
+        {
+            for ( Node<T>* node = m_root; node != nullptr; node = node->m_next )
+            {
+                if ( node->m_data == element )
+                {
+                    return const_iterator( ( *this ), node );
+                }
+            }
+
+            return ( this->cend( ) );
+        }
+
+        void Erase( const T& element )
+        {
+            for ( Node<T>* node = m_root; node != nullptr;)
+            {
+                if ( element == ( node->m_data ) )
+                {
+                    --m_count;
+                    if ( node->m_prev != nullptr )
+                    {
+                        node->m_prev->m_next = node->m_next;
+                    }
+
+                    if ( node->m_next != nullptr )
+                    {
+                        node->m_next->m_prev = node->m_prev;
+                    }
+
+                    if ( node == m_root )
+                    {
+                        m_root = nullptr;
+                        m_root = node->m_next;
+                    }
+
+                    RUMIA_DELETE( m_allocator, node );
+                    return;
+                }
+
+                node = node->m_next;
+            }
+        }
+
+        void Erase( const iterator& iterator )
+        {
+            const T& data = ( *iterator );
+            Erase( data );
+        }
+
         void Clear( )
         {
             for ( Node<T>* node = m_root; node != nullptr; )
@@ -253,6 +362,26 @@ namespace Rumia
             }
 
             return iterator( ( *this ), GetMostLastNode( ) );
+        }
+
+        const_iterator cbegin( bool bIsDummy = false ) const
+        {
+            if ( bIsDummy )
+            {
+                return const_iterator( ( *this ), nullptr );
+            }
+
+            return const_iterator( ( *this ), m_root );
+        }
+
+        const_iterator cend( bool bIsDummy = true ) const
+        {
+            if ( bIsDummy )
+            {
+                return const_iterator( ( *this ), nullptr );
+            }
+
+            return const_iterator( ( *this ), GetMostLastNode( ) );
         }
 
         reverse_iterator rbegin( bool bIsDummy = false )

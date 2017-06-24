@@ -52,11 +52,6 @@ namespace Rumia
                 return ( *this );
             }
 
-            iterator operator-( const iterator& rhs ) const
-            {
-                return iterator( this->m_container, this->m_position - rhs.m_position );
-            }
-
             virtual T& operator*( )
             {
                 return m_container[ m_position ];
@@ -305,13 +300,13 @@ namespace Rumia
         }
 
         template <typename Ty>
-        void Push( Ty&& element )
+        void PushBack( Ty&& element )
         {
             Growth( );
             m_elements[ m_size++ ] = std::forward<Ty>( element );
         }
 
-        T Pop( )
+        T PopBack( )
         {
             assert( !IsEmpty( ) );
             return m_elements[ --m_size ];
@@ -401,6 +396,11 @@ namespace Rumia
         {
             // If it didn't found target. It'll be return dummy iterator
             return iterator( ( *this ), IndexOf( target ) );
+        }
+
+        const_iterator Find( const T& target ) const
+        {
+            return const_iterator( ( *this ), IndexOf( target ) );
         }
 
         // When method didn't find out passed element, it'll be return size of array.

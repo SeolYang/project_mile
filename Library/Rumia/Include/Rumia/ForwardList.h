@@ -75,6 +75,45 @@ namespace Rumia
 
         };
 
+        class const_iterator : public Rumia::Iterator<T, const ForwardList>
+        {
+        public:
+            const_iterator( ContainerType& container, Node<T>* currentNode ) :
+                Iterator<T, const ForwardList>( container ), m_currentNode( currentNode )
+            {
+            }
+
+            ~const_iterator( ) { }
+
+            const_iterator& operator++( )
+            {
+                assert( m_currentNode != nullptr );
+                m_currentNode = m_currentNode->m_next;
+                return ( *this );
+            }
+
+            T& operator*( ) const override
+            {
+                return ( m_currentNode->m_data );
+            }
+
+            bool operator==( const const_iterator& rhs ) const
+            {
+                return ( &m_container == &rhs.m_container ) &&
+                    ( m_currentNode = rhs.m_currentNode );
+            }
+
+            bool operator!=( const const_iterator& rhs ) const
+            {
+                return ( &m_container != &rhs.m_container ) ||
+                    ( m_currentNode != rhs.m_currentNode );
+            }
+
+        private:
+            Node<T>* m_currentNode;
+
+        };
+
     public:
         ForwardList( ) :
             ForwardList( TAllocator( ) )
@@ -136,13 +175,13 @@ namespace Rumia
         }
 
         template <typename Ty>
-        void Push( Ty&& element )
+        void PushFront( Ty&& element )
         {
             m_root = RUMIA_NEW( m_allocator, Node<Ty>, std::forward<Ty>(element), m_root );
             ++m_count;
         }
 
-        T Pop( )
+        T PopFront( )
         {
             assert( !IsEmpty( ) );
             Node<T>* popedNode = m_root;
@@ -152,6 +191,64 @@ namespace Rumia
             RUMIA_DELETE( m_allocator, popedNode );
             --m_count;
             return data;
+        }
+
+        iterator Find( const T& element )
+        {
+            for ( Node<T>* node = m_root; node != nullptr; node = node->m_next )
+            {
+                if ( node->m_data == element )
+                {
+                    return iterator( ( *this ), node );
+                }
+            }
+
+            return ( this->end( ) );
+        }
+
+        const_iterator Find( const T& element ) const
+        {
+            for ( Node<T>* node = m_root; node != nullptr; node = node->m_next )
+            {
+                if ( node->m_data == element )
+                {
+                    return const_iterator( ( *this ), node );
+                }
+            }
+
+            return ( this->cend( ) );
+        }
+
+        void Erase( const T& element )
+        {
+            Node<T>* prevNode = nullptr;
+            for ( Node<T>* node = m_root; node != nullptr; node = node->m_next )
+            {
+                if ( node->m_data == element )
+                {
+                    if ( prevNode != nullptr )
+                    {
+                        prevNode->m_next = node->m_next;
+                    }
+
+                    if ( node == m_root )
+                    {
+                        m_root = node->m_next;
+                    }
+
+                    RUMIA_DELETE( m_allocator, node );
+                    --m_count;
+                    return;
+                }
+
+                prevNode = node;
+            }
+        }
+
+        void Erase( const iterator& itr )
+        {
+            const T& data = ( *itr );
+            Erase( data );
         }
 
         void Clear( )
@@ -175,6 +272,16 @@ namespace Rumia
         iterator end( )
         {
             return iterator( ( *this ), nullptr );
+        }
+
+        const_iterator cbegin( ) const
+        {
+            return const_iterator( ( *this ), m_root );
+        }
+
+        const_iterator cend( ) const
+        {
+            return const_iterator( ( *this ), nullptr );
         }
 
         inline bool IsEmpty( ) const { return m_root == nullptr; }
