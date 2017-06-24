@@ -29,6 +29,7 @@ namespace Mile
             uint32 NewWidth,
             uint32 NewHeight,
             EWindowMode NewWindowMode ) :
+            Title( std::move(NewTitle) ),
             Width( NewWidth ), Height( NewHeight ),
             WindowMode( NewWindowMode )
         {
@@ -42,7 +43,7 @@ namespace Mile
         /**
         * 윈도우의 타이틀을 가져옵니다.
         */
-        MString GetTitle( ) const { return GetName( ); }
+        MString GetTitle( ) const { return Title; }
 
         /**
         * 윈도우의 현재 너비를 가져옵니다.
@@ -90,7 +91,8 @@ namespace Mile
         */
         virtual void OnWindowModeChange( EWindowMode NewWindowMode ) = 0;
 
-    private:
+    protected:
+        MString Title;
         uint32 Width;
         uint32 Height;
 

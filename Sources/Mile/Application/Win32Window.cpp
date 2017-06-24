@@ -5,7 +5,7 @@ namespace Mile
 {
     bool Win32Window::Initialize( )
     {
-        std::wstring Title = static_cast< std::wstring >( GetTitle( ) );
+        std::wstring TitleStr = static_cast< std::wstring >( Title );
 
         /* 여기서 Win32 초기화 */
         WNDCLASS WinClass = { NULL };
@@ -14,14 +14,14 @@ namespace Mile
 
         /* 나중에 DirectX 에서 커스텀 커서 지원하기 */
         WinClass.hCursor = LoadCursor( nullptr, IDC_ARROW );
-        WinClass.lpszClassName = Title.c_str( );
+        WinClass.lpszClassName = TitleStr.c_str( );
         RegisterClass( &WinClass );
 
         /* 화면모드에 따른 적절한 처리하기 */
         uint32 Width = GetWidth( );
         uint32 Height = GetHeight( );
         Handle = CreateWindow(
-            Title.c_str( ), Title.c_str( ),
+            TitleStr.c_str( ), TitleStr.c_str( ),
             WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_VISIBLE,
             0, 0, Width, Height, /* @todo: 시작위치 정할수 있도록 하기 */
             nullptr, nullptr, nullptr, nullptr );
