@@ -18,7 +18,6 @@ namespace Mile
         {
         }
 
-    public:
         SceneComponent( SceneComponent&& MovedObject ) :
             ParentPrivate( nullptr ),
             ActorComponent( std::move( MovedObject ) )
@@ -26,6 +25,7 @@ namespace Mile
             AttachTo( MovedObject.GetParent( ) );
         }
 
+    public:
         void SetTransform( const Transform& NewTransform )
         {
             Transform = NewTransform;

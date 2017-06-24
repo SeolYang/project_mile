@@ -114,6 +114,9 @@
     <ClInclude Include="..\Library\Rumia\Include\Rumia\ForwardList.h">
       <Filter>Sources\Rumia</Filter>
     </ClInclude>
+    <ClInclude Include="..\Sources\Mile\GameFramework\World.h">
+      <Filter>Sources\GameFramework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Sources\Mile\Components\ActorComponent.cpp">
@@ -163,6 +166,9 @@
     </ClCompile>
     <ClCompile Include="..\Sources\Mile\Application\InputSystem.cpp">
       <Filter>Sources\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Mile\GameFramework\World.cpp">
+      <Filter>Sources\GameFramework</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

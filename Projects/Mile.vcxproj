@@ -43,6 +43,7 @@
     <ClInclude Include="..\Sources\Mile\Core\Timer.h" />
     <ClInclude Include="..\Sources\Mile\GameFramework\Actor.h" />
     <ClInclude Include="..\Sources\Mile\GameFramework\TickManager.h" />
+    <ClInclude Include="..\Sources\Mile\GameFramework\World.h" />
     <ClInclude Include="..\Sources\Mile\Math\Matrix.h" />
     <ClInclude Include="..\Sources\Mile\Math\MileMath.h" />
     <ClInclude Include="..\Sources\Mile\Math\Transform.h" />
@@ -65,6 +66,7 @@
     <ClCompile Include="..\Sources\Mile\Core\Timer.cpp" />
     <ClCompile Include="..\Sources\Mile\GameFramework\Actor.cpp" />
     <ClCompile Include="..\Sources\Mile\GameFramework\TickManager.cpp" />
+    <ClCompile Include="..\Sources\Mile\GameFramework\World.cpp" />
     <ClCompile Include="..\Sources\Mile\Math\Matrix.cpp" />
     <ClCompile Include="..\Sources\Mile\Math\Vector.cpp" />
   </ItemGroup>

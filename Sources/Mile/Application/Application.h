@@ -1,5 +1,6 @@
 #pragma once
 #include "Mile.h"
+#include "Win32Window.h"
 
 namespace Mile
 {
