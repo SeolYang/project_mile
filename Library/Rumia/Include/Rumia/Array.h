@@ -199,11 +199,6 @@ namespace Rumia
         using reverse_iterator = ReverseIterator<T, iterator>;
 
     public:
-        Array( size_t initCapacity = 2 ) :
-            Array( TAllocator( ), initCapacity )
-        {
-        }
-
         Array( TAllocator& allocator, size_t initCapacity = 2 ) :
             m_allocator( allocator ),
             m_elements( nullptr ), m_capacity( 0 ), m_size( 0 )

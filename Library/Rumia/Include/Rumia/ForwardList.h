@@ -115,11 +115,6 @@ namespace Rumia
         };
 
     public:
-        ForwardList( ) :
-            ForwardList( TAllocator( ) )
-        {
-        }
-
         ForwardList( TAllocator& allocator ) :
             m_allocator( allocator ),
             m_root( nullptr ),

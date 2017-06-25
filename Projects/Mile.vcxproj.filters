@@ -108,9 +108,6 @@
     <ClInclude Include="..\Library\Rumia\Include\Rumia\Array.h">
       <Filter>Sources\Rumia</Filter>
     </ClInclude>
-    <ClInclude Include="..\Library\Rumia\Include\Rumia\DefaultAllocator.h">
-      <Filter>Sources\Rumia</Filter>
-    </ClInclude>
     <ClInclude Include="..\Library\Rumia\Include\Rumia\ForwardList.h">
       <Filter>Sources\Rumia</Filter>
     </ClInclude>

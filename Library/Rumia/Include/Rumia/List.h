@@ -134,10 +134,6 @@ namespace Rumia
         using reverse_iterator = ReverseIterator<T, iterator>;
 
     public:
-        List( ) : List( TAllocator( ) )
-        {
-        }
-
         List( TAllocator& allocator ) :
             m_allocator(allocator), 
             m_root( nullptr ),

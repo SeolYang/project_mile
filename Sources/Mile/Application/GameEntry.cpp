@@ -20,10 +20,10 @@ int main( int Argc, char* Argv[ ], char* Envp[ ] )
     //MString Str = TEXT( "Test" );
     //std::cout << ( Str == MString( TEXT( "Test" ) ) ) << std::endl;
     
-    auto Window = std::make_unique<Win32Window>( TEXT( "Test" ) );
-    Window->Initialize( );
-    Application app{ std::move(Window) };
-    app.Excute( );
+    //auto Window = std::make_unique<Win32Window>( TEXT( "Test" ) );
+    //Window->Initialize( );
+    //Application app{ std::move(Window) };
+    //app.Excute( );
 
     return 0;
 }
