@@ -1,13 +1,13 @@
 #pragma once
 #include <type_traits>
-#include "DefaultAllocator.h"
+#include "Allocator.h"
 #include "Iterator.h"
 #include "ReverseIterator.h"
 
 namespace Rumia
 {
     /* Rumia::Array is Dynamic Array class **/
-    template <typename T, typename TAllocator = Rumia::DefaultAllocator,
+    template <typename T, typename TAllocator = Rumia::Allocator,
         typename IsChlidOfAllocator = std::enable_if<std::is_base_of<Rumia::Allocator, TAllocator>::value>::type>
         class Array
     {

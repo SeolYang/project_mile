@@ -1,11 +1,11 @@
 #pragma once
 #include <type_traits>
-#include "DefaultAllocator.h"
+#include "Allocator.h"
 #include "Iterator.h"
 
 namespace Rumia
 {
-    template <typename T, typename TAllocator = Rumia::DefaultAllocator,
+    template <typename T, typename TAllocator = Rumia::Allocator,
         typename IsChildOfAllocator = std::enable_if<std::is_base_of<Rumia::Allocator, TAllocator>::value>>
     class ForwardList
     {
