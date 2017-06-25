@@ -12,17 +12,11 @@ namespace Mile
     {
         using ComponentList = Rumia::Array<SceneComponent*>;
     protected:
-        SceneComponent( const MString& NewName ) :
+        SceneComponent( Rumia::Allocator& Allocator, const MString& NewName ) :
             ParentPrivate( nullptr ),
-            ActorComponent( NewName )
+            Children( Allocator ),
+            ActorComponent( Allocator, NewName )
         {
-        }
-
-        SceneComponent( SceneComponent&& MovedObject ) :
-            ParentPrivate( nullptr ),
-            ActorComponent( std::move( MovedObject ) )
-        {
-            AttachTo( MovedObject.GetParent( ) );
         }
 
     public:

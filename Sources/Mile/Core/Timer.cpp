@@ -3,9 +3,9 @@ using namespace std::chrono;
 
 namespace Mile
 {
-    Timer::Timer( const class MString& NewName ) :
+    Timer::Timer( Rumia::Allocator& Allocator, const class MString& NewName ) :
         DeltaTime( 0.0f ), TimeScale( 1.0f ),
-        Object( NewName )
+        Object( Allocator, NewName )
     {
         QueryPerformanceFrequency( ( LARGE_INTEGER* ) &TicksPerSec );
         QueryPerformanceCounter( ( LARGE_INTEGER* ) &CurrentTicks );

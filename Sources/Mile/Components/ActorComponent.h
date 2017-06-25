@@ -15,9 +15,9 @@ namespace Mile
         * ActorComponent의 기본 생성자
         * @param NewName 설정될 오브젝트 이름
         */
-        ActorComponent( const MString& NewName ) :
+        ActorComponent( Rumia::Allocator& Allocator, const MString& NewName ) :
             OwnerPrivate( nullptr ),
-            Object( NewName )
+            Object( Allocator, NewName )
         {
         }
 

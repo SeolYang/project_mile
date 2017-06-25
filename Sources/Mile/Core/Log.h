@@ -46,6 +46,11 @@ namespace Mile
         friend Manager;
 
     public:
+        ~Logger( )
+        {
+            Flush( );
+        }
+
         Logger( const Logger& ) = delete;
         Logger& operator=( const Logger& ) = delete;
 
@@ -60,13 +65,10 @@ namespace Mile
         void Flush( );
 
     private:
-        Logger( ) : Mile::Manager<Logger>( )
+        Logger( Rumia::Allocator& Allocator ) :
+            Logs( Allocator ),
+            Mile::Manager<Logger>( Allocator, MString( TEXT( "Logger" ) ) )
         {
-        }
-
-        ~Logger( )
-        {
-            Flush( );
         }
 
     private:

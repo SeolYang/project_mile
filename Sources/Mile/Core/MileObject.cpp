@@ -8,7 +8,7 @@ namespace Mile
 
     void Object::SetIsTick( bool bNewIsTick )
     {
-        TickManager& Manager = TickManager::Instance( );
+        TickManager& Manager = TickManager::Instance( Allocator );
         switch ( bNewIsTick )
         {
         case true:
@@ -35,7 +35,7 @@ namespace Mile
     {
         if ( bIsTickFuncRegistered )
         {
-            TickManager::Instance( ).ModifyPriority( ObjectID, NewTickPriority );
+            TickManager::Instance( Allocator ).ModifyPriority( ObjectID, NewTickPriority );
         }
 
         TickPriority = NewTickPriority;

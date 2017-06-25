@@ -14,11 +14,12 @@ namespace Mile
         using ComponentList = Rumia::Array<ActorComponent*>;
 
     protected:
-        Actor( const MString& NewName, MileWorld& NewWorld ) :
+        Actor( Rumia::Allocator& Allocator, const MString& NewName, MileWorld& NewWorld ) :
             World( NewWorld ),
+            Components( Allocator ),
             bIsChangedAtComponents( true ),
             ParentPrivate( nullptr ),
-            Object( NewName )
+            Object( Allocator, NewName )
         {
         }
 

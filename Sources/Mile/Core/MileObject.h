@@ -1,21 +1,28 @@
 #pragma once
 #include "Mile.h"
 #include "MileString.h"
-#include "Rumia/DefaultAllocator.h"
+#include "Rumia/Allocator.h"
 
 namespace Mile
 {
     class MILE_API Object
     {
     public:
-        template <typename Ty, typename TAllocator = Rumia::DefaultAllocator, typename... Args >
-        static Ty* NewObject( TAllocator& Allocator, Args&&... Params )
+        template <typename Ty, typename... Args >
+        static Ty* NewObject( Rumia::Allocator& Allocator, Args&&... Params )
         {
-            return RUMIA_NEW( Allocator, Ty, Params );
+            return RUMIA_NEW( Allocator, Ty, Allocator, Params );
+        }
+
+        template <typename Ty>
+        static void DeleteObject( Ty* Target )
+        {
+            RUMIA_DELETE( Target->Allocator, Target );
         }
 
     protected:
-        inline Object( const MString& NewName = MString( TEXT( "UNKNOWN" ) ), bool IsValid = true ) :
+        inline Object( Rumia::Allocator& Allocator, const MString& NewName = MString( TEXT( "UNKNOWN" ) ), bool IsValid = true ) :
+            Allocator( Allocator ),
             Name( NewName ),
             bIsValid( IsValid ),
             ObjectID( NumOfAllocatedObject ),
@@ -28,6 +35,7 @@ namespace Mile
         }
 
         Object( const Object& CopiedObject ) :
+            Allocator( CopiedObject.Allocator ),
             Name( CopiedObject.Name ),
             bIsValid( CopiedObject.bIsValid ),
             ObjectID( NumOfAllocatedObject ),
@@ -42,6 +50,7 @@ namespace Mile
 
     public:
         Object( Object&& MovedObject ) :
+            Allocator( std::move( MovedObject.Allocator )),
             Name( std::move( MovedObject.Name ) ),
             bIsValid( MovedObject.bIsValid ),
             bIsTick( MovedObject.bIsTick ),
@@ -60,6 +69,11 @@ namespace Mile
         void SetName( const MString& NewName )
         {
             Name = NewName;
+        }
+
+        Rumia::Allocator& GetAllocator( )
+        {
+            return this->Allocator;
         }
 
         MString GetName( ) const
@@ -92,6 +106,9 @@ namespace Mile
     private:
         static uint64                NumOfAllocatedObject;
         static uint64                ObjectCounting;
+
+        Rumia::Allocator&            Allocator;
+
         /* ObjectID 는 이때까지 만들어진 Object의 갯수로 할당됨. */
         uint64                       ObjectID;
         MString                      Name;

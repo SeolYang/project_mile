@@ -74,7 +74,7 @@ namespace Mile
         * 타이머 클래스의 기본 생성자
         * @param NewName 타이머의 오브젝트 이름
         */
-        Timer( const class MString& NewName );
+        Timer( Rumia::Allocator& Allocator, const class MString& NewName );
 
     private:
         uint64 TicksPerSec;

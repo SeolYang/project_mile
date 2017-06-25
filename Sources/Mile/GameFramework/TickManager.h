@@ -33,7 +33,7 @@ namespace Mile
         void Tick( float DeltaTime );
 
     private:
-        TickManager( );
+        TickManager( Rumia::Allocator& Allocator );
         ~TickManager( );
 
         void OrderingPriority( uint64 AddedPriority, bool ForceOrdering = false );

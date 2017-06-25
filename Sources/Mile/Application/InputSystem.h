@@ -87,6 +87,7 @@ namespace Mile
         friend Manager;
 
     public:
+        ~InputSystem( );
         InputSystem( const InputSystem& ) = delete;
         InputSystem& operator=( const InputSystem& ) = delete;
 
@@ -115,11 +116,10 @@ namespace Mile
         bool IsBindedAxis( const MString& MappingKey ) const;
 
     private:
-        InputSystem( ) : Mile::Manager<InputSystem>( )
+        InputSystem( Rumia::Allocator& Allocator ) :
+            Mile::Manager<InputSystem>( Allocator, MString( TEXT( "InputSystem" ) ))
         {
         }
-
-        ~InputSystem( );
 
     private:
         // <Mapping Key, pair<vector<ActionKeyProperty>, pair<PressedDelegate, ReleasedDelegate>>>

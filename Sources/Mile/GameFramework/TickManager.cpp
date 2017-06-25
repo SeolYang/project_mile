@@ -2,9 +2,10 @@
 
 namespace Mile
 {
-    TickManager::TickManager( ) :
+    TickManager::TickManager( Rumia::Allocator& Allocator ) :
+        Container( Allocator ),
         RecentAddedPriority( 0 ),
-        Mile::Manager<TickManager>( )
+        Mile::Manager<TickManager>( Allocator, MString( TEXT( "TickManager" ) ) )
     {
     }
 

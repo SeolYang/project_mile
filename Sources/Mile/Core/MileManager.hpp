@@ -5,16 +5,17 @@
 namespace Mile
 {
     template <class Ty>
-    class MILE_API Manager
+    class MILE_API Manager : public Mile::Object
     {
     public:
-        static Ty& Instance( )
+        static Ty& Instance( Rumia::Allocator& Allocator )
         {
             if ( Manager::InstancePrivate == nullptr )
             {
-                Manager::InstancePrivate = new Ty( );
+                Manager::InstancePrivate = new Ty( Allocator );
             }
-
+            
+            ASSERT_MSG( ( Allocator != ( Manager<Ty>::InstancePrivate->GetAllocator( ) ) ), TEXT( "Must use same allocator" ) );
             return ( *Manager::InstancePrivate );
         }
 
@@ -22,7 +23,7 @@ namespace Mile
         {
             if ( Manager::InstancePrivate != nullptr )
             {
-                delete ( Manager::InstancePrivate );
+                Mile::Object::DeleteObject( Manager::InstancePrivate );
                 Manager::InstancePrivate = nullptr;
                 return true;
             }
@@ -31,7 +32,8 @@ namespace Mile
         }
 
     protected:
-        explicit Manager( )
+        explicit Manager( Rumia::Allocator& Allocator, MString& Name ) :
+            Mile::Object( Allocator, Name )
         {
         }
 
