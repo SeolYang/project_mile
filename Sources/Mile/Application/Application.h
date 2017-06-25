@@ -12,7 +12,16 @@ namespace Mile
         Application( std::unique_ptr<Window> NewTargetWindow );
         virtual ~Application( );
 
-        virtual void Excute( ) = 0;
+        virtual void Initialize( ) = 0;
+        virtual void Running( ) = 0;
+        virtual void DeInitialize( ) = 0;
+
+        virtual void Excute( )
+        {
+            Initialize( );
+            Running( );
+            DeInitialize( );
+        }
 
         static Application& GetInstance( );
         Window& GetWindow( ) const;

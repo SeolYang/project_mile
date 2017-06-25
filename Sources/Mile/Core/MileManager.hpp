@@ -15,7 +15,7 @@ namespace Mile
                 Manager::InstancePrivate = new Ty( Allocator );
             }
             
-            ASSERT_MSG( ( Allocator != ( Manager<Ty>::InstancePrivate->GetAllocator( ) ) ), TEXT( "Must use same allocator" ) );
+            ASSERT_MSG( ( &Allocator != &( Manager<Ty>::InstancePrivate->GetAllocator( ) ) ), TEXT( "Must use same allocator" ) );
             return ( *Manager::InstancePrivate );
         }
 
