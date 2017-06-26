@@ -11,6 +11,12 @@ namespace Rumia
         using SecondType = SecondTy;
 
     public:
+        Pair( ) :
+            first( FirstTy( ) ),
+            second( SecondTy( ) )
+        {
+        }
+
         template <typename _FirstTy, typename _SecondTy>
         Pair( _FirstTy&& firstData, _SecondTy&& secondData ) :
             first( std::forward<_FirstTy>( firstData ) ),

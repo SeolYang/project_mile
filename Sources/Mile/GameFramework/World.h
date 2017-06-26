@@ -4,17 +4,17 @@
 
 namespace Mile
 {
-    class Actor;
+    class Entity;
     class MILE_API World final : public Mile::Object
     {
     public:
-        void AddActor( Actor* Actor );
+        //void AddActor( Actor* Actor );
 
         void OnGameBegin( );
         void OnGameEnd( );
 
     private:
-        Rumia::Array<Actor*> Actors;
+        //Rumia::Array<Actor*> Actors;
 
     };
 }

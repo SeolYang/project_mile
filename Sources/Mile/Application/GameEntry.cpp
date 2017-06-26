@@ -3,7 +3,6 @@
 #include "Win32Window.h"
 #include "TickManager.h"
 #include "InputSystem.h"
-#include "Actor.h"
 using namespace Mile;
 
 #ifdef _DEBUG

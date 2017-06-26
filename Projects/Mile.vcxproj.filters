@@ -24,17 +24,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Sources\Mile\Components\ActorComponent.h">
-      <Filter>Sources\Components</Filter>
-    </ClInclude>
     <ClInclude Include="..\Sources\Mile\Core\MileString.h">
       <Filter>Sources\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Sources\Mile\Core\MileChar.h">
       <Filter>Sources\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Mile\GameFramework\Actor.h">
-      <Filter>Sources\GameFramework</Filter>
     </ClInclude>
     <ClInclude Include="..\Sources\Mile\Math\Vector.h">
       <Filter>Sources\Math</Filter>
@@ -50,9 +44,6 @@
     </ClInclude>
     <ClInclude Include="..\Sources\Mile\Mile.h">
       <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Mile\Components\SceneComponent.h">
-      <Filter>Sources\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\Sources\Mile\Math\Transform.h">
       <Filter>Sources\Math</Filter>
@@ -114,22 +105,22 @@
     <ClInclude Include="..\Sources\Mile\GameFramework\World.h">
       <Filter>Sources\GameFramework</Filter>
     </ClInclude>
+    <ClInclude Include="..\Sources\Mile\GameFramework\Entity.h">
+      <Filter>Sources\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Mile\Components\Component.h">
+      <Filter>Sources\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Rumia\Include\Rumia\Algorithm.h">
+      <Filter>Sources\Rumia</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Sources\Mile\Components\ActorComponent.cpp">
-      <Filter>Sources\Components</Filter>
-    </ClCompile>
     <ClCompile Include="..\Sources\Mile\Core\MileString.cpp">
       <Filter>Sources\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\Sources\Mile\GameFramework\Actor.cpp">
-      <Filter>Sources\GameFramework</Filter>
-    </ClCompile>
     <ClCompile Include="..\Sources\Mile\Math\Vector.cpp">
       <Filter>Sources\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Mile\Components\SceneComponent.cpp">
-      <Filter>Sources\Components</Filter>
     </ClCompile>
     <ClCompile Include="..\Sources\Mile\Application\MileWindow.cpp">
       <Filter>Sources\Application</Filter>
@@ -167,5 +158,9 @@
     <ClCompile Include="..\Sources\Mile\GameFramework\World.cpp">
       <Filter>Sources\GameFramework</Filter>
     </ClCompile>
+    <ClCompile Include="..\Sources\Mile\GameFramework\Entity.cpp">
+      <Filter>Sources\GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Mile\Components\Component.cpp" />
   </ItemGroup>
 </Project>
