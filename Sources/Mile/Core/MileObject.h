@@ -48,9 +48,8 @@ namespace Mile
             ++ObjectCounting;
         }
 
-    public:
         Object( Object&& MovedObject ) :
-            Allocator( std::move( MovedObject.Allocator )),
+            Allocator( std::move( MovedObject.Allocator ) ),
             Name( std::move( MovedObject.Name ) ),
             bIsValid( MovedObject.bIsValid ),
             bIsTick( MovedObject.bIsTick ),
@@ -61,6 +60,7 @@ namespace Mile
             this->SetIsTick( bIsTick );
         }
 
+    public:
         virtual ~Object( )
         {
             --ObjectCounting;

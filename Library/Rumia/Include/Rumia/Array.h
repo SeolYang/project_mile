@@ -390,12 +390,42 @@ namespace Rumia
         iterator Find( const T& target )
         {
             // If it didn't found target. It'll be return dummy iterator
-            return iterator( ( *this ), IndexOf( target ) );
+            size_t foundIdx = IndexOf( target );
+            return iterator( ( *this ), foundIdx, ( foundIdx == m_size ) );
+        }
+
+        template <typename UnaryPredicate>
+        iterator FindIf( UnaryPredicate pred )
+        {
+            for ( auto itr = begin( ); itr != end( ); ++itr )
+            {
+                if ( pred( *itr ) )
+                {
+                    return itr;
+                }
+            }
+
+            return end( );
         }
 
         const_iterator Find( const T& target ) const
         {
-            return const_iterator( ( *this ), IndexOf( target ) );
+            size_t foundIdx = IndexOf( target );
+            return const_iterator( ( *this ), foundIdx, ( foundIdx == m_size ) );
+        }
+
+        template <typename UnaryPredicate>
+        const_iterator FindIf( UnaryPredicate pred ) const
+        {
+            for ( auto itr = cbegin( ); itr != cend( ); ++itr )
+            {
+                if ( pred( *itr ) )
+                {
+                    return itr;
+                }
+            }
+
+            return cend( );
         }
 
         // When method didn't find out passed element, it'll be return size of array.

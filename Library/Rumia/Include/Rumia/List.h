@@ -290,6 +290,34 @@ namespace Rumia
             return ( this->cend( ) );
         }
 
+        template <typename UnaryPredicate>
+        iterator FindIf( UnaryPredicate pred )
+        {
+            for ( auto itr = begin( ); itr != end( ); ++itr )
+            {
+                if ( pred( *itr ) )
+                {
+                    return itr;
+                }
+            }
+
+            return end( );
+        }
+
+        template <typename UnaryPredicate>
+        const_iterator FindIf( UnaryPredicate pred ) const
+        {
+            for ( auto itr = cbegin( ); itr != cend( ); ++itr )
+            {
+                if ( pred( *itr ) )
+                {
+                    return itr;
+                }
+            }
+
+            return cend( );
+        }
+
         void Erase( const T& element )
         {
             for ( Node<T>* node = m_root; node != nullptr;)
