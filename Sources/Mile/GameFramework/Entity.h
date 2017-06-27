@@ -27,6 +27,8 @@ namespace Mile
         }
 
     public:
+        virtual ~Entity( );
+
         Mile::World& GetWorld( )
         {
             ASSERT_MSG( this->World == nullptr, TEXT( "World does not exist!" ) );

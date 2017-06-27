@@ -5,6 +5,7 @@ namespace Mile
 {
     World::~World( )
     {
+        // World has responsability to delete Entities
         for ( auto Entity : Entities )
         {
             delete Entity;

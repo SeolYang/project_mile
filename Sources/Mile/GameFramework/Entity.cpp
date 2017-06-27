@@ -9,6 +9,15 @@ namespace Mile
         bIsRegisteredAtWorld = ( World != nullptr );
     }
 
+    Entity::~Entity( )
+    {
+        // Entity has responsability to delete Components
+        for ( auto Comp : Components )
+        {
+            delete Comp.second;
+        }
+    }
+
     void Entity::DetachComponent( uint64 TargetObjectID )
     {
         auto FoundItr = Components.FindIf(
