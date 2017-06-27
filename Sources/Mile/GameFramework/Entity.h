@@ -110,6 +110,9 @@ namespace Mile
             return std::move( Temp );
         }
 
+        void AttachEntity( Entity* NewChild );
+        void DetachEntity( Entity* Target );
+
         void OnBegin( );
         void OnEnd( );
 

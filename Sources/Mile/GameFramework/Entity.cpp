@@ -1,4 +1,5 @@
 #include "Entity.h"
+#include "World.h"
 #include "Component.h"
 
 namespace Mile
@@ -58,6 +59,39 @@ namespace Mile
         }
 
         return nullptr;
+    }
+
+    void Entity::AttachEntity( Entity* NewChild )
+    {
+        if ( NewChild != nullptr )
+        {
+            Entity* OldParent = &NewChild->GetParent( );
+            if ( OldParent != this )
+            {
+                if ( OldParent != nullptr )
+                {
+                    OldParent->DetachEntity( NewChild );
+                }
+
+                Children.PushBack( NewChild );
+                NewChild->Parent = this;
+                World->RegisterEntity( NewChild );
+            }
+        }
+    }
+
+    void Entity::DetachEntity( Entity* Target )
+    {
+        if ( Target != nullptr )
+        {
+            auto Child = Children.Find( Target );
+            if ( Child != Children.end( ) )
+            {
+                Children.Erase( Child );
+                ( *Child )->Parent = nullptr;
+                World->UnRegisterEntity( ( *Child ) );
+            }
+        }
     }
 
     void Entity::OnBegin( )
