@@ -21,15 +21,13 @@ namespace Mile
             World* OldWorld = &( NewEntity->GetWorld( ) );
             if ( OldWorld != this )
             {
-                NewEntity->SetWorld( this );
-                Entities.PushBack( NewEntity );
-            }
-            else
-            {
                 if ( OldWorld != nullptr )
                 {
                     OldWorld->UnRegisterEntity( NewEntity );
                 }
+
+                NewEntity->SetWorld( this );
+                Entities.PushBack( NewEntity );
             }
         }
     }
