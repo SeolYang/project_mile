@@ -28,7 +28,7 @@ namespace Mile
 
         if ( Handle == nullptr )
         {
-            ASSERT_MSG( ( true ), TEXT( "Win32Window failed to initialize." ) );
+            ASSERT_MSG( ( false ), TEXT( "Win32Window failed to initialize." ) );
             return false;
         }
 

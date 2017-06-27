@@ -17,7 +17,7 @@ namespace Mile
 
     Application& Application::GetInstance( )
     {
-        ASSERT_MSG( ( Instance == nullptr ), TEXT( "Application instance is unavaliable!" ) );
+        ASSERT_MSG( ( Instance != nullptr ), TEXT( "Application instance is unavaliable!" ) );
         return ( *Instance );
     }
 
