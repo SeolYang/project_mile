@@ -7,14 +7,26 @@ namespace Mile
     class Entity;
     class MILE_API World final : public Mile::Object
     {
+    protected:
+        World( Rumia::Allocator& Allocator, const MString& Name ) :
+            Entities( Allocator ),
+            Object( Allocator, Name )
+        {
+
+        }
+
     public:
-        //void AddActor( Actor* Actor );
+        virtual ~World( );
 
-        void OnGameBegin( );
-        void OnGameEnd( );
+        void RegisterEntity( Entity* NewEntity );
+        void UnRegisterEntity( Entity* TargetEntity );
+        void UnRegisterAllEntities( );
 
-    private:
-        //Rumia::Array<Actor*> Actors;
+        void OnBegin( );
+        void OnEnd( );
+
+    protected:
+        Rumia::Array<Entity*> Entities;
 
     };
 }
