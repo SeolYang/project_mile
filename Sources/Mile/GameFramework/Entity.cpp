@@ -11,7 +11,7 @@ namespace Mile
 
     Entity::~Entity( )
     {
-        // Entity has responsability to delete Components
+        // Entity has responsibility to delete Components.
         for ( auto Comp : Components )
         {
             delete Comp.second;
