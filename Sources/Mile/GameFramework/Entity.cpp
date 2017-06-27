@@ -3,6 +3,12 @@
 
 namespace Mile
 {
+    void Entity::SetWorld( Mile::World* NewWorld )
+    {
+        World = NewWorld;
+        bIsRegisteredAtWorld = ( World != nullptr );
+    }
+
     void Entity::DetachComponent( uint64 TargetObjectID )
     {
         auto FoundItr = Components.FindIf(
@@ -43,5 +49,21 @@ namespace Mile
         }
 
         return nullptr;
+    }
+
+    void Entity::OnBegin( )
+    {
+        for ( auto Comp : Components )
+        {
+            Comp.second->OnBegin( );
+        }
+    }
+
+    void Entity::OnEnd( )
+    {
+        for ( auto Comp : Components )
+        {
+            Comp.second->OnEnd( );
+        }
     }
 }

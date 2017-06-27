@@ -21,6 +21,9 @@ namespace Mile
             return ( *Owner ); 
         }
 
+        virtual void OnBegin( ) { }
+        virtual void OnEnd( ) { }
+
     private:
         void SetOwner( Entity* NewOwner );
 

@@ -13,6 +13,7 @@ namespace Mile
         using ChildContainerType = Rumia::Array<Entity*>;
         using ComponentContainerType = Rumia::Array<Rumia::Pair<size_t, Component*>>;
         using ComponentPtrContainerType = Rumia::Array<Component*>;
+        friend World;
 
     protected:
         Entity( Rumia::Allocator& Allocator, const MString& Name ) :
@@ -20,6 +21,7 @@ namespace Mile
             Parent( nullptr ),
             Children( Allocator ),
             Components( Allocator ),
+            bIsRegisteredAtWorld( false ),
             Object( Allocator, Name )
         {
         }
@@ -30,6 +32,8 @@ namespace Mile
             ASSERT_MSG( this->World == nullptr, TEXT( "World does not exist!" ) );
             return ( *( this->World ) );
         }
+
+        bool IsRegisteredAtWorld( ) const { return bIsRegisteredAtWorld; }
 
         Entity& GetParent( )
         {
@@ -104,11 +108,18 @@ namespace Mile
             return std::move( Temp );
         }
 
+        void OnBegin( );
+        void OnEnd( );
+
+    private:
+        void SetWorld( Mile::World* NewWorld );
+
     protected:
         Mile::World*            World;
         Entity*                 Parent;
         ChildContainerType      Children;
         ComponentContainerType  Components;
+        bool                    bIsRegisteredAtWorld;
 
     };
 }
