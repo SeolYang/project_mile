@@ -1,26 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mile", "Mile.vcxproj", "{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Runtime", "Runtime.vcxproj", "{6742BECA-60F9-4DF9-9B98-4F684457CCE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		EditorDebug|x64 = EditorDebug|x64
-		EditorRelease|x64 = EditorRelease|x64
-		GameDebug|x64 = GameDebug|x64
-		GameRelease|x64 = GameRelease|x64
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.EditorDebug|x64.ActiveCfg = EditorDebug|x64
-		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.EditorDebug|x64.Build.0 = EditorDebug|x64
-		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.EditorRelease|x64.ActiveCfg = EditorRelease|x64
-		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.EditorRelease|x64.Build.0 = EditorRelease|x64
-		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.GameDebug|x64.ActiveCfg = GameDebug|x64
-		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.GameDebug|x64.Build.0 = GameDebug|x64
-		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.GameRelease|x64.ActiveCfg = GameDebug|x64
-		{D37D80B5-17C7-4D19-8CA7-5D9A795744E1}.GameRelease|x64.Build.0 = GameDebug|x64
+		{6742BECA-60F9-4DF9-9B98-4F684457CCE8}.Debug|x64.ActiveCfg = Debug|x64
+		{6742BECA-60F9-4DF9-9B98-4F684457CCE8}.Debug|x64.Build.0 = Debug|x64
+		{6742BECA-60F9-4DF9-9B98-4F684457CCE8}.Release|x64.ActiveCfg = Release|x64
+		{6742BECA-60F9-4DF9-9B98-4F684457CCE8}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

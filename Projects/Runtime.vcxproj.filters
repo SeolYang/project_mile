@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{5cfaab77-c9fe-42bd-aa80-f722eb33613d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{de67a36c-e7a7-4d56-84cb-2ec42365dc82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Components">
+      <UniqueIdentifier>{5a159d47-a33e-434f-b54b-8bd8ca48aa49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Container">
+      <UniqueIdentifier>{a4047258-bcbd-48a5-a392-b0a916f2e1e8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Runtime\Core\Context.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Core\SubSystem.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Core\Helper.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Rumia\Rumia\ForwardList.h">
+      <Filter>Container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Rumia\Rumia\Iterator.h">
+      <Filter>Container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Rumia\Rumia\List.h">
+      <Filter>Container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Rumia\Rumia\Pair.h">
+      <Filter>Container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Rumia\Rumia\ReverseIterator.h">
+      <Filter>Container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Rumia\Rumia\Tuple.h">
+      <Filter>Container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Rumia\Rumia\Algorithm.h">
+      <Filter>Container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Rumia\Rumia\Allocator.h">
+      <Filter>Container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Rumia\Rumia\Array.h">
+      <Filter>Container</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Runtime\Core\Context.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Core\SubSystem.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
