@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Rumia\Allocator.h"
 
 #define MEAPI __declspec(dllexport)

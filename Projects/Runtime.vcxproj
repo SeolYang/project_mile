@@ -48,7 +48,7 @@
     <OutDir>..\Binaries\$(Configuration)</OutDir>
     <IntDir>..\Binaries\VSOBJ\$(Configuration)</IntDir>
     <TargetName>Runtime</TargetName>
-    <SourcePath>..\ThirdParty\Rumia;..\Runtime\;$(SourcePath)</SourcePath>
+    <SourcePath>..\ThirdParty\Rumia\Src;..\Runtime\;$(SourcePath)</SourcePath>
     <LibraryPath>..\ThirdParty\Rumia\Libs\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -56,7 +56,7 @@
     <OutDir>..\Binaries\$(Configuration)</OutDir>
     <IntDir>..\Binaries\VSOBJ\$(Configuration)</IntDir>
     <TargetName>Runtime</TargetName>
-    <SourcePath>..\ThirdParty\Rumia;..\Runtime\;$(SourcePath)</SourcePath>
+    <SourcePath>..\ThirdParty\Rumia\Src;..\Runtime\;$(SourcePath)</SourcePath>
     <LibraryPath>..\ThirdParty\Rumia\Libs\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -66,7 +66,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\Rumia;..\Runtime\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ThirdParty\Rumia\Src;..\Runtime\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -82,7 +82,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\Rumia;..\Runtime\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ThirdParty\Rumia\Src;..\Runtime\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -92,22 +92,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Runtime\Component\Component.h" />
     <ClInclude Include="..\Runtime\Core\Context.h" />
+    <ClInclude Include="..\Runtime\Core\Engine.h" />
+    <ClInclude Include="..\Runtime\Core\Entity.h" />
     <ClInclude Include="..\Runtime\Core\Helper.h" />
     <ClInclude Include="..\Runtime\Core\SubSystem.h" />
-    <ClInclude Include="..\ThirdParty\Rumia\Rumia\Algorithm.h" />
-    <ClInclude Include="..\ThirdParty\Rumia\Rumia\Allocator.h" />
-    <ClInclude Include="..\ThirdParty\Rumia\Rumia\Array.h" />
-    <ClInclude Include="..\ThirdParty\Rumia\Rumia\ForwardList.h" />
-    <ClInclude Include="..\ThirdParty\Rumia\Rumia\Iterator.h" />
-    <ClInclude Include="..\ThirdParty\Rumia\Rumia\List.h" />
-    <ClInclude Include="..\ThirdParty\Rumia\Rumia\Pair.h" />
-    <ClInclude Include="..\ThirdParty\Rumia\Rumia\ReverseIterator.h" />
-    <ClInclude Include="..\ThirdParty\Rumia\Rumia\Tuple.h" />
+    <ClInclude Include="..\Runtime\Core\World.h" />
+    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Algorithm.h" />
+    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Allocator.h" />
+    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Array.h" />
+    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\ForwardList.h" />
+    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Iterator.h" />
+    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\List.h" />
+    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Pair.h" />
+    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\ReverseIterator.h" />
+    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Tuple.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Runtime\Component\Component.cpp" />
     <ClCompile Include="..\Runtime\Core\Context.cpp" />
+    <ClCompile Include="..\Runtime\Core\Engine.cpp" />
+    <ClCompile Include="..\Runtime\Core\Entity.cpp" />
     <ClCompile Include="..\Runtime\Core\SubSystem.cpp" />
+    <ClCompile Include="..\Runtime\Core\World.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

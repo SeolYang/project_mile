@@ -2,7 +2,7 @@
 
 namespace Mile
 {
-    SubSystem::SubSystem( Context& context ) :
+    SubSystem::SubSystem( Context* context ) :
         m_context( context )
     {
 
