@@ -6,7 +6,7 @@
 
 #define ALIGN_OF(...) __alignof(__VA_ARGS__)
 #define RUMIA_NEW(ALLOCATOR, TYPE, ...) ALLOCATOR.NewObject<TYPE>(__VA_ARGS__)
-#define RUMIA_MAKE_SHARED(ALLOCATORTYPE, ALLOCATOR, TYPE, ...) std::shared_ptr<TYPE>( ALLOCATOR.NewObject<TYPE>(__VA_ARGS__), std::bind(&ALLOCATORTYPE::DeleteObject<TYPE>, &ALLOCATOR, std::placeholders::_1))
+#define RUMIA_MAKE_SHARED( ALLOCATOR, TYPE, ...) std::shared_ptr<TYPE>( ALLOCATOR.NewObject<TYPE>(__VA_ARGS__), std::bind(&Rumia::Allocator::DeleteObject<TYPE>, &ALLOCATOR, std::placeholders::_1))
 #define RUMIA_DELETE(ALLOCATOR, TARGET) if(TARGET != nullptr) { ALLOCATOR.DeleteObject(TARGET); TARGET = nullptr; }
 #define RUMIA_NEW_ARRAY(ALLOCATOR, TYPE, LENGTH) ALLOCATOR.NewObjectArray<TYPE>(LENGTH)
 #define RUMIA_DELETE_ARRAY(ALLOCATOR, TARGET) if(TARGET != nullptr) { ALLOCATOR.DeleteObjectArray(TARGET); TARGET = nullptr; }
