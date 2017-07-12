@@ -15,20 +15,78 @@ namespace Mile
         Entity( Context* context );
         ~Entity( );
 
+        /**
+        * @brief    Entity를 초기화 합니다. ( 이 시점에서 Entity의 Transform 이 설정됩니다. )
+        * @param    Entity에 적용할 Transform 컴포넌트
+        */
         void Initialize( Transform* transform );
 
+        /**
+        * @brief    템플릿 파라미터로 주어진 형식의 컴포넌트를 추가합니다.
+        * @return   추가된 컴포넌트
+        */
         template <typename Ty> Ty* AddComponent( );
+
+        /**
+        * @brief    주어진 컴포넌트가 Entity에 등록되어있다면 제거합니다.
+        * @param    Entity에 등록되어있는 컴포넌트
+        */
         template <typename Ty> void RemoveComponent( Ty* target );
+
+        /**
+        * @brief    템플릿 파라미터로 주어진 형식의 모든 컴포넌트들을 제거합니다. ( 단 메모리의 할당해제는 일어나지 않습니다. )
+        */
         template <typename Ty> void RemoveComponents( );
+
+        /**
+        * @brief    템플릿 파라미터로 주어진 형식의 컴포넌트중 가장 먼저 추가된 컴포넌트를 반환합니다.
+        * @return   가장 먼저 추가된 해당 형식의 컴포넌트
+        */
         template <typename Ty> Ty* GetComponent( );
+
+        /**
+        * @brief    Entitiy에 추가되어있는 모든 컴포넌트들을 반환합니다.
+        * @return   Entitiy에 추가되어있는 컴포넌트 들의 배열
+        */
         template <typename Ty> Array<Ty*> GetComponents( );
+
+        /**
+        * @brief    템플릿 파라미터로 주어진 형식의 컴포넌트가 Entity에 추가되어있는지 확인합니다.
+        * @return   해당 형식의 컴포넌트가 추가 여부
+        */
         template <typename Ty> bool HasComponent( ) const;
 
+        /**
+        * @brief    Entity가 활성화 되어있는지 확인합니다.
+        * @return   Entity의 활성화 여부
+        */
         bool IsActive( ) const { return m_bIsActive; }
+
+        /**
+        * @brief    Entity를 활성화 시키거나 비 활성화 시킵니다.
+        * @param    Entity의 활성화 여부
+        */
         void SetActive( bool bIsActive );
 
+        /**
+        * @brief    Entity에 등록되어있는 Transform 컴포넌트를 반환합니다.
+        * @return   Entity의 Transform 컴포넌트
+        */
         Transform* GetTransform( ) { return m_transform; }
 
+        /**
+        * @brief    Entity에 설정되어있는 이름을 반환합니다.
+        * @return   Entity의 이름
+        */
+        std::string GetName( ) const { return m_name; }
+
+        /**
+        * @brief    Entity에 새로운 이름을 설정해줍니다.
+        * @param    Entity에 설정해줄 새로운 이름
+        */
+        void SetName( const std::string& name ) { m_name = name; }
+
+        
         void Start( );
         void Update( );
         void OnEnable( );
@@ -41,6 +99,7 @@ namespace Mile
 
     private:
         Array<Component*>   m_components;
+        std::string         m_name;
 
     };
 
