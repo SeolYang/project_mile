@@ -45,16 +45,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\Binaries\$(Configuration)</OutDir>
-    <IntDir>..\Binaries\VSOBJ\$(Configuration)</IntDir>
+    <OutDir>..\Binaries\$(Configuration)\</OutDir>
+    <IntDir>..\Binaries\VSOBJ\$(Configuration)\</IntDir>
     <TargetName>Runtime</TargetName>
     <SourcePath>..\ThirdParty\Rumia\Src;..\Runtime\;$(SourcePath)</SourcePath>
     <LibraryPath>..\ThirdParty\Rumia\Libs\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\Binaries\$(Configuration)</OutDir>
-    <IntDir>..\Binaries\VSOBJ\$(Configuration)</IntDir>
+    <OutDir>..\Binaries\$(Configuration)\</OutDir>
+    <IntDir>..\Binaries\VSOBJ\$(Configuration)\</IntDir>
     <TargetName>Runtime</TargetName>
     <SourcePath>..\ThirdParty\Rumia\Src;..\Runtime\;$(SourcePath)</SourcePath>
     <LibraryPath>..\ThirdParty\Rumia\Libs\;$(LibraryPath)</LibraryPath>

@@ -16,11 +16,11 @@
     <Filter Include="Rendering">
       <UniqueIdentifier>{d1f9d1d8-950f-421a-a286-64300b2e45ea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UI">
-      <UniqueIdentifier>{83684b4d-ad6b-4cc9-a70e-a2ae709048aa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="EventSystem">
       <UniqueIdentifier>{41ebf61a-c65f-4cdf-b618-787f880bcbee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{c009a5a2-f10c-4e42-b419-f6dd1a3087ae}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -89,6 +89,8 @@
     <ClCompile Include="..\Runtime\Core\World.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Component\Component.cpp" />
+    <ClCompile Include="..\Runtime\Component\Component.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

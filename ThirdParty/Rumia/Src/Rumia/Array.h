@@ -1,4 +1,5 @@
 #pragma once
+
 #include <type_traits>
 #include "Allocator.h"
 #include "Iterator.h"
@@ -20,12 +21,18 @@ namespace Rumia
             {
             }
 
+            iterator( const iterator& itr ) :
+                iterator( itr.m_container, itr.m_position, itr.m_bIsDummy )
+            {
+            }
+
             ~iterator( ) { }
 
-            iterator& operator++( )
+            iterator operator++( )
             {
-                if ( m_position == ( m_container.GetSize( ) - 1 ) && !m_bIsDummy )
+                if ( m_position >= ( m_container.GetSize( ) - 1 ) && !m_bIsDummy )
                 {
+                    m_position = m_container.GetSize( ) - 1;
                     m_bIsDummy = true;
                 }
                 else
@@ -36,7 +43,7 @@ namespace Rumia
                 return ( *this );
             }
 
-            iterator& operator--( )
+            iterator operator--( )
             {
                 if ( m_position == 0 && !m_bIsDummy )
                 {
@@ -466,9 +473,10 @@ namespace Rumia
             }
         }
 
-        void Erase( const iterator& itr )
+        iterator Erase( const iterator& itr )
         {
             EraseAt( itr.m_position );
+            return itr;
         }
 
         void EraseAt( size_t index )
@@ -532,7 +540,7 @@ namespace Rumia
         inline bool IsEmpty( ) const { return ( m_size == 0 ); }
         inline bool IsFull( ) const { return ( m_size == m_capacity ); }
 
-    protected:
+    private:
         inline void Growth( )
         {
             if ( IsFull( ) )
@@ -558,7 +566,7 @@ namespace Rumia
             return ( ( m_capacity - m_size ) > 0 );
         }
 
-    protected:
+    private:
         Rumia::Allocator& m_allocator;
 
         /** Size of Element buffer */
@@ -569,7 +577,6 @@ namespace Rumia
 
         T* m_elements;
 
-    protected:
         static const unsigned int CapacityExtendScale = 2;
 
     };

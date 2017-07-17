@@ -1,4 +1,5 @@
 #pragma once
+
 #include <type_traits>
 #include "Allocator.h"
 #include "Iterator.h"
@@ -8,8 +9,7 @@ namespace Rumia
     template <typename T>
     class ForwardList
     {
-    protected:
-        template <typename Ty>
+    private:
         struct Node
         {
         public:
@@ -17,15 +17,15 @@ namespace Rumia
             {
             }
 
-            Node( const Ty& data, Node<Ty>* next ) :
+            Node( const T& data, Node* next ) :
                 m_data( data ),
                 m_next( next )
             {
             }
 
         public:
-            Ty m_data;
-            Node<Ty>* m_next;
+            T m_data;
+            Node* m_next;
 
         };
 
@@ -33,14 +33,19 @@ namespace Rumia
         class iterator : public Rumia::Iterator<T, ForwardList>
         {
         public:
-            iterator( ContainerType& container, Node<T>* currentNode ) :
+            iterator( ContainerType& container, Node* currentNode ) :
                 Iterator<T, ForwardList>( container ), m_currentNode( currentNode )
+            {
+            }
+
+            iterator( const iterator& itr ) :
+                iterator( itr.m_container, itr.m_currentNode )
             {
             }
 
             ~iterator( ) { }
 
-            iterator& operator++( )
+            iterator operator++( )
             {
                 assert( m_currentNode != nullptr );
                 m_currentNode = m_currentNode->m_next;
@@ -70,14 +75,14 @@ namespace Rumia
             }
 
         private:
-            Node<T>* m_currentNode;
+            Node* m_currentNode;
 
         };
 
         class const_iterator : public Rumia::Iterator<T, const ForwardList>
         {
         public:
-            const_iterator( ContainerType& container, Node<T>* currentNode ) :
+            const_iterator( ContainerType& container, Node* currentNode ) :
                 Iterator<T, const ForwardList>( container ), m_currentNode( currentNode )
             {
             }
@@ -109,7 +114,7 @@ namespace Rumia
             }
 
         private:
-            Node<T>* m_currentNode;
+            Node* m_currentNode;
 
         };
 
@@ -171,14 +176,14 @@ namespace Rumia
         template <typename Ty>
         void PushFront( Ty&& element )
         {
-            m_root = RUMIA_NEW( m_allocator, Node<Ty>, std::forward<Ty>(element), m_root );
+            m_root = RUMIA_NEW( m_allocator, Node, std::forward<Ty>(element), m_root );
             ++m_count;
         }
 
         T PopFront( )
         {
             assert( !IsEmpty( ) );
-            Node<T>* popedNode = m_root;
+            Node* popedNode = m_root;
             m_root = m_root->m_next;
 
             T data = popedNode->m_data;
@@ -189,7 +194,7 @@ namespace Rumia
 
         iterator Find( const T& element )
         {
-            for ( Node<T>* node = m_root; node != nullptr; node = node->m_next )
+            for ( Node* node = m_root; node != nullptr; node = node->m_next )
             {
                 if ( node->m_data == element )
                 {
@@ -202,7 +207,7 @@ namespace Rumia
 
         const_iterator Find( const T& element ) const
         {
-            for ( Node<T>* node = m_root; node != nullptr; node = node->m_next )
+            for ( Node* node = m_root; node != nullptr; node = node->m_next )
             {
                 if ( node->m_data == element )
                 {
@@ -243,8 +248,8 @@ namespace Rumia
 
         void Erase( const T& element )
         {
-            Node<T>* prevNode = nullptr;
-            for ( Node<T>* node = m_root; node != nullptr; node = node->m_next )
+            Node* prevNode = nullptr;
+            for ( Node* node = m_root; node != nullptr; node = node->m_next )
             {
                 if ( node->m_data == element )
                 {
@@ -267,17 +272,22 @@ namespace Rumia
             }
         }
 
-        void Erase( const iterator& itr )
+        iterator Erase( const iterator& itr )
         {
+            iterator temp = ( itr );
+            ++temp;
+
             const T& data = ( *itr );
             Erase( data );
+
+            return temp;
         }
 
         void Clear( )
         {
             for ( ; m_root != nullptr; )
             {
-                Node<T>* nextNode = m_root->m_next;
+                Node* nextNode = m_root->m_next;
                 m_root->m_data.~T( );
                 RUMIA_DELETE( m_allocator, m_root );
                 m_root = nextNode;
@@ -309,15 +319,15 @@ namespace Rumia
         inline bool IsEmpty( ) const { return m_root == nullptr; }
         inline size_t GetSize( ) const { return m_count; }
 
-    protected:
-        void CopyFrom( Node<T>* root )
+    private:
+        void CopyFrom( Node* root )
         {
             assert( ( m_root == nullptr ) );
-            Node<T>** targetNode = &m_root;
-            Node<T>* prevNode = nullptr;
-            for ( Node<T>* node = root; node != nullptr; )
+            Node** targetNode = &m_root;
+            Node* prevNode = nullptr;
+            for ( Node* node = root; node != nullptr; )
             {
-                Node<T>* newNode = RUMIA_NEW( m_allocator, Node<T>, node->m_data, nullptr );
+                Node* newNode = RUMIA_NEW( m_allocator, Node, node->m_data, nullptr );
                 ( *targetNode ) = newNode;
                 
                 if ( prevNode != nullptr )
@@ -329,9 +339,9 @@ namespace Rumia
             }
         }
 
-    protected:
+    private:
         Rumia::Allocator& m_allocator;
-        Node<T>* m_root;
+        Node* m_root;
         size_t m_count;
 
     };

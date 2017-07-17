@@ -1,5 +1,7 @@
 #pragma once
 
+#pragma warning( disable : 4251 )
+
 #include "Rumia\Allocator.h"
 
 #define MEAPI __declspec(dllexport)
