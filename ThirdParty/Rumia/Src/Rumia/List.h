@@ -198,7 +198,7 @@ namespace Rumia
         template <typename Ty>
         void PushFront( Ty&& element )
         {
-            Node* newNode = RUMIA_NEW( m_allocator, Node, std::forward<Ty>(element), nullptr, nullptr );
+            Node* newNode = New<Node>( m_allocator, std::forward<Ty>( element ), nullptr, nullptr );
             if ( m_root == nullptr )
             {
                 m_root = newNode;
@@ -216,7 +216,7 @@ namespace Rumia
         template <typename Ty>
         void PushBack( Ty&& element )
         {
-            Node* newNode = RUMIA_NEW( m_allocator, Node, std::forward<T>( element ), nullptr, nullptr );
+            Node* newNode = New<Node>( m_allocator, std::forward<T>( element ), nullptr, nullptr );
             if ( m_root == nullptr )
             {
                 m_root = newNode;
@@ -236,7 +236,7 @@ namespace Rumia
             assert( !IsEmpty( ) );
             T data = std::move( m_root->m_data );
             Node* newRoot = m_root->m_next;
-            RUMIA_DELETE( m_allocator, m_root );
+            Delete( m_allocator, m_root );
             m_root = newRoot;
 
             if ( m_root != nullptr )
@@ -263,7 +263,7 @@ namespace Rumia
                 popNode->m_prev->m_next = nullptr;
             }
 
-            RUMIA_DELETE( m_allocator, popNode );
+            Delete( m_allocator, popNode );
             --m_count;
             return std::move( data );
         }
@@ -345,7 +345,7 @@ namespace Rumia
                         m_root = node->m_next;
                     }
 
-                    RUMIA_DELETE( m_allocator, node );
+                    Delete( m_allocator, node );
                     return;
                 }
 
@@ -368,7 +368,7 @@ namespace Rumia
             for ( Node* node = m_root; node != nullptr; )
             {
                 Node* nextNode = node->m_next;
-                RUMIA_DELETE( m_allocator, node );
+                Delete( m_allocator, node );
                 node = nextNode;
             }
 
@@ -438,7 +438,7 @@ namespace Rumia
             for ( Node* node = root; node != nullptr; )
             {
                 Node* nextNode = node->m_next;
-                Node* newNode = RUMIA_NEW( m_allocator, Node, node->m_data, nullptr, nullptr );
+                Node* newNode = New<Node>( m_allocator, node->m_data, nullptr, nullptr );
                 ( *targetNode ) = newNode;
                 if ( prevNode != nullptr )
                 {

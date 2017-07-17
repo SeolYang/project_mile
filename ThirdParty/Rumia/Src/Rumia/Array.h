@@ -239,7 +239,7 @@ namespace Rumia
 
         virtual ~Array( )
         {
-            RUMIA_DELETE_ARRAY( m_allocator, m_elements );
+            DeleteArray( m_allocator, m_elements );
         }
 
         T& operator[]( size_t index )
@@ -377,7 +377,7 @@ namespace Rumia
                     m_elements[ index ] = std::move( cachedElements[ index ] );
                 }
 
-                RUMIA_DELETE_ARRAY( m_allocator, cachedElements );
+                DeleteArray( m_allocator, cachedElements );
 
                 m_capacity = targetCapacity;
             }
@@ -388,14 +388,14 @@ namespace Rumia
             if ( HasUnusedCapacity( ) )
             {
                 T* tempElements = m_elements;
-                m_elements = RUMIA_NEW_ARRAY( m_allocator, T, m_size );
+                m_elements = NewArray<T>( m_allocator, m_size );
                 for ( size_t Idx = 0; Idx < m_size; ++Idx )
                 {
                     m_elements[ Idx ] = tempElements[ Idx ];
                 }
 
                 m_capacity = m_size;
-                RUMIA_DELETE_ARRAY( m_allocator, tempElements );
+                DeleteArray( m_allocator, tempElements );
             }
         }
 
@@ -497,7 +497,7 @@ namespace Rumia
             {
                 m_capacity = 0;
                 m_size = 0;
-                RUMIA_DELETE_ARRAY( m_allocator, m_elements );
+                DeleteArray( m_allocator, m_elements );
             }
             else
             {

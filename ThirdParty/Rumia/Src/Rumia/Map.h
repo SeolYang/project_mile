@@ -52,7 +52,7 @@ namespace Rumia
 
         void Insert( const TPair& insertValue )
         {
-            Node* newNode = RUMIA_NEW( m_allocator, Node, insertValue );
+            Node* newNode = New<Node>( m_allocator, insertValue );
             if ( m_root == nullptr )
             {
                 // Root node is black. ( Fix Condition #2 )
@@ -159,7 +159,7 @@ namespace Rumia
                     EraseFix( successor );
                 }
 
-                RUMIA_DELETE( m_allocator, removeNode );
+                Delete( m_allocator, removeNode );
             }
         }
 
@@ -433,6 +433,8 @@ namespace Rumia
                     return parent;
                 }
             }
+
+            return nullptr;
         }
 
         Node* MinValue( Node* target )
@@ -457,8 +459,6 @@ namespace Rumia
 
     private:
         Rumia::Allocator&      m_allocator;
-
-        public:
         Node*                  m_root;
 
     };

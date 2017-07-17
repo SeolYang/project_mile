@@ -6,11 +6,6 @@
 #include <functional>
 
 #define ALIGN_OF(...) __alignof(__VA_ARGS__)
-#define RUMIA_NEW(ALLOCATOR, TYPE, ...) ALLOCATOR.NewObject<TYPE>(__VA_ARGS__)
-#define RUMIA_MAKE_SHARED( ALLOCATOR, TYPE, ...) std::shared_ptr<TYPE>( ALLOCATOR.NewObject<TYPE>(__VA_ARGS__), std::bind(&Rumia::Allocator::DeleteObject<TYPE>, &ALLOCATOR, std::placeholders::_1))
-#define RUMIA_DELETE(ALLOCATOR, TARGET) if(TARGET != nullptr) { ALLOCATOR.DeleteObject(TARGET); TARGET = nullptr; }
-#define RUMIA_NEW_ARRAY(ALLOCATOR, TYPE, LENGTH) ALLOCATOR.NewObjectArray<TYPE>(LENGTH)
-#define RUMIA_DELETE_ARRAY(ALLOCATOR, TARGET) if(TARGET != nullptr) { ALLOCATOR.DeleteObjectArray(TARGET); TARGET = nullptr; }
 
 namespace Rumia
 {
@@ -90,4 +85,57 @@ namespace Rumia
             std::free( ptr );
         }
     };
+
+    template < typename Ty, typename... Args>
+    static Ty* New( Allocator& allocator, Args&&... params )
+    {
+        return allocator.NewObject<Ty>( std::forward<Args>( params )... );
+    }
+
+    template < typename Ty >
+    static void Delete( Allocator& allocator, Ty& target )
+    {
+        if ( target != nullptr )
+        {
+            allocator.DeleteObject( target );
+            target = nullptr;
+        }
+    }
+
+    template < typename Ty >
+    static Ty* NewArray( Allocator& allocator, size_t length )
+    {
+        if ( length > 0 )
+        {
+            return allocator.NewObjectArray<Ty>( length );
+        }
+
+        return nullptr;
+    }
+
+    template < typename Ty >
+    static void DeleteArray( Allocator& allocator, Ty& target )
+    {
+        if ( target != nullptr )
+        {
+            allocator.DeleteObjectArray( target );
+            target = nullptr;
+        }
+    }
+
+    template < typename Ty, typename... Args >
+    static std::shared_ptr<Ty> MakeShared( Allocator& allocator, Args&&... params )
+    {
+        return std::shared_ptr<Ty>(
+            allocator.NewObject<Ty>( std::forward<Args>( params )... ),
+            std::bind( &Rumia::Allocator::DeleteObject<Ty>, &allocator, std::placeholders::_1 ) );
+    }
+
+    template < typename Ty, typename... Args >
+    static std::unique_ptr<Ty, std::function<void( Ty* )>> MakeUnique( Allocator& allocator, Args&&... params )
+    {
+        return std::unique_ptr<Ty, std::function<void( Ty* )>>(
+            allocator.NewObject<Ty>( std::forward<Args>( params )... ),
+            std::bind( &Rumia::Allocator::DeleteObject<Ty>, &allocator, std::placeholders::_1 ) );
+    }
 }

@@ -176,7 +176,7 @@ namespace Rumia
         template <typename Ty>
         void PushFront( Ty&& element )
         {
-            m_root = RUMIA_NEW( m_allocator, Node, std::forward<Ty>(element), m_root );
+            m_root = New<Node>( m_allocator, std::forward<Ty>( element ), m_root );
             ++m_count;
         }
 
@@ -187,7 +187,7 @@ namespace Rumia
             m_root = m_root->m_next;
 
             T data = popedNode->m_data;
-            RUMIA_DELETE( m_allocator, popedNode );
+            Delete( m_allocator, popedNode );
             --m_count;
             return data;
         }
@@ -263,7 +263,7 @@ namespace Rumia
                         m_root = node->m_next;
                     }
 
-                    RUMIA_DELETE( m_allocator, node );
+                    Delete( m_allocator, node );
                     --m_count;
                     return;
                 }
@@ -289,7 +289,7 @@ namespace Rumia
             {
                 Node* nextNode = m_root->m_next;
                 m_root->m_data.~T( );
-                RUMIA_DELETE( m_allocator, m_root );
+                Delete( m_allocator, m_root );
                 m_root = nextNode;
             }
 
