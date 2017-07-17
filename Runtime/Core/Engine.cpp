@@ -1,5 +1,6 @@
 #include "Engine.h"
 #include "Context.h"
+#include "Resource\ResourceManager.h"
 #include "World.h"
 
 namespace Mile
@@ -11,13 +12,24 @@ namespace Mile
 
         m_context->RegisterSubSystem( this );
 
-        m_world = RUMIA_NEW( allocator, World, m_context );
+        m_resourceManager = New<ResourceManager>( allocator, m_context );
+        m_context->RegisterSubSystem( m_resourceManager );
+
+        m_world = New<World>( allocator, m_context );
         m_context->RegisterSubSystem( m_world );
     }
 
     bool Engine::Initialize( )
     {
         // Initialize subsystems
+
+        // Initialize Resource manager
+        if ( !m_context->GetSubSystem<ResourceManager>( )->Initialize( ) )
+        {
+            return false;
+        }
+
+        // Initialize World
         if ( !m_context->GetSubSystem<World>( )->Initialize( ) )
         {
             //@TODO: Add Log
@@ -36,6 +48,6 @@ namespace Mile
     void Engine::ShutDown( )
     {
         m_world = nullptr;
-        RUMIA_DELETE( m_context->GetAllocator( ), m_context );
+        Delete( m_context->GetAllocator( ), m_context );
     }
 }

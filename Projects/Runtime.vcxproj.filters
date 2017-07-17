@@ -72,6 +72,18 @@
     <ClInclude Include="..\Runtime\Core\World.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Map.h">
+      <Filter>Container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\Resource.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\ResourceManager.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\ResourceCache.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -91,6 +103,15 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Component\Component.cpp">
       <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Resource\Resource.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Resource\ResourceManager.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Resource\ResourceCache.cpp">
+      <Filter>Resource</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

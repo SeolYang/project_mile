@@ -13,7 +13,7 @@ namespace Mile
     {
         for ( size_t idx = 1; idx < m_subSystems.GetSize( ) - 1; ++idx )
         {
-            RUMIA_DELETE( m_allocator, m_subSystems[ idx ] );
+            Delete( m_allocator, m_subSystems[ idx ] );
         }
     }
 

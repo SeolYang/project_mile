@@ -18,7 +18,7 @@ namespace Mile
     * @param    토큰
     * @return   나누어진 문자열들의 배열
     */
-    Array<std::string> Split( Allocator& allocator, const std::string& str, char token )
+    static Array<std::string> SplitStr( Allocator& allocator, const std::string& str, char token )
     {
         Array<std::string> tempArr{ allocator };
         size_t before = 0;
@@ -44,7 +44,7 @@ namespace Mile
     * @param    문자열들을 합치면서 중간에 들어갈 토큰
     * @return   합쳐진 문자열
     */
-    std::string Combine( Array<std::string> strings, const std::string& token = "" )
+    static std::string CombineStr( Array<std::string> strings, const std::string& token = "" )
     {
         std::string temp{ };
 

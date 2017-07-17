@@ -99,12 +99,16 @@
     <ClInclude Include="..\Runtime\Core\Helper.h" />
     <ClInclude Include="..\Runtime\Core\SubSystem.h" />
     <ClInclude Include="..\Runtime\Core\World.h" />
+    <ClInclude Include="..\Runtime\Resource\Resource.h" />
+    <ClInclude Include="..\Runtime\Resource\ResourceCache.h" />
+    <ClInclude Include="..\Runtime\Resource\ResourceManager.h" />
     <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Algorithm.h" />
     <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Allocator.h" />
     <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Array.h" />
     <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\ForwardList.h" />
     <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Iterator.h" />
     <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\List.h" />
+    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Map.h" />
     <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Pair.h" />
     <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\ReverseIterator.h" />
     <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Tuple.h" />
@@ -116,6 +120,9 @@
     <ClCompile Include="..\Runtime\Core\Entity.cpp" />
     <ClCompile Include="..\Runtime\Core\SubSystem.cpp" />
     <ClCompile Include="..\Runtime\Core\World.cpp" />
+    <ClCompile Include="..\Runtime\Resource\Resource.cpp" />
+    <ClCompile Include="..\Runtime\Resource\ResourceCache.cpp" />
+    <ClCompile Include="..\Runtime\Resource\ResourceManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

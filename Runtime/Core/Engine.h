@@ -4,6 +4,8 @@
 
 namespace Mile
 {
+    class Setting;
+    class ResourceManager;
     class World;
     class MEAPI Engine : public SubSystem
     {
@@ -28,7 +30,8 @@ namespace Mile
         void ShutDown( );
 
     private:
-        World*  m_world;
+        ResourceManager*    m_resourceManager;
+        World*              m_world;
 
     };
 }
