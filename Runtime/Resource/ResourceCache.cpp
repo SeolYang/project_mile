@@ -28,7 +28,7 @@ namespace Mile
         m_resources.Shrink( );
     }
 
-    WeakResourcePtr ResourceCache::GetByPath( const std::string& path )
+    ResourcePtr ResourceCache::GetByPath( const std::string& path )
     {
         for ( auto res : m_resources )
         {
@@ -38,10 +38,10 @@ namespace Mile
             }
         }
 
-        return WeakResourcePtr( );
+        return ResourcePtr( );
     }
 
-    WeakResourcePtr ResourceCache::GetByName( const std::string& name )
+    ResourcePtr ResourceCache::GetByName( const std::string& name )
     {
         for ( auto res : m_resources )
         {
@@ -51,10 +51,10 @@ namespace Mile
             }
         }
 
-        return WeakResourcePtr( );
+        return ResourcePtr( );
     }
 
-    bool ResourceCache::CachedByPath( const std::string& name )
+    bool ResourceCache::HasByPath( const std::string& name )
     {
         for ( auto res : m_resources )
         {
@@ -67,7 +67,7 @@ namespace Mile
         return false;
     }
 
-    bool ResourceCache::CachedByName( const std::string& name )
+    bool ResourceCache::HasByName( const std::string& name )
     {
         for ( auto res : m_resources )
         {

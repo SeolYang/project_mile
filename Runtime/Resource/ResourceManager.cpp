@@ -29,21 +29,4 @@ namespace Mile
         m_cache->Clear( );
     }
 
-    std::string ResourceManager::GetFileNameFromPath( Allocator& allocator, const std::string& filePath )
-    {
-        auto splitPath = SplitStr( allocator, filePath, '\\' );
-        auto splitFileName = SplitStr( allocator, splitPath[ splitPath.GetSize( ) - 1 ], '.' );
-        splitFileName.PopBack( );
-
-        return CombineStr( splitFileName, "." );
-    }
-
-    std::string ResourceManager::GetFolderFromPath( Allocator& allocator, const std::string& filePath )
-    {
-        auto splitPath = SplitStr( allocator, filePath, '\\' );
-        splitPath.PopBack( );
-
-        return CombineStr( splitPath, "\\" );
-    }
-
 }

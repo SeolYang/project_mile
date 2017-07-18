@@ -38,7 +38,6 @@ namespace Mile
 
     WeakEntity World::CreateEntity( )
     {
-        //auto newEntity = RUMIA_MAKE_SHARED( m_context->GetAllocator( ), Entity, m_context );
         auto newEntity = MakeShared<Entity>( m_context->GetAllocator( ), m_context );
         m_entities.PushBack( newEntity );
 

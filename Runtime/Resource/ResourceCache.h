@@ -14,10 +14,10 @@ namespace Mile
         void Add( ResourcePtr res );
         void Clear( );
 
-        WeakResourcePtr GetByPath( const std::string& path );
-        WeakResourcePtr GetByName( const std::string& name );
-        bool CachedByPath( const std::string& path );
-        bool CachedByName( const std::string& name );
+        ResourcePtr GetByPath( const std::string& path );
+        ResourcePtr GetByName( const std::string& name );
+        bool HasByPath( const std::string& path );
+        bool HasByName( const std::string& name );
 
     private:
         Context*                m_context;

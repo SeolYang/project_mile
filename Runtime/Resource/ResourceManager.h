@@ -5,7 +5,6 @@
 
 namespace Mile
 {
-    class Setting;
     class MEAPI ResourceManager : public SubSystem
     {
     public:
@@ -17,13 +16,49 @@ namespace Mile
         template < typename Ty >
         std::weak_ptr<Ty> Load( const std::string& relativePath )
         {
-            //@TODO Implement Load
+            if ( m_cache->HasByPath( relativePath ) )
+            {
+                return GetByPath( relativePath );
+            }
+
+            Allocator& allocator = m_context->GetAllocator( );
+            auto newResource = MakeShared<Ty>( allocator,
+                                               relativePath,
+                                               Resource::GetFileNameFromPath( allocator, relativePath ),
+                                               Resource::GetFolderFromPath( allocator, relativePath ) );
+
+            if ( newResource->Initialize( ) )
+            {
+                m_cache->Add( std::dynamic_pointer_cast< Resource >( newResource ) );
+            }
+
+            return GetByPath<Ty>( relativePath );
+        }
+
+        template < typename Ty >
+        std::weak_ptr<Ty> GetByPath( const std::string& filePath )
+        {
+            if ( m_cache->HasByPath( relativePath ) )
+            {
+                return std::dynamic_pointer_cast< Ty >( m_cache->GetByPath( filePath ) );
+            }
+
+            return std::weak_ptr<Ty>( );
+        }
+
+        template < typename Ty >
+        std::weak_ptr<Ty> GetByName( const std::string& name )
+        {
+            if ( m_cache->HasByName( relativePath ) )
+            {
+                return std::dynamic_pointer_cast< Ty >( m_cache->GetByName( name ) );
+            }
+
+            return std::weak_ptr<Ty>( );
         }
 
         void ClearCache( );
 
-        static std::string GetFileNameFromPath( Allocator& allocator, const std::string& filePath );
-        static std::string GetFolderFromPath( Allocator& allocator, const std::string& filePath );
 
     private:
         ResourceCachePtr    m_cache;

@@ -2,7 +2,6 @@
 
 #include "SubSystem.h"
 #include "Rumia/Array.h"
-#include <vector>
 
 namespace Mile
 {
