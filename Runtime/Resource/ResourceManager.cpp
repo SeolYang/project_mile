@@ -11,6 +11,7 @@ namespace Mile
 
     ResourceManager::~ResourceManager( )
     {
+        ClearCache( );
     }
 
     bool ResourceManager::Initialize( )
