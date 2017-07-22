@@ -246,5 +246,15 @@ namespace Mile
         float y;
         float z;
 
+    public:
+        static Vector3 Up;
+        static Vector3 Down;
+        static Vector3 Left;
+        static Vector3 Right;
+        static Vector3 Forward;
+        static Vector3 Backward;
+        static Vector3 One;
+        static Vector3 Zero;
+
     };
 }

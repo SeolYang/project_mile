@@ -84,6 +84,12 @@
     <ClInclude Include="..\Runtime\Resource\ResourceCache.h">
       <Filter>Resource</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Math\Vector3.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Math\Vector4.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">

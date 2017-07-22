@@ -99,6 +99,8 @@
     <ClInclude Include="..\Runtime\Core\Helper.h" />
     <ClInclude Include="..\Runtime\Core\SubSystem.h" />
     <ClInclude Include="..\Runtime\Core\World.h" />
+    <ClInclude Include="..\Runtime\Math\Vector3.h" />
+    <ClInclude Include="..\Runtime\Math\Vector4.h" />
     <ClInclude Include="..\Runtime\Resource\Resource.h" />
     <ClInclude Include="..\Runtime\Resource\ResourceCache.h" />
     <ClInclude Include="..\Runtime\Resource\ResourceManager.h" />
