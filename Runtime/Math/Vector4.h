@@ -304,7 +304,7 @@ namespace Mile
             w *= factor;
         }
 
-        Vector4 GetNormalized4( ) const
+        Vector4 GetNormalized( ) const
         {
             Vector4 temp = ( *this );
             temp.Normalize( );
