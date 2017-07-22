@@ -166,7 +166,7 @@ namespace Mile
             w *= factor;
             return ( *this );
         }
-        
+
         Vector4& operator=( const Vector4& vec )
         {
             x = vec.x;
@@ -197,8 +197,8 @@ namespace Mile
         {
             // Cross product ( 3-Dimension )
             return Vector4( y * vec.z,
-                            z * vec.x, 
-                            x * vec.y, 
+                            z * vec.x,
+                            x * vec.y,
                             1.0f );
         }
 
@@ -316,5 +316,16 @@ namespace Mile
         float y;
         float z;
         float w;
+
+    public:
+        static Vector4 Up;
+        static Vector4 Down;
+        static Vector4 Left;
+        static Vector4 Right;
+        static Vector4 Forward;
+        static Vector4 Backward;
+        static Vector4 One;
+        static Vector4 Zero;
+
     };
 }
