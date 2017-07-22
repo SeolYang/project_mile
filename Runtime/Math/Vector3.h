@@ -234,7 +234,7 @@ namespace Mile
             z *= factor;
         }
 
-        Vector3 Normalized( ) const
+        Vector3 GetNormalized( ) const
         {
             Vector3 temp = ( *this );
             temp.Normalize( );
