@@ -99,6 +99,7 @@
     <ClInclude Include="..\Runtime\Core\Helper.h" />
     <ClInclude Include="..\Runtime\Core\SubSystem.h" />
     <ClInclude Include="..\Runtime\Core\World.h" />
+    <ClInclude Include="..\Runtime\Math\Matrix.h" />
     <ClInclude Include="..\Runtime\Math\Vector3.h" />
     <ClInclude Include="..\Runtime\Math\Vector4.h" />
     <ClInclude Include="..\Runtime\Resource\Resource.h" />
@@ -122,6 +123,9 @@
     <ClCompile Include="..\Runtime\Core\Entity.cpp" />
     <ClCompile Include="..\Runtime\Core\SubSystem.cpp" />
     <ClCompile Include="..\Runtime\Core\World.cpp" />
+    <ClCompile Include="..\Runtime\Math\Matrix.cpp" />
+    <ClCompile Include="..\Runtime\Math\Vector3.cpp" />
+    <ClCompile Include="..\Runtime\Math\Vector4.cpp" />
     <ClCompile Include="..\Runtime\Resource\Resource.cpp" />
     <ClCompile Include="..\Runtime\Resource\ResourceCache.cpp" />
     <ClCompile Include="..\Runtime\Resource\ResourceManager.cpp" />

@@ -157,7 +157,7 @@ namespace Mile
             return ( *this );
         }
 
-        Vector4& operator+=( float div )
+        Vector4& operator/=( float div )
         {
             float factor = 1.0f / div;
             x *= factor;

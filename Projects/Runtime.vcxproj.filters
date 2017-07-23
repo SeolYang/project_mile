@@ -90,6 +90,9 @@
     <ClInclude Include="..\Runtime\Math\Vector4.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Math\Matrix.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -118,6 +121,15 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Resource\ResourceCache.cpp">
       <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Math\Vector3.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Math\Vector4.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Math\Matrix.cpp">
+      <Filter>Math</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
