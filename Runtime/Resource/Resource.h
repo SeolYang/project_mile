@@ -7,7 +7,15 @@ namespace Mile
     enum class ResourceType
     {
         RT_Unknown,
-        RT_Texture,
+        RT_VertexBuffer,
+        RT_IndexBuffer,
+        RT_ConstantBuffer,
+        RT_StructuredBuffer,
+        RT_ByteAddressBuffer,
+        RT_IndirectArgumentsBuffer,
+        RT_Texture1D,
+        RT_Texture2D,
+        RT_Texture3D,
         RT_Model,
         RT_Material,
         RT_Shader,
