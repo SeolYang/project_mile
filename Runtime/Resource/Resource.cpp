@@ -2,31 +2,28 @@
 #include "Core\Context.h"
 namespace Mile
 {
-    Resource::Resource( Context* context, const std::string& path, ResourceType resourceType ) :
-        m_context( context ),
+    Resource::Resource( const std::string& path, ResourceType resourceType ) :
         m_path( path ),
-        m_name( GetFileNameFromPath( context, path ) ),
-        m_folder( GetFolderFromPath( context, path ) ),
+        m_name( GetFileNameFromPath( path ) ),
+        m_folder( GetFolderFromPath( path ) ),
         m_resourceType( resourceType )
     {
     }
 
 
-    std::string Resource::GetFileNameFromPath( Context* context, const std::string& filePath )
+    std::string Resource::GetFileNameFromPath( const std::string& filePath )
     {
-       Allocator& allocator = context->GetAllocator( );
-        auto splitPath = SplitStr( allocator, filePath, '\\' );
-        auto splitFileName = SplitStr( allocator, splitPath[ splitPath.GetSize( ) - 1 ], '.' );
-        splitFileName.PopBack( );
+        auto splitPath = SplitStr( filePath, '\\' );
+        auto splitFileName = SplitStr( splitPath[ splitPath.size( ) - 1 ], '.' );
+        splitFileName.pop_back( );
 
         return CombineStr( splitFileName, "." );
     }
 
-    std::string Resource::GetFolderFromPath( Context* context, const std::string& filePath )
+    std::string Resource::GetFolderFromPath( const std::string& filePath )
     {
-       Allocator& allocator = context->GetAllocator( );
-        auto splitPath = SplitStr( allocator, filePath, '\\' );
-        splitPath.PopBack( );
+        auto splitPath = SplitStr( filePath, '\\' );
+        splitPath.pop_back( );
 
         return CombineStr( splitPath, "\\" );
     }

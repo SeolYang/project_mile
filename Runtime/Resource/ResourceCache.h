@@ -20,8 +20,8 @@ namespace Mile
         bool HasByName( const std::string& name );
 
     private:
-        Context*                m_context;
-        Array<ResourcePtr>      m_resources;
+        Context*                      m_context;
+        std::vector<ResourcePtr>      m_resources;
 
     };
 

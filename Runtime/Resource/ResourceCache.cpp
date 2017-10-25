@@ -4,8 +4,7 @@
 namespace Mile
 {
     ResourceCache::ResourceCache( Context* context ) :
-        m_context( context ),
-        m_resources( context->GetAllocator( ) )
+        m_context( context )
     {
     }
 
@@ -18,14 +17,14 @@ namespace Mile
     {
         if ( res != nullptr )
         {
-            m_resources.PushBack( res );
+            m_resources.push_back( res );
         }
     }
 
     void ResourceCache::Clear( )
     {
-        m_resources.Clear( );
-        m_resources.Shrink( );
+        m_resources.clear( );
+        m_resources.shrink_to_fit( );
     }
 
     ResourcePtr ResourceCache::GetByPath( const std::string& path )

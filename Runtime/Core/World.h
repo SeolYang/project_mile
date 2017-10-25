@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SubSystem.h"
-#include "Rumia/Array.h"
 
 namespace Mile
 {
@@ -47,10 +46,10 @@ namespace Mile
         * @brief    World에 생성어있는 모든 Entity들의 배열을 반환합니다.
         * @param    Entity 배열
         */
-        Array<WeakEntity> GetEntities( );
+        std::vector<WeakEntity> GetEntities( );
 
     private:
-        Array<SharedEntity> m_entities;
+        std::vector<SharedEntity> m_entities;
 
     };
 }

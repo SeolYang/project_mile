@@ -2,7 +2,6 @@
 
 #include "Helper.h"
 #include "Component\Component.h"
-#include "Rumia\Array.h"
 
 namespace Mile
 {
@@ -48,7 +47,7 @@ namespace Mile
         * @brief    Entitiy에 추가되어있는 모든 컴포넌트들을 반환합니다.
         * @return   Entitiy에 추가되어있는 컴포넌트 들의 배열
         */
-        template <typename Ty> Array<Ty*> GetComponents( );
+        template <typename Ty> std::vector<Ty*> GetComponents( );
 
         /**
         * @brief    템플릿 파라미터로 주어진 형식의 컴포넌트가 Entity에 추가되어있는지 확인합니다.
@@ -93,13 +92,13 @@ namespace Mile
         void OnDisable( );
 
     protected:
-        Context*            m_context;
-        bool                m_bIsActive;
-        Transform*          m_transform;
+        Context*                  m_context;
+        bool                      m_bIsActive;
+        Transform*                m_transform;
 
     private:
-        Array<Component*>   m_components;
-        std::string         m_name;
+        std::vector<Component*>   m_components;
+        std::string               m_name;
 
     };
 
@@ -107,7 +106,7 @@ namespace Mile
     Ty* Entity::AddComponent( )
     {
         Component* component = new Ty( m_context );
-        m_components.PushBack( component );
+        m_components.push_back( component );
 
         component->Reset( );
         component->SetActive( true );
@@ -123,8 +122,8 @@ namespace Mile
         {
             for ( auto itr = m_components.begin( ); itr != m_components.end( ); ++itr )
             {
-                m_context->GetAllocator( ).DeleteObject( target );
-                m_components.Erase( itr );
+                SafeDelete( target );
+                m_components.erase( itr );
                 break;
             }
         }
@@ -138,8 +137,8 @@ namespace Mile
             Component* foundComponent = *itr;
             if ( typeid( Ty ) == typeid ( *( foundComponent ) ) )
             {
-                m_context->GetAllocator( ).DeleteObject( foundComponent );
-                m_components.Erase( itr );
+                SafeDelete( foundComponent );
+                m_components.erase( itr );
             }
         }
     }
@@ -169,16 +168,16 @@ namespace Mile
     }
 
     template <typename Ty>
-    Array<Ty*> Entity::GetComponents( )
+    std::vector<Ty*> Entity::GetComponents( )
     {
         auto typeID = typeid( Ty );
-        Array<Ty*> tempArr{ m_context->GetAllocator( ) };
+        std::vector<Ty*> tempArr{ };
 
         if ( m_transform != nullptr )
         {
             if ( typeID == typeid( *m_transform ) )
             {
-                tempArr.PushBack( m_transform );
+                tempArr.push_back( m_transform );
             }
 
             return std::move( tempArr );
@@ -188,7 +187,7 @@ namespace Mile
         {
             if ( typeID == typeid( *component ) )
             {
-                tempArr.PushBack( component );
+                tempArr.push_back( component );
             }
         }
 

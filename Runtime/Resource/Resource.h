@@ -20,7 +20,7 @@ namespace Mile
     class MEAPI Resource
     {
     public:
-        Resource( Context* context, const std::string& path, ResourceType resourceType = ResourceType::RT_Unknown);
+        Resource( const std::string& path, ResourceType resourceType = ResourceType::RT_Unknown);
         virtual ~Resource( ) { }
 
         virtual bool Initialize( ) = 0;
@@ -30,11 +30,10 @@ namespace Mile
         std::string GetFolder( ) const { return m_folder; }
         std::string GetPath( ) const { return m_path; }
 
-        static std::string GetFileNameFromPath( Context* context, const std::string& filePath );
-        static std::string GetFolderFromPath( Context* context, const std::string& filePath );
+        static std::string GetFileNameFromPath( const std::string& filePath );
+        static std::string GetFolderFromPath( const std::string& filePath );
 
     protected:
-        Context*        m_context;
         std::string     m_path;
         std::string     m_name;
         std::string     m_folder;

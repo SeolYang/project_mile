@@ -2,18 +2,16 @@
 
 namespace Mile
 {
-    Context::Context( Allocator& allocator ) :
-        m_allocator( allocator ),
-        m_subSystems( allocator )
+    Context::Context( )
     {
 
     }
 
     Context::~Context( )
     {
-        for ( size_t idx = 1; idx < m_subSystems.GetSize( ) - 1; ++idx )
+        for ( size_t idx = 1; idx < m_subSystems.size( ) - 1; ++idx )
         {
-            Delete( m_allocator, m_subSystems[ idx ] );
+            SafeDelete( m_subSystems[ idx ] );
         }
     }
 
@@ -21,7 +19,7 @@ namespace Mile
     {
         if ( newSubSystem != nullptr )
         {
-            m_subSystems.PushBack( newSubSystem );
+            m_subSystems.push_back( newSubSystem );
         }
     }
 }

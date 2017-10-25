@@ -10,9 +10,6 @@
     <Filter Include="Components">
       <UniqueIdentifier>{5a159d47-a33e-434f-b54b-8bd8ca48aa49}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Container">
-      <UniqueIdentifier>{a4047258-bcbd-48a5-a392-b0a916f2e1e8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering">
       <UniqueIdentifier>{d1f9d1d8-950f-421a-a286-64300b2e45ea}</UniqueIdentifier>
     </Filter>
@@ -39,41 +36,11 @@
     <ClInclude Include="..\Runtime\Component\Component.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Iterator.h">
-      <Filter>Container</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\List.h">
-      <Filter>Container</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Pair.h">
-      <Filter>Container</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\ReverseIterator.h">
-      <Filter>Container</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Tuple.h">
-      <Filter>Container</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Algorithm.h">
-      <Filter>Container</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Allocator.h">
-      <Filter>Container</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Array.h">
-      <Filter>Container</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\ForwardList.h">
-      <Filter>Container</Filter>
-    </ClInclude>
     <ClInclude Include="..\Runtime\Core\Entity.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\World.h">
       <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\Rumia\Src\Rumia\Map.h">
-      <Filter>Container</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Resource\Resource.h">
       <Filter>Resource</Filter>
@@ -92,6 +59,12 @@
     </ClInclude>
     <ClInclude Include="..\Runtime\Math\Matrix.h">
       <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\ResourceDX11.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\BufferDX11.h">
+      <Filter>Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

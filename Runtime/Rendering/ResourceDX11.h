@@ -19,7 +19,7 @@ namespace Mile
    class ResourceDX11
    {
    public:
-      ResourceDX11( );
+      ResourceDX11( ){ }
 
       virtual class ID3D11Resource* GetResource( ) = 0;
       virtual DXResourceType GetResourceType( ) = 0;

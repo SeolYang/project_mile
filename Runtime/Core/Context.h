@@ -1,23 +1,17 @@
 #pragma once
 
 #include "SubSystem.h"
-#include "Rumia/Array.h"
+#include <vector>
 
 namespace Mile
 {
     class MEAPI Context
     {
     public:
-        Context( Allocator& allocator );
+        Context( );
         ~Context( );
 
     public:
-        /**
-        * @brief Context가 소유하고있는 할당자를 가져옵니다.
-        * @return Context의 할당자
-        */
-        Allocator& GetAllocator( ) { return m_allocator; }
-
         /**
         * @brief 새로운 Subsystem을 Context에 등록합니다.
         * @param newSubSystem 새로 등록할 Subsystem의 메모리 주소
@@ -32,8 +26,7 @@ namespace Mile
         template <typename T> bool HasSubSystem( ) const;
 
     private:
-        Allocator& m_allocator;
-        Array<SubSystem*> m_subSystems;
+        std::vector<SubSystem*> m_subSystems;
 
     };
 

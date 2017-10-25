@@ -4,67 +4,66 @@
 
 namespace Mile
 {
-    World::World( Context* context ) :
-        SubSystem( context ),
-        m_entities( context->GetAllocator( ) )
-    {
+   World::World( Context* context ) :
+      SubSystem( context )
+   {
 
-    }
+   }
 
-    World::~World( )
-    {
-    }
+   World::~World( )
+   {
+   }
 
-    bool World::Initialize( )
-    {
-        return false;
-    }
+   bool World::Initialize( )
+   {
+      return false;
+   }
 
-    void World::Start( )
-    {
-        for ( auto entity : m_entities )
-        {
-            entity->Start( );
-        }
-    }
+   void World::Start( )
+   {
+      for ( auto entity : m_entities )
+      {
+         entity->Start( );
+      }
+   }
 
-    void World::Update( )
-    {
-        for ( auto entity : m_entities )
-        {
-            entity->Update( );
-        }
-    }
+   void World::Update( )
+   {
+      for ( auto entity : m_entities )
+      {
+         entity->Update( );
+      }
+   }
 
-    WeakEntity World::CreateEntity( )
-    {
-        auto newEntity = MakeShared<Entity>( m_context->GetAllocator( ), m_context );
-        m_entities.PushBack( newEntity );
+   WeakEntity World::CreateEntity( )
+   {
+      auto newEntity = std::make_shared<Entity>( m_context );
+      m_entities.push_back( newEntity );
 
-        return newEntity;
-    }
+      return newEntity;
+   }
 
-    WeakEntity World::GetEntityByName( const std::string& name )
-    {
-        for ( const auto& entity : m_entities )
-        {
-            if ( name == ( entity )->GetName( ) )
-            {
-                return entity;
-            }
-        }
+   WeakEntity World::GetEntityByName( const std::string& name )
+   {
+      for ( const auto& entity : m_entities )
+      {
+         if ( name == ( entity )->GetName( ) )
+         {
+            return entity;
+         }
+      }
 
-        return WeakEntity( );
-    }
+      return WeakEntity( );
+   }
 
-    Array<WeakEntity> World::GetEntities( )
-    {
-        Array<WeakEntity> tempEntities( m_context->GetAllocator( ) );
-        for ( const auto& entity : m_entities )
-        {
-            tempEntities.PushBack( entity );
-        }
+   std::vector<WeakEntity> World::GetEntities( )
+   {
+      std::vector<WeakEntity> tempEntities{ };
+      for ( const auto& entity : m_entities )
+      {
+         tempEntities.push_back( entity );
+      }
 
-        return std::move( tempEntities );
-    }
+      return std::move( tempEntities );
+   }
 }

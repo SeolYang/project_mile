@@ -6,7 +6,6 @@ namespace Mile
 {
     Entity::Entity( Context* context ) :
         m_context( context ),
-        m_components( context->GetAllocator( ) ),
         m_bIsActive( false ),
         m_transform( nullptr )
     {

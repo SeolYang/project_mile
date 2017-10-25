@@ -16,7 +16,7 @@ namespace Mile
 
     bool ResourceManager::Initialize( )
     {
-        m_cache = std::move( MakeUnique<ResourceCache>( m_context->GetAllocator( ), m_context ) );
+        m_cache = std::move( std::make_unique<ResourceCache>( m_context ) );
         if ( m_cache != nullptr )
         {
             return true;

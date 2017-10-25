@@ -8,14 +8,12 @@ namespace Mile
     Engine::Engine( Context* context ) :
         SubSystem( context )
     {
-        auto allocator = m_context->GetAllocator( );
-
         m_context->RegisterSubSystem( this );
 
-        m_resourceManager = New<ResourceManager>( allocator, m_context );
+        m_resourceManager = new ResourceManager( m_context );
         m_context->RegisterSubSystem( m_resourceManager );
 
-        m_world = New<World>( allocator, m_context );
+        m_world = new World( m_context );
         m_context->RegisterSubSystem( m_world );
     }
 
@@ -48,6 +46,6 @@ namespace Mile
     void Engine::ShutDown( )
     {
         m_world = nullptr;
-        Delete( m_context->GetAllocator( ), m_context );
+        SafeDelete( m_context );
     }
 }
