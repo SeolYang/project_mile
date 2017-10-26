@@ -60,11 +60,14 @@
     <ClInclude Include="..\Runtime\Math\Matrix.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\BufferDX11.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\ResourceDX11.h">
       <Filter>Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\BufferDX11.h">
-      <Filter>Rendering</Filter>
+    <ClInclude Include="..\Runtime\Math\Math.h">
+      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -103,6 +106,9 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Math\Matrix.cpp">
       <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\BufferDX11.cpp">
+      <Filter>Rendering</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
