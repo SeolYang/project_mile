@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Core/SubSystem.h"
+#include <fstream>
+#include <string>
 
 namespace Mile
 {
@@ -14,7 +16,8 @@ namespace Mile
         RT_Material,
         RT_Shader,
         RT_Audio,
-        RT_Script
+        RT_Script,
+        RT_PlainText
     };
 
     class MEAPI Resource
@@ -32,6 +35,8 @@ namespace Mile
 
         static std::string GetFileNameFromPath( const std::string& filePath );
         static std::string GetFolderFromPath( const std::string& filePath );
+
+        virtual bool Save( ) { return false; }
 
     protected:
         std::string     m_path;
