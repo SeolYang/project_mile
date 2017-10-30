@@ -21,7 +21,13 @@ namespace Mile
    class MEAPI ResourceDX11
    {
    public:
-      ResourceDX11( ){ }
+      ResourceDX11( ) 
+      {
+      }
+
+      virtual ~ResourceDX11( )
+      {
+      }
 
       virtual ID3D11Resource* GetResource( ) = 0;
       virtual RenderResourceType GetResourceType( ) = 0;
