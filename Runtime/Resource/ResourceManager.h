@@ -21,11 +21,9 @@ namespace Mile
                 return GetByPath( relativePath );
             }
 
-            Allocator& allocator = m_context->GetAllocator( );
-            auto newResource = MakeShared<Ty>( allocator,
-                                               relativePath,
-                                               Resource::GetFileNameFromPath( allocator, relativePath ),
-                                               Resource::GetFolderFromPath( allocator, relativePath ) );
+            auto newResource = std::make_shared<Ty>( relativePath,
+                                               Resource::GetFileNameFromPath( relativePath ),
+                                               Resource::GetFolderFromPath( relativePath ) );
 
             if ( newResource->Initialize( ) )
             {
