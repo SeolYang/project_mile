@@ -20,6 +20,8 @@ namespace Mile
       */
       virtual bool Initialize( ) override;
 
+      int Execute( );
+
       /**
       * @brief Engine의 Subsystem 들을 업데이트합니다.
       */
@@ -30,7 +32,10 @@ namespace Mile
       */
       void ShutDown( );
 
+      bool IsRunning( ) const { return m_bIsRunning; }
+
    private:
+      bool                m_bIsRunning;
       ConfigSystem*       m_configSys;
       Window*             m_window;
       ResourceManager*    m_resourceManager;

@@ -8,7 +8,7 @@
 namespace Mile
 {
    Engine::Engine( Context* context ) :
-      SubSystem( context )
+      SubSystem( context ), m_bIsRunning( false )
    {
       m_context->RegisterSubSystem( this );
 
@@ -29,11 +29,13 @@ namespace Mile
    {
       // -* Initialize subsystems *-
 
+      // Initialize ConfigSystem
       if ( !m_context->GetSubSystem<ConfigSystem>( ) )
       {
          return false;
       }
 
+      // Initialize Window Subsystem
       if ( !m_context->GetSubSystem<Window>( ) )
       {
          return false;
@@ -55,14 +57,28 @@ namespace Mile
       return true;
    }
 
+   int Engine::Execute( )
+   {
+      m_bIsRunning = true;
+
+      while ( m_bIsRunning )
+      {
+         this->Update( );
+      }
+
+      return 0;
+   }
+
    void Engine::Update( )
    {
       // Update subsystems
+      m_window->Update( );
       m_world->Update( );
    }
 
    void Engine::ShutDown( )
    {
+      m_bIsRunning = false;
       m_world = nullptr;
       SafeDelete( m_context );
    }
