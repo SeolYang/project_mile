@@ -22,6 +22,8 @@ namespace Mile
 
       bool IsFullScreen( ) const { return m_bIsFullScreen; }
 
+      virtual void Update( ) override;
+
    private:
       HWND m_handle;
       unsigned int m_resWidth;

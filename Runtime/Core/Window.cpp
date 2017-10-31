@@ -42,6 +42,16 @@ namespace Mile
       return true;
    }
 
+   void Window::Update( )
+   {
+      MSG msg = { 0 };
+      if ( PeekMessage( &msg, nullptr, 0, 0, PM_REMOVE ) )
+      {
+         TranslateMessage( &msg );
+         DispatchMessage( &msg );
+      }
+   }
+
    LRESULT WinProc( HWND Handle, unsigned int Msg, WPARAM wParam, LPARAM lParam )
    {
       switch ( Msg )
