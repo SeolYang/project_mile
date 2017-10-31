@@ -7,10 +7,26 @@
 #include <memory>
 #include <functional>
 
+#include <locale>
+#include <codecvt>
+#include <string>
+
+#define WIN32_MEAN_AND_LEAN
+#include <Windows.h>
+
 #define MEAPI __declspec(dllexport)
 
 namespace Mile
 {
+   using String = std::wstring;
+
+#ifdef _FLOAT_AS_DOUBLE_
+   using Float = double;
+#else
+   using Float = float;
+#endif
+
+
    /**
    * @brief    주어진 문자열을 토큰을 기준으로 나눕니다.
    * @param    Array를 만드는데 사용될 할당자
@@ -18,15 +34,15 @@ namespace Mile
    * @param    토큰
    * @return   나누어진 문자열들의 배열
    */
-   static std::vector<std::string> SplitStr( const std::string& str, char token )
+   static std::vector<String> SplitStr( const String& str, char token )
    {
-      std::vector<std::string> tempArr{ };
+      std::vector<String> tempArr{ };
       size_t before = 0;
       for ( size_t idx = 0; idx < str.length( ); ++idx )
       {
          if ( str[ idx ] == token )
          {
-            std::string tempStr = str.substr( before, idx - before );
+            String tempStr = str.substr( before, idx - before );
             if ( !tempStr.empty( ) )
             {
                tempArr.push_back( std::move( tempStr ) );
@@ -44,9 +60,9 @@ namespace Mile
    * @param    문자열들을 합치면서 중간에 들어갈 토큰
    * @return   합쳐진 문자열
    */
-   static std::string CombineStr( std::vector<std::string> strings, const std::string& token = "" )
+   static String CombineStr( std::vector<String> strings, const String& token = TEXT("") )
    {
-      std::string temp{ };
+      String temp{ };
 
       for ( auto str : strings )
       {
@@ -81,5 +97,17 @@ namespace Mile
          delete target;
          target = nullptr;
       }
+   }
+
+   static std::wstring String2WString( const std::string& str )
+   {
+      std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+      return converter.from_bytes( str );
+   }
+
+   static std::string WString2String( const std::wstring& str )
+   {
+      std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+      return converter.to_bytes( str );
    }
 }
