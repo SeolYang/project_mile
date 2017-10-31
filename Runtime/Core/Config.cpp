@@ -5,7 +5,8 @@
 
 namespace Mile
 {
-   ConfigSystem::ConfigSystem( Context* context ) : SubSystem( context )
+   ConfigSystem::ConfigSystem( Context* context ) : SubSystem( context ),
+      m_nullConfig( TEXT( "NULL" ), json( ) )
    {
    }
 
@@ -16,7 +17,7 @@ namespace Mile
 
    bool ConfigSystem::Initialize( )
    {
-      if ( !LoadConfig( "Engine" ) )
+      if ( !LoadConfig( TEXT("Engine" )) )
       {
          return false;
       }
@@ -24,7 +25,7 @@ namespace Mile
       return true;
    }
 
-   bool ConfigSystem::IsExist( const std::string & configName ) const
+   bool ConfigSystem::IsExist( const String & configName ) const
    {
       for ( auto& config : m_configs )
       {
@@ -37,15 +38,15 @@ namespace Mile
       return false;
    }
 
-   bool ConfigSystem::LoadConfig( const std::string& configName )
+   bool ConfigSystem::LoadConfig( const String& configName )
    {
       if ( !IsExist( configName ) )
       {
          auto resManager = m_context->GetSubSystem<ResourceManager>( );
          auto text = resManager->Load<PlainText>( GetPathFromName( configName ) );
-         m_configs.push_back( std::make_pair( 
+         m_configs.push_back( std::make_pair(
             configName,
-            json::parse( text._Get( )->GetData( ) ) ) );
+            json::parse( WString2String( text._Get( )->GetData( ) ) ) ) );
 
          return true;
       }
@@ -53,7 +54,7 @@ namespace Mile
       return false;
    }
 
-   bool ConfigSystem::UnloadConfig( const std::string& configName )
+   bool ConfigSystem::UnloadConfig( const String& configName )
    {
       for ( auto itr = m_configs.begin( ); itr != m_configs.end( ); ++itr )
       {
@@ -73,7 +74,7 @@ namespace Mile
       m_configs.shrink_to_fit( );
    }
 
-   bool ConfigSystem::SaveConfig( const std::string& configName )
+   bool ConfigSystem::SaveConfig( const String& configName )
    {
       if ( IsExist( configName ) )
       {
@@ -81,7 +82,8 @@ namespace Mile
          auto resManager = m_context->GetSubSystem<ResourceManager>( );
          auto plainText = resManager->Load<PlainText>( GetPathFromName( configName ) );
          auto plainTextRawPtr = plainText._Get( );
-         plainTextRawPtr->SetData( config.second.dump( ) );
+         auto dumpData = config.second.dump( );
+         plainTextRawPtr->SetData( String2WString( dumpData ) );
          return plainTextRawPtr->Save( );
       }
 
@@ -95,12 +97,13 @@ namespace Mile
       {
          auto plainText = resManager->Load<PlainText>( GetPathFromName( config.first ) );
          auto plainTextRawPtr = plainText._Get( );
-         plainTextRawPtr->SetData( config.second.dump( ) );
+         auto dumpData = config.second.dump( );
+         plainTextRawPtr->SetData( String2WString( dumpData ) );
          plainTextRawPtr->Save( );
       }
    }
 
-   Config& ConfigSystem::GetConfig( const std::string& configName )
+   Config& ConfigSystem::GetConfig( const String& configName )
    {
       for ( auto& config : m_configs )
       {
@@ -110,10 +113,10 @@ namespace Mile
          }
       }
 
-      return Config( "NotFound", json( ) );
+      return m_nullConfig;
    }
 
-   Config ConfigSystem::GetConfig( const std::string& configName ) const
+   Config ConfigSystem::GetConfig( const String& configName ) const
    {
       for ( auto& config : m_configs )
       {
@@ -123,6 +126,6 @@ namespace Mile
          }
       }
 
-      return Config( "NotFound", json() );
+      return m_nullConfig;
    }
 }
