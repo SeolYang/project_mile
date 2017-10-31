@@ -4,12 +4,12 @@ namespace Mile
 {
    bool PlainText::Initialize( )
    {
-      m_data = "";
+      m_data = TEXT("");
 
-      std::ifstream stream( this->m_path );
+      std::wifstream stream( this->m_path );
       if ( stream.is_open( ) )
       {
-         std::string tmp;
+         String tmp;
          while ( std::getline( stream, tmp ) )
          {
             m_data += tmp;
@@ -23,24 +23,24 @@ namespace Mile
       return false;
    }
 
-   std::string& PlainText::GetData( )
+   String& PlainText::GetData( )
    {
       return m_data;
    }
 
-   std::string PlainText::GetData( ) const
+   String PlainText::GetData( ) const
    {
       return m_data;
    }
 
-   void PlainText::SetData( const std::string& newData )
+   void PlainText::SetData( const String& newData )
    {
       m_data = newData;
    }
 
    bool PlainText::Save( )
    {
-      std::ofstream stream( this->m_path );
+      std::wofstream stream( this->m_path );
       stream << m_data;
       stream.close( );
       return true;

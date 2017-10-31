@@ -2,7 +2,7 @@
 #include "Core\Context.h"
 namespace Mile
 {
-    Resource::Resource( const std::string& path, ResourceType resourceType ) :
+    Resource::Resource( const String& path, ResourceType resourceType ) :
         m_path( path ),
         m_name( GetFileNameFromPath( path ) ),
         m_folder( GetFolderFromPath( path ) ),
@@ -11,21 +11,20 @@ namespace Mile
     }
 
 
-    std::string Resource::GetFileNameFromPath( const std::string& filePath )
+    String Resource::GetFileNameFromPath( const String& filePath )
     {
         auto splitPath = SplitStr( filePath, '\\' );
         auto splitFileName = SplitStr( splitPath[ splitPath.size( ) - 1 ], '.' );
         splitFileName.pop_back( );
 
-        return CombineStr( splitFileName, "." );
+        return CombineStr( splitFileName, TEXT("."));
     }
 
-    std::string Resource::GetFolderFromPath( const std::string& filePath )
+    String Resource::GetFolderFromPath( const String& filePath )
     {
         auto splitPath = SplitStr( filePath, '\\' );
         splitPath.pop_back( );
 
-        return CombineStr( splitPath, "\\" );
+        return CombineStr( splitPath, TEXT( "\\" ) );
     }
 }
-

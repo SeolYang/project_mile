@@ -77,13 +77,13 @@ namespace Mile
         * @brief    Entity에 설정되어있는 이름을 반환합니다.
         * @return   Entity의 이름
         */
-        std::string GetName( ) const { return m_name; }
+        String GetName( ) const { return m_name; }
 
         /**
         * @brief    Entity에 새로운 이름을 설정해줍니다.
         * @param    Entity에 설정해줄 새로운 이름
         */
-        void SetName( const std::string& name ) { m_name = name; }
+        void SetName( const String& name ) { m_name = name; }
 
         
         void Start( );
@@ -98,7 +98,7 @@ namespace Mile
 
     private:
         std::vector<Component*>   m_components;
-        std::string               m_name;
+        String                    m_name;
 
     };
 

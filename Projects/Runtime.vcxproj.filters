@@ -19,6 +19,18 @@
     <Filter Include="Resource">
       <UniqueIdentifier>{c009a5a2-f10c-4e42-b419-f6dd1a3087ae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering\Buffer">
+      <UniqueIdentifier>{39cf7b4e-c6cf-4245-aece-4c33c6a97d20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Texture">
+      <UniqueIdentifier>{3cb3f96e-3de6-4787-8dcf-9fb3a400d637}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty">
+      <UniqueIdentifier>{5406f72d-f47b-4710-88b6-111d3153388c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\json">
+      <UniqueIdentifier>{058221c6-d62e-4c78-899f-32d2a0c45c1f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Core\Context.h">
@@ -60,14 +72,38 @@
     <ClInclude Include="..\Runtime\Math\Matrix.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\BufferDX11.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\ResourceDX11.h">
       <Filter>Rendering</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Math\Math.h">
       <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\BufferDX11.h">
+      <Filter>Rendering\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\IndexBufferDX11.h">
+      <Filter>Rendering\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h">
+      <Filter>Rendering\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\ConstantBufferDX11.h">
+      <Filter>Rendering\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\RendererDX11.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Core\Window.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Core\Config.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\json\src\json.hpp">
+      <Filter>ThirdParty\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\PlainText.h">
+      <Filter>Resource</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -108,7 +144,16 @@
       <Filter>Math</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\BufferDX11.cpp">
-      <Filter>Rendering</Filter>
+      <Filter>Rendering\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Core\Window.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Core\Config.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Resource\PlainText.cpp">
+      <Filter>Resource</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

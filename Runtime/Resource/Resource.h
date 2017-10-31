@@ -23,25 +23,25 @@ namespace Mile
     class MEAPI Resource
     {
     public:
-        Resource( const std::string& path, ResourceType resourceType = ResourceType::RT_Unknown);
+        Resource( const String& path, ResourceType resourceType = ResourceType::RT_Unknown);
         virtual ~Resource( ) { }
 
         virtual bool Initialize( ) = 0;
 
         ResourceType GetType( ) const { return m_resourceType; }
-        std::string GetName( ) const { return m_name; }
-        std::string GetFolder( ) const { return m_folder; }
-        std::string GetPath( ) const { return m_path; }
+        String GetName( ) const { return m_name; }
+        String GetFolder( ) const { return m_folder; }
+        String GetPath( ) const { return m_path; }
 
-        static std::string GetFileNameFromPath( const std::string& filePath );
-        static std::string GetFolderFromPath( const std::string& filePath );
+        static String GetFileNameFromPath( const String& filePath );
+        static String GetFolderFromPath( const String& filePath );
 
         virtual bool Save( ) { return false; }
 
     protected:
-        std::string     m_path;
-        std::string     m_name;
-        std::string     m_folder;
+        String     m_path;
+        String     m_name;
+        String     m_folder;
         ResourceType    m_resourceType;
 
     };

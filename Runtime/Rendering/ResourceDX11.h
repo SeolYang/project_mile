@@ -21,7 +21,7 @@ namespace Mile
    class MEAPI ResourceDX11
    {
    public:
-      ResourceDX11( ) 
+      ResourceDX11( ) : m_bIsInitialized( false )
       {
       }
 
@@ -31,5 +31,11 @@ namespace Mile
 
       virtual ID3D11Resource* GetResource( ) = 0;
       virtual RenderResourceType GetResourceType( ) = 0;
+      
+      bool IsInitialized( ) const { return m_bIsInitialized; }
+
+   private:
+      bool     m_bIsInitialized;
+
    };
 }

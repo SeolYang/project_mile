@@ -14,16 +14,14 @@ namespace Mile
         virtual bool Initialize( ) override;
 
         template < typename Ty >
-        std::weak_ptr<Ty> Load( const std::string& relativePath )
+        std::weak_ptr<Ty> Load( const String& relativePath )
         {
             if ( m_cache->HasByPath( relativePath ) )
             {
-                return GetByPath( relativePath );
+                return GetByPath<Ty>( relativePath );
             }
 
-            auto newResource = std::make_shared<Ty>( relativePath,
-                                               Resource::GetFileNameFromPath( relativePath ),
-                                               Resource::GetFolderFromPath( relativePath ) );
+            auto newResource = std::make_shared<Ty>( relativePath );
 
             if ( newResource->Initialize( ) )
             {
@@ -34,9 +32,9 @@ namespace Mile
         }
 
         template < typename Ty >
-        std::weak_ptr<Ty> GetByPath( const std::string& filePath )
+        std::weak_ptr<Ty> GetByPath( const String& filePath )
         {
-            if ( m_cache->HasByPath( relativePath ) )
+            if ( m_cache->HasByPath( filePath ) )
             {
                 return std::dynamic_pointer_cast< Ty >( m_cache->GetByPath( filePath ) );
             }
@@ -45,7 +43,7 @@ namespace Mile
         }
 
         template < typename Ty >
-        std::weak_ptr<Ty> GetByName( const std::string& name )
+        std::weak_ptr<Ty> GetByName( const String& name )
         {
             if ( m_cache->HasByName( relativePath ) )
             {

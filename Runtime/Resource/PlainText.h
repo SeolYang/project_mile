@@ -6,7 +6,7 @@ namespace Mile
    class MEAPI PlainText : public Resource
    {
    public:
-      PlainText( const std::string& path ) 
+      PlainText( const String& path ) 
          : Resource( path, 
                      ResourceType::RT_PlainText )
       {
@@ -14,15 +14,15 @@ namespace Mile
 
       virtual bool Initialize( ) override;
 
-      std::string& GetData( );
-      std::string GetData( ) const;
+      String& GetData( );
+      String GetData( ) const;
 
-      void SetData( const std::string& newData );
+      void SetData( const String& newData );
 
       virtual bool Save( ) override;
 
    private:
-      std::string m_data;
+      String m_data;
 
    };
 }

@@ -40,7 +40,7 @@ namespace Mile
         *           ( 단 같은 이름을 가지는 Entity중 제일 먼저 추가된 Entity를 반환함. )
         * @param    해당하는 이름을 가지는 Entity
         */
-        WeakEntity GetEntityByName( const std::string& name );
+        WeakEntity GetEntityByName( const String& name );
 
         /**
         * @brief    World에 생성어있는 모든 Entity들의 배열을 반환합니다.

@@ -27,7 +27,7 @@ namespace Mile
         m_resources.shrink_to_fit( );
     }
 
-    ResourcePtr ResourceCache::GetByPath( const std::string& path )
+    ResourcePtr ResourceCache::GetByPath( const String& path )
     {
         for ( auto res : m_resources )
         {
@@ -40,7 +40,7 @@ namespace Mile
         return ResourcePtr( );
     }
 
-    ResourcePtr ResourceCache::GetByName( const std::string& name )
+    ResourcePtr ResourceCache::GetByName( const String& name )
     {
         for ( auto res : m_resources )
         {
@@ -53,7 +53,7 @@ namespace Mile
         return ResourcePtr( );
     }
 
-    bool ResourceCache::HasByPath( const std::string& name )
+    bool ResourceCache::HasByPath( const String& name )
     {
         for ( auto res : m_resources )
         {
@@ -66,7 +66,7 @@ namespace Mile
         return false;
     }
 
-    bool ResourceCache::HasByName( const std::string& name )
+    bool ResourceCache::HasByName( const String& name )
     {
         for ( auto res : m_resources )
         {

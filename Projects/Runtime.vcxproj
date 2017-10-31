@@ -48,7 +48,7 @@
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
     <IntDir>..\Binaries\VSOBJ\$(Configuration)\</IntDir>
     <TargetName>Runtime</TargetName>
-    <SourcePath>..\Runtime\;$(SourcePath)</SourcePath>
+    <SourcePath>..\Runtime;..\ThirdParty\json\src;$(SourcePath)</SourcePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -56,7 +56,7 @@
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
     <IntDir>..\Binaries\VSOBJ\$(Configuration)\</IntDir>
     <TargetName>Runtime</TargetName>
-    <SourcePath>..\Runtime\;$(SourcePath)</SourcePath>
+    <SourcePath>..\Runtime;..\ThirdParty\json\src;$(SourcePath)</SourcePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -66,7 +66,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Runtime\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Runtime;..\ThirdParty\json\src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -82,7 +82,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Runtime\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Runtime;..\ThirdParty\json\src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -93,33 +93,44 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Component\Component.h" />
+    <ClInclude Include="..\Runtime\Core\Config.h" />
     <ClInclude Include="..\Runtime\Core\Context.h" />
     <ClInclude Include="..\Runtime\Core\Engine.h" />
     <ClInclude Include="..\Runtime\Core\Entity.h" />
     <ClInclude Include="..\Runtime\Core\Helper.h" />
     <ClInclude Include="..\Runtime\Core\SubSystem.h" />
+    <ClInclude Include="..\Runtime\Core\Window.h" />
     <ClInclude Include="..\Runtime\Core\World.h" />
     <ClInclude Include="..\Runtime\Math\Math.h" />
     <ClInclude Include="..\Runtime\Math\Matrix.h" />
     <ClInclude Include="..\Runtime\Math\Vector3.h" />
     <ClInclude Include="..\Runtime\Math\Vector4.h" />
     <ClInclude Include="..\Runtime\Rendering\BufferDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\ConstantBufferDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\IndexBufferDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\RendererDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ResourceDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h" />
     <ClInclude Include="..\Runtime\Resource\Resource.h" />
     <ClInclude Include="..\Runtime\Resource\ResourceCache.h" />
     <ClInclude Include="..\Runtime\Resource\ResourceManager.h" />
+    <ClInclude Include="..\Runtime\Resource\PlainText.h" />
+    <ClInclude Include="..\ThirdParty\json\src\json.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Component\Component.cpp" />
+    <ClCompile Include="..\Runtime\Core\Config.cpp" />
     <ClCompile Include="..\Runtime\Core\Context.cpp" />
     <ClCompile Include="..\Runtime\Core\Engine.cpp" />
     <ClCompile Include="..\Runtime\Core\Entity.cpp" />
     <ClCompile Include="..\Runtime\Core\SubSystem.cpp" />
+    <ClCompile Include="..\Runtime\Core\Window.cpp" />
     <ClCompile Include="..\Runtime\Core\World.cpp" />
     <ClCompile Include="..\Runtime\Math\Matrix.cpp" />
     <ClCompile Include="..\Runtime\Math\Vector3.cpp" />
     <ClCompile Include="..\Runtime\Math\Vector4.cpp" />
     <ClCompile Include="..\Runtime\Rendering\BufferDX11.cpp" />
+    <ClCompile Include="..\Runtime\Resource\PlainText.cpp" />
     <ClCompile Include="..\Runtime\Resource\Resource.cpp" />
     <ClCompile Include="..\Runtime\Resource\ResourceCache.cpp" />
     <ClCompile Include="..\Runtime\Resource\ResourceManager.cpp" />

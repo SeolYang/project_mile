@@ -43,7 +43,7 @@ namespace Mile
       return newEntity;
    }
 
-   WeakEntity World::GetEntityByName( const std::string& name )
+   WeakEntity World::GetEntityByName( const String& name )
    {
       for ( const auto& entity : m_entities )
       {
