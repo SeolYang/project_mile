@@ -26,7 +26,7 @@ namespace Mile
         Resource( const String& path, ResourceType resourceType = ResourceType::RT_Unknown);
         virtual ~Resource( ) { }
 
-        virtual bool Initialize( ) = 0;
+        virtual bool Init( ) = 0;
 
         ResourceType GetType( ) const { return m_resourceType; }
         String GetName( ) const { return m_name; }

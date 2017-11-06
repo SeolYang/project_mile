@@ -20,7 +20,7 @@ namespace Mile
       virtual void* Map( ) { return nullptr;  }
       virtual void UnMap( ) { }
 
-   private:
+   protected:
       ID3D11Buffer*     m_buffer;
 
    };

@@ -17,7 +17,7 @@ namespace Mile
         /**
         * @brief    World를 초기화합니다.
         */
-        virtual bool Initialize( ) override;
+        virtual bool Init( ) override;
 
         /**
         * @brief    World에 생성되어있는 Entity들의 Start 함수를 호출합니다.

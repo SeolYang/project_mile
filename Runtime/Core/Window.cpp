@@ -15,7 +15,7 @@ namespace Mile
    {
    }
 
-   bool Window::Initialize( )
+   bool Window::Init( )
    {
       auto configSys = m_context->GetSubSystem<ConfigSystem>( );
 

@@ -15,7 +15,7 @@ namespace Mile
     {
     }
 
-    void Entity::Initialize( Transform* transform )
+    void Entity::Init( Transform* transform )
     {
         m_transform = transform;
     }

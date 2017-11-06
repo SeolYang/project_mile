@@ -15,7 +15,7 @@ namespace Mile
       UnloadAllConfigs( );
    }
 
-   bool ConfigSystem::Initialize( )
+   bool ConfigSystem::Init( )
    {
       if ( !LoadConfig( TEXT("Engine" )) )
       {

@@ -25,30 +25,30 @@ namespace Mile
       m_context->RegisterSubSystem( m_world );
    }
 
-   bool Engine::Initialize( )
+   bool Engine::Init( )
    {
       // -* Initialize subsystems *-
 
       // Initialize ConfigSystem
-      if ( !m_context->GetSubSystem<ConfigSystem>( ) )
+      if ( !m_context->GetSubSystem<ConfigSystem>( )->Init( ) )
       {
          return false;
       }
 
       // Initialize Window Subsystem
-      if ( !m_context->GetSubSystem<Window>( ) )
+      if ( !m_context->GetSubSystem<Window>( )->Init( ) )
       {
          return false;
       }
 
       // Initialize Resource manager
-      if ( !m_context->GetSubSystem<ResourceManager>( )->Initialize( ) )
+      if ( !m_context->GetSubSystem<ResourceManager>( )->Init( ) )
       {
          return false;
       }
 
       // Initialize World
-      if ( !m_context->GetSubSystem<World>( )->Initialize( ) )
+      if ( !m_context->GetSubSystem<World>( )->Init( ) )
       {
          //@TODO: Add Log
          return false;

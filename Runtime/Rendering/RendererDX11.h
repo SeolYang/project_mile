@@ -14,7 +14,7 @@ namespace Mile
       RendererDX11( Context* context );
       virtual ~RendererDX11( );
 
-      virtual bool Initialize( ) override;
+      virtual bool Init( ) override;
 
       void Render( );
       void Clear( );

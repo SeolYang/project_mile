@@ -18,7 +18,7 @@ namespace Mile
       * @brief Engine의 Subsystem 들을 초기화합니다.
       * @return 초기화 성공 여부
       */
-      virtual bool Initialize( ) override;
+      virtual bool Init( ) override;
 
       int Execute( );
 

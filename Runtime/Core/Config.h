@@ -16,7 +16,7 @@ namespace Mile
       ConfigSystem( Context* context );
       ~ConfigSystem( );
 
-      virtual bool Initialize( ) override;
+      virtual bool Init( ) override;
 
       bool IsExist( const String& configName ) const;
 

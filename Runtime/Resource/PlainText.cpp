@@ -2,7 +2,7 @@
 
 namespace Mile
 {
-   bool PlainText::Initialize( )
+   bool PlainText::Init( )
    {
       m_data = TEXT("");
 

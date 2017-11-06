@@ -12,7 +12,7 @@ namespace Mile
       {
       }
 
-      virtual bool Initialize( ) override;
+      virtual bool Init( ) override;
 
       String& GetData( );
       String GetData( ) const;

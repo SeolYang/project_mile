@@ -34,7 +34,7 @@ namespace Mile
       
       bool IsInitialized( ) const { return m_bIsInitialized; }
 
-   private:
+   protected:
       bool     m_bIsInitialized;
 
    };

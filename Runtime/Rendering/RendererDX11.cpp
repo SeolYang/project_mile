@@ -22,7 +22,7 @@ namespace Mile
       SafeRelease( m_device );
    }
 
-   bool RendererDX11::Initialize( )
+   bool RendererDX11::Init( )
    {
       m_window = m_context->GetSubSystem<Window>( );
 

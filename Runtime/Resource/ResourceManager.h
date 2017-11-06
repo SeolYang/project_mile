@@ -11,7 +11,7 @@ namespace Mile
         ResourceManager( Context* context );
         ~ResourceManager( );
 
-        virtual bool Initialize( ) override;
+        virtual bool Init( ) override;
 
         template < typename Ty >
         std::weak_ptr<Ty> Load( const String& relativePath )
@@ -23,7 +23,7 @@ namespace Mile
 
             auto newResource = std::make_shared<Ty>( relativePath );
 
-            if ( newResource->Initialize( ) )
+            if ( newResource->Init( ) )
             {
                 m_cache->Add( std::dynamic_pointer_cast< Resource >( newResource ) );
             }

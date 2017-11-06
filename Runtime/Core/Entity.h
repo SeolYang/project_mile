@@ -18,7 +18,7 @@ namespace Mile
         * @brief    Entity를 초기화 합니다. ( 이 시점에서 Entity의 Transform 이 설정됩니다. )
         * @param    Entity에 적용할 Transform 컴포넌트
         */
-        void Initialize( Transform* transform );
+        void Init( Transform* transform );
 
         /**
         * @brief    템플릿 파라미터로 주어진 형식의 컴포넌트를 추가합니다.

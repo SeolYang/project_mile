@@ -11,7 +11,7 @@ namespace Mile
         SubSystem( Context* context );
         virtual ~SubSystem( ) { }
 
-        virtual bool Initialize( ) = 0;
+        virtual bool Init( ) = 0;
         virtual void Update( ) { }
 
     protected:

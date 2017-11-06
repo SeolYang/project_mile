@@ -14,7 +14,7 @@ namespace Mile
    {
    }
 
-   bool World::Initialize( )
+   bool World::Init( )
    {
       return false;
    }

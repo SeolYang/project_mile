@@ -14,7 +14,7 @@ namespace Mile
         ClearCache( );
     }
 
-    bool ResourceManager::Initialize( )
+    bool ResourceManager::Init( )
     {
         m_cache = std::move( std::make_unique<ResourceCache>( m_context ) );
         if ( m_cache != nullptr )

@@ -10,7 +10,7 @@ namespace Mile
       Window( Context* context );
       virtual ~Window( );
 
-      virtual bool Initialize( ) override;
+      virtual bool Init( ) override;
 
       void* GetHandle( ) { return m_handle; }
 
