@@ -155,5 +155,11 @@
     <ClCompile Include="..\Runtime\Resource\PlainText.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\RendererDX11.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\IndexBufferDX11.cpp">
+      <Filter>Rendering\Buffer</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
