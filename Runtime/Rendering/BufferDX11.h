@@ -6,7 +6,9 @@ namespace Mile
    class MEAPI BufferDX11 : public ResourceDX11
    {
    public:
-      BufferDX11( ) : m_buffer( nullptr )
+      BufferDX11( RendererDX11* renderer ) : 
+         m_buffer( nullptr ),
+         ResourceDX11( renderer )
       {
       }
 
@@ -16,12 +18,14 @@ namespace Mile
       }
 
       virtual ID3D11Resource* GetResource( ) override;
+      D3D11_BUFFER_DESC GetDesc( ) const { return m_desc; }
 
       virtual void* Map( ) { return nullptr;  }
       virtual void UnMap( ) { }
 
    protected:
       ID3D11Buffer*     m_buffer;
+      D3D11_BUFFER_DESC m_desc;
 
    };
 }

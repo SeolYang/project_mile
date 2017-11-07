@@ -18,10 +18,13 @@ namespace Mile
       RDRT_Texture3D
    };
 
+   class RendererDX11;
    class MEAPI ResourceDX11
    {
    public:
-      ResourceDX11( ) : m_bIsInitialized( false )
+      ResourceDX11( RendererDX11* renderer ) : 
+         m_bIsInitialized( false ),
+         m_renderer( renderer )
       {
       }
 
@@ -30,12 +33,13 @@ namespace Mile
       }
 
       virtual ID3D11Resource* GetResource( ) = 0;
-      virtual RenderResourceType GetResourceType( ) = 0;
+      virtual RenderResourceType GetResourceType( ) const = 0;
       
       bool IsInitialized( ) const { return m_bIsInitialized; }
 
    protected:
-      bool     m_bIsInitialized;
+      RendererDX11*  m_renderer;
+      bool           m_bIsInitialized;
 
    };
 }
