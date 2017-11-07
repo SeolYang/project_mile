@@ -3,31 +3,22 @@
 
 namespace Mile
 {
-   bool IndexBufferDX11::Init( const std::vector<unsigned int>& indicies, bool dynamic )
+   bool IndexBufferDX11::Init( const std::vector<unsigned int>& indicies )
    {
-      if ( !m_bIsInitialized )
-      { 
+      if ( m_bIsInitialized || ( m_renderer == nullptr ) )
+      {
          return false;
       }
 
       D3D11_BUFFER_DESC desc;
-      
+
       ZeroMemory( &desc, sizeof( desc ) );
       desc.ByteWidth = sizeof( unsigned int ) * indicies.size( );
       desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
       desc.StructureByteStride = 0;
       desc.MiscFlags = 0;
-      
-      if ( dynamic )
-      {
-         desc.Usage = D3D11_USAGE_DYNAMIC;
-         desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-      }
-      else
-      {
-         desc.Usage = D3D11_USAGE_IMMUTABLE;
-         desc.CPUAccessFlags = 0;
-      }
+      desc.Usage = D3D11_USAGE_IMMUTABLE;
+      desc.CPUAccessFlags = 0;
 
       D3D11_SUBRESOURCE_DATA subResource;
       ZeroMemory( &subResource, sizeof( subResource ) );
@@ -39,8 +30,8 @@ namespace Mile
          return false;
       }
 
-      m_bIsInitialized = true;
       m_desc = desc;
+      m_bIsInitialized = true;
       return true;
    }
 
