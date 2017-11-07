@@ -23,6 +23,19 @@ namespace Mile
       return false;
    }
 
+   bool PlainText::Save( const String& filePath )
+   {
+      std::wofstream stream( this->m_path );
+      stream << m_data;
+      stream.close( );
+      return true;
+   }
+
+   bool PlainText::Save( )
+   {
+      return Save( this->m_path );
+   }
+
    String& PlainText::GetData( )
    {
       return m_data;
@@ -36,13 +49,5 @@ namespace Mile
    void PlainText::SetData( const String& newData )
    {
       m_data = newData;
-   }
-
-   bool PlainText::Save( )
-   {
-      std::wofstream stream( this->m_path );
-      stream << m_data;
-      stream.close( );
-      return true;
    }
 }
