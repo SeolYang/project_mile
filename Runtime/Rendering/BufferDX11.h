@@ -21,7 +21,7 @@ namespace Mile
       D3D11_BUFFER_DESC GetDesc( ) const { return m_desc; }
 
       virtual void* Map( ) { return nullptr;  }
-      virtual void UnMap( ) { }
+      virtual bool UnMap( ) { return false; }
 
    protected:
       ID3D11Buffer*     m_buffer;
