@@ -12,7 +12,7 @@ namespace Mile
       }
 
       bool Init( const std::vector<unsigned int>& indicies );
-      bool Bind( );
+      bool BindAtIA( );
 
       virtual RenderResourceType GetResourceType( ) const override { return RenderResourceType::RDRT_IndexBuffer; }
       
