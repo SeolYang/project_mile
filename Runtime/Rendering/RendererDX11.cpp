@@ -8,7 +8,7 @@ namespace Mile
       m_window( nullptr ),
       m_device( nullptr ), m_deviceContext( nullptr ),
       m_swapChain( nullptr ), m_renderTargetView( nullptr ),
-      m_depthStencilBuffer(nullptr), m_depthStencilView(nullptr), m_bDepthEnabled( true )
+      m_depthStencilBuffer( nullptr ), m_depthStencilView( nullptr ), m_bDepthEnabled( true )
    {
    }
 
@@ -56,7 +56,7 @@ namespace Mile
       swDesc.BufferDesc.Height = m_window->GetResHeight( );
       swDesc.BufferDesc.Format = DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM;
       swDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-      swDesc.OutputWindow = reinterpret_cast<HWND>( m_window->GetHandle( ) );
+      swDesc.OutputWindow = reinterpret_cast< HWND >( m_window->GetHandle( ) );
       swDesc.SampleDesc.Count = 1;
       swDesc.SampleDesc.Quality = 0;
       swDesc.Windowed = !m_window->IsFullScreen( );
@@ -92,7 +92,7 @@ namespace Mile
 
       /* Create Render target view **/
       ID3D11Texture2D* backBuffer = nullptr;
-      hr = m_swapChain->GetBuffer( 0, 
+      hr = m_swapChain->GetBuffer( 0,
                                    __uuidof( ID3D11Texture2D ),
                                    ( LPVOID* ) &backBuffer );
 
@@ -102,7 +102,7 @@ namespace Mile
          return false;
       }
 
-      hr = m_device->CreateRenderTargetView( backBuffer, 
+      hr = m_device->CreateRenderTargetView( backBuffer,
                                              nullptr,
                                              &m_renderTargetView );
       SafeRelease( backBuffer );
@@ -118,59 +118,59 @@ namespace Mile
 
    bool RendererDX11::CreateDepthStencilBuffer( )
    {
-      if ( m_device != nullptr )
+      if ( m_device == nullptr )
       {
-         D3D11_TEXTURE2D_DESC bufferDesc;
-         ZeroMemory( &bufferDesc, sizeof( bufferDesc ) );
-         bufferDesc.Width = m_window->GetResWidth( );
-         bufferDesc.Height = m_window->GetResHeight( );
-         bufferDesc.MipLevels = 1;
-         bufferDesc.ArraySize = 1;
-         bufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-         bufferDesc.SampleDesc.Count = 1;
-         bufferDesc.SampleDesc.Quality = 0;
-         bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-         bufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-         bufferDesc.CPUAccessFlags = 0;
-         bufferDesc.MiscFlags = 0;
-
-         auto hr = m_device->CreateTexture2D( &bufferDesc, nullptr, &m_depthStencilBuffer );
-         if ( FAILED( hr ) )
-         {
-            /* Failed to create Depth-Stencil Buffer. **/
-            return false;
-         }
-
-         return true;
+         return false;
       }
 
-      return false;
+      D3D11_TEXTURE2D_DESC bufferDesc;
+      ZeroMemory( &bufferDesc, sizeof( bufferDesc ) );
+      bufferDesc.Width = m_window->GetResWidth( );
+      bufferDesc.Height = m_window->GetResHeight( );
+      bufferDesc.MipLevels = 1;
+      bufferDesc.ArraySize = 1;
+      bufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+      bufferDesc.SampleDesc.Count = 1;
+      bufferDesc.SampleDesc.Quality = 0;
+      bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+      bufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+      bufferDesc.CPUAccessFlags = 0;
+      bufferDesc.MiscFlags = 0;
+
+      auto hr = m_device->CreateTexture2D( &bufferDesc, nullptr, &m_depthStencilBuffer );
+      if ( FAILED( hr ) )
+      {
+         /* Failed to create Depth-Stencil Buffer. **/
+         return false;
+      }
+
+      return true;
    }
+
 
    bool RendererDX11::CreateDepthStencilView( )
    {
-      if ( m_device != nullptr && m_depthStencilBuffer != nullptr )
+      if ( m_device == nullptr || m_depthStencilBuffer == nullptr )
       {
-         D3D11_DEPTH_STENCIL_VIEW_DESC dsViewDesc;
-         ZeroMemory( &dsViewDesc, sizeof( dsViewDesc ) );
-         dsViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-         dsViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-         dsViewDesc.Texture2D.MipSlice = 0;
+         return false;
+      }
+      D3D11_DEPTH_STENCIL_VIEW_DESC dsViewDesc;
+      ZeroMemory( &dsViewDesc, sizeof( dsViewDesc ) );
+      dsViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+      dsViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+      dsViewDesc.Texture2D.MipSlice = 0;
 
-         auto hr = m_device->CreateDepthStencilView( m_depthStencilBuffer,
-                                                     &dsViewDesc,
-                                                     &m_depthStencilView );
+      auto hr = m_device->CreateDepthStencilView( m_depthStencilBuffer,
+                                                  &dsViewDesc,
+                                                  &m_depthStencilView );
 
-         if ( FAILED( hr ) )
-         {
-            /* Failed to create depth stencil view. **/
-            return false;
-         }
-
-         return true;
+      if ( FAILED( hr ) )
+      {
+         /* Failed to create depth stencil view. **/
+         return false;
       }
 
-      return false;
+      return true;
    }
 
    void RendererDX11::Render( )
@@ -182,8 +182,8 @@ namespace Mile
       if ( m_deviceContext != nullptr )
       {
          float clearColor[ 4 ] = { m_clearColor.x, m_clearColor.y, m_clearColor.z, m_clearColor.w };
-         m_deviceContext->ClearRenderTargetView( m_renderTargetView, 
-                                                 clearColor);
+         m_deviceContext->ClearRenderTargetView( m_renderTargetView,
+                                                 clearColor );
 
          if ( m_bDepthEnabled )
          {
