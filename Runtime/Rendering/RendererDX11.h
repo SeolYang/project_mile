@@ -6,8 +6,16 @@
 
 namespace Mile
 {
-   class Window;
+   enum class ShaderType
+   {
+      VertexShader,
+      HullShader,
+      DomainShader,
+      GeometryShader,
+      PixelShader
+   };
 
+   class Window;
    class MEAPI RendererDX11 : public SubSystem
    {
    public:

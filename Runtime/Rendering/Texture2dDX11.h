@@ -15,7 +15,7 @@ namespace Mile
 
       bool Init( unsigned int width, unsigned int height, int channels, unsigned char* data, DXGI_FORMAT format );
 
-      ID3D11Texture2D* GetTexture( ) { return m_texture; }
+      virtual ID3D11Resource* GetResource( ) override { return m_texture; }
       unsigned int GetMipLevels( ) const { return m_mipLevels; }
 
    private:

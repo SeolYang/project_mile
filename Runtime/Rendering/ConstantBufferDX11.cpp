@@ -64,7 +64,7 @@ namespace Mile
       return true;
    }
 
-   bool ConstantBufferDX11::BindAtShader( unsigned int startSlot, RenderResourceType shaderType )
+   bool ConstantBufferDX11::BindAtShader( unsigned int startSlot, ShaderType shaderType )
    {
       if ( !m_bIsInitialized || m_renderer == nullptr )
       {
@@ -74,19 +74,19 @@ namespace Mile
       auto deviceContext = m_renderer->GetDeviceContext( );
       switch ( shaderType )
       {
-      case RenderResourceType::RDRT_VertexShader:
+      case ShaderType::VertexShader:
          deviceContext->VSSetConstantBuffers( startSlot, 1, &m_buffer );
          break;
-      case RenderResourceType::RDRT_HullShader:
+      case ShaderType::HullShader:
          deviceContext->HSSetConstantBuffers( startSlot, 1, &m_buffer );
          break;
-      case RenderResourceType::RDRT_DomainShader:
+      case ShaderType::DomainShader:
          deviceContext->DSSetConstantBuffers( startSlot, 1, &m_buffer );
          break;
-      case RenderResourceType::RDRT_GeometryShader:
+      case ShaderType::GeometryShader:
          deviceContext->GSSetConstantBuffers( startSlot, 1, &m_buffer );
          break;
-      case RenderResourceType::RDRT_PixelShader:
+      case ShaderType::PixelShader:
          deviceContext->PSSetConstantBuffers( startSlot, 1, &m_buffer );
          break;
       default:
