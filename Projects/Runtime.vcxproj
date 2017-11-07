@@ -130,6 +130,7 @@
     <ClCompile Include="..\Runtime\Math\Vector3.cpp" />
     <ClCompile Include="..\Runtime\Math\Vector4.cpp" />
     <ClCompile Include="..\Runtime\Rendering\BufferDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\IndexBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RendererDX11.cpp" />
     <ClCompile Include="..\Runtime\Resource\PlainText.cpp" />
     <ClCompile Include="..\Runtime\Resource\Resource.cpp" />
