@@ -17,6 +17,13 @@ namespace Mile
       }
 
       bool Init( unsigned int size );
+      
+      virtual void* Map( ) override;
+      virtual bool UnMap( ) override;
+
+      bool BindAtShader( unsigned int slot, RenderResourceType shaderType );
+
+      virtual RenderResourceType GetResourceType( ) const override { return RenderResourceType::RDRT_ConstantBuffer; }
 
    };
 }

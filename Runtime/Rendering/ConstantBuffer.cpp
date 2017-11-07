@@ -31,4 +31,68 @@ namespace Mile
       m_bIsInitialized = true;
       return true;
    }
+
+   void* ConstantBufferDX11::Map( )
+   {
+      if ( !m_bIsInitialized || m_renderer == nullptr )
+      {
+         return nullptr;
+      }
+
+      D3D11_MAPPED_SUBRESOURCE resource;
+      auto result = m_renderer->GetDeviceContext( )->Map(
+         m_buffer, 
+         0, D3D11_MAP_WRITE_DISCARD, 0,
+         &resource );
+
+      if ( FAILED( result ) )
+      {
+         return nullptr;
+      }
+
+      return resource.pData;
+   }
+
+   bool ConstantBufferDX11::UnMap( )
+   {
+      if ( !m_bIsInitialized || m_renderer == nullptr )
+      {
+         return false;
+      }
+
+      m_renderer->GetDeviceContext( )->Unmap( m_buffer, 0 );
+      return true;
+   }
+
+   bool ConstantBufferDX11::BindAtShader( unsigned int startSlot, RenderResourceType shaderType )
+   {
+      if ( !m_bIsInitialized || m_renderer == nullptr )
+      {
+         return false;
+      }
+
+      auto deviceContext = m_renderer->GetDeviceContext( );
+      switch ( shaderType )
+      {
+      case RenderResourceType::RDRT_VertexShader:
+         deviceContext->VSSetConstantBuffers( startSlot, 1, &m_buffer );
+         break;
+      case RenderResourceType::RDRT_HullShader:
+         deviceContext->HSSetConstantBuffers( startSlot, 1, &m_buffer );
+         break;
+      case RenderResourceType::RDRT_DomainShader:
+         deviceContext->DSSetConstantBuffers( startSlot, 1, &m_buffer );
+         break;
+      case RenderResourceType::RDRT_GeometryShader:
+         deviceContext->GSSetConstantBuffers( startSlot, 1, &m_buffer );
+         break;
+      case RenderResourceType::RDRT_PixelShader:
+         deviceContext->PSSetConstantBuffers( startSlot, 1, &m_buffer );
+         break;
+      default:
+         return false;
+      }
+
+      return true;
+   }
 }
