@@ -15,17 +15,18 @@ namespace Mile
       ZeroMemory( &desc, sizeof( desc ) );
       desc.ByteWidth = sizeof( unsigned int ) * indicies.size( );
       desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+      desc.StructureByteStride = 0;
       desc.MiscFlags = 0;
       
       if ( dynamic )
       {
          desc.Usage = D3D11_USAGE_DYNAMIC;
-         desc.CPUAccessFlags = true;
+         desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
       }
       else
       {
          desc.Usage = D3D11_USAGE_IMMUTABLE;
-         desc.CPUAccessFlags = false;
+         desc.CPUAccessFlags = 0;
       }
 
       D3D11_SUBRESOURCE_DATA subResource;
