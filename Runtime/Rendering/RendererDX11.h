@@ -16,6 +16,7 @@ namespace Mile
    };
 
    class Window;
+   class DepthStencilBufferDX11;
    class MEAPI RendererDX11 : public SubSystem
    {
    public:
@@ -25,6 +26,7 @@ namespace Mile
       virtual bool Init( ) override;
 
       void Render( );
+
       void Clear( );
       void Present( );
 
@@ -34,15 +36,14 @@ namespace Mile
       void SetClearColor( Vector4 clearColor );
       Vector4 GetClearColor( ) const { return m_clearColor; }
 
-      void SetDepthEnable( bool bDepthEnabled );
-      bool IsDepthEnabled( ) const { return m_bDepthEnabled; }
+      void SetDepthStencilEnable( bool bDepthEnabled );
+      bool IsDepthStencilEnabled( ) const { return m_bDepthStencilEnabled; }
 
       void SetBackbufferAsRenderTarget( );
-   
+
    private:
       bool CreateDeviceAndSwapChain( );
       bool CreateDepthStencilBuffer( );
-      bool CreateDepthStencilView( );
 
    private:
       Window*                 m_window;
@@ -51,10 +52,9 @@ namespace Mile
       IDXGISwapChain*         m_swapChain;
       ID3D11RenderTargetView* m_renderTargetView;
 
-      ID3D11Texture2D*        m_depthStencilBuffer;
-      ID3D11DepthStencilView* m_depthStencilView;
-      bool                    m_bDepthEnabled;
-
+      std::unique_ptr<DepthStencilBufferDX11>   m_depthStencilBuffer;
+      
+      bool                    m_bDepthStencilEnabled;
       Vector4                 m_clearColor;
    };
 }
