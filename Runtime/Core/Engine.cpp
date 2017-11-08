@@ -3,6 +3,7 @@
 #include "Config.h"
 #include "Window.h"
 #include "Resource\ResourceManager.h"
+#include "Rendering\RendererDX11.h"
 #include "World.h"
 
 namespace Mile
@@ -20,6 +21,9 @@ namespace Mile
 
       m_resourceManager = new ResourceManager( m_context );
       m_context->RegisterSubSystem( m_resourceManager );
+
+      m_renderer = new RendererDX11( m_context );
+      m_context->RegisterSubSystem( m_renderer );
 
       m_world = new World( m_context );
       m_context->RegisterSubSystem( m_world );
@@ -43,6 +47,11 @@ namespace Mile
 
       // Initialize Resource manager
       if ( !m_context->GetSubSystem<ResourceManager>( )->Init( ) )
+      {
+         return false;
+      }
+
+      if ( !m_context->GetSubSystem<RendererDX11>( )->Init( ) )
       {
          return false;
       }
