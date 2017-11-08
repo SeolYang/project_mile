@@ -105,6 +105,18 @@
     <ClInclude Include="..\Runtime\Resource\PlainText.h">
       <Filter>Resource</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\Texture2dDX11.h">
+      <Filter>Rendering\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\RenderTargetDX11.h">
+      <Filter>Rendering\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\DepthStencilBufferDX11.h">
+      <Filter>Rendering\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\Rendering.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -159,6 +171,18 @@
       <Filter>Rendering</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\IndexBufferDX11.cpp">
+      <Filter>Rendering\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\Texture2dDX11.cpp">
+      <Filter>Rendering\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\ConstantBufferDX11.cpp">
+      <Filter>Rendering\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\RenderTargetDX11.cpp">
+      <Filter>Rendering\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\DepthStencilBufferDX11.cpp">
       <Filter>Rendering\Buffer</Filter>
     </ClCompile>
   </ItemGroup>

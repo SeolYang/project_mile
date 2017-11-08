@@ -1,19 +1,10 @@
 #pragma once
 
-#include "../Core/SubSystem.h"
-#include "Math/Vector4.h"
-#include <d3d11.h>
+#include "Rendering.h"
 
 namespace Mile
 {
-   enum class ShaderType
-   {
-      VertexShader,
-      HullShader,
-      DomainShader,
-      GeometryShader,
-      PixelShader
-   };
+
 
    class Window;
    class DepthStencilBufferDX11;

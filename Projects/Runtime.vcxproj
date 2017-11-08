@@ -107,9 +107,13 @@
     <ClInclude Include="..\Runtime\Math\Vector4.h" />
     <ClInclude Include="..\Runtime\Rendering\BufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ConstantBufferDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\DepthStencilBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\IndexBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\RendererDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\Rendering.h" />
+    <ClInclude Include="..\Runtime\Rendering\RenderTargetDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ResourceDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\Texture2dDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h" />
     <ClInclude Include="..\Runtime\Resource\Resource.h" />
     <ClInclude Include="..\Runtime\Resource\ResourceCache.h" />
@@ -130,8 +134,12 @@
     <ClCompile Include="..\Runtime\Math\Vector3.cpp" />
     <ClCompile Include="..\Runtime\Math\Vector4.cpp" />
     <ClCompile Include="..\Runtime\Rendering\BufferDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\ConstantBufferDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\DepthStencilBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\IndexBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RendererDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\RenderTargetDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\Texture2dDX11.cpp" />
     <ClCompile Include="..\Runtime\Resource\PlainText.cpp" />
     <ClCompile Include="..\Runtime\Resource\Resource.cpp" />
     <ClCompile Include="..\Runtime\Resource\ResourceCache.cpp" />
