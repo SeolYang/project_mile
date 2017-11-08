@@ -21,8 +21,7 @@ namespace Mile
                 return GetByPath<Ty>( relativePath );
             }
 
-            auto newResource = std::make_shared<Ty>( relativePath );
-
+            auto newResource = std::make_shared<Ty>( m_context, relativePath );
             if ( newResource->Init( ) )
             {
                 m_cache->Add( std::dynamic_pointer_cast< Resource >( newResource ) );

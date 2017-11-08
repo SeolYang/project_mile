@@ -27,7 +27,7 @@ namespace Mile
       virtual ~Resource( ) { }
 
       virtual bool Init( ) = 0;
-      virtual bool Save( const std::string& filePath ) = 0;
+      virtual bool Save( const String& filePath ) = 0;
       virtual bool Save( ) { return false; }
 
       ResourceType GetType( ) const { return m_resourceType; }
