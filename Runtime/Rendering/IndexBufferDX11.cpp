@@ -13,7 +13,7 @@ namespace Mile
       D3D11_BUFFER_DESC desc;
 
       ZeroMemory( &desc, sizeof( desc ) );
-      desc.ByteWidth = sizeof( unsigned int ) * indicies.size( );
+      desc.ByteWidth = static_cast< unsigned int >( sizeof( unsigned int ) * indicies.size( ) );
       desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
       desc.StructureByteStride = 0;
       desc.MiscFlags = 0;
