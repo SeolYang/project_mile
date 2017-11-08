@@ -15,7 +15,9 @@ namespace Mile
       RDRT_IndirectArgumentsBuffer,
       RDRT_Texture1D,
       RDRT_Texture2D,
-      RDRT_Texture3D
+      RDRT_Texture3D,
+      RDRT_RenderTarget,
+      RDRT_DepthStencilBuffer
    };
 
    class RendererDX11;

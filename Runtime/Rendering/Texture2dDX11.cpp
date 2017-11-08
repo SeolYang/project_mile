@@ -31,7 +31,6 @@ namespace Mile
       resource.SysMemSlicePitch = ( width * height * channels ) * sizeof( unsigned char );
 
       auto result = m_renderer->GetDevice( )->CreateTexture2D( &desc, &resource, &m_texture );
-      
       if ( FAILED( result ) )
       {
          return false;

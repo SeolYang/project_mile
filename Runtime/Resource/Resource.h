@@ -38,7 +38,6 @@ namespace Mile
       static String GetFileNameFromPath( const String& filePath );
       static String GetFolderFromPath( const String& filePath );
 
-
    protected:
       Context*   m_context;
       String     m_path;
