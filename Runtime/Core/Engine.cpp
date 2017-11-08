@@ -69,10 +69,10 @@ namespace Mile
    int Engine::Execute( )
    {
       m_bIsRunning = true;
-
       while ( m_bIsRunning )
       {
          this->Update( );
+         m_renderer->Render( );
       }
 
       return 0;

@@ -7,8 +7,8 @@ namespace Mile
    class ConfigSystem;
    class Window;
    class ResourceManager;
-   class World;
    class RendererDX11;
+   class World;
    class MEAPI Engine : public SubSystem
    {
    public:
