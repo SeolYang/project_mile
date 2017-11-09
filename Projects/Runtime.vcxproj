@@ -70,7 +70,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -88,7 +88,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -109,12 +109,15 @@
     <ClInclude Include="..\Runtime\Rendering\ConstantBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\DepthStencilBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\IndexBufferDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\InputLayoutDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\RendererDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\Rendering.h" />
     <ClInclude Include="..\Runtime\Rendering\RenderTargetDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ResourceDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\ShaderDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\Texture2dDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\VertexShaderDX11.h" />
     <ClInclude Include="..\Runtime\Resource\Resource.h" />
     <ClInclude Include="..\Runtime\Resource\ResourceCache.h" />
     <ClInclude Include="..\Runtime\Resource\ResourceManager.h" />
@@ -137,9 +140,11 @@
     <ClCompile Include="..\Runtime\Rendering\ConstantBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\DepthStencilBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\IndexBufferDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\InputLayoutDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RendererDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RenderTargetDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Texture2dDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\VertexShaderDX11.cpp" />
     <ClCompile Include="..\Runtime\Resource\PlainText.cpp" />
     <ClCompile Include="..\Runtime\Resource\Resource.cpp" />
     <ClCompile Include="..\Runtime\Resource\ResourceCache.cpp" />

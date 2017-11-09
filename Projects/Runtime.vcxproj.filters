@@ -19,17 +19,20 @@
     <Filter Include="Resource">
       <UniqueIdentifier>{c009a5a2-f10c-4e42-b419-f6dd1a3087ae}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Buffer">
-      <UniqueIdentifier>{39cf7b4e-c6cf-4245-aece-4c33c6a97d20}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Texture">
-      <UniqueIdentifier>{3cb3f96e-3de6-4787-8dcf-9fb3a400d637}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ThirdParty">
       <UniqueIdentifier>{5406f72d-f47b-4710-88b6-111d3153388c}</UniqueIdentifier>
     </Filter>
     <Filter Include="ThirdParty\json">
       <UniqueIdentifier>{058221c6-d62e-4c78-899f-32d2a0c45c1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Buffers">
+      <UniqueIdentifier>{39cf7b4e-c6cf-4245-aece-4c33c6a97d20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Textures">
+      <UniqueIdentifier>{3cb3f96e-3de6-4787-8dcf-9fb3a400d637}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Shaders">
+      <UniqueIdentifier>{72d4f322-50ea-48c3-88aa-8b17e771855b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -79,16 +82,16 @@
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\BufferDX11.h">
-      <Filter>Rendering\Buffer</Filter>
+      <Filter>Rendering\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\IndexBufferDX11.h">
-      <Filter>Rendering\Buffer</Filter>
+      <Filter>Rendering\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h">
-      <Filter>Rendering\Buffer</Filter>
+      <Filter>Rendering\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\ConstantBufferDX11.h">
-      <Filter>Rendering\Buffer</Filter>
+      <Filter>Rendering\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\RendererDX11.h">
       <Filter>Rendering</Filter>
@@ -106,16 +109,25 @@
       <Filter>Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\Texture2dDX11.h">
-      <Filter>Rendering\Texture</Filter>
+      <Filter>Rendering\Textures</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\RenderTargetDX11.h">
-      <Filter>Rendering\Texture</Filter>
+      <Filter>Rendering\Textures</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\DepthStencilBufferDX11.h">
-      <Filter>Rendering\Buffer</Filter>
+      <Filter>Rendering\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\Rendering.h">
       <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\ShaderDX11.h">
+      <Filter>Rendering\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\VertexShaderDX11.h">
+      <Filter>Rendering\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\InputLayoutDX11.h">
+      <Filter>Rendering\Shaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -156,7 +168,7 @@
       <Filter>Math</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\BufferDX11.cpp">
-      <Filter>Rendering\Buffer</Filter>
+      <Filter>Rendering\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Core\Window.cpp">
       <Filter>Core</Filter>
@@ -171,19 +183,25 @@
       <Filter>Rendering</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\IndexBufferDX11.cpp">
-      <Filter>Rendering\Buffer</Filter>
+      <Filter>Rendering\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\Texture2dDX11.cpp">
-      <Filter>Rendering\Texture</Filter>
+      <Filter>Rendering\Textures</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\ConstantBufferDX11.cpp">
-      <Filter>Rendering\Buffer</Filter>
+      <Filter>Rendering\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\RenderTargetDX11.cpp">
-      <Filter>Rendering\Texture</Filter>
+      <Filter>Rendering\Textures</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\DepthStencilBufferDX11.cpp">
-      <Filter>Rendering\Buffer</Filter>
+      <Filter>Rendering\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\VertexShaderDX11.cpp">
+      <Filter>Rendering\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\InputLayoutDX11.cpp">
+      <Filter>Rendering\Shaders</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
