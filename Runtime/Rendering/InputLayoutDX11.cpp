@@ -34,7 +34,6 @@ namespace Mile
       }
 
       m_renderer->GetDeviceContext( )->IASetInputLayout( m_inputLayout );
-
       return true;
    }
 }
