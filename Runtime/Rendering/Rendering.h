@@ -8,30 +8,3 @@
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
-
-namespace Mile
-{
-   enum class RenderResourceType
-   {
-      RDRT_VertexBuffer,
-      RDRT_IndexBuffer,
-      RDRT_ConstantBuffer,
-      RDRT_StructuredBuffer,
-      RDRT_ByteAddressBuffer,
-      RDRT_IndirectArgumentsBuffer,
-      RDRT_Texture1D,
-      RDRT_Texture2D,
-      RDRT_Texture3D,
-      RDRT_RenderTarget,
-      RDRT_DepthStencilBuffer
-   };
-
-   enum class ShaderType
-   {
-      VertexShader,
-      HullShader,
-      DomainShader,
-      GeometryShader,
-      PixelShader
-   };
-}

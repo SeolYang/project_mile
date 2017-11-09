@@ -1,6 +1,6 @@
 #pragma once
 #include "BufferDX11.h"
-#include "RendererDX11.h"
+#include "ShaderDX11.h"
 
 namespace Mile
 {
@@ -19,12 +19,12 @@ namespace Mile
 
       bool Init( unsigned int size );
       
+      virtual RenderResourceType GetResourceType( ) const override { return RenderResourceType::RDRT_ConstantBuffer; }
+
       virtual void* Map( ) override;
       virtual bool UnMap( ) override;
 
       bool BindAtShader( unsigned int slot, ShaderType shaderType );
-
-      virtual RenderResourceType GetResourceType( ) const override { return RenderResourceType::RDRT_ConstantBuffer; }
 
    };
 }

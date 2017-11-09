@@ -4,6 +4,21 @@
 
 namespace Mile
 {
+   enum class RenderResourceType
+   {
+      RDRT_VertexBuffer,
+      RDRT_IndexBuffer,
+      RDRT_ConstantBuffer,
+      RDRT_StructuredBuffer,
+      RDRT_ByteAddressBuffer,
+      RDRT_IndirectArgumentsBuffer,
+      RDRT_Texture1D,
+      RDRT_Texture2D,
+      RDRT_Texture3D,
+      RDRT_RenderTarget,
+      RDRT_DepthStencilBuffer
+   };
+
    class RendererDX11;
    class MEAPI ResourceDX11
    {

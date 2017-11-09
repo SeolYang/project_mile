@@ -4,6 +4,15 @@
 
 namespace Mile
 {
+   enum class ShaderType
+   {
+      VertexShader,
+      HullShader,
+      DomainShader,
+      GeometryShader,
+      PixelShader
+   };
+
    class MEAPI ShaderDX11
    {
    public:
@@ -15,7 +24,7 @@ namespace Mile
       {
       }
 
-      ~ShaderDX11( )
+      virtual ~ShaderDX11( )
       {
          SafeRelease( m_blob );
          SafeRelease( m_errorBlob );
