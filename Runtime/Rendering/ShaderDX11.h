@@ -31,6 +31,7 @@ namespace Mile
       }
 
       virtual bool Init( const String& shaderPath ) = 0;
+      virtual bool Bind( ) = 0;
 
       ID3D10Blob* GetBlob( ) { return m_blob; }
 
@@ -93,6 +94,7 @@ namespace Mile
             return false;
          }
 
+         m_bIsCompiled = true;
          return true;
       }
 

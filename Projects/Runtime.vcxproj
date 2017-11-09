@@ -110,6 +110,7 @@
     <ClInclude Include="..\Runtime\Rendering\DepthStencilBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\IndexBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\InputLayoutDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\PixelShaderDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\RendererDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\Rendering.h" />
     <ClInclude Include="..\Runtime\Rendering\RenderTargetDX11.h" />

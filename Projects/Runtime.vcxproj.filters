@@ -129,6 +129,9 @@
     <ClInclude Include="..\Runtime\Rendering\InputLayoutDX11.h">
       <Filter>Rendering\Shaders</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\PixelShaderDX11.h">
+      <Filter>Rendering\Shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">

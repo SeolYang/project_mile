@@ -23,7 +23,7 @@ namespace Mile
       }
 
       virtual bool Init( const String& shaderPath ) override;
-      bool Bind( );
+      virtual bool Bind( ) override;
 
       virtual ShaderType GetShaderType( ) const override { return ShaderType::VertexShader; }
 
