@@ -14,18 +14,15 @@ namespace Mile
 
    String Resource::GetFileNameFromPath( const String& filePath )
    {
-      auto splitPath = SplitStr( filePath, '\\' );
-      auto splitFileName = SplitStr( splitPath[ splitPath.size( ) - 1 ], '.' );
-      splitFileName.pop_back( );
-
-      return CombineStr( splitFileName, TEXT( "." ) );
+      auto splitPath = SplitStr( filePath, '/' );
+      return splitPath[ splitPath.size( ) - 1 ];
    }
 
    String Resource::GetFolderFromPath( const String& filePath )
    {
-      auto splitPath = SplitStr( filePath, '\\' );
+      auto splitPath = SplitStr( filePath, '/' );
       splitPath.pop_back( );
 
-      return CombineStr( splitPath, TEXT( "\\" ) );
+      return CombineStr( splitPath, TEXT( "/" ) );
    }
 }
