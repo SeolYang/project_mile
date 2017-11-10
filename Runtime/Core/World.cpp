@@ -16,7 +16,7 @@ namespace Mile
 
    bool World::Init( )
    {
-      return false;
+      return true;
    }
 
    void World::Start( )
