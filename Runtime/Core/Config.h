@@ -8,8 +8,9 @@ using json = nlohmann::json;
 namespace Mile
 {
    using Config = std::pair<String, json >;
-
+   
    // Engine Config file must be Engine.json
+   // Contents/Configs/Engine.json
    class MEAPI ConfigSystem : public SubSystem
    {
    public:
@@ -33,7 +34,7 @@ namespace Mile
    private:
       static String GetPathFromName( const String& configName )
       {
-         return ( TEXT( "Content/Configs/" ) + configName + TEXT( ".json" ) );
+         return ( TEXT( "Contents/Configs/" ) + configName + TEXT( ".json" ) );
       }
 
    private:
