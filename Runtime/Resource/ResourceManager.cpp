@@ -16,7 +16,7 @@ namespace Mile
 
     bool ResourceManager::Init( )
     {
-        m_cache = std::move( std::make_unique<ResourceCache>( m_context ) );
+        m_cache = std::make_unique<ResourceCache>( m_context );
         if ( m_cache != nullptr )
         {
             return true;

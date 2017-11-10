@@ -25,9 +25,10 @@ namespace Mile
             if ( newResource->Init( ) )
             {
                 m_cache->Add( std::dynamic_pointer_cast< Resource >( newResource ) );
+                return newResource;
             }
 
-            return GetByPath<Ty>( relativePath );
+            return std::weak_ptr<Ty>( );
         }
 
         template < typename Ty >

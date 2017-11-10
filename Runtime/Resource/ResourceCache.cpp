@@ -3,80 +3,81 @@
 
 namespace Mile
 {
-    ResourceCache::ResourceCache( Context* context ) :
-        m_context( context )
-    {
-    }
+   ResourceCache::ResourceCache( Context* context ) :
+      m_context( context ),
+      m_resources( )
+   {
+   }
 
-    ResourceCache::~ResourceCache( )
-    {
-        Clear( );
-    }
+   ResourceCache::~ResourceCache( )
+   {
+      Clear( );
+   }
 
-    void ResourceCache::Add( ResourcePtr res )
-    {
-        if ( res != nullptr )
-        {
-            m_resources.push_back( res );
-        }
-    }
+   void ResourceCache::Add( ResourcePtr res )
+   {
+      if ( res != nullptr )
+      {
+         m_resources.push_back( res );
+      }
+   }
 
-    void ResourceCache::Clear( )
-    {
-        m_resources.clear( );
-        m_resources.shrink_to_fit( );
-    }
+   void ResourceCache::Clear( )
+   {
+      m_resources.clear( );
+      m_resources.shrink_to_fit( );
+   }
 
-    ResourcePtr ResourceCache::GetByPath( const String& path )
-    {
-        for ( auto res : m_resources )
-        {
-            if ( res->GetPath( ) == path )
-            {
-                return res;
-            }
-        }
+   ResourcePtr ResourceCache::GetByPath( const String& path )
+   {
+      for ( auto res : m_resources )
+      {
+         if ( res->GetPath( ) == path )
+         {
+            return res;
+         }
+      }
 
-        return ResourcePtr( );
-    }
+      return ResourcePtr( );
+   }
 
-    ResourcePtr ResourceCache::GetByName( const String& name )
-    {
-        for ( auto res : m_resources )
-        {
-            if ( res->GetName( ) == name )
-            {
-                return res;
-            }
-        }
+   ResourcePtr ResourceCache::GetByName( const String& name )
+   {
+      for ( auto res : m_resources )
+      {
+         if ( res->GetName( ) == name )
+         {
+            return res;
+         }
+      }
 
-        return ResourcePtr( );
-    }
+      return ResourcePtr( );
+   }
 
-    bool ResourceCache::HasByPath( const String& name )
-    {
-        for ( auto res : m_resources )
-        {
-            if ( res->GetPath( ) == name )
-            {
-                return true;
-            }
-        }
+   bool ResourceCache::HasByPath( const String& name )
+   {
+      for ( auto res : m_resources )
+      {
+         if ( res->GetPath( ) == name )
+         {
+            return true;
+         }
+      }
 
-        return false;
-    }
+      return false;
+   }
 
-    bool ResourceCache::HasByName( const String& name )
-    {
-        for ( auto res : m_resources )
-        {
-            if ( res->GetName( ) == name )
-            {
-                return true;
-            }
-        }
+   bool ResourceCache::HasByName( const String& name )
+   {
+      for ( auto res : m_resources )
+      {
+         if ( res->GetName( ) == name )
+         {
+            return true;
+         }
+      }
 
-        return false;
-    }
+      return false;
+   }
 
 }
