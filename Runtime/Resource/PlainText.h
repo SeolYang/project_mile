@@ -17,7 +17,6 @@ namespace Mile
       virtual bool Save( const String& filePath ) override;
       virtual bool Save( ) override;
 
-      String& GetData( );
       String GetData( ) const;
 
       void SetData( const String& newData );

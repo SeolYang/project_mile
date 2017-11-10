@@ -16,6 +16,7 @@ namespace Mile
             m_data += '\n';
          }
 
+         stream.close( );
          return true;
       }
 
@@ -34,11 +35,6 @@ namespace Mile
    bool PlainText::Save( )
    {
       return Save( this->m_path );
-   }
-
-   String& PlainText::GetData( )
-   {
-      return m_data;
    }
 
    String PlainText::GetData( ) const
