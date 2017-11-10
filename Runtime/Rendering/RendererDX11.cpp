@@ -131,6 +131,8 @@ namespace Mile
 
    void RendererDX11::Render( )
    {
+      Clear( );
+      Present( );
    }
 
    void RendererDX11::Clear( )
