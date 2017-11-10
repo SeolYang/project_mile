@@ -13,14 +13,14 @@ namespace Mile
    {
       m_context->RegisterSubSystem( this );
 
+      m_resourceManager = new ResourceManager( m_context );
+      m_context->RegisterSubSystem( m_resourceManager );
+
       m_configSys = new ConfigSystem( m_context );
       m_context->RegisterSubSystem( m_configSys );
 
       m_window = new Window( m_context );
       m_context->RegisterSubSystem( m_window );
-
-      m_resourceManager = new ResourceManager( m_context );
-      m_context->RegisterSubSystem( m_resourceManager );
 
       m_renderer = new RendererDX11( m_context );
       m_context->RegisterSubSystem( m_renderer );
@@ -33,6 +33,12 @@ namespace Mile
    {
       // -* Initialize subsystems *-
 
+      // Initialize Resource manager
+      if ( !m_context->GetSubSystem<ResourceManager>( )->Init( ) )
+      {
+         return false;
+      }
+
       // Initialize ConfigSystem
       if ( !m_context->GetSubSystem<ConfigSystem>( )->Init( ) )
       {
@@ -41,12 +47,6 @@ namespace Mile
 
       // Initialize Window Subsystem
       if ( !m_context->GetSubSystem<Window>( )->Init( ) )
-      {
-         return false;
-      }
-
-      // Initialize Resource manager
-      if ( !m_context->GetSubSystem<ResourceManager>( )->Init( ) )
       {
          return false;
       }
@@ -89,6 +89,5 @@ namespace Mile
    {
       m_bIsRunning = false;
       m_world = nullptr;
-      SafeDelete( m_context );
    }
 }
