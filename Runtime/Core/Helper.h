@@ -37,17 +37,21 @@ namespace Mile
    static std::vector<String> SplitStr( const String& str, char token )
    {
       std::vector<String> tempArr{ };
-      size_t before = 0;
-      for ( size_t idx = 0; idx < str.length( ); ++idx )
+      String tempStr{ };
+
+      size_t length = str.length( );
+
+      for ( size_t idx = 0; idx < length; ++idx )
       {
-         if ( str[ idx ] == token )
+         if ( str[ idx ] != token )
          {
-            String tempStr = str.substr( before, idx - before );
-            if ( !tempStr.empty( ) )
-            {
-               tempArr.push_back( std::move( tempStr ) );
-            }
-            before = idx;
+            tempStr += str[ idx ];
+         }
+
+         if ( str[ idx ] == token || idx == ( length - 1 ) )
+         {
+            tempArr.push_back( tempStr );
+            tempStr.clear( );
          }
       }
 
@@ -99,14 +103,23 @@ namespace Mile
       }
    }
 
-   static std::wstring String2WString( const std::string& str )
+   static String String2WString( const std::string& str )
    {
+      if ( str.empty( ) )
+      {
+         return TEXT( "" );
+      }
       std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
       return converter.from_bytes( str );
    }
 
-   static std::string WString2String( const std::wstring& str )
+   static std::string WString2String( const String& str )
    {
+      if ( str.empty( ) )
+      {
+         return std::string( );
+      }
+
       std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
       return converter.to_bytes( str );
    }
