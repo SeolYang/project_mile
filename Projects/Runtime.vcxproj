@@ -46,7 +46,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
-    <IntDir>..\Binaries\VSOBJ\$(Configuration)\</IntDir>
+    <IntDir>..\Binaries\VSOBJ\Runtime\$(Configuration)\</IntDir>
     <TargetName>Runtime</TargetName>
     <SourcePath>..\Runtime;..\ThirdParty\json\src;$(SourcePath)</SourcePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
@@ -54,7 +54,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
-    <IntDir>..\Binaries\VSOBJ\$(Configuration)\</IntDir>
+    <IntDir>..\Binaries\VSOBJ\Runtime\$(Configuration)\</IntDir>
     <TargetName>Runtime</TargetName>
     <SourcePath>..\Runtime;..\ThirdParty\json\src;$(SourcePath)</SourcePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
