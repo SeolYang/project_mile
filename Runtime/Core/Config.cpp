@@ -44,13 +44,18 @@ namespace Mile
       {
          auto resManager = m_context->GetSubSystem<ResourceManager>( );
          auto text = resManager->Load<PlainText>( GetPathFromName( configName ) );
-         m_configs.push_back( std::make_pair(
-            configName,
-            json::parse( WString2String( text._Get( )->GetData( ) ) ) ) );
+         
+         if ( !text.expired( ) )
+         {
+            m_configs.push_back( std::make_pair(
+               configName,
+               json::parse( WString2String( text._Get( )->GetData( ) ) ) ) );
 
-         return true;
+            return true;
+         }
       }
 
+      // Failed to load engine config!
       return false;
    }
 
