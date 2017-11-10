@@ -9,7 +9,7 @@
 namespace Mile
 {
    Engine::Engine( Context* context ) :
-      SubSystem( context ), m_bIsRunning( false )
+      SubSystem( context ), m_bIsRunning( false ), m_bShutdownFlag( false )
    {
       m_context->RegisterSubSystem( this );
 
@@ -71,8 +71,15 @@ namespace Mile
       m_bIsRunning = true;
       while ( m_bIsRunning )
       {
-         this->Update( );
-         m_renderer->Render( );
+         if ( m_bShutdownFlag )
+         {
+            ShutDown( );
+         }
+         else
+         {
+            this->Update( );
+            m_renderer->Render( );
+         }
       }
 
       return 0;
@@ -88,6 +95,10 @@ namespace Mile
    void Engine::ShutDown( )
    {
       m_bIsRunning = false;
+      m_resourceManager = nullptr;
+      m_configSys = nullptr;
+      m_window = nullptr;
+      m_renderer = nullptr;
       m_world = nullptr;
    }
 }

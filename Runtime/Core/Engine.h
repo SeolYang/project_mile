@@ -13,7 +13,6 @@ namespace Mile
    {
    public:
       Engine( Context* context );
-      virtual ~Engine( ) { ShutDown( ); }
 
       /**
       * @brief Engine의 Subsystem 들을 초기화합니다.
@@ -32,14 +31,16 @@ namespace Mile
       * @brief Engine의 Subsystem 들을 해제합니다.
       */
       void ShutDown( );
+      void ShutDownFlagEnable( ) { m_bShutdownFlag = true; }
 
       bool IsRunning( ) const { return m_bIsRunning; }
 
    private:
       bool                m_bIsRunning;
+      bool                m_bShutdownFlag;
+      ResourceManager*    m_resourceManager;
       ConfigSystem*       m_configSys;
       Window*             m_window;
-      ResourceManager*    m_resourceManager;
       RendererDX11*       m_renderer;
       World*              m_world;
 

@@ -1,5 +1,6 @@
 #include "Window.h"
 #include "Context.h"
+#include "Engine.h"
 #include "Config.h"
 
 namespace Mile
@@ -35,7 +36,7 @@ namespace Mile
       m_resHeight = config.second[ "ResolutionHeight" ];
 
       m_handle = CreateWindow( windowTitle.c_str( ), windowTitle.c_str( ),
-                               WS_POPUP | WS_CAPTION | WS_VISIBLE,
+                               WS_CAPTION | WS_SYSMENU | WS_VISIBLE | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,
                                posX, posY, m_resWidth, m_resHeight,
                                nullptr, nullptr, nullptr, nullptr );
 
@@ -47,6 +48,13 @@ namespace Mile
       MSG msg = { 0 };
       if ( PeekMessage( &msg, nullptr, 0, 0, PM_REMOVE ) )
       {
+         auto message = msg.message;
+         if ( message == WM_QUIT || message == WM_CLOSE || message == WM_DESTROY )
+         {
+            // Dummy flag for shutting down after 1 frame
+            m_context->GetSubSystem<Engine>( )->ShutDownFlagEnable( );
+         }
+
          TranslateMessage( &msg );
          DispatchMessage( &msg );
       }
