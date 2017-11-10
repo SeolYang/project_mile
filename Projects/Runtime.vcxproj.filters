@@ -206,5 +206,8 @@
     <ClCompile Include="..\Runtime\Rendering\InputLayoutDX11.cpp">
       <Filter>Rendering\Shaders</Filter>
     </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\PixelShaderDX11.cpp">
+      <Filter>Rendering\Shaders</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

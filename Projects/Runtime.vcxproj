@@ -142,6 +142,7 @@
     <ClCompile Include="..\Runtime\Rendering\DepthStencilBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\IndexBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\InputLayoutDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\PixelShaderDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RendererDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RenderTargetDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Texture2dDX11.cpp" />
