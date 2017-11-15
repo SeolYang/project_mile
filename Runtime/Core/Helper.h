@@ -19,12 +19,7 @@
 namespace Mile
 {
    using String = std::wstring;
-
-#ifdef _FLOAT_AS_DOUBLE_
-   using Float = double;
-#else
    using Float = float;
-#endif
 
 
    /**
