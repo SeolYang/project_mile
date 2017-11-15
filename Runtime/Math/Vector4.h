@@ -312,10 +312,19 @@ namespace Mile
         }
 
     public:
-        float x;
-        float y;
-        float z;
-        float w;
+       union
+       {
+          struct
+          {
+             float x;
+             float y;
+             float z;
+             float w;
+          };
+
+          float elements[ 4 ];
+       };
+
 
     public:
         static Vector4 Up;

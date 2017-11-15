@@ -1,5 +1,5 @@
 #pragma once
-#include "Core\Helper.h"
+#include "Core/Helper.h"
 #include "Math.h"
 
 namespace Mile
@@ -242,10 +242,18 @@ namespace Mile
         }
 
     public:
-        float x;
-        float y;
-        float z;
+       union
+       {
+          struct
+          {
+             float x;
+             float y;
+             float z;
+          };
 
+          float elements[ 3 ];
+       };
+        
     public:
         static Vector3 Up;
         static Vector3 Down;
