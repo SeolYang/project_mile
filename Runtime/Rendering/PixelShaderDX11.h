@@ -4,6 +4,7 @@
 
 namespace Mile
 {
+   class SamplerDX11;
    class MEAPI PixelShaderDX11 : public ShaderDX11
    {
    public:
@@ -15,6 +16,11 @@ namespace Mile
 
       ~PixelShaderDX11( )
       {
+         for ( auto sampler : m_samplers )
+         {
+            SafeDelete( sampler );
+         }
+
          SafeRelease( m_shader );
       }
 
@@ -23,8 +29,11 @@ namespace Mile
 
       virtual ShaderType GetShaderType( ) const override { return ShaderType::PixelShader; }
 
+      bool AddSampler( D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE AddressModeU, D3D11_TEXTURE_ADDRESS_MODE AddressModeV, D3D11_TEXTURE_ADDRESS_MODE AddressModeW, D3D11_COMPARISON_FUNC compFunc );
+      bool AddSampler( D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE AddressMode, D3D11_COMPARISON_FUNC compFunc );
+
    private:
       ID3D11PixelShader*   m_shader;
-
+      std::vector<SamplerDX11*> m_samplers;
    };
 }

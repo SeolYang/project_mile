@@ -24,7 +24,7 @@ namespace Mile
       virtual void* Map( ) override;
       virtual bool UnMap( ) override;
 
-      bool BindAtShader( unsigned int slot, ShaderType shaderType );
+      bool Bind( unsigned int slot, ShaderType shaderType );
 
    };
 }

@@ -64,7 +64,7 @@ namespace Mile
       return true;
    }
 
-   bool ConstantBufferDX11::BindAtShader( unsigned int startSlot, ShaderType shaderType )
+   bool ConstantBufferDX11::Bind( unsigned int startSlot, ShaderType shaderType )
    {
       if ( !m_bIsInitialized || m_renderer == nullptr )
       {

@@ -35,7 +35,7 @@ namespace Mile
       return true;
    }
 
-   bool IndexBufferDX11::BindAtIA( )
+   bool IndexBufferDX11::Bind( )
    {
       if ( m_bIsInitialized )
       {
