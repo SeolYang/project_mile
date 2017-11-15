@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\Core\Helper.h"
+#include "../Core/Helper.h"
 
 namespace Mile
 {
@@ -16,7 +16,7 @@ namespace Mile
         bool IsActive( ) const { return m_bIsActive; }
         void SetActive( bool bIsActive );
 
-        virtual void Reset( ) = 0;
+        virtual void Reset( ) { }
         virtual void Start( ) { }
         virtual void Update( ) { }
         virtual void OnEnable( ) { }
