@@ -103,8 +103,10 @@
     <ClInclude Include="..\Runtime\Core\World.h" />
     <ClInclude Include="..\Runtime\Math\Math.h" />
     <ClInclude Include="..\Runtime\Math\Matrix.h" />
+    <ClInclude Include="..\Runtime\Math\Vector2.h" />
     <ClInclude Include="..\Runtime\Math\Vector3.h" />
     <ClInclude Include="..\Runtime\Math\Vector4.h" />
+    <ClInclude Include="..\Runtime\Math\Vertex.h" />
     <ClInclude Include="..\Runtime\Rendering\BufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ConstantBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\DepthStencilBufferDX11.h" />
@@ -117,8 +119,8 @@
     <ClInclude Include="..\Runtime\Rendering\ResourceDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ShaderDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\Texture2dDX11.h" />
-    <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\VertexShaderDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\SamplerDX11.h" />
     <ClInclude Include="..\Runtime\Resource\Resource.h" />
     <ClInclude Include="..\Runtime\Resource\ResourceCache.h" />
     <ClInclude Include="..\Runtime\Resource\ResourceManager.h" />
@@ -135,6 +137,7 @@
     <ClCompile Include="..\Runtime\Core\Window.cpp" />
     <ClCompile Include="..\Runtime\Core\World.cpp" />
     <ClCompile Include="..\Runtime\Math\Matrix.cpp" />
+    <ClCompile Include="..\Runtime\Math\Vector2.cpp" />
     <ClCompile Include="..\Runtime\Math\Vector3.cpp" />
     <ClCompile Include="..\Runtime\Math\Vector4.cpp" />
     <ClCompile Include="..\Runtime\Rendering\BufferDX11.cpp" />
@@ -145,6 +148,7 @@
     <ClCompile Include="..\Runtime\Rendering\PixelShaderDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RendererDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RenderTargetDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\SamplerDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Texture2dDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\VertexShaderDX11.cpp" />
     <ClCompile Include="..\Runtime\Resource\PlainText.cpp" />

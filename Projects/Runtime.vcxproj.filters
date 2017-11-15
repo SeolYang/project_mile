@@ -87,9 +87,6 @@
     <ClInclude Include="..\Runtime\Rendering\IndexBufferDX11.h">
       <Filter>Rendering\Buffers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h">
-      <Filter>Rendering\Buffers</Filter>
-    </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\ConstantBufferDX11.h">
       <Filter>Rendering\Buffers</Filter>
     </ClInclude>
@@ -131,6 +128,15 @@
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\PixelShaderDX11.h">
       <Filter>Rendering\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\SamplerDX11.h">
+      <Filter>Rendering\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Math\Vertex.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Math\Vector2.h">
+      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -208,6 +214,12 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\PixelShaderDX11.cpp">
       <Filter>Rendering\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\SamplerDX11.cpp">
+      <Filter>Rendering\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Math\Vector2.cpp">
+      <Filter>Math</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
