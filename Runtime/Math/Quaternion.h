@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/Helper.h"
-#include "Math.h"
+#include "Vector3.h"
 
 namespace Mile
 {
@@ -18,6 +18,16 @@ namespace Mile
 
       Quaternion( ) :
          Quaternion( 1.0f, 0.0f, 0.0f, 0.0f )
+      {
+      }
+
+      Quaternion( float real, const Vector3& imaginary ) :
+         Quaternion( real, imaginary.x, imaginary.y, imaginary.z )
+      {
+      }
+
+      Quaternion( const Vector3& imaginary ) :
+         Quaternion( 0.0f, imaginary )
       {
       }
 
