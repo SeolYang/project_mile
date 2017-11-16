@@ -4,15 +4,6 @@
 
 namespace Mile
 {
-   enum class ShaderType
-   {
-      VertexShader,
-      HullShader,
-      DomainShader,
-      GeometryShader,
-      PixelShader
-   };
-
    class MEAPI ShaderDX11
    {
    public:

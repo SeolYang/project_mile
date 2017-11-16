@@ -4,7 +4,14 @@
 
 namespace Mile
 {
-
+   enum class ShaderType
+   {
+      VertexShader,
+      HullShader,
+      DomainShader,
+      GeometryShader,
+      PixelShader
+   };
 
    class Window;
    class DepthStencilBufferDX11;
