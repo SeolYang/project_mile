@@ -98,11 +98,14 @@
     <ClInclude Include="..\Runtime\Core\Engine.h" />
     <ClInclude Include="..\Runtime\Core\Entity.h" />
     <ClInclude Include="..\Runtime\Core\Helper.h" />
+    <ClInclude Include="..\Runtime\Core\Serializer.h" />
     <ClInclude Include="..\Runtime\Core\SubSystem.h" />
+    <ClInclude Include="..\Runtime\Core\Transform.h" />
     <ClInclude Include="..\Runtime\Core\Window.h" />
     <ClInclude Include="..\Runtime\Core\World.h" />
     <ClInclude Include="..\Runtime\Math\Math.h" />
     <ClInclude Include="..\Runtime\Math\Matrix.h" />
+    <ClInclude Include="..\Runtime\Math\Quaternion.h" />
     <ClInclude Include="..\Runtime\Math\Vector2.h" />
     <ClInclude Include="..\Runtime\Math\Vector3.h" />
     <ClInclude Include="..\Runtime\Math\Vector4.h" />
@@ -133,6 +136,7 @@
     <ClCompile Include="..\Runtime\Core\Context.cpp" />
     <ClCompile Include="..\Runtime\Core\Engine.cpp" />
     <ClCompile Include="..\Runtime\Core\Entity.cpp" />
+    <ClCompile Include="..\Runtime\Core\Serializer.cpp" />
     <ClCompile Include="..\Runtime\Core\SubSystem.cpp" />
     <ClCompile Include="..\Runtime\Core\Window.cpp" />
     <ClCompile Include="..\Runtime\Core\World.cpp" />

@@ -4,7 +4,6 @@ namespace Mile
 {
     Component::Component( Context* context ) :
         m_context( context ),
-        m_transform( nullptr ),
         m_bIsActive( false )
     {
 

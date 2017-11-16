@@ -143,11 +143,10 @@ namespace Mile
             + "\"y\":" + std::to_string( y ) + "}";
       }
 
-      void DeSerialize( const std::string& jsonText )
+      void DeSerialize( const json& jsonDaa )
       {
-         auto jsonObj = json::parse( jsonText );
-         x = jsonObj[ "x" ];
-         y = jsonObj[ "y" ];
+         x = jsonData[ "x" ];
+         y = jsonData[ "y" ];
       }
 
       bool operator==( const Vector2& vec ) const

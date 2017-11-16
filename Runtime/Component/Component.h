@@ -13,7 +13,7 @@ namespace Mile
         virtual ~Component( ) { }
 
         String Serialize( ) const;
-        void DeSerialize( const String& json );
+        void DeSerialize( const json& jsonData );
 
         bool IsActive( ) const { return m_bIsActive; }
         void SetActive( bool bIsActive );

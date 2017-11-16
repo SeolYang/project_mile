@@ -183,12 +183,12 @@ namespace Mile
               + "\"z\":" + std::to_string( z ) + "}";
         }
 
-        void DeSerialize( const std::string& jsonText )
+
+        void DeSerialize( const json& jsonData )
         {
-           auto jsonObj = json::parse( jsonText );
-           x = jsonObj[ "x" ];
-           y = jsonObj[ "y" ];
-           z = jsonObj[ "z" ];
+           x = jsonData[ "x" ];
+           y = jsonData[ "y" ];
+           z = jsonData[ "z" ];
         }
 
         float GetX( ) const

@@ -34,6 +34,9 @@
     <Filter Include="Rendering\Shaders">
       <UniqueIdentifier>{72d4f322-50ea-48c3-88aa-8b17e771855b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\GameFramework">
+      <UniqueIdentifier>{7ab57107-4381-488a-af23-0b9a63b49ca7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Core\Context.h">
@@ -50,9 +53,6 @@
     </ClInclude>
     <ClInclude Include="..\Runtime\Component\Component.h">
       <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Core\Entity.h">
-      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\World.h">
       <Filter>Core</Filter>
@@ -138,6 +138,18 @@
     <ClInclude Include="..\Runtime\Math\Vector2.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Core\Entity.h">
+      <Filter>Core\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Core\Transform.h">
+      <Filter>Core\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Core\Serializer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Math\Quaternion.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -147,9 +159,6 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Core\Engine.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Core\Entity.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Core\World.cpp">
@@ -220,6 +229,12 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Math\Vector2.cpp">
       <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Core\Entity.cpp">
+      <Filter>Core\GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Core\Serializer.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
