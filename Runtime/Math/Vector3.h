@@ -176,6 +176,21 @@ namespace Mile
             return Cross( vec );
         }
 
+        std::string Serialize( ) const
+        {
+           return "{ \"x\":" + std::to_string( x ) + ","
+              + "\"y\":" + std::to_string( y ) + ","
+              + "\"z\":" + std::to_string( z ) + "}";
+        }
+
+        void DeSerialize( const std::string& jsonText )
+        {
+           auto jsonObj = json::parse( jsonText );
+           x = jsonObj[ "x" ];
+           y = jsonObj[ "y" ];
+           z = jsonObj[ "z" ];
+        }
+
         float GetX( ) const
         {
             return x;

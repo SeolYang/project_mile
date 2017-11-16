@@ -137,6 +137,19 @@ namespace Mile
          return ( *this );
       }
 
+      std::string Serialize( ) const
+      {
+         return "{ \"x\":" + std::to_string( x ) + ","
+            + "\"y\":" + std::to_string( y ) + "}";
+      }
+
+      void DeSerialize( const std::string& jsonText )
+      {
+         auto jsonObj = json::parse( jsonText );
+         x = jsonObj[ "x" ];
+         y = jsonObj[ "y" ];
+      }
+
       bool operator==( const Vector2& vec ) const
       {
          return ( x == vec.x ) && ( y == vec.y );
@@ -174,7 +187,7 @@ namespace Mile
 
       float SizeSquared( ) const
       {
-         return ( x * x + y * y + z * z );
+         return ( x * x + y * y );
       }
 
       float Size( ) const

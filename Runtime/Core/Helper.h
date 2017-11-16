@@ -16,6 +16,9 @@
 
 #define MEAPI __declspec(dllexport)
 
+#include "json.hpp"
+using json = nlohmann::json;
+
 namespace Mile
 {
    using String = std::wstring;

@@ -1,6 +1,6 @@
 #include "Entity.h"
 #include "Context.h"
-#include "Component\Component.h"
+#include "Component/Component.h"
 
 namespace Mile
 {

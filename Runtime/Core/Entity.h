@@ -14,6 +14,9 @@ namespace Mile
         Entity( Context* context );
         ~Entity( );
 
+        String Serialize( ) const;
+        void DeSerialize( const String& json );
+
         /**
         * @brief    Entity를 초기화 합니다. ( 이 시점에서 Entity의 Transform 이 설정됩니다. )
         * @param    Entity에 적용할 Transform 컴포넌트
@@ -84,7 +87,6 @@ namespace Mile
         * @param    Entity에 설정해줄 새로운 이름
         */
         void SetName( const String& name ) { m_name = name; }
-
         
         void Start( );
         void Update( );

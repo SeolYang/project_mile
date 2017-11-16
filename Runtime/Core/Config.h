@@ -1,9 +1,6 @@
 #pragma once
 #include "SubSystem.h"
-#include "json.hpp"
 #include <tuple>
-
-using json = nlohmann::json;
 
 namespace Mile
 {

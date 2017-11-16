@@ -5,13 +5,15 @@
 namespace Mile
 {
     class Context;
-    class Transform;
     class MEAPI Component
     {
         friend class Entity;
     public:
         Component( Context* context );
         virtual ~Component( ) { }
+
+        String Serialize( ) const;
+        void DeSerialize( const String& json );
 
         bool IsActive( ) const { return m_bIsActive; }
         void SetActive( bool bIsActive );
@@ -24,7 +26,6 @@ namespace Mile
 
     protected:
         Context*        m_context;
-        Transform*      m_transform;
         bool            m_bIsActive;
 
     };

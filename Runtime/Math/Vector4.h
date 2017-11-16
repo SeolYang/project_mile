@@ -202,6 +202,23 @@ namespace Mile
                             1.0f );
         }
 
+        std::string Serialize( ) const
+        {
+           return "{ \"x\":" + std::to_string( x ) + ","
+              + "\"y\":" + std::to_string( y ) + ","
+              + "\"z\":" + std::to_string( z ) + ","
+              + "\"w\":" + std::to_string( w ) + "}";
+        }
+
+        void DeSerialize( const std::string& jsonText )
+        {
+           auto jsonObj = json::parse( jsonText );
+           x = jsonObj[ "x" ];
+           y = jsonObj[ "y" ];
+           z = jsonObj[ "z" ];
+           w = jsonObj[ "w" ];
+        }
+
         float GetX( ) const
         {
             return x;
