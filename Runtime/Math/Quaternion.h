@@ -2,6 +2,7 @@
 
 #include "Core/Helper.h"
 #include "Vector3.h"
+#include "Matrix.h"
 
 namespace Mile
 {
@@ -108,7 +109,7 @@ namespace Mile
                             z * factor );
       }
 
-      Quaternion operator/=( float div )
+      Quaternion& operator/=( float div )
       {
          float factor = 1.0f / div;
          w *= factor;
@@ -118,9 +119,18 @@ namespace Mile
          return ( *this );
       }
 
+      Quaternion& operator=( const Quaternion& quat )
+      {
+         w = quat.w;
+         x = quat.x;
+         y = quat.y;
+         z = quat.z;
+         return ( *this );
+      }
+
       std::string Serialize( ) const
       {
-         return "{ \"x\":" + std::to_string( w ) + ","
+         return "\"Quaternion\": { \"x\":" + std::to_string( w ) + ","
             + "\"y\":" + std::to_string( x ) + ","
             + "\"z\":" + std::to_string( y ) + ","
             + "\"w\":" + std::to_string( z ) + "}";
@@ -172,6 +182,17 @@ namespace Mile
                             x * normInv,
                             y * normInv,
                             z * normInv );
+      }
+
+      Quaternion& Rotate( const Quaternion& rot )
+      {
+         ( *this ) = ( rot * ( *this ) * rot.Conjugate( ) );
+         return ( *this );
+      }
+
+      Quaternion Rotated( const Quaternion& rot ) const
+      {
+         return ( rot * ( *this ) * rot.Conjugate( ) );
       }
 
    public:

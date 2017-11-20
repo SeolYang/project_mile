@@ -178,7 +178,7 @@ namespace Mile
 
         std::string Serialize( ) const
         {
-           return "{ \"x\":" + std::to_string( x ) + ","
+           return "\"Vector3\": { \"x\":" + std::to_string( x ) + ","
               + "\"y\":" + std::to_string( y ) + ","
               + "\"z\":" + std::to_string( z ) + "}";
         }
