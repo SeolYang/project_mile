@@ -33,6 +33,21 @@ namespace Mile
       {
       }
 
+      std::string Serialize( ) const
+      {
+         return "{ \"Position\":" + m_position.Serialize( ) +
+            ", \"Scale\":" + m_scale.Serialize( ) +
+            ", \"Rotation\":" + m_rotation.Serialize( ) + " }";
+      }
+
+      void DeSerialize( const json& jsonObj )
+      {
+         m_position.DeSerialize( jsonObj[ "Position" ] );
+         m_scale.DeSerialize( jsonObj[ "Scale" ] );
+         m_rotation.DeSerialize( jsonObj[ "Rotation" ] );
+         ForceUpdateMatrix( );
+      }
+
       Vector3 GetPosition( TransformSpace space = TransformSpace::Local ) const
       {
          switch ( space )

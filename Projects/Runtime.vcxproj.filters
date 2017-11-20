@@ -144,9 +144,6 @@
     <ClInclude Include="..\Runtime\Core\Transform.h">
       <Filter>Core\GameFramework</Filter>
     </ClInclude>
-    <ClInclude Include="..\Runtime\Core\Serializer.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="..\Runtime\Math\Quaternion.h">
       <Filter>Math</Filter>
     </ClInclude>
@@ -227,14 +224,11 @@
     <ClCompile Include="..\Runtime\Rendering\SamplerDX11.cpp">
       <Filter>Rendering\Shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Math\Vector2.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
     <ClCompile Include="..\Runtime\Core\Entity.cpp">
       <Filter>Core\GameFramework</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Core\Serializer.cpp">
-      <Filter>Core</Filter>
+    <ClCompile Include="..\Runtime\Core\Transform.cpp">
+      <Filter>Core\GameFramework</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

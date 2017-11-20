@@ -130,7 +130,7 @@ namespace Mile
 
       std::string Serialize( ) const
       {
-         return "\"Quaternion\": { \"x\":" + std::to_string( w ) + ","
+         return "{ \"x\":" + std::to_string( w ) + ","
             + "\"y\":" + std::to_string( x ) + ","
             + "\"z\":" + std::to_string( y ) + ","
             + "\"w\":" + std::to_string( z ) + "}";
