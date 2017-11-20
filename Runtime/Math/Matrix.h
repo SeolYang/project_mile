@@ -1,5 +1,6 @@
 #pragma once
 #include "Vector4.h"
+#include "Quaternion.h"
 
 namespace Mile
 {
@@ -221,6 +222,11 @@ namespace Mile
       Matrix& Inverse( )
       {
          float determinant = Determinant( );
+         if ( determinant == 0.0f )
+         {
+            return ( *this );
+         }
+
          auto adjugate = Adjugate( );
          ( *this ) = adjugate * ( 1.0f / determinant );
          return ( *this );
@@ -240,6 +246,55 @@ namespace Mile
             std::to_wstring( m41 ) + TEXT( "\t" ) + std::to_wstring( m42 ) + TEXT( "\t" ) + std::to_wstring( m43 ) + TEXT( "\t" ) + std::to_wstring( m44 ) + TEXT( "\n" );
       }
 
+      static Matrix CreateTranslation( float x, float y, float z )
+      {
+         return Matrix{
+            1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 1.0f, 0.0f,
+            x,    y,    z,    1.0f };
+      }
+
+      static Matrix CreateTranslation( const Vector3& vec )
+      {
+         return CreateTranslation( vec.x, vec.y, vec.z );
+      }
+
+      static Matrix CreateScale( float x, float y, float z )
+      {
+         return Matrix{
+            x,       0.0f,    0.0f,    0.0f,
+            0.0f,    y,       0.0f,    0.0f,
+            0.0f,    0.0f,    z,       0.0f,
+            0.0f,    0.0f,    0.0f,    1.0f };
+      }
+
+      static Matrix CreateScale( const Vector3& vec )
+      {
+         return CreateScale( vec.x, vec.y, vec.z );
+      }
+
+      static Matrix CreateRotation( const Quaternion& quat )
+      {
+         float x = quat.x;
+         float y = quat.y;
+         float z = quat.z;
+         float w = quat.w;
+         float xSqrd = quat.x * quat.x;
+         float ySqrd = quat.y * quat.y;
+         float zSqrd = quat.z * quat.z;
+         return Matrix{
+            ( 1 - 2 * ySqrd - 2 * zSqrd ), ( 2 * x*y + 2 * w*z ), ( 2 * x*z - 2 * w*y ), 0.0f,
+            ( 2 * x*y - 2 * w*z ), ( 1 - 2 * xSqrd - 2 * zSqrd ), ( 2 * y*z + 2 * w*x ), 0.0f,
+            ( 2 * x*z + 2 * w*y ), ( 2 * y*z - 2 * w*z ), ( 1 - 2 * xSqrd - 2 * ySqrd ),   0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f };
+      }
+
+      static Matrix CreateTransformMatrix( const Vector3& scale, const Quaternion& rot, const Vector3& position )
+      {
+         return CreateScale( scale ) * CreateRotation( rot ) * CreateTranslation( position );
+      }
+
    public:
       float m11, m12, m13, m14;
       float m21, m22, m23, m24;
@@ -257,5 +312,11 @@ namespace Mile
                       vec.x * mat.m12 + vec.y * mat.m22 + vec.z * mat.m32 + vec.w * mat.m42,
                       vec.x * mat.m13 + vec.y * mat.m23 + vec.z * mat.m33 + vec.w * mat.m43,
                       vec.x * mat.m14 + vec.y * mat.m24 + vec.z * mat.m34 + vec.w * mat.m44 );
+   }
+
+   static Vector3 operator*( const Vector3& vec, const Matrix& mat )
+   {
+      Vector4 vec4 = Vector4( vec ) * mat;
+      return Vector3( vec4.x, vec4.y, vec4.z );
    }
 }
