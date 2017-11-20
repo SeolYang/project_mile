@@ -147,6 +147,9 @@
     <ClInclude Include="..\Runtime\Math\Quaternion.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Core\ComponentRegister.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -229,6 +232,9 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Core\Transform.cpp">
       <Filter>Core\GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Core\ComponentRegister.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

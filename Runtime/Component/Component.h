@@ -4,29 +4,40 @@
 
 namespace Mile
 {
-    class Context;
-    class MEAPI Component
-    {
-        friend class Entity;
-    public:
-        Component( Context* context );
-        virtual ~Component( ) { }
+   class Context;
+   class MEAPI Component
+   {
+   public:
+      Component( Context* context );
+      virtual ~Component( ) { }
 
-        String Serialize( ) const;
-        void DeSerialize( const json& jsonData );
+      template <typename Ty>
+      static Ty* Create( Context* context )
+      {
+         return new Ty( context );
+      }
 
-        bool IsActive( ) const { return m_bIsActive; }
-        void SetActive( bool bIsActive );
+      std::string Serialize( ) const;
+      void DeSerialize( const json& jsonData );
 
-        virtual void Reset( ) { }
-        virtual void Start( ) { }
-        virtual void Update( ) { }
-        virtual void OnEnable( ) { }
-        virtual void OnDisable( ) { }
+      bool IsActive( ) const { return m_bIsActive; }
+      void SetActive( bool bIsActive );
 
-    protected:
-        Context*        m_context;
-        bool            m_bIsActive;
+      virtual void Reset( ) { }
+      virtual void Start( ) { }
+      virtual void Update( ) { }
+      virtual void OnEnable( ) { }
+      virtual void OnDisable( ) { }
 
-    };
+   protected:
+      Component( ) :
+         Component( nullptr )
+      {
+      }
+
+   protected:
+      Context*        m_context;
+      bool            m_bIsActive;
+
+   };
 }

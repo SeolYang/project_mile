@@ -1,4 +1,5 @@
 #include "Context.h"
+#include "ComponentRegister.h"
 
 namespace Mile
 {
@@ -12,6 +13,8 @@ namespace Mile
       {
          SafeDelete( m_subSystems[ idx ] );
       }
+
+      ComponentRegister::Destroy( );
    }
 
    void Context::RegisterSubSystem( SubSystem* newSubSystem )

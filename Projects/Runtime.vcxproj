@@ -93,6 +93,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Component\Component.h" />
+    <ClInclude Include="..\Runtime\Core\ComponentRegister.h" />
     <ClInclude Include="..\Runtime\Core\Config.h" />
     <ClInclude Include="..\Runtime\Core\Context.h" />
     <ClInclude Include="..\Runtime\Core\Engine.h" />
@@ -131,6 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Component\Component.cpp" />
+    <ClCompile Include="..\Runtime\Core\ComponentRegister.cpp" />
     <ClCompile Include="..\Runtime\Core\Config.cpp" />
     <ClCompile Include="..\Runtime\Core\Context.cpp" />
     <ClCompile Include="..\Runtime\Core\Engine.cpp" />
