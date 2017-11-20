@@ -5,9 +5,6 @@
 namespace Mile
 {
     class Entity;
-    using WeakEntity = std::weak_ptr<Entity>;
-    using SharedEntity = std::shared_ptr<Entity>;
-
     class MEAPI World : public SubSystem
     {
     public:
@@ -33,23 +30,23 @@ namespace Mile
         * @brief    World에 새로운 Entity를 생성합니다.
         * @return   생성된 Entity
         */
-        WeakEntity CreateEntity( );
+        Entity* CreateEntity( );
 
         /**
         * @brief    World에 생성되어있는 Entitiy중 주어진 이름을 가진 Entity를 반환합니다.
         *           ( 단 같은 이름을 가지는 Entity중 제일 먼저 추가된 Entity를 반환함. )
         * @param    해당하는 이름을 가지는 Entity
         */
-        WeakEntity GetEntityByName( const String& name );
+        Entity* GetEntityByName( const String& name );
 
         /**
         * @brief    World에 생성어있는 모든 Entity들의 배열을 반환합니다.
         * @param    Entity 배열
         */
-        std::vector<WeakEntity> GetEntities( );
+        std::vector<Entity*> GetEntities( );
 
     private:
-        std::vector<SharedEntity> m_entities;
+        std::vector<Entity*> m_entities;
 
     };
 }

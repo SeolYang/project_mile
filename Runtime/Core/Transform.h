@@ -50,16 +50,12 @@ namespace Mile
 
       Vector3 GetPosition( TransformSpace space = TransformSpace::Local ) const
       {
-         switch ( space )
+         if ( space == TransformSpace::World && HasParent( ) )
          {
-         case TransformSpace::Local:
-            return m_position;
-            break;
-
-         case TransformSpace::World:
             return m_position * m_worldMatrix;
-            break;
          }
+
+         return m_position;
       }
 
       void SetPosition( const Vector3& position, TransformSpace space = TransformSpace::Local, bool bImmediatelyUpdateMatrix = true )
@@ -85,16 +81,12 @@ namespace Mile
 
       Vector3 GetScale( TransformSpace space = TransformSpace::Local ) const
       {
-         switch ( space )
+         if ( space == TransformSpace::World && HasParent( ) )
          {
-         case TransformSpace::Local:
-            return m_scale;
-            break;
-
-         case TransformSpace::World:
-
-            break;
+            return m_scale * m_parent->GetScale( space );
          }
+
+         return m_scale;
       }
 
       void SetScale( const Vector3& scale, TransformSpace space = TransformSpace::Local, bool bImmediatelyUpdateMatrix = true )
@@ -189,7 +181,7 @@ namespace Mile
       {
          if ( space == TransformSpace::World && HasParent( ) )
          {
-            m_rotation.Rotate( rot.Rotated( m_parent->GetRotation( space ) ) );
+            m_rotation.Rotate( rot.Rotated( m_parent->GetRotation( space ).Inverse( ) ) );
          }
          else
          {

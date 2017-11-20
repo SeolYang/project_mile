@@ -35,15 +35,15 @@ namespace Mile
       }
    }
 
-   WeakEntity World::CreateEntity( )
+   Entity* World::CreateEntity( )
    {
-      auto newEntity = std::make_shared<Entity>( m_context );
+      auto newEntity = new Entity( m_context );
       m_entities.push_back( newEntity );
 
       return newEntity;
    }
 
-   WeakEntity World::GetEntityByName( const String& name )
+   Entity* World::GetEntityByName( const String& name )
    {
       for ( const auto& entity : m_entities )
       {
@@ -53,12 +53,12 @@ namespace Mile
          }
       }
 
-      return WeakEntity( );
+      return nullptr;
    }
 
-   std::vector<WeakEntity> World::GetEntities( )
+   std::vector<Entity*> World::GetEntities( )
    {
-      std::vector<WeakEntity> tempEntities{ };
+      std::vector<Entity*> tempEntities{ };
       for ( const auto& entity : m_entities )
       {
          tempEntities.push_back( entity );

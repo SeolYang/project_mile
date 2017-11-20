@@ -183,7 +183,6 @@ namespace Mile
               + "\"z\":" + std::to_string( z ) + "}";
         }
 
-
         void DeSerialize( const json& jsonData )
         {
            x = jsonData[ "x" ];
