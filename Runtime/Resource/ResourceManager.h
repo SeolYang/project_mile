@@ -53,6 +53,32 @@ namespace Mile
             return std::weak_ptr<Ty>( );
         }
 
+        template < typename Ty >
+        std::weak_ptr<Ty> Create( const String& relativePath )
+        {
+           if ( m_cache->HasByPath( relativePath ) )
+           {
+              return GetByPath<Ty>( relativePath );
+           }
+
+           auto res = Load<Ty>( relativePath );
+           if ( res.expired( ) )
+           {
+              auto newResource = std::make_shared<Ty>( m_context, relativePath );
+              if ( newResource->Save( ) )
+              {
+                 m_cache->Add( std::dynamic_pointer_cast< Resource >( newResource ) );
+                 return newResource;
+              }
+           }
+           else
+           {
+              return res;
+           }
+           
+           return std::weak_ptr<Ty>( );
+        }
+
         void ClearCache( );
 
 

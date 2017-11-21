@@ -43,7 +43,7 @@ namespace Mile
       if ( !IsExist( configName ) )
       {
          auto resManager = m_context->GetSubSystem<ResourceManager>( );
-         auto text = resManager->Load<PlainText>( GetPathFromName( configName ) );
+         auto text = resManager->Load<PlainText<>>( GetPathFromName( configName ) );
          
          if ( !text.expired( ) )
          {
@@ -85,7 +85,7 @@ namespace Mile
       {
          Config& config = GetConfig( configName );
          auto resManager = m_context->GetSubSystem<ResourceManager>( );
-         auto plainText = resManager->Load<PlainText>( GetPathFromName( configName ) );
+         auto plainText = resManager->Load<PlainText<>>( GetPathFromName( configName ) );
          auto plainTextRawPtr = plainText._Get( );
          auto dumpData = config.second.dump( );
          plainTextRawPtr->SetData( String2WString( dumpData ) );
@@ -100,7 +100,7 @@ namespace Mile
       auto resManager = m_context->GetSubSystem<ResourceManager>( );
       for ( auto& config : m_configs )
       {
-         auto plainText = resManager->Load<PlainText>( GetPathFromName( config.first ) );
+         auto plainText = resManager->Load<PlainText<>>( GetPathFromName( config.first ) );
          auto plainTextRawPtr = plainText._Get( );
          auto dumpData = config.second.dump( );
          plainTextRawPtr->SetData( String2WString( dumpData ) );

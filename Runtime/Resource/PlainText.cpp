@@ -2,9 +2,10 @@
 
 namespace Mile
 {
-   bool PlainText::Init( )
+   template<>
+   bool PlainText<String>::Init( )
    {
-      m_data = TEXT("");
+      m_data = TEXT( "" );
 
       std::wifstream stream( this->m_path );
       if ( stream.is_open( ) )
@@ -24,26 +25,44 @@ namespace Mile
       return false;
    }
 
-   bool PlainText::Save( const String& filePath )
+   template<>
+   bool PlainText<std::string>::Init( )
    {
-      std::wofstream stream( this->m_path );
+      m_data = "";
+
+      std::ifstream stream( this->m_path );
+      if ( stream.is_open( ) )
+      {
+         std::string tmp;
+         while ( std::getline( stream, tmp ) )
+         {
+            m_data += tmp;
+            m_data += '\n';
+         }
+
+         stream.close( );
+         return true;
+      }
+
+      stream.close( );
+      return false;
+   }
+
+   template <>
+   bool PlainText<String>::Save( const String& filePath )
+   {
+      std::wofstream stream( filePath );
       stream << m_data;
       stream.close( );
       return true;
    }
 
-   bool PlainText::Save( )
+   template <>
+   bool PlainText<std::string>::Save( const String& filePath )
    {
-      return Save( this->m_path );
-   }
-
-   String PlainText::GetData( ) const
-   {
-      return m_data;
-   }
-
-   void PlainText::SetData( const String& newData )
-   {
-      m_data = newData;
+      std::ofstream stream( filePath );
+      stream << m_data;
+      stream.close( );
+      return true;
    }
 }

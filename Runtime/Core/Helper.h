@@ -24,6 +24,15 @@ namespace Mile
    using String = std::wstring;
    using Float = float;
 
+   static std::string BoolSerialize( bool value )
+   {
+      if ( value )
+      {
+         return "true";
+      }
+      
+      return "false";
+   }
 
    /**
    * @brief    주어진 문자열을 토큰을 기준으로 나눕니다.
