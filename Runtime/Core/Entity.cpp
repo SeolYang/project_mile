@@ -1,13 +1,15 @@
 #include "Entity.h"
 #include "Context.h"
 #include "Component/Component.h"
+#include "ComponentRegister.h"
 
 namespace Mile
 {
-   Entity::Entity( Context* context ) :
+   Entity::Entity( Context* context, const String& name ) :
       m_context( context ),
+      m_name( name ),
       m_bIsActive( false ),
-      m_transform( nullptr ),
+      m_transform( new Transform( this ) ),
       m_parent( nullptr )
    {
    }
@@ -25,9 +27,55 @@ namespace Mile
       }
    }
 
+   std::string Entity::Serialize( ) const
+   {
+      std::string res = "{ \"Name\": \"" + Mile::WString2String(m_name) +"\", \"IsActivated\": " + BoolSerialize( m_bIsActive ) +
+         ", \"Transform\": " + m_transform->Serialize( ) + ", \"Components\": [  ";
+      for ( auto comp : m_components )
+      {
+         res += comp->Serialize( ) + ", ";
+      }
+      res[ res.length( ) - 2 ] = ']';
+
+      res += ", \"Children\": [  ";
+      for ( auto child : m_children )
+      {
+         res += child->Serialize( ) + ", ";
+      }
+      res[ res.length( ) - 2 ] = ']';
+
+      res += '}';
+
+      return res;
+   }
+
+   void Entity::DeSerialize( const json& jsonData )
+   {
+      m_name = Mile::String2WString( jsonData[ "Name" ] );
+      m_bIsActive = jsonData[ "IsActivated" ];
+
+      m_transform->DeSerialize( jsonData[ "Transform" ] );
+
+      std::vector<json> components = jsonData[ "Components" ];
+      for ( auto component : components )
+      {
+         std::string type = component[ "Type" ];
+         Component* compInst = ComponentRegister::GetInstance( ).Acquire( type, m_context );
+         compInst->DeSerialize( component );
+         m_components.push_back( compInst );
+      }
+
+      std::vector<json> children = jsonData[ "Children" ];
+      for ( auto child : children )
+      {
+         Entity* tempChild = new Entity( m_context, TEXT("") );
+         tempChild->DeSerialize( child );
+         this->AttachChild( tempChild );
+      }
+   }
+
    bool Entity::Init( )
    {
-      m_transform = new Transform( this );
       return true;
    }
 

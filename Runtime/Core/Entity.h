@@ -11,7 +11,7 @@ namespace Mile
    class Entity
    {
    public:
-      Entity( Context* context );
+      Entity( Context* context, const String& name );
       ~Entity( );
 
       std::string Serialize( ) const;
