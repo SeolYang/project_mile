@@ -13,5 +13,7 @@ int main( )
       return 1;
    }
 
-   return engine->Execute( );
+   int execute = engine->Execute( );
+   context.reset( );
+   return execute;
 }

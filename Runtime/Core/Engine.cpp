@@ -69,6 +69,7 @@ namespace Mile
    int Engine::Execute( )
    {
       m_bIsRunning = true;
+      m_world->Start( );
       while ( m_bIsRunning )
       {
          if ( m_bShutdownFlag )

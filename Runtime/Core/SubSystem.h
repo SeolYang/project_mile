@@ -13,6 +13,7 @@ namespace Mile
 
         virtual bool Init( ) = 0;
         virtual void Update( ) { }
+        virtual void DeInit( ) { }
 
     protected:
         Context* m_context;

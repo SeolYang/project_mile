@@ -17,8 +17,11 @@ namespace Mile
          return new Ty( context );
       }
 
-      std::string Serialize( ) const;
-      void DeSerialize( const json& jsonData );
+      virtual std::string Serialize( ) const = 0;
+      virtual void DeSerialize( const json& jsonData )
+      {
+         m_bIsActive = jsonData[ "IsActivated" ];
+      }
 
       bool IsActive( ) const { return m_bIsActive; }
       void SetActive( bool bIsActive );
