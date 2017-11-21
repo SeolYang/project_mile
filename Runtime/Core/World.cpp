@@ -113,6 +113,7 @@ namespace Mile
          return false;
       }
 
+      this->m_loadedData = res;
       this->DeSerialize( json::parse( res.lock( )->GetData( ) ) );
       return true;
    }
@@ -133,5 +134,17 @@ namespace Mile
       auto resPtr = res.lock( );
       resPtr->SetData( this->Serialize( ) );
       return resPtr->Save( );
+   }
+
+   bool World::Save( )
+   {
+      if ( m_loadedData.expired( ) )
+      {
+         return false;
+      }
+
+      auto rawPtr = m_loadedData._Get( );
+      rawPtr->SetData( this->Serialize( ) );
+      return rawPtr->Save( );
    }
 }

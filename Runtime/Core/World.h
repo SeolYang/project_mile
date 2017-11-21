@@ -54,9 +54,11 @@ namespace Mile
 
         bool LoadFrom( const String& filePath );
         bool SaveTo( const String& filePath );
+        bool Save( );
 
     private:
         std::vector<Entity*> m_entities;
+        std::weak_ptr<PlainText<std::string>> m_loadedData;
 
     };
 }
