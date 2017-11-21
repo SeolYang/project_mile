@@ -1,6 +1,10 @@
 #include "World.h"
 #include "Context.h"
 #include "Entity.h"
+#include "Resource\ResourceManager.h"
+#include "Config.h"
+#include "Resource\PlainText.h"
+#include <iostream>
 
 namespace Mile
 {
@@ -14,9 +18,42 @@ namespace Mile
    {
    }
 
+   std::string World::Serialize( ) const
+   {
+      std::string res = "{ \"Entities\": [  ";
+      /* Entity serialize */
+      for ( auto entity : m_entities )
+      {
+         res += entity->Serialize( );
+         res += ", ";
+      }
+      res[ res.length( ) - 2 ] = ']';
+      res += "}";
+      return res;
+   }
+
+   void World::DeSerialize( const json& jsonData )
+   {
+      std::vector<json> entities = jsonData[ "Entities" ];
+      for ( auto entity : entities )
+      {
+         Entity* temp = CreateEntity( TEXT( "" ) );
+         temp->DeSerialize( entity );
+      }
+   }
+
    bool World::Init( )
    {
-      return true;
+      auto configSys = m_context->GetSubSystem<ConfigSystem>( );
+      auto engineConfig = configSys->GetConfig( TEXT( "Engine" ) );
+      String defaultPath = String2WString(engineConfig.second[ "World" ]);
+
+      return LoadFrom( defaultPath );
+   }
+
+   void World::DeInit( )
+   {
+      //SaveTo( TEXT( "Contents/Worlds/Test.json" ) );
    }
 
    void World::Start( )
@@ -35,9 +72,9 @@ namespace Mile
       }
    }
 
-   Entity* World::CreateEntity( )
+   Entity* World::CreateEntity( const String& name )
    {
-      auto newEntity = new Entity( m_context );
+      auto newEntity = new Entity( m_context, name );
       m_entities.push_back( newEntity );
 
       return newEntity;
@@ -65,5 +102,36 @@ namespace Mile
       }
 
       return std::move( tempEntities );
+   }
+
+   bool World::LoadFrom( const String& filePath )
+   {
+      auto resMng = m_context->GetSubSystem<ResourceManager>( );
+      auto res = resMng->Create<PlainText<std::string>>( filePath );
+      if ( res.expired( ) )
+      {
+         return false;
+      }
+
+      this->DeSerialize( json::parse( res.lock( )->GetData( ) ) );
+      return true;
+   }
+
+   bool World::SaveTo( const String& filePath )
+   {
+      auto resMng = m_context->GetSubSystem<ResourceManager>( );
+      auto res = resMng->GetByPath<PlainText<std::string>>( filePath );
+      if ( res.expired( ) )
+      {
+         res = resMng->Create<PlainText<std::string>>( filePath );
+         if ( res.expired( ) )
+         {
+            return false;
+         }
+      }
+
+      auto resPtr = res.lock( );
+      resPtr->SetData( this->Serialize( ) );
+      return resPtr->Save( );
    }
 }
