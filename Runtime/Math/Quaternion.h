@@ -129,10 +129,10 @@ namespace Mile
 
       std::string Serialize( ) const
       {
-         return "{ \"x\":" + std::to_string( w ) + ","
-            + "\"y\":" + std::to_string( x ) + ","
-            + "\"z\":" + std::to_string( y ) + ","
-            + "\"w\":" + std::to_string( z ) + "}";
+         return "{ \"x\": " + std::to_string( w ) + ", "
+            + "\"y\": " + std::to_string( x ) + ", "
+            + "\"z\": " + std::to_string( y ) + ", "
+            + "\"w\": " + std::to_string( z ) + " }";
       }
 
       void DeSerialize( const json& jsonData )
@@ -199,13 +199,13 @@ namespace Mile
       {
          struct
          {
-            float elements[ 4 ];
+            float x;
+            float y;
+            float z;
+            float w;
          };
 
-         float x;
-         float y;
-         float z;
-         float w;
+         float elements[ 4 ];
       };
    };
 }
