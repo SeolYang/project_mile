@@ -110,6 +110,16 @@ namespace Mile
       }
    }
 
+   template <typename T>
+   void SafeFree( T& target )
+   {
+      if ( target != nullptr )
+      {
+         std::free( target );
+         target = nullptr;
+      }
+   }
+
    static String String2WString( const std::string& str )
    {
       if ( str.empty( ) )

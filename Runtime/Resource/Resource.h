@@ -34,15 +34,18 @@ namespace Mile
       String GetName( ) const { return m_name; }
       String GetFolder( ) const { return m_folder; }
       String GetPath( ) const { return m_path; }
+      String GetExt( ) const { return m_ext; }
 
       static String GetFileNameFromPath( const String& filePath );
       static String GetFolderFromPath( const String& filePath );
+      static String GetFileExtensionFromPath( const String& filePath );
 
    protected:
       Context*   m_context;
       String     m_path;
       String     m_name;
       String     m_folder;
+      String     m_ext;
       ResourceType    m_resourceType;
 
    };

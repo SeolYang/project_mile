@@ -150,6 +150,12 @@
     <ClInclude Include="..\Runtime\Core\ComponentRegister.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\Texture2D.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\TextureLoader.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -235,6 +241,12 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Core\ComponentRegister.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Resource\Texture2D.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Resource\TextureLoader.cpp">
+      <Filter>Resource</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

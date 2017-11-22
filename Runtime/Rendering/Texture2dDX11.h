@@ -18,6 +18,7 @@ namespace Mile
       bool Bind( unsigned int startSlot, ShaderType shader );
 
       virtual ID3D11Resource* GetResource( ) override { return m_texture; }
+      virtual RenderResourceType GetResourceType( ) const override { return RenderResourceType::RDRT_Texture2D; }
       ID3D11ShaderResourceView* GetSRV( ) { return m_srv; }
       unsigned int GetMipLevels( ) const { return m_mipLevels; }
 

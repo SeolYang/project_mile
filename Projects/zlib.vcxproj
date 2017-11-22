@@ -10,22 +10,52 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\ThirdParty\zlib\include\adler32.c" />
+    <ClCompile Include="..\ThirdParty\zlib\include\compress.c" />
+    <ClCompile Include="..\ThirdParty\zlib\include\crc32.c" />
+    <ClCompile Include="..\ThirdParty\zlib\include\deflate.c" />
+    <ClCompile Include="..\ThirdParty\zlib\include\gzclose.c" />
+    <ClCompile Include="..\ThirdParty\zlib\include\gzlib.c" />
+    <ClCompile Include="..\ThirdParty\zlib\include\gzread.c" />
+    <ClCompile Include="..\ThirdParty\zlib\include\gzwrite.c" />
+    <ClCompile Include="..\ThirdParty\zlib\include\infback.c" />
+    <ClCompile Include="..\ThirdParty\zlib\include\inffast.c" />
+    <ClCompile Include="..\ThirdParty\zlib\include\inflate.c" />
+    <ClCompile Include="..\ThirdParty\zlib\include\inftrees.c" />
+    <ClCompile Include="..\ThirdParty\zlib\include\trees.c" />
+    <ClCompile Include="..\ThirdParty\zlib\include\uncompr.c" />
+    <ClCompile Include="..\ThirdParty\zlib\include\zutil.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\ThirdParty\zlib\include\crc32.h" />
+    <ClInclude Include="..\ThirdParty\zlib\include\deflate.h" />
+    <ClInclude Include="..\ThirdParty\zlib\include\gzguts.h" />
+    <ClInclude Include="..\ThirdParty\zlib\include\inffast.h" />
+    <ClInclude Include="..\ThirdParty\zlib\include\inffixed.h" />
+    <ClInclude Include="..\ThirdParty\zlib\include\inflate.h" />
+    <ClInclude Include="..\ThirdParty\zlib\include\inftrees.h" />
+    <ClInclude Include="..\ThirdParty\zlib\include\trees.h" />
+    <ClInclude Include="..\ThirdParty\zlib\include\zconf.h" />
+    <ClInclude Include="..\ThirdParty\zlib\include\zlib.h" />
+    <ClInclude Include="..\ThirdParty\zlib\include\zutil.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{5862A8D8-525E-4271-A925-E11865B4B705}</ProjectGuid>
+    <ProjectGuid>{C048B0FC-13E9-4088-BC2F-098D1C1D23EF}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Test</RootNamespace>
+    <RootNamespace>zlib</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -43,15 +73,15 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\Binaries\$(Configuration)\</OutDir>
-    <IntDir>..\Binaries\VSOBJ\Test\$(Configuration)\</IntDir>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
+    <TargetName>zlib</TargetName>
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
-    <IntDir>..\Binaries\VSOBJ\Test\$(Configuration)\</IntDir>
+    <IntDir>..\Binaries\VSOBJ\zlib\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>zlib_d</TargetName>
+    <OutDir>..\Binaries\$(Configuration)\</OutDir>
+    <IntDir>..\Binaries\VSOBJ\zlib\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -59,13 +89,12 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Runtime;..\ThirdParty\json\src;..\Test;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\ThirdParty\zlib\include</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4996;4267</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>Runtime.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Binaries\$(Configuration)\</AdditionalLibraryDirectories>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -76,20 +105,16 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Runtime;..\ThirdParty\json\src;..\Test;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\ThirdParty\zlib\include</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4996;4267</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Runtime.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Binaries\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\Test\Entry.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

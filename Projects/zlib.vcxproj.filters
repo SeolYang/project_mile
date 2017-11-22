@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{94b7753a-1156-4621-91f2-4675b56cba10}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\ThirdParty\zlib\include\gzwrite.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\zlib\include\infback.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\zlib\include\inffast.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\zlib\include\inflate.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\zlib\include\inftrees.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\zlib\include\trees.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\zlib\include\uncompr.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\zlib\include\zutil.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\zlib\include\adler32.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\zlib\include\compress.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\zlib\include\crc32.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\zlib\include\deflate.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\zlib\include\gzclose.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\zlib\include\gzlib.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\zlib\include\gzread.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\ThirdParty\zlib\include\inffast.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\zlib\include\inffixed.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\zlib\include\inflate.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\zlib\include\inftrees.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\zlib\include\trees.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\zlib\include\zconf.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\zlib\include\zlib.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\zlib\include\zutil.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\zlib\include\crc32.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\zlib\include\deflate.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\zlib\include\gzguts.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

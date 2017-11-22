@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{855427c6-a9f0-4ec4-a8e6-bf996a57561d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\ThirdParty\libpng\include\png.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\libpng\include\pngconf.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\libpng\include\pngdebug.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\libpng\include\pnginfo.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\libpng\include\pnglibconf.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\libpng\include\pngpriv.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\libpng\include\pngstruct.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\ThirdParty\libpng\include\pngerror.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\libpng\include\pngget.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\libpng\include\pngmem.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\libpng\include\pngpread.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\libpng\include\pngread.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\libpng\include\pngrio.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\libpng\include\pngrtran.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\libpng\include\pngrutil.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\libpng\include\pngset.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\libpng\include\pngtest.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\libpng\include\pngtrans.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\libpng\include\pngwio.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\libpng\include\pngwrite.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\libpng\include\pngwtran.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\libpng\include\pngwutil.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\libpng\include\png.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
