@@ -18,7 +18,7 @@ namespace Mile
    class MEAPI TextureLoader
    {
    public:
-      static TextureInfo&& LoadTexture( const String& filePath, const String& fileExtension )
+      static TextureInfo LoadTexture( const String& filePath, const String& fileExtension )
       {
          if ( fileExtension == TEXT( "png" ) )
          {
@@ -28,7 +28,7 @@ namespace Mile
          return TextureInfo( );
       }
 
-      static TextureInfo&& LoadPNG( const String& filePath );
+      static TextureInfo LoadPNG( const String& filePath );
 
    };
 }

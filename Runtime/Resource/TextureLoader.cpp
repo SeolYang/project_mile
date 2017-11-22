@@ -3,15 +3,14 @@
 
 namespace Mile
 {
-   TextureInfo&& TextureLoader::LoadPNG( const String& filePath )
+   TextureInfo TextureLoader::LoadPNG( const String& filePath )
    {
       png_structp pngPtr = nullptr;
       png_infop infoPtr = nullptr;
       unsigned int sigRead = 8;
-      int colorType, interlaceType;
       FILE* file = nullptr;
 
-      file = _wfopen( filePath.c_str( ), TEXT( "rb" ) );
+      _wfopen_s( &file, filePath.c_str( ), TEXT( "rb" ) );
       if ( file == nullptr )
       {
          return TextureInfo( );
@@ -87,7 +86,7 @@ namespace Mile
 
       png_read_update_info( pngPtr, infoPtr );
 
-      unsigned int rowBytes = png_get_rowbytes( pngPtr, infoPtr );
+      png_size_t rowBytes = png_get_rowbytes( pngPtr, infoPtr );
       unsigned char* data = reinterpret_cast< unsigned char* >( malloc( rowBytes * height ) );
       png_bytepp rowPointers = png_get_rows( pngPtr, infoPtr );
 
