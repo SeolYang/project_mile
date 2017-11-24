@@ -2,8 +2,8 @@
 
 namespace Mile
 {
-    Component::Component( Context* context ) :
-        m_context( context ),
+    Component::Component( Entity* entity ) :
+        m_entity( entity ),
         m_bIsActive( false )
     {
 

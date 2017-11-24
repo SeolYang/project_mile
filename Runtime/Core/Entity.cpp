@@ -60,7 +60,7 @@ namespace Mile
       for ( auto component : components )
       {
          std::string type = component[ "Type" ];
-         Component* compInst = ComponentRegister::GetInstance( ).Acquire( type, m_context );
+         Component* compInst = ComponentRegister::GetInstance( ).Acquire( type, this );
          compInst->DeSerialize( component );
          m_components.push_back( compInst );
       }

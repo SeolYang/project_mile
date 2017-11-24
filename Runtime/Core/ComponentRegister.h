@@ -14,7 +14,7 @@ namespace Mile
          m_constructorMap.insert( std::make_pair( key, &Component::Create<Ty> ) );
       }
 
-      Component* Acquire( const std::string& key, Context* context )
+      Component* Acquire( const std::string& key, Entity* entity )
       {
          auto itr = m_constructorMap.find( key );
          if ( itr == m_constructorMap.end( ) )
@@ -22,7 +22,7 @@ namespace Mile
             return nullptr;
          }
 
-         return ( *itr ).second( context );
+         return ( *itr ).second( entity );
       }
 
       static ComponentRegister& GetInstance( )
@@ -45,7 +45,7 @@ namespace Mile
 
    private:
       static ComponentRegister*  m_instance;
-      std::map<std::string, std::function<Component*( Context* )>> m_constructorMap;
+      std::map<std::string, std::function<Component*( Entity* )>> m_constructorMap;
 
    };
 }

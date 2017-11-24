@@ -10,7 +10,8 @@ namespace Mile
    {
    public:
       // @TODO Vertex/Index Buffer Initialize
-      Mesh( RendererDX11* renderer) :
+      Mesh( RendererDX11* renderer, const std::string& name) :
+         m_name( name ),
          m_renderer( renderer )
       {
       }
@@ -22,7 +23,7 @@ namespace Mile
       }
 
       template <typename Vertex>
-      bool Init( const std::vector<Vertex>& verticies, const std::vector<unsigned int>& indicies )
+      bool Init( const std::vector<Vertex>& verticies, const std::vector<unsigned int>& indices )
       {
          if ( m_indexBuffer != nullptr || m_indexBuffer != nullptr )
          {
@@ -51,11 +52,14 @@ namespace Mile
       IndexBufferDX11* GetIndexBuffer( ) { return m_indexBuffer; }
       VertexBufferDX11* GetVertexBuffer( ) { return m_vertexBuffer; }
 
+      std::string GetName( ) const { return m_name; }
 
    private:
-      RendererDX11*  m_renderer;
-      IndexBufferDX11* m_indexBuffer;
+      RendererDX11*     m_renderer;
+      IndexBufferDX11*  m_indexBuffer;
       VertexBufferDX11* m_vertexBuffer;
+
+      std::string       m_name;
 
    };
 }

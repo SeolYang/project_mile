@@ -4,17 +4,17 @@
 
 namespace Mile
 {
-   class Context;
+   class Entity;
    class MEAPI Component
    {
    public:
-      Component( Context* context );
+      Component( Entity* entity );
       virtual ~Component( ) { }
 
       template <typename Ty>
-      static Ty* Create( Context* context )
+      static Ty* Create( Entity* entity )
       {
-         return new Ty( context );
+         return new Ty( entity );
       }
 
       virtual std::string Serialize( ) const = 0;
@@ -39,7 +39,7 @@ namespace Mile
       }
 
    protected:
-      Context*        m_context;
+      Entity*         m_entity;
       bool            m_bIsActive;
 
    };
