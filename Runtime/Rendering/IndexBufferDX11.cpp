@@ -37,13 +37,14 @@ namespace Mile
 
    bool IndexBufferDX11::Bind( )
    {
-      if ( m_bIsInitialized )
+      if ( !m_bIsInitialized )
       {
-         auto deviceContext = m_renderer->GetDeviceContext( );
-         deviceContext->IASetIndexBuffer( m_buffer, DXGI_FORMAT_R32_UINT, 0 );
-         return true;
+         return false;
       }
 
-      return false;
+      auto deviceContext = m_renderer->GetDeviceContext( );
+      deviceContext->IASetIndexBuffer( m_buffer, DXGI_FORMAT_R32_UINT, 0 );
+
+      return true;
    }
 }

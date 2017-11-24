@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Math\Vertex.h"
 #include "VertexBufferDX11.h"
 #include "IndexBufferDX11.h"
 
