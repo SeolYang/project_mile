@@ -12,7 +12,8 @@ namespace Mile
       m_height( 0 ),
       m_channels( 0 ),
       m_bitDepth( 0 ),
-      Resource( context, filePath )
+      Resource( context, filePath,
+                ResourceType::RT_Texture2D)
    {
    }
 

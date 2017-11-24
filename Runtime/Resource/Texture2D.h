@@ -13,7 +13,6 @@ namespace Mile
 
       virtual bool Init( ) override;
       virtual bool Save( const String& filePath );
-      virtual bool Save( ) { return false; }
 
       unsigned char* GetRawData( ) const { return m_rawData; }
       
