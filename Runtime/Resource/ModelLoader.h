@@ -15,7 +15,7 @@ namespace Mile
    class MEAPI ModelLoader
    {
    public:
-      Entity* LoadModel( Context* context, Model* target, const String& filePath );
+      static Entity* LoadModel( Context* context, Model* target, const String& filePath );
 
    private:
       static void ReconstructEntityWithAiNode( const aiScene* scene, aiNode* node, Model* target, Entity* entity );

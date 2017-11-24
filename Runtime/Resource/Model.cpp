@@ -1,5 +1,8 @@
 #include "Model.h"
+#include "ModelLoader.h"
+#include "Core\Entity.h"
 #include "Rendering\Mesh.h"
+#include "Core\World.h"
 #include <assimp\scene.h>
 #include <assimp\Importer.hpp>
 #include <assimp\postprocess.h>
@@ -12,6 +15,9 @@ namespace Mile
       {
          return false;
       }
+
+      m_instance = ModelLoader::LoadModel( m_context, this, m_path );
+      m_serializedInstance = m_instance->Serialize( );
 
       return true;
    }
@@ -32,5 +38,12 @@ namespace Mile
       }
 
       return nullptr;
+   }
+
+   Entity* Model::Instantiate( Model* target, World* targetWorld )
+   {
+      Entity* tempEntity = targetWorld->CreateEntity( TEXT( "" ) );
+      tempEntity->DeSerialize( target->m_serializedInstance );
+      return tempEntity;
    }
 }
