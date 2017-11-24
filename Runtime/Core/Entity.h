@@ -119,12 +119,11 @@ namespace Mile
    template <typename Ty>
    Ty* Entity::AddComponent( )
    {
-      Component* component = new Ty( m_context );
+      Component* component = new Ty( this );
       m_components.push_back( component );
 
       component->Reset( );
       component->SetActive( true );
-      component->m_transform = m_transform;
 
       return static_cast< Ty* >( component );
    }
