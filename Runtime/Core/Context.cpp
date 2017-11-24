@@ -9,7 +9,7 @@ namespace Mile
 
    Context::~Context( )
    {
-      for ( int idx = m_subSystems.size()-1; idx; --idx )
+      for ( size_t idx = m_subSystems.size()-1; idx; --idx )
       {
          m_subSystems[ idx ]->DeInit( );
          SafeDelete( m_subSystems[ idx ] );

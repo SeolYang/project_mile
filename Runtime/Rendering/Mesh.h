@@ -9,9 +9,9 @@ namespace Mile
    class MEAPI Mesh
    {
    public:
-      // @TODO Vertex/Index Buffer Initialize
-      Mesh( RendererDX11* renderer, const std::string& name) :
+      Mesh( RendererDX11* renderer, const std::string& name, const String& modelPath) :
          m_name( name ),
+         m_modelPath( modelPath ),
          m_renderer( renderer )
       {
       }
@@ -31,13 +31,13 @@ namespace Mile
          }
 
          m_indexBuffer = new IndexBufferDX11( m_renderer );
-         if ( !m_indexBuffer->Init( indicies ) )
+         if ( !m_indexBuffer->Init( indices ) )
          {
             SafeDelete( m_indexBuffer );
             return false;
          }
 
-         m_vertexBuffer = new VertexBufferDX11( m_vertexBuffer );
+         m_vertexBuffer = new VertexBufferDX11( m_renderer );
          if ( !m_vertexBuffer->Init<Vertex>( verticies ) )
          {
             SafeDelete( m_vertexBuffer );
@@ -53,6 +53,7 @@ namespace Mile
       VertexBufferDX11* GetVertexBuffer( ) { return m_vertexBuffer; }
 
       std::string GetName( ) const { return m_name; }
+      String GetModelPath( ) const { return m_modelPath; }
 
    private:
       RendererDX11*     m_renderer;
@@ -60,6 +61,7 @@ namespace Mile
       VertexBufferDX11* m_vertexBuffer;
 
       std::string       m_name;
+      String            m_modelPath;
 
    };
 }

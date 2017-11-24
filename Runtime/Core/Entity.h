@@ -103,6 +103,8 @@ namespace Mile
       void OnEnable( );
       void OnDisable( );
 
+      Context* GetContext( ) const { return m_context; }
+
    protected:
       Context*                  m_context;
       bool                      m_bIsActive;

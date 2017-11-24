@@ -66,12 +66,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\libpng\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\libpng\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>zlib_d.lib;libpng_d.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Binaries\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc140-mt_d.lib;zlib_d.lib;libpng_d.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Binaries\$(Configuration)\;..\ThirdParty\assimp\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -83,18 +83,19 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\libpng\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\libpng\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>zlib.lib;libpng.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Binaries\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc140-mt.lib;zlib.lib;libpng.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Binaries\$(Configuration)\;..\ThirdParty\assimp\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Component\Component.h" />
+    <ClInclude Include="..\Runtime\Component\MeshRenderComponent.h" />
     <ClInclude Include="..\Runtime\Core\ComponentRegister.h" />
     <ClInclude Include="..\Runtime\Core\Config.h" />
     <ClInclude Include="..\Runtime\Core\Context.h" />
@@ -117,6 +118,7 @@
     <ClInclude Include="..\Runtime\Rendering\DepthStencilBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\IndexBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\InputLayoutDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\Mesh.h" />
     <ClInclude Include="..\Runtime\Rendering\PixelShaderDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\RendererDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\Rendering.h" />
@@ -124,18 +126,63 @@
     <ClInclude Include="..\Runtime\Rendering\ResourceDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ShaderDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\Texture2dDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\VertexShaderDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\SamplerDX11.h" />
+    <ClInclude Include="..\Runtime\Resource\Material.h" />
+    <ClInclude Include="..\Runtime\Resource\Model.h" />
+    <ClInclude Include="..\Runtime\Resource\ModelLoader.h" />
     <ClInclude Include="..\Runtime\Resource\Resource.h" />
     <ClInclude Include="..\Runtime\Resource\ResourceCache.h" />
     <ClInclude Include="..\Runtime\Resource\ResourceManager.h" />
     <ClInclude Include="..\Runtime\Resource\PlainText.h" />
     <ClInclude Include="..\Runtime\Resource\Texture2D.h" />
     <ClInclude Include="..\Runtime\Resource\TextureLoader.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\ai_assert.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\anim.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\camera.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\cexport.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\cfileio.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\cimport.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\color4.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\Compiler\poppack1.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\Compiler\pstdint.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\Compiler\pushpack1.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\DefaultIOStream.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\DefaultIOSystem.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\DefaultLogger.hpp" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\Defines.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\defs.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\Exporter.hpp" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\Importer.hpp" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\importerdesc.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\IOStream.hpp" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\IOSystem.hpp" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\light.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\Logger.hpp" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\LogStream.hpp" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\material.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\matrix3x3.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\matrix4x4.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\mesh.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\metadata.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\NullLogger.hpp" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\port\AndroidJNI\AndroidJNIIOSystem.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\postprocess.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\ProgressHandler.hpp" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\quaternion.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\scene.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\SceneCombiner.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\texture.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\types.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\vector2.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\vector3.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\version.h" />
     <ClInclude Include="..\ThirdParty\json\src\json.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Component\Component.cpp" />
+    <ClCompile Include="..\Runtime\Component\MeshRenderComponent.cpp" />
     <ClCompile Include="..\Runtime\Core\ComponentRegister.cpp" />
     <ClCompile Include="..\Runtime\Core\Config.cpp" />
     <ClCompile Include="..\Runtime\Core\Context.cpp" />
@@ -153,18 +200,34 @@
     <ClCompile Include="..\Runtime\Rendering\DepthStencilBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\IndexBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\InputLayoutDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\Mesh.cpp" />
     <ClCompile Include="..\Runtime\Rendering\PixelShaderDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RendererDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RenderTargetDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\SamplerDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Texture2dDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\VertexBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\VertexShaderDX11.cpp" />
+    <ClCompile Include="..\Runtime\Resource\Material.cpp" />
+    <ClCompile Include="..\Runtime\Resource\Model.cpp" />
+    <ClCompile Include="..\Runtime\Resource\ModelLoader.cpp" />
     <ClCompile Include="..\Runtime\Resource\PlainText.cpp" />
     <ClCompile Include="..\Runtime\Resource\Resource.cpp" />
     <ClCompile Include="..\Runtime\Resource\ResourceCache.cpp" />
     <ClCompile Include="..\Runtime\Resource\ResourceManager.cpp" />
     <ClCompile Include="..\Runtime\Resource\Texture2D.cpp" />
     <ClCompile Include="..\Runtime\Resource\TextureLoader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\ThirdParty\assimp\include\assimp\.editorconfig" />
+    <None Include="..\ThirdParty\assimp\include\assimp\color4.inl" />
+    <None Include="..\ThirdParty\assimp\include\assimp\config.h" />
+    <None Include="..\ThirdParty\assimp\include\assimp\material.inl" />
+    <None Include="..\ThirdParty\assimp\include\assimp\matrix3x3.inl" />
+    <None Include="..\ThirdParty\assimp\include\assimp\matrix4x4.inl" />
+    <None Include="..\ThirdParty\assimp\include\assimp\quaternion.inl" />
+    <None Include="..\ThirdParty\assimp\include\assimp\vector2.inl" />
+    <None Include="..\ThirdParty\assimp\include\assimp\vector3.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
