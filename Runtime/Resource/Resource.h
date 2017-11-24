@@ -26,10 +26,10 @@ namespace Mile
       Resource( Context* context, const String& path, ResourceType resourceType = ResourceType::RT_Unknown );
       virtual ~Resource( ) { }
 
-      virtual bool LoadMetafile( ) { }
+      virtual bool LoadMetafile( ) { return false; }
       virtual bool Init( ) = 0;
-      virtual bool Save( const String& filePath ) { return false; }
-      bool Save( ) { return Save( this->m_path ); }
+      virtual bool SaveTo( const String& filePath ) { return false; }
+      virtual bool Save( ) { return SaveTo( this->m_path ); }
 
       ResourceType GetType( ) const { return m_resourceType; }
       String GetName( ) const { return m_name; }
@@ -48,6 +48,8 @@ namespace Mile
       String     m_folder;
       String     m_ext;
       ResourceType    m_resourceType;
+
+      bool       m_bIsInitialized;
 
    };
 

@@ -49,7 +49,7 @@ namespace Mile
    }
 
    template <>
-   bool PlainText<String>::Save( const String& filePath )
+   bool PlainText<String>::SaveTo( const String& filePath )
    {
       std::wofstream stream( filePath );
       stream << m_data;
@@ -58,7 +58,7 @@ namespace Mile
    }
 
    template <>
-   bool PlainText<std::string>::Save( const String& filePath )
+   bool PlainText<std::string>::SaveTo( const String& filePath )
    {
       std::ofstream stream( filePath );
       stream << m_data;

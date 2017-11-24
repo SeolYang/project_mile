@@ -15,7 +15,7 @@ namespace Mile
       }
 
       virtual bool Init( ) override;
-      virtual bool Save( const String& filePath ) override;
+      virtual bool SaveTo( const String& filePath ) override;
 
       StrType GetData( ) const { return m_data; }
 

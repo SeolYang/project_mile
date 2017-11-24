@@ -44,7 +44,7 @@ namespace Mile
       srvDesc.Texture2D.MostDetailedMip = 0;
       srvDesc.Format = desc.Format;
       srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-      
+
       result = device->CreateShaderResourceView( m_texture, &srvDesc, &m_srv );
       if ( FAILED( result ) )
       {
@@ -91,5 +91,6 @@ namespace Mile
       case ShaderType::PixelShader:
          immediateContext->PSSetShaderResources( m_bindedSlot, 1, nullptr );
          break;
+      }
    }
 }
