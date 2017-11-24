@@ -74,6 +74,22 @@ namespace Mile
          break;
       }
 
+      m_bindedSlot = startSlot;
+      m_bindedShader = shader;
+
       return true;
+   }
+
+   void Texture2dDX11::UnBind( )
+   {
+      auto immediateContext = m_renderer->GetDeviceContext( );
+      switch ( m_bindedShader )
+      {
+      case ShaderType::VertexShader:
+         immediateContext->VSSetShaderResources( m_bindedSlot, 1, nullptr );
+         break;
+      case ShaderType::PixelShader:
+         immediateContext->PSSetShaderResources( m_bindedSlot, 1, nullptr );
+         break;
    }
 }

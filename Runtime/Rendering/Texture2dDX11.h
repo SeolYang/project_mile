@@ -10,12 +10,15 @@ namespace Mile
          m_texture( nullptr ),
          m_srv( nullptr ),
          m_mipLevels( 1 ),
+         m_bindedSlot( 0 ),
+         m_bindedShader( ShaderType::PixelShader ),
          ResourceDX11( renderer )
       {
       }
 
       bool Init( unsigned int width, unsigned int height, int channels, unsigned char* data, DXGI_FORMAT format );
       bool Bind( unsigned int startSlot, ShaderType shader );
+      void UnBind( );
 
       virtual ID3D11Resource* GetResource( ) override { return m_texture; }
       virtual RenderResourceType GetResourceType( ) const override { return RenderResourceType::RDRT_Texture2D; }
@@ -26,6 +29,9 @@ namespace Mile
       ID3D11Texture2D*           m_texture;
       ID3D11ShaderResourceView*  m_srv;
       unsigned int               m_mipLevels;
+
+      unsigned int               m_bindedSlot;
+      ShaderType                 m_bindedShader;
 
    };
 }
