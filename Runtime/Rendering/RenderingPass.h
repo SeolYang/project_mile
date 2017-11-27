@@ -15,8 +15,8 @@ namespace Mile
 
       virtual bool Init( const String& shaderPath );
 
-      bool Bind( );
-      void Unbind( );
+      virtual bool Bind( );
+      virtual void Unbind( );
       
    private:
       bool InitVS( const String& filePath );
