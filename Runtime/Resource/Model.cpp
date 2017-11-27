@@ -9,6 +9,19 @@
 
 namespace Mile
 {
+   Model::Model( Context* context, const String& filePath ) :
+      Resource( context, filePath, ResourceType::RT_Model )
+   {
+   }
+
+   Model::~Model( )
+   {
+      for ( auto mesh : m_meshes )
+      {
+         SafeDelete( mesh );
+      }
+   }
+
    bool Model::Init( )
    {
       if ( m_context == nullptr || m_instance != nullptr )

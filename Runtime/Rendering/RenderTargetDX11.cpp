@@ -3,6 +3,20 @@
 
 namespace Mile
 {
+   RenderTargetDX11::RenderTargetDX11( RendererDX11* renderer ) :
+      m_renderer( renderer ),
+      m_texture( nullptr ),
+      m_rtv( nullptr ),
+      m_width( 0 ),
+      m_height( 0 )
+   {
+   }
+
+   RenderTargetDX11::~RenderTargetDX11( )
+   {
+      SafeRelease( m_rtv );
+      SafeDelete( m_texture );
+   }
    bool RenderTargetDX11::Init( unsigned int width, unsigned int height )
    {
       if ( m_texture != nullptr 

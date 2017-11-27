@@ -3,6 +3,19 @@
 
 namespace Mile
 {
+   DepthStencilBufferDX11::DepthStencilBufferDX11( RendererDX11* renderer ) :
+      m_bStencilEnabled( true ),
+      ResourceDX11( renderer )
+   {
+
+   }
+
+   DepthStencilBufferDX11::~DepthStencilBufferDX11( )
+   {
+      SafeRelease( m_depthStencilView );
+      SafeRelease( m_depthStencilBuffer );
+   }
+
    bool DepthStencilBufferDX11::Init( unsigned int width, unsigned int height, bool bStencilEnable )
    {
       if ( m_bIsInitialized || m_renderer == nullptr )

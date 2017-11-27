@@ -8,18 +8,8 @@ namespace Mile
    class MEAPI GBuffer
    {
    public:
-      GBuffer( RendererDX11* renderer ) :
-         m_renderer( renderer ),
-         m_normalBuffer( nullptr ),
-         m_positionBuffer( nullptr )
-      {
-      }
-
-      ~GBuffer( )
-      {
-         SafeDelete( m_normalBuffer );
-         SafeDelete( m_positionBuffer );
-      }
+      GBuffer( RendererDX11* renderer );
+      ~GBuffer( );
 
       bool Init( unsigned int width, unsigned int height );
       

@@ -3,6 +3,22 @@
 
 namespace Mile
 {
+   PixelShaderDX11::PixelShaderDX11( RendererDX11* renderer ) :
+      m_shader( nullptr ),
+      ShaderDX11( renderer )
+   {
+   }
+
+   PixelShaderDX11::~PixelShaderDX11( )
+   {
+      for ( auto sampler : m_samplers )
+      {
+         SafeDelete( sampler );
+      }
+
+      SafeRelease( m_shader );
+   }
+
    bool PixelShaderDX11::Init( const String& shaderPath )
    {
       if ( m_bIsCompiled || m_renderer == nullptr )

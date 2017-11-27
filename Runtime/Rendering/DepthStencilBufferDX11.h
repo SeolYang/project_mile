@@ -7,18 +7,8 @@ namespace Mile
    class MEAPI DepthStencilBufferDX11 : public ResourceDX11
    {
    public:
-      DepthStencilBufferDX11( RendererDX11* renderer ) :
-         m_bStencilEnabled( true ),
-         ResourceDX11( renderer )
-      {
-
-      }
-
-      ~DepthStencilBufferDX11( )
-      {
-         SafeRelease( m_depthStencilView );
-         SafeRelease( m_depthStencilBuffer );
-      }
+      DepthStencilBufferDX11( RendererDX11* renderer );
+      ~DepthStencilBufferDX11( );
 
       bool Init( unsigned int width, unsigned int height, bool stencilEnable );
 

@@ -8,21 +8,8 @@ namespace Mile
    class MEAPI PixelShaderDX11 : public ShaderDX11
    {
    public:
-      PixelShaderDX11( RendererDX11* renderer ) :
-         m_shader( nullptr ),
-         ShaderDX11( renderer )
-      {
-      }
-
-      ~PixelShaderDX11( )
-      {
-         for ( auto sampler : m_samplers )
-         {
-            SafeDelete( sampler );
-         }
-
-         SafeRelease( m_shader );
-      }
+      PixelShaderDX11( RendererDX11* renderer );
+      ~PixelShaderDX11( );
 
       virtual bool Init( const String& shaderPath ) override;
       virtual bool Bind( ) override;

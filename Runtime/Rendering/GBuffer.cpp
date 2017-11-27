@@ -3,6 +3,19 @@
 
 namespace Mile
 {
+   GBuffer::GBuffer( RendererDX11* renderer ) :
+      m_renderer( renderer ),
+      m_normalBuffer( nullptr ),
+      m_positionBuffer( nullptr )
+   {
+   }
+
+   GBuffer::~GBuffer( )
+   {
+      SafeDelete( m_normalBuffer );
+      SafeDelete( m_positionBuffer );
+   }
+
    bool GBuffer::Init( unsigned int width, unsigned int height )
    {
       bool bIsInitialized = m_normalBuffer != nullptr || m_positionBuffer != nullptr;

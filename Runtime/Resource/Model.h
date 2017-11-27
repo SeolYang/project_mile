@@ -11,18 +11,8 @@ namespace Mile
    class MEAPI Model : public Resource
    {
    public:
-      Model( Context* context, const String& filePath ) :
-         Resource( context, filePath, ResourceType::RT_Model )
-      {
-      }
-
-      virtual ~Model( ) 
-      { 
-         for ( auto mesh : m_meshes )
-         {
-            SafeDelete( mesh );
-         }
-      }
+      Model( Context* context, const String& filePath );
+      virtual ~Model( );
 
       virtual bool Init( ) override;
 

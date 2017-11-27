@@ -39,6 +39,10 @@ namespace Mile
 
       void SetBackbufferAsRenderTarget( );
 
+      void GeometryBufferPass( );
+      void LightBufferPass( );
+      void FinalRenderPass( );
+
    private:
       bool CreateDeviceAndSwapChain( );
       bool CreateDepthStencilBuffer( );
@@ -47,12 +51,15 @@ namespace Mile
       Window*                 m_window;
       ID3D11Device*           m_device;
       ID3D11DeviceContext*    m_deviceContext;
+
+      // Back Buffer Variables
       IDXGISwapChain*         m_swapChain;
       ID3D11RenderTargetView* m_renderTargetView;
-
       std::unique_ptr<DepthStencilBufferDX11>   m_depthStencilBuffer;
-      
+      // \Back Buffer Variables
+
       bool                    m_bDepthStencilEnabled;
       Vector4                 m_clearColor;
+
    };
 }
