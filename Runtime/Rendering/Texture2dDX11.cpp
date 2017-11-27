@@ -38,6 +38,40 @@ namespace Mile
          return false;
       }
 
+      if ( !InitSRV( desc ) )
+      {
+         return false;
+      }
+
+      return true;
+   }
+
+   bool Texture2dDX11::Init( ID3D11Texture2D* texture )
+   {
+      if ( texture == nullptr || m_renderer == nullptr )
+      {
+         return false;
+      }
+
+      m_texture = texture;
+
+      D3D11_TEXTURE2D_DESC desc;
+      m_texture->GetDesc( &desc );
+      
+      m_width = desc.Width;
+      m_height = desc.Height;
+
+      if ( !InitSRV( desc ) )
+      {
+         return false;
+      }
+
+      return true;
+   }
+
+   bool Texture2dDX11::InitSRV( D3D11_TEXTURE2D_DESC desc )
+   {
+      auto device = m_renderer->GetDevice( );
       D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
       ZeroMemory( &srvDesc, sizeof( srvDesc ) );
       srvDesc.Texture2D.MipLevels = m_mipLevels;
@@ -45,12 +79,11 @@ namespace Mile
       srvDesc.Format = desc.Format;
       srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 
-      result = device->CreateShaderResourceView( m_texture, &srvDesc, &m_srv );
+      auto result = device->CreateShaderResourceView( m_texture, &srvDesc, &m_srv );
       if ( FAILED( result ) )
       {
          return false;
       }
-
 
       return true;
    }
