@@ -4,11 +4,20 @@
 
 namespace Mile
 {
-   bool RenderingPass::Init( const String& vertexShader,
-                             const String& pixelShader,
-                             const String& geometryShader,
-                             const String& hullShader,
-                             const String& domainShader )
+   RenderingPass::RenderingPass( RendererDX11* renderer ) :
+      m_vertexShader( nullptr ),
+      m_pixelShader( nullptr ),
+      m_renderer( renderer )
+   {
+   }
+
+   RenderingPass::~RenderingPass( )
+   {
+      SafeDelete( m_vertexShader );
+      SafeDelete( m_pixelShader );
+   }
+
+   bool RenderingPass::Init( const String& filePath )
    {
       bool bIsInitialized = m_vertexShader != nullptr || m_pixelShader != nullptr;
       if ( m_renderer == nullptr || bIsInitialized )
@@ -16,12 +25,12 @@ namespace Mile
          return false;
       }
 
-      if ( !InitVS( vertexShader ) )
+      if ( !InitVS( filePath ) )
       {
          return false;
       }
 
-      if ( !InitPS( pixelShader ) )
+      if ( !InitPS( filePath ) )
       {
          return false;
       }
@@ -72,13 +81,14 @@ namespace Mile
          return false;
       }
 
-      if ( filePath == TEXT( "null" ) )
+      m_vertexShader = new VertexShaderDX11( m_renderer );
+      if ( !m_vertexShader->Init( filePath ) )
       {
-         return true;
+         SafeDelete( m_vertexShader );
+         return false;
       }
 
-      m_vertexShader = new VertexShaderDX11( m_renderer );
-      return m_vertexShader->Init( filePath );
+      return true;
    }
 
    bool RenderingPass::InitPS( const String& filePath )
@@ -88,13 +98,13 @@ namespace Mile
          return false;
       }
 
-      if ( filePath == TEXT( "null" ) )
+      m_pixelShader = new PixelShaderDX11( m_renderer );
+      if ( !m_pixelShader->Init( filePath ) )
       {
-         return true;
+         SafeDelete( m_pixelShader );
+         return false;
       }
 
-      m_pixelShader = new PixelShaderDX11( m_renderer );
-      return m_pixelShader->Init( filePath );
+      return true;
    }
-
 }

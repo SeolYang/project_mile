@@ -6,25 +6,14 @@ namespace Mile
 {
    class VertexShaderDX11;
    class PixelShaderDX11;
+   class ConstantBufferDX11;
    class MEAPI RenderingPass
    {
    public:
-      RenderingPass( RendererDX11* renderer ) :
-         m_renderer( renderer )
-      {
-      }
+      RenderingPass( RendererDX11* renderer );
+      virtual ~RenderingPass( );
 
-      ~RenderingPass( )
-      {
-         SafeDelete( m_vertexShader );
-         SafeDelete( m_pixelShader );
-      }
-
-      bool Init( const String& vertexShader,
-                 const String& pixelShader = TEXT( "null" ),
-                 const String& geometryShader = TEXT( "null" ),
-                 const String& hullShader = TEXT( "null" ),
-                 const String& domainShader = TEXT( "null" ) );
+      virtual bool Init( const String& shaderPath );
 
       bool Bind( );
       void Unbind( );
@@ -33,7 +22,7 @@ namespace Mile
       bool InitVS( const String& filePath );
       bool InitPS( const String& filePath );
 
-   private:
+   protected:
       RendererDX11*     m_renderer;
       VertexShaderDX11* m_vertexShader;
       PixelShaderDX11*  m_pixelShader;
