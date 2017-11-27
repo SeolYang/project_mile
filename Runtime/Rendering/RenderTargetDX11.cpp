@@ -1,10 +1,11 @@
 #include "RenderTargetDX11.h"
+#include "Texture2dDX11.h"
 
 namespace Mile
 {
    bool RenderTargetDX11::Init( unsigned int width, unsigned int height )
    {
-      if ( m_bIsInitialized 
+      if ( m_texture != nullptr 
            || m_renderer == nullptr
            || width == 0 || height == 0 )
       {
@@ -28,10 +29,11 @@ namespace Mile
       texDesc.CPUAccessFlags = 0;
       texDesc.MiscFlags = 0;
 
+      ID3D11Texture2D* texture = nullptr;
       auto device = m_renderer->GetDevice( );
       auto result = device->CreateTexture2D( &texDesc, 
-                                                               nullptr,
-                                                               &m_renderTarget );
+                                             nullptr,
+                                             &texture );
       if ( FAILED( result ) )
       {
          return false;
@@ -43,33 +45,49 @@ namespace Mile
       rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
       rtvDesc.Texture2D.MipSlice = 0;
 
-      result = device->CreateRenderTargetView( m_renderTarget,
+      result = device->CreateRenderTargetView( texture,
                                                &rtvDesc,
-                                               &m_renderTargetView );
+                                               &m_rtv );
       if ( FAILED( result ) )
       {
          return false;
       }
 
-      D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-      ZeroMemory( &srvDesc, sizeof( srvDesc ) );
-      srvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-      srvDesc.Texture2D.MostDetailedMip = 0;
-      srvDesc.Texture2D.MipLevels = 1;
-
-      m_bIsInitialized = true;
-      return true;
-   }
-
-   bool RenderTargetDX11::SetAsRenderTarget( )
-   {
-      if ( !m_bIsInitialized || m_renderer == nullptr )
+      m_texture = new Texture2dDX11( m_renderer );
+      if ( !m_texture->Init( texture ) )
       {
          return false;
       }
 
-      m_renderer->GetDeviceContext( )->OMSetRenderTargets( 1, &m_renderTargetView, nullptr );
       return true;
    }
-}
 
+   bool RenderTargetDX11::BindAsRenderTarget( )
+   {
+      if ( m_texture == nullptr || m_renderer == nullptr )
+      {
+         return false;
+      }
+
+      m_renderer->GetDeviceContext( )->OMSetRenderTargets( 1, &m_rtv, nullptr );
+      return true;
+   }
+
+   bool RenderTargetDX11::BindAsShaderResource( unsigned int startSlot, ShaderType shader )
+   {
+      if ( m_texture == nullptr )
+      {
+         return false;
+      }
+
+      return m_texture->Bind( startSlot, shader );
+   }
+
+   void RenderTargetDX11::Unbind( )
+   {
+      if ( m_texture != nullptr )
+      {
+         m_texture->UnBind( );
+      }
+   }
+}

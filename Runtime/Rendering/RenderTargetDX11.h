@@ -1,27 +1,26 @@
 #pragma once
 
-#include "ResourceDX11.h"
+#include "RendererDX11.h"
 
 namespace Mile
 {
-   class MEAPI RenderTargetDX11 : public ResourceDX11
+   class Texture2dDX11;
+   class MEAPI RenderTargetDX11
    {
    public:
       RenderTargetDX11( RendererDX11* renderer ) :
-         m_renderTarget( nullptr ),
-         m_renderTargetView( nullptr ),
-         m_srv( nullptr ),
+         m_renderer( renderer ),
+         m_texture( nullptr ),
+         m_rtv( nullptr ),
          m_width( 0 ),
-         m_height( 0 ),
-         ResourceDX11( renderer )
+         m_height( 0 )
       {
       }
 
       virtual ~RenderTargetDX11( )
       {
-         SafeRelease( m_srv );
-         SafeRelease( m_renderTargetView );
-         SafeRelease( m_renderTarget );
+         SafeRelease( m_rtv );
+         SafeDelete( m_texture );
       }
       
       bool Init( unsigned int width, unsigned int height );
@@ -29,18 +28,20 @@ namespace Mile
       unsigned int GetWidth( ) const { return m_width; }
       unsigned int GetHeight( ) const { return m_height; }
 
-      virtual ID3D11Resource* GetResource( ) override { return m_renderTarget; }
-      virtual RenderResourceType GetResourceType( ) const override { return RenderResourceType::RDRT_RenderTarget; }
-      ID3D11ShaderResourceView* GetSRV( ) { return m_srv; }
+      Texture2dDX11* GetTexture( ) const { return m_texture; }
+      ID3D11RenderTargetView* GetRTV( ) const { return m_rtv; }
 
-      bool SetAsRenderTarget( );
+      bool BindAsRenderTarget( );
+      bool BindAsShaderResource( unsigned int startSlot, ShaderType shader );
+      void Unbind( );
 
    private:
-      ID3D11Texture2D*           m_renderTarget;
-      ID3D11RenderTargetView*    m_renderTargetView;
-      ID3D11ShaderResourceView*  m_srv;
+      RendererDX11*              m_renderer;
+      Texture2dDX11*             m_texture;
+      ID3D11RenderTargetView*    m_rtv;
 
       unsigned int               m_width;
       unsigned int               m_height;
+
    };
 }
