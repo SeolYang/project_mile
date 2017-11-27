@@ -50,6 +50,15 @@ namespace Mile
       return true;
    }
 
+   void PixelShaderDX11::Unbind( )
+   {
+      if ( m_renderer != nullptr )
+      {
+         auto deviceContext = m_renderer->GetDeviceContext( );
+         deviceContext->PSSetShader( nullptr, nullptr, 0 );
+      }
+   }
+
    bool PixelShaderDX11::AddSampler( D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE AddressModeU, D3D11_TEXTURE_ADDRESS_MODE AddressModeV, D3D11_TEXTURE_ADDRESS_MODE AddressModeW, D3D11_COMPARISON_FUNC compFunc )
    {
       SamplerDX11* sampler = new SamplerDX11( m_renderer );

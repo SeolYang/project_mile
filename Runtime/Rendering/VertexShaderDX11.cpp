@@ -51,6 +51,15 @@ namespace Mile
       return true;
    }
 
+   void VertexShaderDX11::Unbind( )
+   {
+      if ( m_renderer != nullptr )
+      {
+         auto deviceContext = m_renderer->GetDeviceContext( );
+         deviceContext->VSSetShader( nullptr, nullptr, 0 );
+      }
+   }
+
    std::vector<D3D11_INPUT_ELEMENT_DESC>&& VertexShaderDX11::Reflect( ) const
    {
       auto inputLayoutDescs = std::vector<D3D11_INPUT_ELEMENT_DESC>( );
