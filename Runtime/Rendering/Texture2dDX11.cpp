@@ -113,7 +113,7 @@ namespace Mile
       return true;
    }
 
-   void Texture2dDX11::UnBind( )
+   void Texture2dDX11::Unbind( )
    {
       auto immediateContext = m_renderer->GetDeviceContext( );
       switch ( m_bindedShader )

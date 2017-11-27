@@ -1,9 +1,12 @@
 #include "GBufferPass.h"
 #include "ConstantBufferDX11.h"
+#include "PixelShaderDX11.h"
+#include "Texture2dDX11.h"
 
 namespace Mile
 {
    GBufferPass::GBufferPass( RendererDX11* renderer ) :
+      m_normalTexture( nullptr ),
       m_transformBuffer( nullptr ),
       m_materialBuffer( nullptr ),
       RenderingPass( renderer )
@@ -38,6 +41,11 @@ namespace Mile
          return false;
       }
 
+      m_pixelShader->AddSampler( D3D11_FILTER_ANISOTROPIC,
+                                 D3D11_TEXTURE_ADDRESS_BORDER, 
+                                 D3D11_COMPARISON_ALWAYS
+      );
+
       return true;
    }
 
@@ -49,17 +57,35 @@ namespace Mile
          return false;
       }
 
-      if ( !m_transformBuffer->Bind( 0, ShaderType::VertexShader ) )
+      if ( !m_transformBuffer->Bind( 0, ShaderType::VertexShader ) && !m_transformBuffer->Bind( 0, ShaderType::PixelShader ) )
       {
          return false;
       }
 
-      if ( !m_materialBuffer->Bind( 1, ShaderType::PixelShader ) )
+      if ( !m_materialBuffer->Bind( 1, ShaderType::VertexShader ) && !m_materialBuffer->Bind( 1, ShaderType::PixelShader ) )
+      {
+         return false;
+      }
+
+      if ( !m_normalTexture->Bind( 0, ShaderType::PixelShader ) )
       {
          return false;
       }
 
       return true;
+   }
+
+   void GBufferPass::Unbind( )
+   {
+      if ( m_renderer == nullptr )
+      {
+         return;
+      }
+
+      if ( m_normalTexture != nullptr )
+      {
+         m_normalTexture->Unbind( );
+      }
    }
 
    void GBufferPass::UpdateTransformBuffer( const Matrix& world, const Matrix& worldView, const Matrix& worldViewProj )
@@ -86,4 +112,12 @@ namespace Mile
       }
    }
 
+   void GBufferPass::UpdateNormalTexture( Texture2dDX11* texture )
+   {
+      if ( texture == nullptr )
+      {
+         m_normalTexture->Unbind( );
+         m_normalTexture = nullptr;
+      }
+   }
 }
