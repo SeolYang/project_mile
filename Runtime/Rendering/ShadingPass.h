@@ -29,6 +29,9 @@ namespace Mile
       void SetLightBuffer( RenderTargetDX11* lightBuffer ) { m_lightBuffer = lightBuffer; }
       void UpdateDiffuseTexture( Texture2dDX11* diffuseTexture );
 
+      // To reuse transform constant buffer from GBufferPass
+      void AcquireTransformBuffer( GBufferPass* gBufferPass );
+
    private:
       CBufferPtr        m_transformBuffer;
       CBufferPtr        m_materialBuffer;

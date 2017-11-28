@@ -1,7 +1,13 @@
 #include "RendererDX11.h"
-#include "Core/Context.h"
-#include "Core/Window.h"
+#include "Core\Context.h"
+#include "Core\Window.h"
+#include "Math\Vector2.h"
 #include "DepthStencilBufferDX11.h"
+#include "RenderTargetDX11.h"
+#include "GBuffer.h"
+#include "GBufferPass.h"
+#include "LightBufferPass.h"
+#include "ShadingPass.h"
 
 namespace Mile
 {
@@ -9,14 +15,22 @@ namespace Mile
       m_window( nullptr ),
       m_device( nullptr ), m_deviceContext( nullptr ),
       m_swapChain( nullptr ), m_renderTargetView( nullptr ),
-      m_depthStencilBuffer( nullptr ), m_bDepthStencilEnabled( true )
+      m_depthStencilBuffer( nullptr ), m_bDepthStencilEnabled( true ),
+      m_gBuffer( nullptr ), m_gBufferPass( nullptr ),
+      m_lightBuffer( nullptr ), m_lightBufferPass( nullptr ),
+      m_shadingPass( nullptr )
    {
    }
 
    RendererDX11::~RendererDX11( )
    {
+      SafeDelete( m_shadingPass );
+      SafeDelete( m_lightBufferPass );
+      SafeDelete( m_lightBuffer );
+      SafeDelete( m_gBufferPass );
+      SafeDelete( m_gBuffer );
       SafeRelease( m_renderTargetView );
-      m_depthStencilBuffer.reset( nullptr );
+      SafeDelete( m_depthStencilBuffer );
       SafeRelease( m_swapChain );
       SafeRelease( m_deviceContext );
       SafeRelease( m_device );
@@ -24,6 +38,7 @@ namespace Mile
 
    bool RendererDX11::Init( )
    {
+      // Initialize low level systems
       m_window = m_context->GetSubSystem<Window>( );
       if ( !CreateDeviceAndSwapChain( ) )
       {
@@ -34,8 +49,47 @@ namespace Mile
       {
          return false;
       }
+      // #Initialize low level systems
 
-      SetBackbufferAsRenderTarget( );
+      // Initialize Pre Light pass
+      Vector2 screenRes{ m_window->GetResWidth( ), m_window->GetResHeight( ) };
+      m_gBuffer = new GBuffer( this );
+      if ( !m_gBuffer->Init( screenRes.x, screenRes.y ) )
+      {
+         return false;
+      }
+      m_gBuffer->SetDepthStencilBuffer( m_depthStencilBuffer );
+
+      m_gBufferPass = new GBufferPass( this );
+      if ( !m_gBufferPass->Init( TEXT( "Shaders/GBuffer.hlsl" ) ) )
+      {
+         return false;
+      }
+      m_gBufferPass->SetGBuffer( m_gBuffer );
+
+      m_lightBuffer = new RenderTargetDX11( this );
+      if ( !m_lightBuffer->Init( screenRes.x, screenRes.y ) )
+      {
+         return false;
+      }
+
+      m_lightBufferPass = new LightBufferPass( this );
+      if ( !m_lightBufferPass->Init( TEXT( "Shaders/LightBuffer.hlsl" ) ) )
+      {
+         return false;
+      }
+      m_lightBufferPass->SetGBuffer( m_gBuffer );
+      m_lightBufferPass->SetLightBuffer( m_lightBuffer );
+
+      m_shadingPass = new ShadingPass( this );
+      if ( !m_shadingPass->Init( TEXT( "Shaders/Shading.hlsl" ) ) )
+      {
+         return false;
+      }
+      m_shadingPass->SetLightBuffer( m_lightBuffer );
+      m_shadingPass->AcquireTransformBuffer( m_gBufferPass );
+      // #Initialize Pre Light pass
+
       return true;
    }
 
@@ -116,7 +170,7 @@ namespace Mile
          return false;
       }
 
-      m_depthStencilBuffer = std::make_unique<DepthStencilBufferDX11>( this );
+      m_depthStencilBuffer = new DepthStencilBufferDX11( this );
       bool res = m_depthStencilBuffer->Init( m_window->GetResWidth( ),
                                   m_window->GetResHeight( ),
                                   true );

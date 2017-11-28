@@ -2,6 +2,8 @@
 #include "Texture2dDX11.h"
 #include "ConstantBufferDX11.h"
 #include "RenderTargetDX11.h"
+#include "PixelShaderDX11.h"
+#include "GBufferPass.h"
 
 namespace Mile
 {
@@ -30,6 +32,10 @@ namespace Mile
       {
          return false;
       }
+
+      m_pixelShader->AddSampler( D3D11_FILTER_ANISOTROPIC,
+                                 D3D11_TEXTURE_ADDRESS_BORDER,
+                                 D3D11_COMPARISON_ALWAYS );
 
       return true;
    }
@@ -108,4 +114,11 @@ namespace Mile
       }
    }
 
+   void ShadingPass::AcquireTransformBuffer( GBufferPass* gBufferPass )
+   {
+      if ( gBufferPass != nullptr )
+      {
+         m_transformBuffer = gBufferPass->GetTransformBuffer( );
+      }
+   }
 }

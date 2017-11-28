@@ -15,6 +15,11 @@ namespace Mile
 
    class Window;
    class DepthStencilBufferDX11;
+   class RenderTargetDX11;
+   class GBuffer;
+   class GBufferPass;
+   class LightBufferPass;
+   class ShadingPass;
    class MEAPI RendererDX11 : public SubSystem
    {
    public:
@@ -24,6 +29,9 @@ namespace Mile
       virtual bool Init( ) override;
 
       void Render( );
+      void RenderGBuffer( );
+      void RenderLightBuffer( );
+      void RenderShading( );
 
       void Clear( );
       void Present( );
@@ -51,8 +59,16 @@ namespace Mile
       // Back Buffer Variables
       IDXGISwapChain*         m_swapChain;
       ID3D11RenderTargetView* m_renderTargetView;
-      std::unique_ptr<DepthStencilBufferDX11>   m_depthStencilBuffer;
+      DepthStencilBufferDX11*   m_depthStencilBuffer;
       // \Back Buffer Variables
+
+      // Pre light pass Rendering
+      GBuffer*          m_gBuffer;
+      GBufferPass*      m_gBufferPass;
+      RenderTargetDX11* m_lightBuffer;
+      LightBufferPass*  m_lightBufferPass;
+      ShadingPass*      m_shadingPass;
+      // \Pre light pass Rendering
 
       bool                    m_bDepthStencilEnabled;
       Vector4                 m_clearColor;
