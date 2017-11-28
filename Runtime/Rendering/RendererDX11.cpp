@@ -52,9 +52,11 @@ namespace Mile
       // #Initialize low level systems
 
       // Initialize Pre Light pass
-      Vector2 screenRes{ m_window->GetResWidth( ), m_window->GetResHeight( ) };
+      Vector2 screenRes{ m_window->GetResolution( ) };
       m_gBuffer = new GBuffer( this );
-      if ( !m_gBuffer->Init( screenRes.x, screenRes.y ) )
+      if ( !m_gBuffer->Init( 
+         static_cast<unsigned int>( screenRes.x ), 
+         static_cast<unsigned int>( screenRes.y ) ) )
       {
          return false;
       }
@@ -68,7 +70,9 @@ namespace Mile
       m_gBufferPass->SetGBuffer( m_gBuffer );
 
       m_lightBuffer = new RenderTargetDX11( this );
-      if ( !m_lightBuffer->Init( screenRes.x, screenRes.y ) )
+      if ( !m_lightBuffer->Init( 
+         static_cast<unsigned int>( screenRes.x ),
+         static_cast<unsigned int>( screenRes.y ) ) )
       {
          return false;
       }
