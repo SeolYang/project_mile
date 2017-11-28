@@ -10,6 +10,7 @@ namespace Mile
          m_texture( nullptr ),
          m_srv( nullptr ),
          m_mipLevels( 1 ),
+         m_bIsBinded( false ),
          m_bindedSlot( 0 ),
          m_bindedShader( ShaderType::PixelShader ),
          m_width( 0 ),
@@ -39,6 +40,7 @@ namespace Mile
       ID3D11ShaderResourceView*  m_srv;
       unsigned int               m_mipLevels;
 
+      bool                       m_bIsBinded;
       unsigned int               m_bindedSlot;
       ShaderType                 m_bindedShader;
 

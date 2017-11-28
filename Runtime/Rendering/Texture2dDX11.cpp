@@ -90,7 +90,7 @@ namespace Mile
 
    bool Texture2dDX11::Bind( unsigned int startSlot, ShaderType shader )
    {
-      if ( !m_bIsInitialized && m_renderer == nullptr )
+      if ( !m_bIsInitialized || m_renderer == nullptr || m_bIsBinded )
       {
          return false;
       }
@@ -110,11 +110,17 @@ namespace Mile
       m_bindedSlot = startSlot;
       m_bindedShader = shader;
 
+      m_bIsBinded = true;
       return true;
    }
 
    void Texture2dDX11::Unbind( )
    {
+      if ( !m_bIsBinded )
+      {
+         return;
+      }
+
       auto immediateContext = m_renderer->GetDeviceContext( );
       switch ( m_bindedShader )
       {
@@ -125,5 +131,7 @@ namespace Mile
          immediateContext->PSSetShaderResources( m_bindedSlot, 1, nullptr );
          break;
       }
+
+      m_bIsBinded = false;
    }
 }

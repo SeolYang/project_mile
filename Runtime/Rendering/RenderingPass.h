@@ -8,6 +8,11 @@ namespace Mile
    class PixelShaderDX11;
    class ConstantBufferDX11;
    class Texture2dDX11;
+   class RenderTargetDX11;
+   class DepthStencilBufferDX11;
+   using CBufferPtr = ConstantBufferDX11*;
+   
+   // If bind once, you must call unbind before bind other rendering pass.
    class MEAPI RenderingPass
    {
    public:
