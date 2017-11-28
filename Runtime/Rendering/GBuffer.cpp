@@ -1,10 +1,12 @@
 #include "GBuffer.h"
 #include "RenderTargetDX11.h"
+#include "DepthStencilBufferDX11.h"
 
 namespace Mile
 {
    GBuffer::GBuffer( RendererDX11* renderer ) :
       m_renderer( renderer ),
+      m_depthStencilBuffer( nullptr ),
       m_normalBuffer( nullptr ),
       m_positionBuffer( nullptr )
    {
@@ -50,12 +52,18 @@ namespace Mile
 
       auto deviceContext = m_renderer->GetDeviceContext( );
 
+      ID3D11DepthStencilView* dsv = nullptr;
+      if ( m_depthStencilBuffer != nullptr )
+      {
+         dsv = m_depthStencilBuffer->GetDSV( );
+      }
+
       std::array<ID3D11RenderTargetView*, 2> targets{
          m_normalBuffer->GetRTV( ),
          m_positionBuffer->GetRTV( )
       };
 
-      deviceContext->OMSetRenderTargets( 2, targets.data( ), nullptr );
+      deviceContext->OMSetRenderTargets( 2, targets.data( ), dsv );
       return true;
    }
 

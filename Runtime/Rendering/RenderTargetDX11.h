@@ -5,6 +5,7 @@
 namespace Mile
 {
    class Texture2dDX11;
+   class DepthStencilBufferDX11;
    class MEAPI RenderTargetDX11
    {
    public:
@@ -19,6 +20,8 @@ namespace Mile
       Texture2dDX11* GetTexture( ) const { return m_texture; }
       ID3D11RenderTargetView* GetRTV( ) const { return m_rtv; }
 
+      void SetDepthStencilBuffer( DepthStencilBufferDX11* buffer ) { this->m_depthStencilBuffer = buffer; }
+
       bool BindAsRenderTarget( );
       bool BindAsShaderResource( unsigned int startSlot, ShaderType shader );
       void Unbind( );
@@ -30,6 +33,8 @@ namespace Mile
 
       unsigned int               m_width;
       unsigned int               m_height;
+
+      DepthStencilBufferDX11*    m_depthStencilBuffer;
 
    };
 }

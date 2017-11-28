@@ -1,10 +1,12 @@
 #include "RenderTargetDX11.h"
+#include "DepthStencilBufferDX11.h"
 #include "Texture2dDX11.h"
 
 namespace Mile
 {
    RenderTargetDX11::RenderTargetDX11( RendererDX11* renderer ) :
       m_renderer( renderer ),
+      m_depthStencilBuffer( nullptr ),
       m_texture( nullptr ),
       m_rtv( nullptr ),
       m_width( 0 ),
@@ -83,7 +85,13 @@ namespace Mile
          return false;
       }
 
-      m_renderer->GetDeviceContext( )->OMSetRenderTargets( 1, &m_rtv, nullptr );
+      ID3D11DepthStencilView* dsv = nullptr;
+      if ( m_depthStencilBuffer != nullptr )
+      {
+         dsv = m_depthStencilBuffer->GetDSV( );
+      }
+
+      m_renderer->GetDeviceContext( )->OMSetRenderTargets( 1, &m_rtv, dsv );
       return true;
    }
 
