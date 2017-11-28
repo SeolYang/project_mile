@@ -312,6 +312,9 @@
     <ClInclude Include="..\Runtime\Rendering\LightBufferPass.h">
       <Filter>Rendering\PreLightPass</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\ShadingPass.h">
+      <Filter>Rendering\PreLightPass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -429,6 +432,12 @@
       <Filter>Rendering\PreLightPass</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\GBufferPass.cpp">
+      <Filter>Rendering\PreLightPass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\LightBufferPass.cpp">
+      <Filter>Rendering\PreLightPass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\ShadingPass.cpp">
       <Filter>Rendering\PreLightPass</Filter>
     </ClCompile>
   </ItemGroup>

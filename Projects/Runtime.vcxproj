@@ -129,6 +129,7 @@
     <ClInclude Include="..\Runtime\Rendering\RenderTargetDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ResourceDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ShaderDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\ShadingPass.h" />
     <ClInclude Include="..\Runtime\Rendering\Texture2dDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\VertexShaderDX11.h" />
@@ -206,12 +207,14 @@
     <ClCompile Include="..\Runtime\Rendering\GBufferPass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\IndexBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\InputLayoutDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\LightBufferPass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Mesh.cpp" />
     <ClCompile Include="..\Runtime\Rendering\PixelShaderDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RendererDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RenderingPass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RenderTargetDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\SamplerDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\ShadingPass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Texture2dDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\VertexBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\VertexShaderDX11.cpp" />

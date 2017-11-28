@@ -100,6 +100,11 @@ namespace Mile
       }
    }
 
+   void GBufferPass::SetDepthStencilBuffer( DepthStencilBufferDX11* buffer )
+   {
+      this->m_gBuffer->SetDepthStencilBuffer( buffer );
+   }
+
    void GBufferPass::UpdateTransformBuffer( const Matrix& world, const Matrix& worldView, const Matrix& worldViewProj )
    {
       if ( m_transformBuffer != nullptr )
