@@ -8,6 +8,7 @@ namespace Mile
    class Mesh;
    class MEAPI MeshRenderComponent : public Component
    {
+      RegisterComponent( MeshRenderComponent )
    public:
       MeshRenderComponent( Entity* entity ) : 
          m_mesh( nullptr ),

@@ -50,5 +50,5 @@ namespace Mile
    };
 }
 
-#define RegisteComponent(TYPE) private: TYPE _registeryInst; \
+#define RegisterComponent(TYPE) private: static TYPE _registeryInst; \
    TYPE() { Mile::ComponentRegister::GetInstance().Register<TYPE>( #TYPE ); }
