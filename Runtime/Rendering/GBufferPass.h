@@ -5,7 +5,7 @@
 
 namespace Mile
 {
-   class Texture2dDX11;
+   class GBuffer;
    class MEAPI GBufferPass : public RenderingPass
    {
       struct TransformConstantBuffer
@@ -28,6 +28,8 @@ namespace Mile
       virtual bool Bind( ) override;
       virtual void Unbind( ) override;
 
+      void SetGBuffer( GBuffer* buffer ) { this->m_gBuffer = buffer; }
+
       void UpdateTransformBuffer( const Matrix& world, const Matrix& view, const Matrix& proj );
       void UpdateMaterialBuffer( float specExp );
       void UpdateNormalTexture( Texture2dDX11* texture );
@@ -37,6 +39,8 @@ namespace Mile
       ConstantBufferDX11*      m_materialBuffer;
 
       Texture2dDX11*           m_normalTexture;
+
+      GBuffer*                m_gBuffer;
 
    };
 }

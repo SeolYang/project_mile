@@ -1,4 +1,5 @@
 #include "GBufferPass.h"
+#include "GBuffer.h"
 #include "ConstantBufferDX11.h"
 #include "PixelShaderDX11.h"
 #include "Texture2dDX11.h"
@@ -29,15 +30,12 @@ namespace Mile
       m_transformBuffer = new ConstantBufferDX11( m_renderer );
       if ( !m_transformBuffer->Init( sizeof( TransformConstantBuffer ) ) )
       {
-         SafeDelete( m_transformBuffer );
          return false;
       }
 
       m_materialBuffer = new ConstantBufferDX11( m_renderer );
       if ( !m_materialBuffer->Init( sizeof( MaterialConstantBuffer ) ) )
       {
-         SafeDelete( m_transformBuffer );
-         SafeDelete( m_materialBuffer );
          return false;
       }
 
@@ -51,8 +49,18 @@ namespace Mile
 
    bool GBufferPass::Bind( )
    {
+      if ( !RenderingPass::Bind( ) )
+      {
+         return false;
+      }
+
       bool bIsInitialized = m_transformBuffer != nullptr && m_materialBuffer != nullptr;
-      if ( m_renderer == nullptr || !bIsInitialized )
+      if ( !bIsInitialized  || m_gBuffer == nullptr )
+      {
+         return false;
+      }
+
+      if ( !m_gBuffer->BindAsRenderTarget( ) )
       {
          return false;
       }

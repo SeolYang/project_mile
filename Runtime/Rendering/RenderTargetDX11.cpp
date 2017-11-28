@@ -101,7 +101,7 @@ namespace Mile
    {
       if ( m_texture != nullptr )
       {
-         m_texture->UnBind( );
+         m_texture->Unbind( );
       }
    }
 }

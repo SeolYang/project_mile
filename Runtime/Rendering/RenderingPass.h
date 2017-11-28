@@ -7,6 +7,7 @@ namespace Mile
    class VertexShaderDX11;
    class PixelShaderDX11;
    class ConstantBufferDX11;
+   class Texture2dDX11;
    class MEAPI RenderingPass
    {
    public:
