@@ -309,6 +309,9 @@
     <ClInclude Include="..\Runtime\Rendering\GBufferPass.h">
       <Filter>Rendering\PreLightPass</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\LightBufferPass.h">
+      <Filter>Rendering\PreLightPass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">

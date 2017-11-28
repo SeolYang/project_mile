@@ -120,6 +120,7 @@
     <ClInclude Include="..\Runtime\Rendering\GBufferPass.h" />
     <ClInclude Include="..\Runtime\Rendering\IndexBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\InputLayoutDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\LightBufferPass.h" />
     <ClInclude Include="..\Runtime\Rendering\Mesh.h" />
     <ClInclude Include="..\Runtime\Rendering\PixelShaderDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\RenderingPass.h" />
