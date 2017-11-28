@@ -29,18 +29,17 @@ namespace Mile
       virtual void Unbind( ) override;
 
       void SetGBuffer( GBuffer* buffer ) { this->m_gBuffer = buffer; }
+      void SetDepthStencilBuffer( DepthStencilBufferDX11* buffer ) { this->m_gBuffer->SetDepthStencilBuffer( buffer ); }
 
       void UpdateTransformBuffer( const Matrix& world, const Matrix& view, const Matrix& proj );
       void UpdateMaterialBuffer( float specExp );
       void UpdateNormalTexture( Texture2dDX11* texture );
 
    private:
-      ConstantBufferDX11*      m_transformBuffer;
-      ConstantBufferDX11*      m_materialBuffer;
-
+      CBufferPtr      m_transformBuffer;
+      CBufferPtr      m_materialBuffer;
       Texture2dDX11*           m_normalTexture;
-
-      GBuffer*                m_gBuffer;
+      GBuffer*                 m_gBuffer;
 
    };
 }

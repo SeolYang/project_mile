@@ -54,8 +54,10 @@ namespace Mile
          return false;
       }
 
-      bool bIsInitialized = m_transformBuffer != nullptr && m_materialBuffer != nullptr;
-      if ( !bIsInitialized  || m_gBuffer == nullptr )
+      bool bIsReadyToBind = m_transformBuffer != nullptr && 
+         m_materialBuffer != nullptr &&
+         m_gBuffer != nullptr;
+      if ( !bIsReadyToBind )
       {
          return false;
       }
@@ -85,6 +87,8 @@ namespace Mile
 
    void GBufferPass::Unbind( )
    {
+      RenderingPass::Unbind( );
+
       if ( m_renderer == nullptr )
       {
          return;
@@ -122,10 +126,15 @@ namespace Mile
 
    void GBufferPass::UpdateNormalTexture( Texture2dDX11* texture )
    {
-      if ( texture == nullptr )
+      if ( m_normalTexture != nullptr )
       {
          m_normalTexture->Unbind( );
-         m_normalTexture = nullptr;
+      }
+
+      if ( texture != nullptr )
+      {
+         texture->Unbind( );
+         m_normalTexture = texture;
       }
    }
 }

@@ -50,8 +50,10 @@ namespace Mile
          return false;
       }
 
-      bool bIsInitialized = m_lightBuffer != nullptr && m_cameraBuffer != nullptr;
-      if ( !bIsInitialized || m_gBuffer == nullptr || m_lightBuffer == nullptr )
+      bool bIsReadyToBind = m_lightBuffer != nullptr &&
+         m_cameraBuffer != nullptr &&
+         m_gBuffer != nullptr;
+      if ( !bIsReadyToBind )
       {
          return false;
       }
@@ -81,12 +83,13 @@ namespace Mile
 
    void LightBufferPass::Unbind( )
    {
+      RenderingPass::Unbind( );
+
       if ( m_renderer == nullptr )
       {
          return;
       }
 
-      RenderingPass::Unbind( );
       m_gBuffer->Unbind( );
    }
 
@@ -108,7 +111,7 @@ namespace Mile
    {
       if ( m_lightBuffer != nullptr )
       {
-         auto buffer = reinterpret_cast< LightParamConstantBuffer* >( m_lightBuffer->Map( ) );
+         auto buffer = reinterpret_cast< LightParamConstantBuffer* >( m_lightParamBuffer->Map( ) );
          buffer->LightPos = lightPos;
          buffer->LightColor = lightColor;
          buffer->LightDirection = lightDirection;

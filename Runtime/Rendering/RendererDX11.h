@@ -39,10 +39,6 @@ namespace Mile
 
       void SetBackbufferAsRenderTarget( );
 
-      void GeometryBufferPass( );
-      void LightBufferPass( );
-      void FinalRenderPass( );
-
    private:
       bool CreateDeviceAndSwapChain( );
       bool CreateDepthStencilBuffer( );
