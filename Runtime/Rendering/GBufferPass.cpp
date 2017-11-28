@@ -41,8 +41,7 @@ namespace Mile
 
       m_pixelShader->AddSampler( D3D11_FILTER_ANISOTROPIC,
                                  D3D11_TEXTURE_ADDRESS_BORDER, 
-                                 D3D11_COMPARISON_ALWAYS
-      );
+                                 D3D11_COMPARISON_ALWAYS );
 
       return true;
    }
@@ -98,11 +97,6 @@ namespace Mile
       {
          m_normalTexture->Unbind( );
       }
-   }
-
-   void GBufferPass::SetDepthStencilBuffer( DepthStencilBufferDX11* buffer )
-   {
-      this->m_gBuffer->SetDepthStencilBuffer( buffer );
    }
 
    void GBufferPass::UpdateTransformBuffer( const Matrix& world, const Matrix& worldView, const Matrix& worldViewProj )
