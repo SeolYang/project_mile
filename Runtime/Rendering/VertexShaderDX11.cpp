@@ -3,6 +3,18 @@
 
 namespace Mile
 {
+   VertexShaderDX11::VertexShaderDX11( RendererDX11* renderer ) :
+      m_shader( nullptr ),
+      m_inputLayout( nullptr ),
+      ShaderDX11( renderer )
+   {
+   }
+
+   VertexShaderDX11::~VertexShaderDX11( )
+   {
+      SafeRelease( m_shader );
+   }
+
    bool VertexShaderDX11::Init( const String& shaderPath )
    {
       if ( m_bIsCompiled || m_renderer == nullptr )
@@ -25,7 +37,7 @@ namespace Mile
          return false;
       }
       
-      m_inputLayout = std::make_shared<InputLayoutDX11>( m_renderer );
+      m_inputLayout = std::make_unique<InputLayoutDX11>( m_renderer );
       if ( !m_inputLayout->Init( this->Reflect( ), this ) )
       {
          return false;

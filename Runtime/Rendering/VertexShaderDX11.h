@@ -7,20 +7,11 @@ namespace Mile
    class InputLayoutDX11;
    class MEAPI VertexShaderDX11 : public ShaderDX11
    {
-      using InputLayoutPtr = std::shared_ptr<InputLayoutDX11>;
+      using InputLayoutPtr = std::unique_ptr<InputLayoutDX11>;
 
    public:
-      VertexShaderDX11( RendererDX11* renderer ) :
-         m_shader( nullptr ),
-         m_inputLayout( nullptr ),
-         ShaderDX11( renderer )
-      {
-      }
-
-      ~VertexShaderDX11( )
-      {
-         SafeRelease( m_shader );
-      }
+      VertexShaderDX11( RendererDX11* renderer );
+      ~VertexShaderDX11( );
 
       virtual bool Init( const String& shaderPath ) override;
       virtual bool Bind( ) override;
