@@ -47,10 +47,15 @@ namespace Mile
         Entity* GetEntityByName( const String& name );
 
         /**
-        * @brief    World에 생성어있는 모든 Entity들의 배열을 반환합니다.
-        * @param    Entity 배열
+        * @brief    World에 생성되어있는 모든 Entity들의 배열을 반환합니다.
+        * @return    Entity 배열
         */
         std::vector<Entity*> GetEntities( );
+
+        /**
+        * @brief    World에 생성되어있는 Entity 중 Root Entitiy들의 배열을 반환합니다.
+        */
+        std::vector<Entity*>&& GetRootEntities( );
 
         bool LoadFrom( const String& filePath );
         bool SaveTo( const String& filePath );

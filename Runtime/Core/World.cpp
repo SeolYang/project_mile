@@ -74,7 +74,7 @@ namespace Mile
 
    Entity* World::CreateEntity( const String& name )
    {
-      auto newEntity = new Entity( m_context, name );
+      auto newEntity = new Entity( this, name );
       m_entities.push_back( newEntity );
 
       return newEntity;
@@ -95,13 +95,21 @@ namespace Mile
 
    std::vector<Entity*> World::GetEntities( )
    {
-      std::vector<Entity*> tempEntities{ };
-      for ( const auto& entity : m_entities )
+      return m_entities;
+   }
+
+   std::vector<Entity*>&& World::GetRootEntities( )
+   {
+      std::vector<Entity*> rootEntities{ };
+      for ( auto entity : m_entities )
       {
-         tempEntities.push_back( entity );
+         if ( entity->GetParent( ) == nullptr )
+         {
+            rootEntities.push_back( entity );
+         }
       }
 
-      return std::move( tempEntities );
+      return std::move( rootEntities );
    }
 
    bool World::LoadFrom( const String& filePath )
