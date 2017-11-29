@@ -32,6 +32,8 @@ namespace Mile
       virtual void OnEnable( ) { }
       virtual void OnDisable( ) { }
 
+      Entity* GetEntity( ) const { return m_entity; }
+
    protected:
       Component( ) :
          Component( nullptr )
