@@ -46,7 +46,7 @@ namespace Mile
                                       aiProcess_ConvertToLeftHanded |
                                       aiProcess_SortByPType );
 
-      Entity* res = new Entity( context, TEXT( "" ) );
+      Entity* res = new Entity( nullptr, TEXT( "" ) );
       ReconstructEntityWithAiNode( scene, scene->mRootNode, target, res );
 
       importer.FreeScene( );
@@ -64,14 +64,14 @@ namespace Mile
       // Create Mesh Entity first
       for ( size_t idx = 0; idx < node->mNumMeshes; ++idx )
       {
-         Entity* renderableMesh = new Entity( contextInst, TEXT( "" ) );
+         Entity* renderableMesh = new Entity( nullptr, TEXT( "" ) );
          ReconstructMeshWithAiMesh( scene, scene->mMeshes[idx], target, renderableMesh );
       }
 
       // Create children Entity
       for ( size_t idx = 0; idx < node->mNumChildren; ++idx )
       {
-         Entity* child = new Entity( contextInst, TEXT( "" ) );
+         Entity* child = new Entity( nullptr, TEXT( "" ) );
          ReconstructEntityWithAiNode( scene, node->mChildren[ idx ], target, child );
          entity->AttachChild( child );
       }

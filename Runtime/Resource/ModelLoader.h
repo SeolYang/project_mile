@@ -9,6 +9,7 @@ namespace Mile
 {
    class Model;
    class Context;
+   class World;
    class RendererDX11;
    class Entity;
    class Mesh;
