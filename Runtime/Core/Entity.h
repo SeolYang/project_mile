@@ -21,6 +21,7 @@ namespace Mile
       ~Entity( );
 
       std::string Serialize( ) const;
+      // Null world entitiy must not deserialized.
       void DeSerialize( const json& jsonData );
 
       /**
