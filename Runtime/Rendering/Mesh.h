@@ -11,6 +11,8 @@ namespace Mile
    public:
       Mesh( RendererDX11* renderer, const std::string& name, const String& modelPath) :
          m_name( name ),
+         m_vertexNum( 0 ),
+         m_indexNum( 0 ),
          m_modelPath( modelPath ),
          m_renderer( renderer )
       {
@@ -23,7 +25,7 @@ namespace Mile
       }
 
       template <typename Vertex>
-      bool Init( const std::vector<Vertex>& verticies, const std::vector<unsigned int>& indices )
+      bool Init( const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices )
       {
          if ( m_indexBuffer != nullptr || m_indexBuffer != nullptr )
          {
@@ -31,6 +33,7 @@ namespace Mile
          }
 
          m_indexBuffer = new IndexBufferDX11( m_renderer );
+         m_indexNum = reinterpret_cast<unsigned int>( indices.size( ) );
          if ( !m_indexBuffer->Init( indices ) )
          {
             SafeDelete( m_indexBuffer );
@@ -38,7 +41,8 @@ namespace Mile
          }
 
          m_vertexBuffer = new VertexBufferDX11( m_renderer );
-         if ( !m_vertexBuffer->Init<Vertex>( verticies ) )
+         m_vertexNum = reinterpret_cast<unsigned int>( vertices.size( ) );
+         if ( !m_vertexBuffer->Init<Vertex>( vertices ) )
          {
             SafeDelete( m_vertexBuffer );
             return false;
@@ -52,6 +56,9 @@ namespace Mile
       IndexBufferDX11* GetIndexBuffer( ) { return m_indexBuffer; }
       VertexBufferDX11* GetVertexBuffer( ) { return m_vertexBuffer; }
 
+      unsigned int GetVertexCount( ) const { return m_vertexNum; }
+      unsigned int GetIndexCount( ) const { return m_indexNum; }
+
       std::string GetName( ) const { return m_name; }
       String GetModelPath( ) const { return m_modelPath; }
 
@@ -62,6 +69,9 @@ namespace Mile
 
       std::string       m_name;
       String            m_modelPath;
+
+      unsigned int      m_vertexNum;
+      unsigned int      m_indexNum;
 
    };
 }
