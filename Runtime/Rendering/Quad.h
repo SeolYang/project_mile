@@ -13,7 +13,7 @@ namespace Mile
       {
       }
 
-      bool Init( const Vector2& topLeft, const Vector2& topRight,
-                 const Vector2& bottomLeft, const Vector2& bottomRight );
+      bool Init( float minX, float minY,
+                 float maxX, float maxY );
    };
 }
