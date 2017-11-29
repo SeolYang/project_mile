@@ -1,4 +1,5 @@
 #include "Component.h"
+#include "Core\Entity.h"
 
 namespace Mile
 {
@@ -23,5 +24,10 @@ namespace Mile
                 OnDisable( );
             }
         }
+    }
+
+    Transform* Component::GetTransform( ) const
+    {
+       return m_entity->GetTransform( );
     }
 }
