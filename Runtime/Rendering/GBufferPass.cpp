@@ -16,6 +16,7 @@ namespace Mile
 
    GBufferPass::~GBufferPass( )
    {
+      Unbind( );
       SafeDelete( m_transformBuffer );
       SafeDelete( m_materialBuffer );
    }
@@ -76,27 +77,18 @@ namespace Mile
          return false;
       }
 
-      if ( !m_normalTexture->Bind( 0, ShaderType::PixelShader ) )
-      {
-         return false;
-      }
-
       return true;
    }
 
    void GBufferPass::Unbind( )
    {
       RenderingPass::Unbind( );
-
       if ( m_renderer == nullptr )
       {
          return;
       }
 
-      if ( m_normalTexture != nullptr )
-      {
-         m_normalTexture->Unbind( );
-      }
+      UpdateNormalTexture( nullptr );
    }
 
    void GBufferPass::UpdateTransformBuffer( const Matrix& world, const Matrix& worldView, const Matrix& worldViewProj )
@@ -134,6 +126,7 @@ namespace Mile
       {
          texture->Unbind( );
          m_normalTexture = texture;
+         m_normalTexture->Bind( 0, ShaderType::PixelShader );
       }
    }
 }
