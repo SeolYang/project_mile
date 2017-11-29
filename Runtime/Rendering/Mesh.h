@@ -18,7 +18,7 @@ namespace Mile
       {
       }
 
-      ~Mesh( )
+      virtual ~Mesh( )
       {
          SafeDelete( m_vertexBuffer );
          SafeDelete( m_indexBuffer );
