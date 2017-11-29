@@ -315,6 +315,9 @@
     <ClInclude Include="..\Runtime\Rendering\ShadingPass.h">
       <Filter>Rendering\PreLightPass</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Component\LightComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -439,6 +442,9 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\ShadingPass.cpp">
       <Filter>Rendering\PreLightPass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Component\LightComponent.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

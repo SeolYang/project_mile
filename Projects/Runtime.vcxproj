@@ -95,6 +95,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Component\Component.h" />
+    <ClInclude Include="..\Runtime\Component\LightComponent.h" />
     <ClInclude Include="..\Runtime\Component\MeshRenderComponent.h" />
     <ClInclude Include="..\Runtime\Core\ComponentRegister.h" />
     <ClInclude Include="..\Runtime\Core\Config.h" />
@@ -187,6 +188,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Component\Component.cpp" />
+    <ClCompile Include="..\Runtime\Component\LightComponent.cpp" />
     <ClCompile Include="..\Runtime\Component\MeshRenderComponent.cpp" />
     <ClCompile Include="..\Runtime\Core\ComponentRegister.cpp" />
     <ClCompile Include="..\Runtime\Core\Config.cpp" />
