@@ -17,7 +17,7 @@ namespace Mile
          return new Ty( entity );
       }
 
-      virtual std::string Serialize( ) const = 0;
+      virtual std::string Serialize( ) const { return ( "\"IsActivated\": " + Mile::BoolSerialize( m_bIsActive )); }
       virtual void DeSerialize( const json& jsonData )
       {
          m_bIsActive = jsonData[ "IsActivated" ];

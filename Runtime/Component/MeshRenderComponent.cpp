@@ -14,7 +14,8 @@ namespace Mile
       // { "Mesh": { "Model": (Model filepath), "Name": (Mesh Name) },
       // "Material": (Material filepath) }
       //std::string res = "{ \"Mesh\": " + 
-      std::string res = "{ \"Mesh\": { \"Model\": \"" + WString2String( m_mesh->GetModelPath( ) ) + 
+      std::string res = "{ " + Component::Serialize( ) +
+         ", \"Mesh\": { \"Model\": \"" + WString2String( m_mesh->GetModelPath( ) ) + 
          "\", \"Name\": \"" + m_mesh->GetName( ) + "\" }, "
          " \"Material\": \"" + WString2String( m_material._Get( )->GetPath( ) ) + "\" }";
       return res;

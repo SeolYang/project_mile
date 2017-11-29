@@ -23,7 +23,8 @@ namespace Mile
 
    std::string LightComponent::Serialize( ) const
    {
-      auto res = "{ \"Type\": " + LightTypeToString(m_type) + 
+      auto res = "{ " + Component::Serialize() + 
+         ", \"Type\": " + LightTypeToString(m_type) + 
          ", \"Color\": " + m_color.Serialize( ) + 
          ", \"SpotlightAngles\": " + m_spotlightAngles.Serialize( )
          + " }";
@@ -33,6 +34,7 @@ namespace Mile
 
    void LightComponent::DeSerialize( const json& jsonData )
    {
+      Component::DeSerialize( jsonData );
       m_type = StringToLightType( jsonData[ "Type" ] );
       m_color.DeSerialize( jsonData[ "Color" ] );
       m_spotlightAngles.DeSerialize( jsonData[ "SpotlightAngles" ] );
