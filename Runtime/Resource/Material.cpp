@@ -31,7 +31,7 @@ namespace Mile
       auto resourceMng = m_context->GetSubSystem<ResourceManager>( );
       json jsonData = json::parse( jsonStr );
       m_specExp = jsonData[ "SpecExp" ];
-      m_specIntensity = jsonData[ "SpecIntensity" ];
+      m_specAlbedo.DeSerialize(jsonData[ "SpecAlbedo" ]);
       m_diffuseMap = resourceMng->Load<Texture2D>( String2WString( jsonData[ "DiffuseMap" ] ) );
       m_normalMap = resourceMng->Load<Texture2D>( String2WString( jsonData[ "NormalMap" ] ) );
 
@@ -54,7 +54,7 @@ namespace Mile
       }
 
       std::string res = "{ \"SpecExp\": " + std::to_string( m_specExp ) +
-         ", \"SpecIntensity\": " + std::to_string( m_specIntensity ) +
+         ", \"SpecAlbedo\": " + m_specAlbedo.Serialize( ) +
          ", \"DiffuseMap\": " + diffuseMapPath +
          ", \"NormalMap\":" + normalMapPath + " }";
 

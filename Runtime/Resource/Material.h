@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Resource.h"
+#include "Math\Vector3.h"
 
 namespace Mile
 {
@@ -16,7 +17,7 @@ namespace Mile
    public:
       Material( Context* context, const String& filePath ) :
          m_specExp( 1.0f ),
-         m_specIntensity( 0.0f ),
+         m_specAlbedo( Vector3( ) ),
          Resource( context, filePath, ResourceType::RT_Material )
       {
       }
@@ -39,7 +40,7 @@ namespace Mile
 
    private:
       float                      m_specExp;
-      float                      m_specIntensity;
+      Vector3                    m_specAlbedo;
       std::weak_ptr<Texture2D>   m_diffuseMap;
       std::weak_ptr<Texture2D>   m_normalMap;
 
