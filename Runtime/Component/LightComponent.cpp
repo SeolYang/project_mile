@@ -5,6 +5,10 @@
 namespace Mile
 {
    LightComponent::LightComponent( Entity* entity ) :
+      m_type( LightType::Directional ),
+      m_color( Vector3( 1.0f, 1.0f, 1.0f ) ),
+      m_spotlightAngles( Vector2( 0.0f, 0.0f ) ),
+      m_lightRange( 100.0f ),
       Component( entity )
    {
    }
@@ -26,7 +30,8 @@ namespace Mile
       auto res = "{ " + Component::Serialize() + 
          ", \"Type\": " + LightTypeToString(m_type) + 
          ", \"Color\": " + m_color.Serialize( ) + 
-         ", \"SpotlightAngles\": " + m_spotlightAngles.Serialize( )
+         ", \"SpotlightAngles\": " + m_spotlightAngles.Serialize( ) +
+         ", \"LightRange\": " + std::to_string( m_lightRange )
          + " }";
 
       return res;
@@ -38,5 +43,6 @@ namespace Mile
       m_type = StringToLightType( jsonData[ "Type" ] );
       m_color.DeSerialize( jsonData[ "Color" ] );
       m_spotlightAngles.DeSerialize( jsonData[ "SpotlightAngles" ] );
+      m_lightRange = jsonData[ "LightRange" ];
    }
 }

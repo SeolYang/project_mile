@@ -31,6 +31,9 @@ namespace Mile
       Vector2 GetSpotlightAngles( ) const { return m_spotlightAngles; }
       void SetSpotlightAngles( const Vector2& angles ) { m_spotlightAngles = angles; }
 
+      float GetLightRange( ) const { return m_lightRange; }
+      void SetLightRange( float range ) { m_lightRange = range; }
+
       Vector3 GetLightDirection( ) const;
       Vector3 GetLightPosition( ) const;
 
@@ -83,6 +86,7 @@ namespace Mile
       LightType      m_type;
       Vector3        m_color;
       Vector2        m_spotlightAngles;
+      float          m_lightRange;
 
    };
 }
