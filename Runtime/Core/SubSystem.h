@@ -15,6 +15,8 @@ namespace Mile
         virtual void Update( ) { }
         virtual void DeInit( ) { }
 
+        Context* GetContext( ) const { return m_context; }
+
     protected:
         Context* m_context;
 

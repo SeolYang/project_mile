@@ -2,16 +2,22 @@
 #include "Context.h"
 #include "Component/Component.h"
 #include "ComponentRegister.h"
+#include "World.h"
 
 namespace Mile
 {
-   Entity::Entity( Context* context, const String& name ) :
-      m_context( context ),
+   Entity::Entity( World* world, const String& name ) :
+      m_world( world ),
+      m_context( nullptr ),
       m_name( name ),
       m_bIsActive( false ),
       m_transform( new Transform( this ) ),
       m_parent( nullptr )
    {
+      if ( m_world != nullptr )
+      {
+         m_context = m_world->GetContext( );
+      }
    }
 
    Entity::~Entity( )
@@ -68,7 +74,7 @@ namespace Mile
       std::vector<json> children = jsonData[ "Children" ];
       for ( auto child : children )
       {
-         Entity* tempChild = new Entity( m_context, TEXT("") );
+         Entity* tempChild = m_world->CreateEntity( TEXT( "" ) );
          tempChild->DeSerialize( child );
          this->AttachChild( tempChild );
       }

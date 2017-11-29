@@ -7,11 +7,17 @@
 namespace Mile
 {
    class Context;
+   class World;
    class Component;
    class Entity
    {
+      friend World;
+      friend class ModelLoader;
+
+   private:
+      Entity( World* world, const String& name );
+
    public:
-      Entity( Context* context, const String& name );
       ~Entity( );
 
       std::string Serialize( ) const;
@@ -103,10 +109,12 @@ namespace Mile
       void OnEnable( );
       void OnDisable( );
 
+      World* GetWorld( ) const { return m_world; }
       Context* GetContext( ) const { return m_context; }
 
    protected:
       Context*                  m_context;
+      World*                    m_world;
       bool                      m_bIsActive;
       Transform*                m_transform;
 
@@ -161,21 +169,11 @@ namespace Mile
    template <typename Ty>
    Ty* Entity::GetComponent( )
    {
-      auto typeID = typeid( Ty );
-
-      if ( m_transform != nullptr )
-      {
-         if ( typeID == typeid( *m_transform ) )
-         {
-            return m_transform;
-         }
-      }
-
       for ( auto component : m_components )
       {
-         if ( typeID == typeid( *component ) )
+         if ( typeid( Ty ) == typeid( *component ) )
          {
-            return component;
+            return reinterpret_cast<Ty*>( component );
          }
       }
 
@@ -185,22 +183,11 @@ namespace Mile
    template <typename Ty>
    std::vector<Ty*> Entity::GetComponents( )
    {
-      auto typeID = typeid( Ty );
       std::vector<Ty*> tempArr{ };
-
-      if ( m_transform != nullptr )
-      {
-         if ( typeID == typeid( *m_transform ) )
-         {
-            tempArr.push_back( m_transform );
-         }
-
-         return std::move( tempArr );
-      }
 
       for ( auto component : m_components )
       {
-         if ( typeID == typeid( *component ) )
+         if ( typeid( Ty ) == typeid( *component ) )
          {
             tempArr.push_back( component );
          }
