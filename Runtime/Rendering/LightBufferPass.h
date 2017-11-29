@@ -10,7 +10,7 @@ namespace Mile
    class GBuffer;
    class MEAPI LightBufferPass : public RenderingPass
    {
-      struct LightParamConstantBuffer
+      struct alignas( 16 ) LightParamConstantBuffer
       {
          Vector3 LightPos;
          Vector3 LightColor;
@@ -19,7 +19,7 @@ namespace Mile
          Vector4 LightRange;
       };
 
-      struct CameraConstantBuffer
+      struct alignas( 16 ) CameraConstantBuffer
       {
          Vector3 CameraPos;
       };

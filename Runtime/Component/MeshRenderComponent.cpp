@@ -22,6 +22,7 @@ namespace Mile
 
    void MeshRenderComponent::DeSerialize( const json& jsonData )
    {
+      Component::DeSerialize( jsonData );
       auto resMng = m_entity->GetContext( )->GetSubSystem<ResourceManager>( );
       json meshData = jsonData[ "Mesh" ];
       auto loadedModel = resMng->Load<Model>( String2WString( meshData[ "Model" ] ) );

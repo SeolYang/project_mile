@@ -6,14 +6,14 @@ namespace Mile
 {
    class MEAPI ShadingPass : public RenderingPass
    {
-      struct TransformConstantBuffer
+      struct alignas( 16 ) TransformConstantBuffer
       {
          Matrix m_worldMatrix;
          Matrix m_worldViewMatrix;
          Matrix m_worldViewProjMatrix;
       };
 
-      struct MaterialConstantBuffer
+      struct alignas( 16 ) MaterialConstantBuffer
       {
          Vector3 SpecularAlbedo;
       };

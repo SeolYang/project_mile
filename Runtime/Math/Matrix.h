@@ -4,7 +4,7 @@
 
 namespace Mile
 {
-   class MEAPI Matrix
+   class MEAPI alignas( 16 ) Matrix
    {
    public:
       Matrix( float _m11, float _m12, float _m13, float _m14,

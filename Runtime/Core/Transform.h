@@ -14,7 +14,7 @@ namespace Mile
    };
 
    class Entity;
-   class MEAPI Transform
+   class MEAPI alignas( 16 ) Transform
    {
    public:
       Transform( Entity* entity, const Vector3& position, const Vector3& scale, const Quaternion& rotation ) :

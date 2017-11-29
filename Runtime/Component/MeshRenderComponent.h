@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Component.h"
+#include "Core/ComponentRegister.h"
 
 namespace Mile
 {

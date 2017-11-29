@@ -8,14 +8,14 @@ namespace Mile
    class GBuffer;
    class MEAPI GBufferPass : public RenderingPass
    {
-      struct TransformConstantBuffer
+      struct alignas( 16 ) TransformConstantBuffer
       {
          Matrix m_worldMatrix;
          Matrix m_worldViewMatrix;
          Matrix m_worldViewProjMatrix;
       };
 
-      struct MaterialConstantBuffer
+      struct alignas( 16 ) MaterialConstantBuffer
       {
          float specularExp;
       };

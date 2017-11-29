@@ -29,7 +29,8 @@ namespace Mile
 
       auto device = m_renderer->GetDevice( );
       auto result = device->CreateVertexShader( m_blob->GetBufferPointer( ), m_blob->GetBufferSize( ),
-                                                nullptr, &m_shader );
+                                                nullptr, 
+                                                &m_shader );
 
       if ( FAILED( result ) )
       {

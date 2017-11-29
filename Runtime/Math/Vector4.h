@@ -3,7 +3,7 @@
 
 namespace Mile
 {
-    class MEAPI Vector4
+    class MEAPI alignas( 16 ) Vector4
     {
     public:
         Vector4( float xx, float yy, float zz, float ww ) :
