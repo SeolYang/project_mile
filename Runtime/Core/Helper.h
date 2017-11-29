@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <array>
+#include <map>
+#include <set>
 
 #include <memory>
 #include <functional>

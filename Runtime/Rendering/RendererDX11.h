@@ -14,6 +14,11 @@ namespace Mile
    };
 
    class Window;
+   class World;
+   class Entity;
+   class Material;
+   class MeshRenderComponent;
+   class LightComponent;
    class DepthStencilBufferDX11;
    class RenderTargetDX11;
    class GBuffer;
@@ -22,11 +27,16 @@ namespace Mile
    class ShadingPass;
    class MEAPI RendererDX11 : public SubSystem
    {
+      using MaterialMap = std::map<Material*, std::vector<MeshRenderComponent*>>;
    public:
       RendererDX11( Context* context );
       virtual ~RendererDX11( );
 
       virtual bool Init( ) override;
+
+      void AcquireMeshRenderersAndMaterial( const std::vector<Entity*>& entities );
+      void AcquireMaterials( );
+      void AcquireLights( const std::vector<Entity*>& entities );
 
       void Render( );
       void RenderGBuffer( );
@@ -57,8 +67,8 @@ namespace Mile
       ID3D11DeviceContext*    m_deviceContext;
 
       // Back Buffer Variables
-      IDXGISwapChain*         m_swapChain;
-      ID3D11RenderTargetView* m_renderTargetView;
+      IDXGISwapChain*           m_swapChain;
+      ID3D11RenderTargetView*   m_renderTargetView;
       DepthStencilBufferDX11*   m_depthStencilBuffer;
       // \Back Buffer Variables
 
@@ -70,8 +80,14 @@ namespace Mile
       ShadingPass*      m_shadingPass;
       // \Pre light pass Rendering
 
-      bool                    m_bDepthStencilEnabled;
-      Vector4                 m_clearColor;
+      // Renderable objects
+      std::vector<MeshRenderComponent*> m_meshRenderComponents;
+      std::vector<LightComponent*>      m_lightComponents;
+      MaterialMap                       m_materialMap;
+      // \Renderable objects
+
+      bool      m_bDepthStencilEnabled;
+      Vector4   m_clearColor;
 
    };
 }

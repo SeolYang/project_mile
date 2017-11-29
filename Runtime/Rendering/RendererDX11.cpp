@@ -1,13 +1,17 @@
 #include "RendererDX11.h"
-#include "Core\Context.h"
-#include "Core\Window.h"
-#include "Math\Vector2.h"
+#include "Core/Context.h"
+#include "Core/Window.h"
+#include "Math/Vector2.h"
 #include "DepthStencilBufferDX11.h"
 #include "RenderTargetDX11.h"
 #include "GBuffer.h"
 #include "GBufferPass.h"
 #include "LightBufferPass.h"
 #include "ShadingPass.h"
+#include "Core/Entity.h"
+#include "Core/World.h"
+#include "Component/MeshRenderComponent.h"
+#include "Component/LightComponent.h"
 
 namespace Mile
 {
@@ -187,9 +191,57 @@ namespace Mile
       return true;
    }
 
+   void RendererDX11::AcquireMeshRenderersAndMaterial( const std::vector<Entity*>& entities )
+   {
+      m_meshRenderComponents.clear( );
+      m_materialMap.clear( );
+      for ( auto entity : entities )
+      {
+         auto meshRenderComponent = entity->GetComponent<MeshRenderComponent>( );
+         if ( entity->IsActive( ) && meshRenderComponent->IsActive( ) )
+         {
+            auto material = meshRenderComponent->GetMaterial( );
+            if ( !material.expired( ) )
+            {
+               // Material Batching
+               m_meshRenderComponents.push_back( meshRenderComponent );
+               m_materialMap[ material._Get( ) ].push_back( meshRenderComponent );
+            }
+         }
+      }
+   }
+
+   void RendererDX11::AcquireLights( const std::vector<Entity*>& entities )
+   {
+      m_lightComponents.clear( );
+      for ( auto entity : entities )
+      {
+         auto lightComponent = entity->GetComponent<LightComponent>( );
+         if ( entity->IsActive( ) && lightComponent->IsActive( ) )
+         {
+            m_lightComponents.push_back( lightComponent );
+         }
+      }
+   }
+
    void RendererDX11::Render( )
    {
       Clear( );
+
+      World* world = m_context->GetSubSystem<World>( );
+      if ( world != nullptr )
+      {
+         auto entities = world->GetEntities( );
+         // Acquire necessarry informations
+         AcquireMeshRenderersAndMaterial( entities );
+         AcquireLights( entities );
+
+         // Pre light pass rendering
+         //RenderGBuffer( );
+         //RenderLightBuffer( );
+         //RenderShading( );
+      }
+
       Present( );
    }
 
