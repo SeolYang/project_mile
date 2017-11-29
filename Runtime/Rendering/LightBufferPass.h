@@ -16,7 +16,8 @@ namespace Mile
          Vector3 LightColor;
          Vector3 LightDirection;
          Vector2 SpotlightAngles;
-         Vector4 LightRange;
+         Vector3 LightRange;
+         unsigned int LightType;
       };
 
       struct alignas( 16 ) CameraConstantBuffer
@@ -39,7 +40,8 @@ namespace Mile
                               const Vector3& lightColor,
                               const Vector3& lightDirection,
                               const Vector2& spotlightAngles,
-                              const Vector4& lightRange );
+                              const Vector3& lightRange,
+                              unsigned int lightType );
 
       void UpdateCameraBuffer( const Vector3& camPos );
 

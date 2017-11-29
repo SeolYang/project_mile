@@ -107,7 +107,8 @@ namespace Mile
                                             const Vector3& lightColor,
                                             const Vector3& lightDirection,
                                             const Vector2& spotlightAngles,
-                                            const Vector4& lightRange )
+                                            const Vector3& lightRange,
+                                            unsigned int lightType )
    {
       if ( m_lightBuffer != nullptr )
       {
@@ -117,6 +118,7 @@ namespace Mile
          buffer->LightDirection = lightDirection;
          buffer->SpotlightAngles = spotlightAngles;
          buffer->LightRange = lightRange;
+         buffer->LightType = lightType;
 
          m_lightParamBuffer->UnMap( );
       }
