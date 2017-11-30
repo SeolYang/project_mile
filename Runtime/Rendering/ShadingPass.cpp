@@ -1,9 +1,9 @@
 #include "ShadingPass.h"
-#include "Texture2dDX11.h"
+#include "GBufferPass.h"
 #include "ConstantBufferDX11.h"
+#include "Texture2dDX11.h"
 #include "RenderTargetDX11.h"
 #include "PixelShaderDX11.h"
-#include "GBufferPass.h"
 
 namespace Mile
 {

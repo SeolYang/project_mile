@@ -1,17 +1,22 @@
 #include "RendererDX11.h"
-#include "Core/Context.h"
-#include "Core/Window.h"
-#include "Math/Vector2.h"
 #include "DepthStencilBufferDX11.h"
 #include "RenderTargetDX11.h"
+#include "Mesh.h"
+#include "Quad.h"
 #include "GBuffer.h"
 #include "GBufferPass.h"
 #include "LightBufferPass.h"
 #include "ShadingPass.h"
-#include "Core/Entity.h"
-#include "Core/World.h"
-#include "Component/MeshRenderComponent.h"
-#include "Component/LightComponent.h"
+#include "Core\Context.h"
+#include "Core\Window.h"
+#include "Core\World.h"
+#include "Core\Entity.h"
+#include "Math\Vector2.h"
+#include "Component\MeshRenderComponent.h"
+#include "Component\LightComponent.h"
+#include "Component\CameraComponent.h"
+#include "Resource\Material.h"
+#include "Resource\Texture2D.h"
 
 namespace Mile
 {
@@ -28,6 +33,7 @@ namespace Mile
 
    RendererDX11::~RendererDX11( )
    {
+      SafeDelete( m_screenQuad );
       SafeDelete( m_shadingPass );
       SafeDelete( m_lightBufferPass );
       SafeDelete( m_lightBuffer );
@@ -57,10 +63,17 @@ namespace Mile
 
       // Initialize Pre Light pass
       Vector2 screenRes{ m_window->GetResolution( ) };
+
+      m_screenQuad = new Quad( this );
+      if ( !m_screenQuad->Init( 0.0f, 0.0f, screenRes.x, screenRes.y ) )
+      {
+         return false;
+      }
+
       m_gBuffer = new GBuffer( this );
-      if ( !m_gBuffer->Init( 
-         static_cast<unsigned int>( screenRes.x ), 
-         static_cast<unsigned int>( screenRes.y ) ) )
+      if ( !m_gBuffer->Init(
+         static_cast< unsigned int >( screenRes.x ),
+         static_cast< unsigned int >( screenRes.y ) ) )
       {
          return false;
       }
@@ -74,9 +87,9 @@ namespace Mile
       m_gBufferPass->SetGBuffer( m_gBuffer );
 
       m_lightBuffer = new RenderTargetDX11( this );
-      if ( !m_lightBuffer->Init( 
-         static_cast<unsigned int>( screenRes.x ),
-         static_cast<unsigned int>( screenRes.y ) ) )
+      if ( !m_lightBuffer->Init(
+         static_cast< unsigned int >( screenRes.x ),
+         static_cast< unsigned int >( screenRes.y ) ) )
       {
          return false;
       }
@@ -180,8 +193,8 @@ namespace Mile
 
       m_depthStencilBuffer = new DepthStencilBufferDX11( this );
       bool res = m_depthStencilBuffer->Init( m_window->GetResWidth( ),
-                                  m_window->GetResHeight( ),
-                                  true );
+                                             m_window->GetResHeight( ),
+                                             true );
 
       if ( !res )
       {
@@ -198,14 +211,17 @@ namespace Mile
       for ( auto entity : entities )
       {
          auto meshRenderComponent = entity->GetComponent<MeshRenderComponent>( );
-         if ( entity->IsActive( ) && meshRenderComponent->IsActive( ) )
+         if ( meshRenderComponent != nullptr )
          {
-            auto material = meshRenderComponent->GetMaterial( );
-            if ( !material.expired( ) )
+            if ( entity->IsActive( ) && meshRenderComponent->IsActive( ) )
             {
-               // Material Batching
-               m_meshRenderComponents.push_back( meshRenderComponent );
-               m_materialMap[ material._Get( ) ].push_back( meshRenderComponent );
+               auto material = meshRenderComponent->GetMaterial( );
+               if ( !material.expired( ) )
+               {
+                  // Material Batching
+                  m_meshRenderComponents.push_back( meshRenderComponent );
+                  m_materialMap[ material._Get( ) ].push_back( meshRenderComponent );
+               }
             }
          }
       }
@@ -217,9 +233,28 @@ namespace Mile
       for ( auto entity : entities )
       {
          auto lightComponent = entity->GetComponent<LightComponent>( );
-         if ( entity->IsActive( ) && lightComponent->IsActive( ) )
+         if ( lightComponent != nullptr )
          {
-            m_lightComponents.push_back( lightComponent );
+            if ( entity->IsActive( ) && lightComponent->IsActive( ) )
+            {
+               m_lightComponents.push_back( lightComponent );
+            }
+         }
+      }
+   }
+
+   void RendererDX11::AcquireCameras( const std::vector<Entity*>& entities )
+   {
+      m_cameras.clear( );
+      for ( auto entity : entities )
+      {
+         auto cameraComponent = entity->GetComponent<CameraComponent>( );
+         if ( cameraComponent != nullptr )
+         {
+            if ( entity->IsActive( ) && cameraComponent->IsActive( ) )
+            {
+               m_cameras.push_back( cameraComponent );
+            }
          }
       }
    }
@@ -235,14 +270,114 @@ namespace Mile
          // Acquire necessarry informations
          AcquireMeshRenderersAndMaterial( entities );
          AcquireLights( entities );
+         AcquireCameras( entities );
 
-         // Pre light pass rendering
-         //RenderGBuffer( );
-         //RenderLightBuffer( );
-         //RenderShading( );
+         if ( !m_cameras.empty( ) )
+         {
+            // @TODO: Implement Multiple camera rendering
+            // Pre light pass rendering
+            //RenderGBuffer( );
+            //RenderLightBuffer( );
+            //RenderShading( );
+         }
+
       }
 
       Present( );
+   }
+
+   void RendererDX11::RenderGBuffer( )
+   {
+      m_gBuffer->SetDepthStencilBuffer( m_depthStencilBuffer );
+      m_gBufferPass->Bind( );
+
+      for ( auto batchedMaterial : m_materialMap )
+      {
+         auto material = batchedMaterial.first;
+         auto normalTexture = material->GetNormalMap( );
+         m_gBufferPass->UpdateMaterialBuffer( material->GetSpecularExp( ) ); // per material
+         m_gBufferPass->UpdateNormalTexture( normalTexture._Get( )->GetRawTexture( ) ); // per material
+
+         for ( auto meshRenderer : batchedMaterial.second )
+         {
+            auto transform = meshRenderer->GetEntity( )->GetTransform( );
+            auto mesh = meshRenderer->GetMesh( );
+            // @TODO: add camera
+            //m_gBufferPass->UpdateTransformBuffer( transform->GetWorldMatrix( ), );  // per object
+            mesh->Bind( 0 );
+
+            // @TODO: Implement instancing
+            m_deviceContext->DrawIndexed( mesh->GetIndexCount( ), 0, 0 );
+         }
+
+         // Unbind shader resource
+         m_gBufferPass->UpdateNormalTexture( nullptr );
+      }
+
+      // End of gbuffer pass
+      m_gBufferPass->Unbind( );
+   }
+
+   void RendererDX11::RenderLightBuffer( )
+   {
+      m_lightBufferPass->SetGBuffer( m_gBuffer );
+      m_lightBufferPass->SetLightBuffer( m_lightBuffer );
+      m_lightBufferPass->Bind( );
+
+      // @TODO: Implement multi - camera rendering
+      auto cameraTransform = m_cameras[ 0 ]->GetTransform( );
+      m_lightBufferPass->UpdateCameraBuffer( cameraTransform->GetPosition( ) );
+
+      for ( auto light : m_lightComponents )
+      {
+         // @TODO: Add light type
+         m_lightBufferPass->UpdateLightParamBuffer(
+            light->GetLightPosition( ),
+            light->GetLightColor( ),
+            light->GetLightDirection( ),
+            light->GetSpotlightAngles( ),
+            Vector3( light->GetLightRange( ), 0.0f, 0.0f ),
+            LightComponent::LightTypeToIndex( light->GetLightType( ) ) );
+
+         m_screenQuad->Bind( 0 );
+         m_deviceContext->DrawIndexed( 4, 0, 0 );
+      }
+
+      m_lightBufferPass->Unbind( );
+   }
+
+   void RendererDX11::RenderShading( )
+   {
+      m_shadingPass->SetLightBuffer( m_lightBuffer );
+      m_shadingPass->AcquireTransformBuffer( m_gBufferPass );
+      m_shadingPass->Bind( );
+      SetBackbufferAsRenderTarget( );
+
+      for ( auto batchedMaterial : m_materialMap )
+      {
+         auto material = batchedMaterial.first;
+         auto diffuseTexture = material->GetDiffuseMap( );
+         m_shadingPass->UpdateMaterialBuffer( material->GetSpecularAlbedo( ) );
+         m_shadingPass->UpdateDiffuseTexture( diffuseTexture._Get( )->GetRawTexture( ) );
+
+         for ( auto meshRenderer : batchedMaterial.second )
+         {
+            auto transform = meshRenderer->GetTransform( );
+
+            auto mesh = meshRenderer->GetMesh( );
+            // @TODO: add camera
+            //m_gBufferPass->UpdateTransformBuffer( transform->GetWorldMatrix( ), );  // per object
+            mesh->Bind( 0 );
+
+            // @TODO: Implement instancing
+            m_deviceContext->DrawIndexed( mesh->GetIndexCount( ), 0, 0 );
+         }
+
+         // Unbind ShaderResource
+         m_shadingPass->UpdateDiffuseTexture( nullptr );
+      }
+
+      m_shadingPass->Unbind( );
    }
 
    void RendererDX11::Clear( )
@@ -256,7 +391,7 @@ namespace Mile
          if ( m_bDepthStencilEnabled )
          {
             m_deviceContext->ClearDepthStencilView(
-               m_depthStencilBuffer->GetDSV( ), 
+               m_depthStencilBuffer->GetDSV( ),
                D3D11_CLEAR_DEPTH, 1.0f, 0 );
          }
       }

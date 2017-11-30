@@ -13,18 +13,20 @@ namespace Mile
       PixelShader
    };
 
-   class Window;
-   class World;
-   class Entity;
-   class Material;
-   class MeshRenderComponent;
-   class LightComponent;
    class DepthStencilBufferDX11;
    class RenderTargetDX11;
+   class Quad;
    class GBuffer;
    class GBufferPass;
    class LightBufferPass;
    class ShadingPass;
+   class Window;
+   class World;
+   class Entity;
+   class MeshRenderComponent;
+   class LightComponent;
+   class CameraComponent;
+   class Material;
    class MEAPI RendererDX11 : public SubSystem
    {
       using MaterialMap = std::map<Material*, std::vector<MeshRenderComponent*>>;
@@ -35,8 +37,8 @@ namespace Mile
       virtual bool Init( ) override;
 
       void AcquireMeshRenderersAndMaterial( const std::vector<Entity*>& entities );
-      void AcquireMaterials( );
       void AcquireLights( const std::vector<Entity*>& entities );
+      void AcquireCameras( const std::vector<Entity*>& entities );
 
       void Render( );
       void RenderGBuffer( );
@@ -78,11 +80,13 @@ namespace Mile
       RenderTargetDX11* m_lightBuffer;
       LightBufferPass*  m_lightBufferPass;
       ShadingPass*      m_shadingPass;
+      Quad*             m_screenQuad;
       // \Pre light pass Rendering
 
       // Renderable objects
       std::vector<MeshRenderComponent*> m_meshRenderComponents;
       std::vector<LightComponent*>      m_lightComponents;
+      std::vector<CameraComponent*>     m_cameras;
       MaterialMap                       m_materialMap;
       // \Renderable objects
 
