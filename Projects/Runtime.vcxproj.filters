@@ -318,6 +318,12 @@
     <ClInclude Include="..\Runtime\Component\LightComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\Quad.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Component\CameraComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -444,6 +450,12 @@
       <Filter>Rendering\PreLightPass</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Component\LightComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\Quad.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Component\CameraComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
   </ItemGroup>

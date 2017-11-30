@@ -94,6 +94,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Runtime\Component\CameraComponent.h" />
     <ClInclude Include="..\Runtime\Component\Component.h" />
     <ClInclude Include="..\Runtime\Component\LightComponent.h" />
     <ClInclude Include="..\Runtime\Component\MeshRenderComponent.h" />
@@ -124,6 +125,7 @@
     <ClInclude Include="..\Runtime\Rendering\LightBufferPass.h" />
     <ClInclude Include="..\Runtime\Rendering\Mesh.h" />
     <ClInclude Include="..\Runtime\Rendering\PixelShaderDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\Quad.h" />
     <ClInclude Include="..\Runtime\Rendering\RenderingPass.h" />
     <ClInclude Include="..\Runtime\Rendering\RendererDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\Rendering.h" />
@@ -187,6 +189,7 @@
     <ClInclude Include="..\ThirdParty\json\src\json.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Runtime\Component\CameraComponent.cpp" />
     <ClCompile Include="..\Runtime\Component\Component.cpp" />
     <ClCompile Include="..\Runtime\Component\LightComponent.cpp" />
     <ClCompile Include="..\Runtime\Component\MeshRenderComponent.cpp" />
@@ -212,6 +215,7 @@
     <ClCompile Include="..\Runtime\Rendering\LightBufferPass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Mesh.cpp" />
     <ClCompile Include="..\Runtime\Rendering\PixelShaderDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\Quad.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RendererDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RenderingPass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RenderTargetDX11.cpp" />
