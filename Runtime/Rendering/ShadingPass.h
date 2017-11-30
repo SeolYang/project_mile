@@ -31,6 +31,8 @@ namespace Mile
 
       // To reuse transform constant buffer from GBufferPass
       void AcquireTransformBuffer( GBufferPass* gBufferPass );
+      void UpdateTransformBuffer( const Matrix& world, const Matrix& worldView, const Matrix& worldViewProj );
+      void UpdateMaterialBuffer( const Vector3& specularAlbedo );
 
    private:
       CBufferPtr        m_transformBuffer;

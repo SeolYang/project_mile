@@ -17,6 +17,8 @@ namespace Mile
 
    ShadingPass::~ShadingPass( )
    {
+      // Do not delete transform constant buffer in shading pass destructor.
+      // Because it is acquire from G-Buffer Pass(recycle constant buffer object)
       SafeDelete( m_materialBuffer );
    }
 
@@ -119,6 +121,28 @@ namespace Mile
       if ( gBufferPass != nullptr )
       {
          m_transformBuffer = gBufferPass->GetTransformBuffer( );
+      }
+   }
+
+   void ShadingPass::UpdateTransformBuffer( const Matrix& world, const Matrix& worldView, const Matrix& worldViewProj )
+   {
+      if ( m_transformBuffer != nullptr )
+      {
+         auto buffer = reinterpret_cast< TransformConstantBuffer* >( m_transformBuffer->Map( ) );
+         buffer->m_worldMatrix = world;
+         buffer->m_worldViewMatrix = worldView;
+         buffer->m_worldViewProjMatrix = worldViewProj;
+         m_transformBuffer->UnMap( );
+      }
+   }
+
+   void ShadingPass::UpdateMaterialBuffer( const Vector3& specAlbedo )
+   {
+      if ( m_materialBuffer != nullptr )
+      {
+         auto buffer = reinterpret_cast< MaterialConstantBuffer* >( m_materialBuffer->Map( ) );
+         buffer->SpecularAlbedo = specAlbedo;
+         m_materialBuffer->UnMap( );
       }
    }
 }
