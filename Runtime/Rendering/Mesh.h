@@ -33,7 +33,7 @@ namespace Mile
          }
 
          m_indexBuffer = new IndexBufferDX11( m_renderer );
-         m_indexNum = reinterpret_cast<unsigned int>( indices.size( ) );
+         m_indexNum = static_cast<unsigned int>( indices.size( ) );
          if ( !m_indexBuffer->Init( indices ) )
          {
             SafeDelete( m_indexBuffer );
@@ -41,7 +41,7 @@ namespace Mile
          }
 
          m_vertexBuffer = new VertexBufferDX11( m_renderer );
-         m_vertexNum = reinterpret_cast<unsigned int>( vertices.size( ) );
+         m_vertexNum = static_cast<unsigned int>( vertices.size( ) );
          if ( !m_vertexBuffer->Init<Vertex>( vertices ) )
          {
             SafeDelete( m_vertexBuffer );

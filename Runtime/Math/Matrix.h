@@ -290,7 +290,7 @@ namespace Mile
             0.0f, 0.0f, 0.0f, 1.0f };
       }
 
-      static Matrix CreateTransformMatrix( const Vector3& scale, const Quaternion& rot, const Vector3& position )
+      static Matrix CreateTransformMatrix( const Vector3& position, Vector3& scale, const Quaternion& rot )
       {
          return CreateScale( scale ) * CreateRotation( rot ) * CreateTranslation( position );
       }

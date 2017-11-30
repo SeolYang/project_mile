@@ -16,7 +16,7 @@ namespace Mile
 
    void Transform::ForceUpdateMatrix( )
    {
-      m_localMatrix = Matrix::CreateTransformMatrix( m_scale, m_rotation, m_position );
+      m_localMatrix = Matrix::CreateTransformMatrix( m_position, m_scale, m_rotation );
 
       if ( m_parent != nullptr )
       {
