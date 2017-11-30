@@ -28,9 +28,9 @@ namespace Mile
       // Specular Exponential
       float GetSpecularExp( ) const { return m_specExp; }
       void SetSpecularExp( float specExp ) { m_specExp = specExp; }
-      // Specular Intensity
-      float GetSpecularIntensity( ) const { return m_specIntensity; }
-      void SetSpecularIntensity( float specIntensity ) { m_specIntensity = specIntensity; }
+      // Specular Albedo
+      Vector3 GetSpecularAlbedo( ) const { return m_specAlbedo; }
+      void SetSpecularAlbedo( const Vector3& specAlbedo ) { m_specAlbedo = specAlbedo; }
       // Diffuse map/Texture
       std::weak_ptr<Texture2D> GetDiffuseMap( ) const { return m_diffuseMap; }
       void SetDiffuseMap( std::weak_ptr<Texture2D> diffuseMap ) { m_diffuseMap = diffuseMap; }
