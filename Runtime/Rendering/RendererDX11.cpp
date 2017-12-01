@@ -11,6 +11,7 @@
 #include "Core\Window.h"
 #include "Core\World.h"
 #include "Core\Entity.h"
+#include "Core\Transform.h"
 #include "Math\Vector2.h"
 #include "Component\MeshRenderComponent.h"
 #include "Component\LightComponent.h"
@@ -27,7 +28,8 @@ namespace Mile
       m_depthStencilBuffer( nullptr ), m_bDepthStencilEnabled( true ),
       m_gBuffer( nullptr ), m_gBufferPass( nullptr ),
       m_lightBuffer( nullptr ), m_lightBufferPass( nullptr ),
-      m_shadingPass( nullptr )
+      m_shadingPass( nullptr ),
+      m_mainCamera( nullptr )
    {
    }
 
@@ -274,13 +276,13 @@ namespace Mile
 
          if ( !m_cameras.empty( ) )
          {
+            m_mainCamera = m_cameras[ 0 ];
             // @TODO: Implement Multiple camera rendering
-            // Pre light pass rendering
-            //RenderGBuffer( );
-            //RenderLightBuffer( );
-            //RenderShading( );
+            // light pre pass rendering
+            RenderGBuffer( );
+            RenderLightBuffer( );
+            RenderShading( );
          }
-
       }
 
       Present( );
@@ -290,6 +292,8 @@ namespace Mile
    {
       m_gBuffer->SetDepthStencilBuffer( m_depthStencilBuffer );
       m_gBufferPass->Bind( );
+
+      auto camTransform = m_mainCamera->GetTransform( );
 
       for ( auto batchedMaterial : m_materialMap )
       {
@@ -302,8 +306,20 @@ namespace Mile
          {
             auto transform = meshRenderer->GetEntity( )->GetTransform( );
             auto mesh = meshRenderer->GetMesh( );
-            // @TODO: add camera
-            //m_gBufferPass->UpdateTransformBuffer( transform->GetWorldMatrix( ), );  // per object
+            
+            Matrix world = transform->GetWorldMatrix( );
+            Matrix worldView = world * 
+               Matrix::CreateView( 
+                  camTransform->GetPosition( TransformSpace::World ),
+                  camTransform->GetForward( ) );
+            Matrix worldViewProj = worldView *
+               Matrix::CreatePerspectiveProj(
+                  m_mainCamera->GetFov( ),
+                  m_window->GetAspectRatio( ),
+                  m_mainCamera->GetNearPlane( ),
+                  m_mainCamera->GetFarPlane( ) );
+
+            m_gBufferPass->UpdateTransformBuffer( world, worldView, worldViewProj );  // per object
             mesh->Bind( 0 );
 
             // @TODO: Implement instancing
@@ -352,6 +368,9 @@ namespace Mile
       m_shadingPass->AcquireTransformBuffer( m_gBufferPass );
       m_shadingPass->Bind( );
       SetBackbufferAsRenderTarget( );
+      ClearDepthStencil( );
+
+      auto camTransform = m_mainCamera->GetTransform( );
 
       for ( auto batchedMaterial : m_materialMap )
       {
@@ -363,10 +382,21 @@ namespace Mile
          for ( auto meshRenderer : batchedMaterial.second )
          {
             auto transform = meshRenderer->GetTransform( );
-
             auto mesh = meshRenderer->GetMesh( );
+
+            Matrix world = transform->GetWorldMatrix( );
+            Matrix worldView = world *
+               Matrix::CreateView(
+                  camTransform->GetPosition( TransformSpace::World ),
+                  camTransform->GetForward( ) );
+            Matrix worldViewProj = worldView *
+               Matrix::CreatePerspectiveProj(
+                  m_mainCamera->GetFov( ),
+                  m_window->GetAspectRatio( ),
+                  m_mainCamera->GetNearPlane( ),
+                  m_mainCamera->GetFarPlane( ) );
             // @TODO: add camera
-            //m_gBufferPass->UpdateTransformBuffer( transform->GetWorldMatrix( ), );  // per object
+            m_shadingPass->UpdateTransformBuffer( world, worldView, worldViewProj );  // per object
             mesh->Bind( 0 );
 
             // @TODO: Implement instancing
@@ -388,12 +418,17 @@ namespace Mile
          m_deviceContext->ClearRenderTargetView( m_renderTargetView,
                                                  clearColor );
 
-         if ( m_bDepthStencilEnabled )
-         {
-            m_deviceContext->ClearDepthStencilView(
-               m_depthStencilBuffer->GetDSV( ),
-               D3D11_CLEAR_DEPTH, 1.0f, 0 );
-         }
+         ClearDepthStencil( );
+      }
+   }
+
+   void RendererDX11::ClearDepthStencil( )
+   {
+      if ( m_bDepthStencilEnabled )
+      {
+         m_deviceContext->ClearDepthStencilView(
+            m_depthStencilBuffer->GetDSV( ),
+            D3D11_CLEAR_DEPTH, 1.0f, 0 );
       }
    }
 

@@ -46,6 +46,7 @@ namespace Mile
       void RenderShading( );
 
       void Clear( );
+      void ClearDepthStencil( );
       void Present( );
 
       ID3D11Device* GetDevice( ) { return m_device; }
@@ -86,8 +87,11 @@ namespace Mile
       // Renderable objects
       std::vector<MeshRenderComponent*> m_meshRenderComponents;
       std::vector<LightComponent*>      m_lightComponents;
-      std::vector<CameraComponent*>     m_cameras;
       MaterialMap                       m_materialMap;
+      std::vector<CameraComponent*>     m_cameras;
+
+      CameraComponent*                  m_mainCamera;
+
       // \Renderable objects
 
       bool      m_bDepthStencilEnabled;
