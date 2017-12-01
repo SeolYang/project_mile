@@ -40,7 +40,7 @@
     <Filter Include="ThirdParty\assimp">
       <UniqueIdentifier>{bdda35a3-0e52-49d6-90cd-a9fdc918cd15}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\PreLightPass">
+    <Filter Include="Rendering\LightPrePass">
       <UniqueIdentifier>{7c2fe0e0-1738-4d2a-8131-9079fe36cf50}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -304,16 +304,16 @@
       <Filter>Rendering</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\GBuffer.h">
-      <Filter>Rendering\PreLightPass</Filter>
+      <Filter>Rendering\LightPrePass</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\GBufferPass.h">
-      <Filter>Rendering\PreLightPass</Filter>
+      <Filter>Rendering\LightPrePass</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\LightBufferPass.h">
-      <Filter>Rendering\PreLightPass</Filter>
+      <Filter>Rendering\LightPrePass</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\ShadingPass.h">
-      <Filter>Rendering\PreLightPass</Filter>
+      <Filter>Rendering\LightPrePass</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Component\LightComponent.h">
       <Filter>Components</Filter>
@@ -438,16 +438,16 @@
       <Filter>Rendering</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\GBuffer.cpp">
-      <Filter>Rendering\PreLightPass</Filter>
+      <Filter>Rendering\LightPrePass</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\GBufferPass.cpp">
-      <Filter>Rendering\PreLightPass</Filter>
+      <Filter>Rendering\LightPrePass</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\LightBufferPass.cpp">
-      <Filter>Rendering\PreLightPass</Filter>
+      <Filter>Rendering\LightPrePass</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\ShadingPass.cpp">
-      <Filter>Rendering\PreLightPass</Filter>
+      <Filter>Rendering\LightPrePass</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Component\LightComponent.cpp">
       <Filter>Components</Filter>

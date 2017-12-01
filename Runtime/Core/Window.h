@@ -18,6 +18,7 @@ namespace Mile
       unsigned int GetResWidth( ) const { return m_resWidth; }
       unsigned int GetResHeight( ) const { return m_resHeight; }
       Vector2 GetResolution( ) const { return Vector2( static_cast<float>( m_resWidth ), static_cast<float>( m_resHeight ) ); }
+      float GetAspectRatio( ) const { return ( m_resWidth / static_cast< float >( m_resHeight ) ); }
 
       Float GetRefreshRate( ) const { return m_refreshRate; }
 
