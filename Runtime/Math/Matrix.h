@@ -295,6 +295,33 @@ namespace Mile
          return CreateScale( scale ) * CreateRotation( rot ) * CreateTranslation( position );
       }
 
+      static Matrix CreateView( const Vector3& camPosition, const Vector3& camDirection, const Vector3& up = Vector3::Up )
+      {
+         Vector3 upNor = up.GetNormalized( );
+         Vector3 zAxis = camDirection.GetNormalized( );
+         Vector3 xAxis = ( upNor ^ zAxis ).GetNormalized( );
+         Vector3 yAxis = ( zAxis ^ yAxis ).GetNormalized( );
+
+         return Matrix{
+            xAxis.x, yAxis.x, zAxis.x, 0.0f,
+            xAxis.y, yAxis.y, zAxis.y, 0.0f,
+            xAxis.z, yAxis.z, zAxis.z, 0.0f,
+            -( xAxis | camPosition ), -( yAxis | camPosition ), -( zAxis | camPosition ), 1.0f };
+      }
+
+      static Matrix CreatePerspectiveProj( float degreeFov, float aspectRatio, float nearPlane, float farPlane )
+      {
+         float height = ( 1.0f / std::tanf( Math::DegreeToRadian( degreeFov ) ) );
+         float width = height / aspectRatio;
+         float range = farPlane / ( farPlane - nearPlane );
+
+         return Matrix{
+            width,   0.0f, 0.0f, 0.0f,
+            0.0f, height,  0.0f, 0.0f,
+            0.0f, 0.0f, range,   1.0f,
+            0.0f, 0.0f, -range * nearPlane,  0.0f };
+      }
+
    public:
       float m11, m12, m13, m14;
       float m21, m22, m23, m24;
