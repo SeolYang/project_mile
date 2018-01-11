@@ -20,7 +20,7 @@ namespace Mile
       virtual ShaderType GetShaderType( ) const override { return ShaderType::VertexShader; }
 
    private:
-      std::vector<D3D11_INPUT_ELEMENT_DESC>&& Reflect( ) const;
+      std::vector<D3D11_INPUT_ELEMENT_DESC> Reflect( ) const;
 
    private:
       ID3D11VertexShader*  m_shader;

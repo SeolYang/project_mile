@@ -11,6 +11,8 @@ namespace Mile
    public:
       Mesh( RendererDX11* renderer, const std::string& name, const String& modelPath) :
          m_name( name ),
+         m_vertexBuffer( nullptr ),
+         m_indexBuffer( nullptr ),
          m_vertexNum( 0 ),
          m_indexNum( 0 ),
          m_modelPath( modelPath ),

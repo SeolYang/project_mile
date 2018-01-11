@@ -98,7 +98,7 @@ namespace Mile
       return m_entities;
    }
 
-   std::vector<Entity*>&& World::GetRootEntities( )
+   std::vector<Entity*> World::GetRootEntities( )
    {
       std::vector<Entity*> rootEntities{ };
       for ( auto entity : m_entities )
@@ -109,7 +109,7 @@ namespace Mile
          }
       }
 
-      return std::move( rootEntities );
+      return rootEntities;
    }
 
    bool World::LoadFrom( const String& filePath )

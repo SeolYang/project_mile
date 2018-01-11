@@ -55,7 +55,7 @@ namespace Mile
         /**
         * @brief    World에 생성되어있는 Entity 중 Root Entitiy들의 배열을 반환합니다.
         */
-        std::vector<Entity*>&& GetRootEntities( );
+        std::vector<Entity*> GetRootEntities( );
 
         bool LoadFrom( const String& filePath );
         bool SaveTo( const String& filePath );
