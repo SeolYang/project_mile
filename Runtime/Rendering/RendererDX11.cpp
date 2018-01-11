@@ -269,6 +269,8 @@ namespace Mile
       if ( world != nullptr )
       {
          auto entities = world->GetEntities( );
+
+         // @TODO: Multi-threaded resource acquire
          // Acquire necessarry informations
          AcquireMeshRenderersAndMaterial( entities );
          AcquireLights( entities );
@@ -276,8 +278,12 @@ namespace Mile
 
          if ( !m_cameras.empty( ) )
          {
-            m_mainCamera = m_cameras[ 0 ];
             // @TODO: Implement Multiple camera rendering
+            m_mainCamera = m_cameras[ 0 ];
+
+
+            // @TODO: Set Viewport
+
             // light pre pass rendering
             RenderGBuffer( );
             RenderLightBuffer( );
