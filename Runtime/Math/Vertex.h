@@ -17,6 +17,16 @@ namespace Mile
    /*
    * @ Vector4(float4) : POSITION
    * @ Vector2(float2) : TEXCOORD0
+   **/
+   struct MEAPI alignas( 16 ) VertexPosTex
+   {
+      Vector4 Position;
+      Vector2 TexCoord;
+   };
+
+   /*
+   * @ Vector4(float4) : POSITION
+   * @ Vector2(float2) : TEXCOORD0
    * @ Vector3(float3) : NORMAL
    **/
    struct MEAPI alignas( 16 ) VertexPosTexNormal
