@@ -73,6 +73,14 @@
       <AdditionalDependencies>assimp-vc140-mt_d.lib;zlib_d.lib;libpng_d.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\Binaries\$(Configuration)\;..\ThirdParty\zlib\libs;..\ThirdParty\libpng\libs;..\ThirdParty\assimp\lib</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>copy "..\ThirdParty\libpng\dlls\Debug" "..\Binaries\$(Configuration)\";
+copy "..\ThirdParty\assimp\dlls\Debug" "..\Binaries\$(Configuration)\";
+copy "..\ThirdParty\zlib\dlls\Debug" "..\Binaries\$(Configuration)\";</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copy Third Party dlls</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -92,6 +100,14 @@
       <AdditionalDependencies>assimp-vc140-mt.lib;zlib.lib;libpng.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\Binaries\$(Configuration)\;..\ThirdParty\zlib\libs;..\ThirdParty\libpng\libs;..\ThirdParty\assimp\lib</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>copy "..\ThirdParty\libpng\dlls\Release" "..\Binaries\$(Configuration)\";
+copy "..\ThirdParty\assimp\dlls\Release" "..\Binaries\$(Configuration)\";
+copy "..\ThirdParty\zlib\dlls\Release" "..\Binaries\$(Configuration)\";</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copy Third Party dlls</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Component\CameraComponent.h" />
