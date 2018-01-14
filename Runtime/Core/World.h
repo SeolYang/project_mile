@@ -63,7 +63,7 @@ namespace Mile
 
     private:
         std::vector<Entity*> m_entities;
-        std::weak_ptr<PlainText<std::string>> m_loadedData;
+        PlainText<std::string>* m_loadedData;
 
     };
 }

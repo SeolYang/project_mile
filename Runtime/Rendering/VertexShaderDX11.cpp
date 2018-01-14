@@ -73,7 +73,7 @@ namespace Mile
       }
    }
 
-   std::vector<D3D11_INPUT_ELEMENT_DESC>&& VertexShaderDX11::Reflect( ) const
+   std::vector<D3D11_INPUT_ELEMENT_DESC> VertexShaderDX11::Reflect( ) const
    {
       auto inputLayoutDescs = std::vector<D3D11_INPUT_ELEMENT_DESC>( );
       ID3D11ShaderReflection* vsReflection = nullptr;

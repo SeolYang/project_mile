@@ -36,6 +36,7 @@ namespace Mile
       String GetFolder( ) const { return m_folder; }
       String GetPath( ) const { return m_path; }
       String GetExt( ) const { return m_ext; }
+      unsigned int GetID( ) const { return m_id; }
 
       static String GetFileNameFromPath( const String& filePath );
       static String GetFolderFromPath( const String& filePath );
@@ -48,11 +49,14 @@ namespace Mile
       String     m_folder;
       String     m_ext;
       ResourceType    m_resourceType;
+      unsigned int m_id;
 
       bool       m_bIsInitialized;
 
+   private:
+      static unsigned int ResCount;
+
    };
 
-   using ResourcePtr = std::shared_ptr<Resource>;
-   using WeakResourcePtr = std::weak_ptr<Resource>;
+   using ResourcePtr = Resource* ;
 }

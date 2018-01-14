@@ -4,14 +4,17 @@
 
 namespace Mile
 {
+   unsigned int Resource::ResCount = 0;
    Resource::Resource( Context* context, const String& path, ResourceType resourceType ) :
       m_context( context ),
       m_path( path ),
       m_name( GetFileNameFromPath( path ) ),
       m_ext( GetFileExtensionFromPath( m_path ) ),
       m_folder( GetFolderFromPath( path ) ),
-      m_resourceType( resourceType )
+      m_resourceType( resourceType ),
+      m_id( ResCount )
    {
+      ++ResCount;
       std::transform( m_ext.begin( ), m_ext.end( ), m_ext.begin( ), ::towlower );
    }
 

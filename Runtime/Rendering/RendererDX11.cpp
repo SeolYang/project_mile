@@ -218,11 +218,11 @@ namespace Mile
             if ( entity->IsActive( ) && meshRenderComponent->IsActive( ) )
             {
                auto material = meshRenderComponent->GetMaterial( );
-               if ( !material.expired( ) )
+               if ( material != nullptr )
                {
                   // Material Batching
                   m_meshRenderComponents.push_back( meshRenderComponent );
-                  m_materialMap[ material._Get( ) ].push_back( meshRenderComponent );
+                  m_materialMap[ material ].push_back( meshRenderComponent );
                }
             }
          }
@@ -306,7 +306,7 @@ namespace Mile
          auto material = batchedMaterial.first;
          auto normalTexture = material->GetNormalMap( );
          m_gBufferPass->UpdateMaterialBuffer( material->GetSpecularExp( ) ); // per material
-         m_gBufferPass->UpdateNormalTexture( normalTexture._Get( )->GetRawTexture( ) ); // per material
+         m_gBufferPass->UpdateNormalTexture( normalTexture->GetRawTexture( ) ); // per material
 
          for ( auto meshRenderer : batchedMaterial.second )
          {
@@ -383,7 +383,7 @@ namespace Mile
          auto material = batchedMaterial.first;
          auto diffuseTexture = material->GetDiffuseMap( );
          m_shadingPass->UpdateMaterialBuffer( material->GetSpecularAlbedo( ) );
-         m_shadingPass->UpdateDiffuseTexture( diffuseTexture._Get( )->GetRawTexture( ) );
+         m_shadingPass->UpdateDiffuseTexture( diffuseTexture->GetRawTexture( ) );
 
          for ( auto meshRenderer : batchedMaterial.second )
          {

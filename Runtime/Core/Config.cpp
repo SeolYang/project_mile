@@ -45,11 +45,11 @@ namespace Mile
          auto resManager = m_context->GetSubSystem<ResourceManager>( );
          auto text = resManager->Load<PlainText<>>( GetPathFromName( configName ) );
          
-         if ( !text.expired( ) )
+         if ( text != nullptr )
          {
             m_configs.push_back( std::make_pair(
                configName,
-               json::parse( WString2String( text._Get( )->GetData( ) ) ) ) );
+               json::parse( WString2String( text->GetData( ) ) ) ) );
 
             return true;
          }
@@ -86,10 +86,9 @@ namespace Mile
          Config& config = GetConfig( configName );
          auto resManager = m_context->GetSubSystem<ResourceManager>( );
          auto plainText = resManager->Load<PlainText<>>( GetPathFromName( configName ) );
-         auto plainTextRawPtr = plainText._Get( );
          auto dumpData = config.second.dump( );
-         plainTextRawPtr->SetData( String2WString( dumpData ) );
-         return plainTextRawPtr->Save( );
+         plainText->SetData( String2WString( dumpData ) );
+         return plainText->Save( );
       }
 
       return false;
@@ -101,10 +100,9 @@ namespace Mile
       for ( auto& config : m_configs )
       {
          auto plainText = resManager->Load<PlainText<>>( GetPathFromName( config.first ) );
-         auto plainTextRawPtr = plainText._Get( );
          auto dumpData = config.second.dump( );
-         plainTextRawPtr->SetData( String2WString( dumpData ) );
-         plainTextRawPtr->Save( );
+         plainText->SetData( String2WString( dumpData ) );
+         plainText->Save( );
       }
    }
 

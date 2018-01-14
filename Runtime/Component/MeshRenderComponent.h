@@ -13,6 +13,7 @@ namespace Mile
    public:
       MeshRenderComponent( Entity* entity ) : 
          m_mesh( nullptr ),
+         m_material( nullptr ),
          Component( entity )
       {
       }
@@ -23,12 +24,12 @@ namespace Mile
       void SetMesh( Mesh* mesh ) { m_mesh = mesh; }
       Mesh* GetMesh( ) const { return m_mesh; }
 
-      void SetMaterial( std::weak_ptr<Material> material ) { m_material = material; }
-      std::weak_ptr<Material> GetMaterial( ) const { return m_material; }
+      void SetMaterial( Material* material ) { m_material = material; }
+      Material*  GetMaterial( ) const { return m_material; }
 
    private:
       Mesh*                   m_mesh;
-      std::weak_ptr<Material> m_material;
+      Material*               m_material;
 
    };
 }

@@ -116,43 +116,43 @@ namespace Mile
    {
       auto resMng = m_context->GetSubSystem<ResourceManager>( );
       auto res = resMng->Create<PlainText<std::string>>( filePath );
-      if ( res.expired( ) )
+      if ( res != nullptr )
       {
-         return false;
+         this->m_loadedData = res;
+         this->DeSerialize( json::parse( res->GetData( ) ) );
+         return true;
       }
 
-      this->m_loadedData = res;
-      this->DeSerialize( json::parse( res.lock( )->GetData( ) ) );
-      return true;
+      return false;
    }
 
    bool World::SaveTo( const String& filePath )
    {
       auto resMng = m_context->GetSubSystem<ResourceManager>( );
       auto res = resMng->GetByPath<PlainText<std::string>>( filePath );
-      if ( res.expired( ) )
+
+      if ( res == nullptr )
       {
          res = resMng->Create<PlainText<std::string>>( filePath );
-         if ( res.expired( ) )
-         {
-            return false;
-         }
       }
 
-      auto resPtr = res.lock( );
-      resPtr->SetData( this->Serialize( ) );
-      return resPtr->Save( );
+      if ( res != nullptr )
+      {
+         res->SetData( this->Serialize( ) );
+         return res->Save( );
+      }
+
+      return false;
    }
 
    bool World::Save( )
    {
-      if ( m_loadedData.expired( ) )
+      if ( m_loadedData != nullptr )
       {
-         return false;
+         m_loadedData->SetData( this->Serialize( ) );
+         return m_loadedData->Save( );
       }
 
-      auto rawPtr = m_loadedData._Get( );
-      rawPtr->SetData( this->Serialize( ) );
-      return rawPtr->Save( );
+      return false;
    }
 }

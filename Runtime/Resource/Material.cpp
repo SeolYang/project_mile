@@ -42,15 +42,15 @@ namespace Mile
    bool Material::SaveTo( const String& filePath )
    {
       std::string diffuseMapPath = "\"None\"";
-      if ( !m_diffuseMap.expired( ) )
+      if ( m_diffuseMap != nullptr )
       {
-         diffuseMapPath = "\"" + WString2String( m_diffuseMap._Get( )->GetPath( ) ) + "\"";
+         diffuseMapPath = "\"" + WString2String( m_diffuseMap->GetPath( ) ) + "\"";
       }
 
       std::string normalMapPath = "\"None\"";
-      if ( !m_normalMap.expired( ) )
+      if ( m_normalMap != nullptr )
       {
-         normalMapPath = "\"" + WString2String( m_normalMap._Get( )->GetPath( ) ) + "\"";
+         normalMapPath = "\"" + WString2String( m_normalMap->GetPath( ) ) + "\"";
       }
 
       std::string res = "{ \"SpecExp\": " + std::to_string( m_specExp ) +

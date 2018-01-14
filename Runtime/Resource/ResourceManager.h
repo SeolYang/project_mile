@@ -14,47 +14,47 @@ namespace Mile
         virtual bool Init( ) override;
 
         template < typename Ty >
-        std::weak_ptr<Ty> Load( const String& relativePath )
+        Ty* Load( const String& relativePath )
         {
             if ( m_cache->HasByPath( relativePath ) )
             {
                 return GetByPath<Ty>( relativePath );
             }
 
-            auto newResource = std::make_shared<Ty>( m_context, relativePath );
+            auto newResource = new Ty( m_context, relativePath );
             if ( newResource->Init( ) )
             {
-                m_cache->Add( std::dynamic_pointer_cast< Resource >( newResource ) );
+                m_cache->Add( static_cast< ResourcePtr >( newResource ) );
                 return newResource;
             }
 
-            return std::weak_ptr<Ty>( );
+            return nullptr;
         }
 
         template < typename Ty >
-        std::weak_ptr<Ty> GetByPath( const String& filePath )
+        Ty* GetByPath( const String& filePath )
         {
             if ( m_cache->HasByPath( filePath ) )
             {
-                return std::dynamic_pointer_cast< Ty >( m_cache->GetByPath( filePath ) );
+                return static_cast< Ty* >( m_cache->GetByPath( filePath ) );
             }
 
-            return std::weak_ptr<Ty>( );
+            return nullptr;
         }
 
         template < typename Ty >
-        std::weak_ptr<Ty> GetByName( const String& name )
+        Ty* GetByName( const String& name )
         {
             if ( m_cache->HasByName( relativePath ) )
             {
-                return std::dynamic_pointer_cast< Ty >( m_cache->GetByName( name ) );
+               return static_cast< Ty* >( m_cache->GetByName( name ) );
             }
 
-            return std::weak_ptr<Ty>( );
+            return nullptr;
         }
 
         template < typename Ty >
-        std::weak_ptr<Ty> Create( const String& relativePath )
+        Ty* Create( const String& relativePath )
         {
            if ( m_cache->HasByPath( relativePath ) )
            {
@@ -62,21 +62,19 @@ namespace Mile
            }
 
            auto res = Load<Ty>( relativePath );
-           if ( res.expired( ) )
-           {
-              auto newResource = std::make_shared<Ty>( m_context, relativePath );
-              if ( newResource->Save( ) )
-              {
-                 m_cache->Add( std::dynamic_pointer_cast< Resource >( newResource ) );
-                 return newResource;
-              }
-           }
-           else
+           if ( res != nullptr )
            {
               return res;
            }
+
+           auto newResource = new Ty( m_context, relativePath );
+           if ( newResource->Save( ) )
+           {
+              m_cache->Add( static_cast< Resource* >( newResource ) );
+              return newResource;
+           }
            
-           return std::weak_ptr<Ty>( );
+           return nullptr;
         }
 
         void ClearCache( );

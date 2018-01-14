@@ -18,6 +18,8 @@ namespace Mile
       Material( Context* context, const String& filePath ) :
          m_specExp( 1.0f ),
          m_specAlbedo( Vector3( ) ),
+         m_diffuseMap( nullptr ),
+         m_normalMap( nullptr ),
          Resource( context, filePath, ResourceType::RT_Material )
       {
       }
@@ -32,17 +34,17 @@ namespace Mile
       Vector3 GetSpecularAlbedo( ) const { return m_specAlbedo; }
       void SetSpecularAlbedo( const Vector3& specAlbedo ) { m_specAlbedo = specAlbedo; }
       // Diffuse map/Texture
-      std::weak_ptr<Texture2D> GetDiffuseMap( ) const { return m_diffuseMap; }
-      void SetDiffuseMap( std::weak_ptr<Texture2D> diffuseMap ) { m_diffuseMap = diffuseMap; }
+      Texture2D* GetDiffuseMap( ) const { return m_diffuseMap; }
+      void SetDiffuseMap( Texture2D* diffuseMap ) { m_diffuseMap = diffuseMap; }
       // Normal map/Texture
-      std::weak_ptr<Texture2D> GetNormalMap( ) const { return m_normalMap; }
-      void SetNormalMap( std::weak_ptr<Texture2D> normalMap ) { m_normalMap = normalMap; }
+      Texture2D* GetNormalMap( ) const { return m_normalMap; }
+      void SetNormalMap( Texture2D* normalMap ) { m_normalMap = normalMap; }
 
    private:
       float                      m_specExp;
       Vector3                    m_specAlbedo;
-      std::weak_ptr<Texture2D>   m_diffuseMap;
-      std::weak_ptr<Texture2D>   m_normalMap;
+      Texture2D*                 m_diffuseMap;
+      Texture2D*                 m_normalMap;
 
    };
 }

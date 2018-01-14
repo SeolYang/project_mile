@@ -140,10 +140,10 @@
     <ClInclude Include="..\Runtime\Resource\Material.h" />
     <ClInclude Include="..\Runtime\Resource\Model.h" />
     <ClInclude Include="..\Runtime\Resource\ModelLoader.h" />
+    <ClInclude Include="..\Runtime\Resource\PlainText.h" />
     <ClInclude Include="..\Runtime\Resource\Resource.h" />
     <ClInclude Include="..\Runtime\Resource\ResourceCache.h" />
     <ClInclude Include="..\Runtime\Resource\ResourceManager.h" />
-    <ClInclude Include="..\Runtime\Resource\PlainText.h" />
     <ClInclude Include="..\Runtime\Resource\Texture2D.h" />
     <ClInclude Include="..\Runtime\Resource\TextureLoader.h" />
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\ai_assert.h" />

@@ -16,9 +16,6 @@
     <Filter Include="EventSystem">
       <UniqueIdentifier>{41ebf61a-c65f-4cdf-b618-787f880bcbee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource">
-      <UniqueIdentifier>{c009a5a2-f10c-4e42-b419-f6dd1a3087ae}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ThirdParty">
       <UniqueIdentifier>{5406f72d-f47b-4710-88b6-111d3153388c}</UniqueIdentifier>
     </Filter>
@@ -43,6 +40,9 @@
     <Filter Include="Rendering\LightPrePass">
       <UniqueIdentifier>{7c2fe0e0-1738-4d2a-8131-9079fe36cf50}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{59186037-5e12-4276-ad89-04ba5e35c69f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Core\Context.h">
@@ -62,15 +62,6 @@
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\World.h">
       <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Resource\Resource.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Resource\ResourceManager.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Resource\ResourceCache.h">
-      <Filter>Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Math\Vector3.h">
       <Filter>Math</Filter>
@@ -107,9 +98,6 @@
     </ClInclude>
     <ClInclude Include="..\ThirdParty\json\src\json.hpp">
       <Filter>ThirdParty\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Resource\PlainText.h">
-      <Filter>Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\Texture2dDX11.h">
       <Filter>Rendering\Textures</Filter>
@@ -155,15 +143,6 @@
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\ComponentRegister.h">
       <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Resource\Texture2D.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Resource\TextureLoader.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Resource\Model.h">
-      <Filter>Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\Mesh.h">
       <Filter>Rendering</Filter>
@@ -288,17 +267,11 @@
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\port\AndroidJNI\AndroidJNIIOSystem.h">
       <Filter>ThirdParty\assimp</Filter>
     </ClInclude>
-    <ClInclude Include="..\Runtime\Resource\ModelLoader.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h">
       <Filter>Rendering\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Component\MeshRenderComponent.h">
       <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Resource\Material.h">
-      <Filter>Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\RenderingPass.h">
       <Filter>Rendering</Filter>
@@ -324,6 +297,33 @@
     <ClInclude Include="..\Runtime\Component\CameraComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\ModelLoader.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\PlainText.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\Resource.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\ResourceCache.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\ResourceManager.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\Texture2D.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\TextureLoader.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\Material.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\Model.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -340,15 +340,6 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Component\Component.cpp">
       <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Resource\Resource.cpp">
-      <Filter>Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Resource\ResourceManager.cpp">
-      <Filter>Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Resource\ResourceCache.cpp">
-      <Filter>Resource</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Math\Vector3.cpp">
       <Filter>Math</Filter>
@@ -367,9 +358,6 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Core\Config.cpp">
       <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Resource\PlainText.cpp">
-      <Filter>Resource</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\RendererDX11.cpp">
       <Filter>Rendering</Filter>
@@ -410,18 +398,6 @@
     <ClCompile Include="..\Runtime\Core\ComponentRegister.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Resource\Texture2D.cpp">
-      <Filter>Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Resource\TextureLoader.cpp">
-      <Filter>Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Resource\Model.cpp">
-      <Filter>Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Resource\ModelLoader.cpp">
-      <Filter>Resource</Filter>
-    </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\Mesh.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
@@ -430,9 +406,6 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Component\MeshRenderComponent.cpp">
       <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Resource\Material.cpp">
-      <Filter>Resource</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\RenderingPass.cpp">
       <Filter>Rendering</Filter>
@@ -457,6 +430,33 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Component\CameraComponent.cpp">
       <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Resource\PlainText.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Resource\Resource.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Resource\ResourceCache.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Resource\ResourceManager.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Resource\Texture2D.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Resource\TextureLoader.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Resource\Material.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Resource\Model.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Resource\ModelLoader.cpp">
+      <Filter>Resource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

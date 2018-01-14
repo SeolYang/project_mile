@@ -17,7 +17,7 @@ namespace Mile
       std::string res = "{ " + Component::Serialize( ) +
          ", \"Mesh\": { \"Model\": \"" + WString2String( m_mesh->GetModelPath( ) ) + 
          "\", \"Name\": \"" + m_mesh->GetName( ) + "\" }, "
-         " \"Material\": \"" + WString2String( m_material._Get( )->GetPath( ) ) + "\" }";
+         " \"Material\": \"" + WString2String( m_material->GetPath( ) ) + "\" }";
       return res;
    }
 
@@ -27,19 +27,18 @@ namespace Mile
       auto resMng = m_entity->GetContext( )->GetSubSystem<ResourceManager>( );
       json meshData = jsonData[ "Mesh" ];
       auto loadedModel = resMng->Load<Model>( String2WString( meshData[ "Model" ] ) );
-      if ( loadedModel.expired( ) )
+      if ( loadedModel != nullptr )
       {
-         return;
-      }
-      m_mesh = loadedModel._Get( )->GetMeshByName( meshData[ "Name" ] );
+         m_mesh = loadedModel->GetMeshByName( meshData[ "Name" ] );
 
-      m_material = resMng->Load<Material>( String2WString( jsonData[ "Material" ] ) );
-      // Begin
-      //json meshData = jsonData[ "Mesh" ];
-      //meshData["Model"] -> Resource Load
-      // m_mesh = LoadedModel->GetMeshByName( meshData["Name"] )
-      //jsonData[ "Material" ] -> Resource Load
-      // m_material = LoadedMaterial
-      // End
+         m_material = resMng->Load<Material>( String2WString( jsonData[ "Material" ] ) );
+         // Begin
+         //json meshData = jsonData[ "Mesh" ];
+         //meshData["Model"] -> Resource Load
+         // m_mesh = LoadedModel->GetMeshByName( meshData["Name"] )
+         //jsonData[ "Material" ] -> Resource Load
+         // m_material = LoadedMaterial
+         // End
+      }
    }
 }
