@@ -78,7 +78,7 @@ namespace Mile
       auto inputLayoutDescs = std::vector<D3D11_INPUT_ELEMENT_DESC>( );
       ID3D11ShaderReflection* vsReflection = nullptr;
       auto result = D3DReflect( m_blob->GetBufferPointer( ), m_blob->GetBufferSize( ),
-                                IID_ID3D11ShaderReflection, ( void** )( &m_shader ) );
+                                IID_ID3D11ShaderReflection, ( void** )( &vsReflection ) );
 
       if ( FAILED( result ) )
       {
