@@ -43,6 +43,12 @@
     <Filter Include="Resource">
       <UniqueIdentifier>{59186037-5e12-4276-ad89-04ba5e35c69f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ThirdParty\zlib">
+      <UniqueIdentifier>{ffd86714-8c1b-48fb-bb52-3217461516c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\libpng">
+      <UniqueIdentifier>{6fc24fcb-976f-4e28-876e-32905fc8521a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Core\Context.h">
@@ -323,6 +329,21 @@
     </ClInclude>
     <ClInclude Include="..\Runtime\Resource\Model.h">
       <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\libpng\include\png.h">
+      <Filter>ThirdParty\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\libpng\include\pngconf.h">
+      <Filter>ThirdParty\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\libpng\include\pnglibconf.h">
+      <Filter>ThirdParty\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\zlib\include\zconf.h">
+      <Filter>ThirdParty\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\zlib\include\zlib.h">
+      <Filter>ThirdParty\zlib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
