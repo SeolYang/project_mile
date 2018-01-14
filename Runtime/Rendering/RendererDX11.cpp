@@ -82,7 +82,7 @@ namespace Mile
       m_gBuffer->SetDepthStencilBuffer( m_depthStencilBuffer );
 
       m_gBufferPass = new GBufferPass( this );
-      if ( !m_gBufferPass->Init( TEXT( "Shaders/GBuffer.hlsl" ) ) )
+      if ( !m_gBufferPass->Init( TEXT( "Contents/Shaders/GBuffer.hlsl" ) ) )
       {
          return false;
       }
@@ -97,7 +97,7 @@ namespace Mile
       }
 
       m_lightBufferPass = new LightBufferPass( this );
-      if ( !m_lightBufferPass->Init( TEXT( "Shaders/LightBuffer.hlsl" ) ) )
+      if ( !m_lightBufferPass->Init( TEXT( "Contents/Shaders/LightBuffer.hlsl" ) ) )
       {
          return false;
       }
@@ -105,7 +105,7 @@ namespace Mile
       m_lightBufferPass->SetLightBuffer( m_lightBuffer );
 
       m_shadingPass = new ShadingPass( this );
-      if ( !m_shadingPass->Init( TEXT( "Shaders/Shading.hlsl" ) ) )
+      if ( !m_shadingPass->Init( TEXT( "Contents/Shaders/Shading.hlsl" ) ) )
       {
          return false;
       }

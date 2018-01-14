@@ -49,6 +49,9 @@
     <Filter Include="ThirdParty\libpng">
       <UniqueIdentifier>{6fc24fcb-976f-4e28-876e-32905fc8521a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{776385f7-c74f-4647-8275-8c2537b0f97d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Core\Context.h">
@@ -508,5 +511,16 @@
     <None Include="..\ThirdParty\assimp\include\assimp\config.h">
       <Filter>ThirdParty\assimp</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Contents\Shaders\GBuffer.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\LightBuffer.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\Shading.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

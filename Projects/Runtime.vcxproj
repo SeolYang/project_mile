@@ -266,6 +266,17 @@ copy "..\ThirdParty\zlib\dlls\Release" "..\Binaries\$(Configuration)\";</Command
     <None Include="..\ThirdParty\assimp\include\assimp\vector2.inl" />
     <None Include="..\ThirdParty\assimp\include\assimp\vector3.inl" />
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Contents\Shaders\GBuffer.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\LightBuffer.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\Shading.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
