@@ -8,6 +8,7 @@ namespace Mile
 {
    LightBufferPass::LightBufferPass( RendererDX11* renderer ) :
       m_lightBuffer( nullptr ),
+      m_lightParamBuffer( nullptr ),
       m_cameraBuffer( nullptr ),
       m_gBuffer( nullptr ),
       RenderingPass( renderer )

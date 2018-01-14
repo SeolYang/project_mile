@@ -33,7 +33,7 @@ namespace Mile
    protected:
       virtual bool Compile( const String& shaderPath, ShaderType shaderType ) final
       {
-         if ( !m_bIsCompiled || m_renderer == nullptr )
+         if ( m_bIsCompiled || m_renderer == nullptr )
          {
             return false;
          }
