@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Rendering.h"
+#include "Viewport.h"
 
 namespace Mile
 {
@@ -27,6 +28,7 @@ namespace Mile
    class LightComponent;
    class CameraComponent;
    class Material;
+   class RasterizerState;
    class MEAPI RendererDX11 : public SubSystem
    {
       using MaterialMap = std::map<Material*, std::vector<MeshRenderComponent*>>;
@@ -91,11 +93,16 @@ namespace Mile
       std::vector<CameraComponent*>     m_cameras;
 
       CameraComponent*                  m_mainCamera;
-
       // \Renderable objects
 
       bool      m_bDepthStencilEnabled;
       Vector4   m_clearColor;
+
+      // @TODO: Multiple Viewports
+      Viewport*  m_viewport;
+
+      // Rasterizer State
+      RasterizerState*   m_defaultState;
 
    };
 }

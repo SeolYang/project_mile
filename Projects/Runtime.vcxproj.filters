@@ -348,6 +348,12 @@
     <ClInclude Include="..\ThirdParty\zlib\include\zlib.h">
       <Filter>ThirdParty\zlib</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\Viewport.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\RasterizerState.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -481,6 +487,12 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Resource\ModelLoader.cpp">
       <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\Viewport.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\RasterizerState.cpp">
+      <Filter>Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

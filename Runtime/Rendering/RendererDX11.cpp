@@ -7,6 +7,7 @@
 #include "GBufferPass.h"
 #include "LightBufferPass.h"
 #include "ShadingPass.h"
+#include "RasterizerState.h"
 #include "Core\Context.h"
 #include "Core\Window.h"
 #include "Core\World.h"
@@ -29,12 +30,16 @@ namespace Mile
       m_gBuffer( nullptr ), m_gBufferPass( nullptr ),
       m_lightBuffer( nullptr ), m_lightBufferPass( nullptr ),
       m_shadingPass( nullptr ),
-      m_mainCamera( nullptr )
+      m_mainCamera( nullptr ),
+      m_viewport( nullptr ),
+      m_defaultState( nullptr )
    {
    }
 
    RendererDX11::~RendererDX11( )
    {
+      SafeDelete( m_viewport );
+      SafeDelete( m_defaultState );
       SafeDelete( m_screenQuad );
       SafeDelete( m_shadingPass );
       SafeDelete( m_lightBufferPass );
@@ -68,6 +73,17 @@ namespace Mile
 
       m_screenQuad = new Quad( this );
       if ( !m_screenQuad->Init( 0.0f, 0.0f, screenRes.x, screenRes.y ) )
+      {
+         return false;
+      }
+
+      // @TODO: Multiple viewports
+      m_viewport = new Viewport( this );
+      m_viewport->SetWidth( screenRes.x );
+      m_viewport->SetHeight( screenRes.y );
+
+      m_defaultState = new RasterizerState( this );
+      if ( !m_defaultState->Init( ) )
       {
          return false;
       }
@@ -281,8 +297,8 @@ namespace Mile
             // @TODO: Implement Multiple camera rendering
             m_mainCamera = m_cameras[ 0 ];
 
-
-            // @TODO: Set Viewport
+            m_viewport->Bind( );
+            m_defaultState->Bind( );
 
             // light pre pass rendering
             RenderGBuffer( );

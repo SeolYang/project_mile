@@ -142,6 +142,7 @@ copy "..\ThirdParty\zlib\dlls\Release" "..\Binaries\$(Configuration)\";</Command
     <ClInclude Include="..\Runtime\Rendering\Mesh.h" />
     <ClInclude Include="..\Runtime\Rendering\PixelShaderDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\Quad.h" />
+    <ClInclude Include="..\Runtime\Rendering\RasterizerState.h" />
     <ClInclude Include="..\Runtime\Rendering\RenderingPass.h" />
     <ClInclude Include="..\Runtime\Rendering\RendererDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\Rendering.h" />
@@ -153,6 +154,7 @@ copy "..\ThirdParty\zlib\dlls\Release" "..\Binaries\$(Configuration)\";</Command
     <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\VertexShaderDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\SamplerDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\Viewport.h" />
     <ClInclude Include="..\Runtime\Resource\Material.h" />
     <ClInclude Include="..\Runtime\Resource\Model.h" />
     <ClInclude Include="..\Runtime\Resource\ModelLoader.h" />
@@ -237,6 +239,7 @@ copy "..\ThirdParty\zlib\dlls\Release" "..\Binaries\$(Configuration)\";</Command
     <ClCompile Include="..\Runtime\Rendering\Mesh.cpp" />
     <ClCompile Include="..\Runtime\Rendering\PixelShaderDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Quad.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\RasterizerState.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RendererDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RenderingPass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RenderTargetDX11.cpp" />
@@ -245,6 +248,7 @@ copy "..\ThirdParty\zlib\dlls\Release" "..\Binaries\$(Configuration)\";</Command
     <ClCompile Include="..\Runtime\Rendering\Texture2dDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\VertexBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\VertexShaderDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\Viewport.cpp" />
     <ClCompile Include="..\Runtime\Resource\Material.cpp" />
     <ClCompile Include="..\Runtime\Resource\Model.cpp" />
     <ClCompile Include="..\Runtime\Resource\ModelLoader.cpp" />
