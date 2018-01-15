@@ -2,7 +2,7 @@
     "Title": "Engine",
     "PosX": 500,
     "PosY": 500,
-    "ResolutionWidth": 480,
-    "ResolutionHeight": 320,
+    "ResolutionWidth": 1280,
+    "ResolutionHeight": 720,
     "World": "Contents/Worlds/Test.json"
 }
