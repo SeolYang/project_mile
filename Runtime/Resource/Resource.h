@@ -38,7 +38,7 @@ namespace Mile
       String GetExt( ) const { return m_ext; }
       unsigned int GetID( ) const { return m_id; }
 
-      static String GetFileNameFromPath( const String& filePath );
+      static String GetFileNameFromPath( const String& filePath, bool includeExt = false );
       static String GetFolderFromPath( const String& filePath );
       static String GetFileExtensionFromPath( const String& filePath );
 

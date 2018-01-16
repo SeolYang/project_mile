@@ -18,9 +18,14 @@ namespace Mile
       std::transform( m_ext.begin( ), m_ext.end( ), m_ext.begin( ), ::towlower );
    }
 
-   String Resource::GetFileNameFromPath( const String& filePath )
+   String Resource::GetFileNameFromPath( const String& filePath, bool includeExt )
    {
       auto splitPath = SplitStr( filePath, '/' );
+      if ( includeExt )
+      {
+         return splitPath[ splitPath.size( ) - 1 ];
+      }
+
       auto splitFileName = SplitStr( splitPath[ splitPath.size( ) - 1 ], '.' );
       return splitFileName[ 0 ];
    }
@@ -35,7 +40,7 @@ namespace Mile
 
    String Resource::GetFileExtensionFromPath( const String& filePath )
    {
-      auto name = GetFileNameFromPath( filePath );
+      auto name = GetFileNameFromPath( filePath, true );
       auto splitName = SplitStr( name, '.' );
       return splitName[ splitName.size( ) - 1 ];
    }

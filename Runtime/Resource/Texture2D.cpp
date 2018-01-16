@@ -7,6 +7,7 @@
 namespace Mile
 {
    Texture2D::Texture2D( Context* context, const String& filePath ) :
+      m_rawData( nullptr ),
       m_rawTexture( nullptr ),
       m_width( 0 ),
       m_height( 0 ),
@@ -41,7 +42,7 @@ namespace Mile
          return false;
       }
 
-      return true;
+      return InitRawTexture( );
    }
 
    bool Texture2D::Save( const String& filePath )
