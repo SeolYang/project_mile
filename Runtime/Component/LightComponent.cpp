@@ -4,6 +4,8 @@
 
 namespace Mile
 {
+   RegisterComponent( LightComponent )
+
    LightComponent::LightComponent( Entity* entity ) :
       m_type( LightType::Directional ),
       m_color( Vector3( 1.0f, 1.0f, 1.0f ) ),

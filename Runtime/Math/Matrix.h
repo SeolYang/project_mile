@@ -343,7 +343,7 @@ namespace Mile
 
    static Vector3 operator*( const Vector3& vec, const Matrix& mat )
    {
-      Vector4 vec4 = Vector4( vec ) * mat;
+      Vector4 vec4 = Vector4( vec.x, vec.y, vec.z, 1.0f ) * mat;
       return Vector3( vec4.x, vec4.y, vec4.z );
    }
 }

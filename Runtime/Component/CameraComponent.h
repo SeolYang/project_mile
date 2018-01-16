@@ -1,12 +1,14 @@
 #pragma once
 
 #include "Component.h"
+#include "Core\ComponentRegister.h"
 #include "Math\Vector4.h"
 
 namespace Mile
 {
    class MEAPI CameraComponent : public Component
    {
+      ComponentBegin( CameraComponent );
    public:
       CameraComponent( Entity* entity );
 

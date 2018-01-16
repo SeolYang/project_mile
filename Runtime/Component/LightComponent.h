@@ -17,7 +17,7 @@ namespace Mile
 
    class MEAPI LightComponent : public Component
    {
-      RegisterComponent( LightComponent )
+      ComponentBegin( LightComponent )
 
    public:
       LightComponent( Entity* entity );

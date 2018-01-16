@@ -2,6 +2,7 @@
 
 #include "Core\Helper.h"
 #include "Component\Component.h"
+#include <iostream>
 
 namespace Mile
 {
@@ -11,34 +12,13 @@ namespace Mile
       template < typename Ty >
       void Register( const std::string& key )
       {
+         std::cout << key << std::endl;
          m_constructorMap.insert( std::make_pair( key, &Component::Create<Ty> ) );
       }
 
-      Component* Acquire( const std::string& key, Entity* entity )
-      {
-         auto itr = m_constructorMap.find( key );
-         if ( itr == m_constructorMap.end( ) )
-         {
-            return nullptr;
-         }
-
-         return ( *itr ).second( entity );
-      }
-
-      static ComponentRegister& GetInstance( )
-      {
-         if ( m_instance == nullptr )
-         {
-            m_instance = new ComponentRegister( );
-         }
-
-         return ( *m_instance );
-      }
-
-      static void Destroy( )
-      {
-         SafeDelete( m_instance );
-      }
+      Component* Acquire( const std::string& key, Entity* entity );
+      static ComponentRegister& GetInstance( );
+      static void Destroy( );
 
    private:
       ComponentRegister( ) { }
@@ -50,5 +30,6 @@ namespace Mile
    };
 }
 
-#define RegisterComponent(TYPE) private: static TYPE _registeryInst; \
+#define RegisterComponent(TYPE) TYPE TYPE::_registeryInst;
+#define ComponentBegin(TYPE) private: static TYPE _registeryInst; \
    TYPE() { Mile::ComponentRegister::GetInstance().Register<TYPE>( #TYPE ); }

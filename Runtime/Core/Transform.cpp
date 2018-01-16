@@ -35,4 +35,23 @@ namespace Mile
 
       m_bDirtyFlag = false;
    }
+
+   Vector3 Transform::GetForward( TransformSpace space )
+   {
+      UpdateMatrix( );
+
+      Vector4 res;
+      switch ( space )
+      {
+      case TransformSpace::Local:
+         res = Vector4::Forward * m_localMatrix;
+         break;
+
+      case TransformSpace::World:
+         res = Vector4::Forward * m_worldMatrix;
+         break;
+      }
+
+      return Vector3( res.x, res.y, res.z );
+   }
 }

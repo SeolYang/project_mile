@@ -8,13 +8,16 @@
 
 namespace Mile
 {
+   RegisterComponent( MeshRenderComponent )
+
    std::string MeshRenderComponent::Serialize( ) const
    {
       //auto model = m_mesh->Ge
       // { "Mesh": { "Model": (Model filepath), "Name": (Mesh Name) },
       // "Material": (Material filepath) }
       //std::string res = "{ \"Mesh\": " + 
-      std::string res = "{ " + Component::Serialize( ) +
+      std::string res = "{ \"Type\": \"MeshRenderComponent\", "
+         + Component::Serialize( ) +
          ", \"Mesh\": { \"Model\": \"" + WString2String( m_mesh->GetModelPath( ) ) + 
          "\", \"Name\": \"" + m_mesh->GetName( ) + "\" }, "
          " \"Material\": \"" + WString2String( m_material->GetPath( ) ) + "\" }";

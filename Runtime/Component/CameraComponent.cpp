@@ -2,6 +2,8 @@
 
 namespace Mile
 {
+   RegisterComponent( CameraComponent )
+
    CameraComponent::CameraComponent( Entity* entity ) :
       m_fov( 45.0f ),
       m_nearPlane( 1.0f ),

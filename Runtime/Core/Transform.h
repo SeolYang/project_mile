@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Math/Vector3.h"
-#include "Math/Vector2.h"
-#include "Math/Quaternion.h"
-#include "Math/Matrix.h"
+#include "Math\Vector4.h"
+#include "Math\Vector3.h"
+#include "Math\Vector2.h"
+#include "Math\Quaternion.h"
+#include "Math\Matrix.h"
 
 namespace Mile
 {
@@ -244,24 +245,7 @@ namespace Mile
          }
       }
 
-      Vector3 GetForward( TransformSpace space = TransformSpace::World )
-      {
-         UpdateMatrix( );
-
-         Vector4 res;
-         switch ( space )
-         {
-         case TransformSpace::Local:
-            res = Vector4::Forward * m_localMatrix;
-            break;
-
-         case TransformSpace::World:
-            res = Vector4::Forward * m_worldMatrix;
-            break;
-         }
-
-         return Vector3( res.x, res.y, res.z );
-      }
+      Vector3 GetForward( TransformSpace space = TransformSpace::World );
 
    private:
       void SetParent( Transform* parent )
