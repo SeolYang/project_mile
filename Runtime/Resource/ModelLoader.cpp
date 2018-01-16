@@ -72,9 +72,16 @@ namespace Mile
       // Create children Entity
       for ( size_t idx = 0; idx < node->mNumChildren; ++idx )
       {
-         Entity* child = new Entity( nullptr, TEXT( "" ) );
-         ReconstructEntityWithAiNode( scene, node->mChildren[ idx ], target, child );
-         entity->AttachChild( child );
+         if ( node->mNumMeshes == 0 )
+         {
+            ReconstructEntityWithAiNode( scene, node->mChildren[ idx ], target, entity );
+         }
+         else
+         {
+            Entity* child = new Entity( nullptr, TEXT( "" ) );
+            ReconstructEntityWithAiNode( scene, node->mChildren[ idx ], target, child );
+            entity->AttachChild( child );
+         }
       }
    }
 
