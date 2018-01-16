@@ -10,6 +10,7 @@
 namespace Mile
 {
    Model::Model( Context* context, const String& filePath ) :
+      m_instance( nullptr ),
       Resource( context, filePath, ResourceType::RT_Model )
    {
    }
@@ -56,7 +57,7 @@ namespace Mile
    Entity* Model::Instantiate( Model* target, World* targetWorld )
    {
       Entity* tempEntity = targetWorld->CreateEntity( TEXT( "" ) );
-      tempEntity->DeSerialize( target->m_serializedInstance );
+      tempEntity->DeSerialize( json::parse( target->m_serializedInstance ) );
       return tempEntity;
    }
 }

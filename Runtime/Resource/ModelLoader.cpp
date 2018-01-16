@@ -55,8 +55,8 @@ namespace Mile
 
    void ModelLoader::ReconstructEntityWithAiNode( const aiScene* scene, aiNode* node, Model* target, Entity* entity )
    {
-      bool bValidCall = scene == nullptr || node == nullptr || entity == nullptr;
-      if ( !bValidCall )
+      bool bIsNotValidCall = scene == nullptr || node == nullptr || entity == nullptr;
+      if ( bIsNotValidCall )
       {
          return;
       }
@@ -66,6 +66,7 @@ namespace Mile
       {
          Entity* renderableMesh = new Entity( nullptr, TEXT( "" ) );
          ReconstructMeshWithAiMesh( scene, scene->mMeshes[idx], target, renderableMesh );
+         entity->AttachChild( renderableMesh );
       }
 
       // Create children Entity
@@ -86,8 +87,8 @@ namespace Mile
       }
 
       // Reserve space
-      std::vector<VertexPosTexNT> verticies{ mesh->mNumVertices };
-      std::vector<unsigned int> indices{ mesh->mNumFaces * 3 };
+      std::vector<VertexPosTexNT> verticies( mesh->mNumVertices );
+      std::vector<unsigned int> indices( mesh->mNumFaces * 3 );
 
       bool bHasUV = mesh->HasTextureCoords( 0 );
       bool bHasNormals = mesh->HasNormals( );
@@ -142,8 +143,12 @@ namespace Mile
       // Set Material
       // Create model dir + material name
       auto resMng = contextInst->GetSubSystem<ResourceManager>( );
-      auto newMat = resMng->Create<Material>( target->GetName( ) + std::to_wstring( mesh->mMaterialIndex )
+      auto newMat = resMng->Create<Material>( target->GetFolder() + target->GetName( ) + std::to_wstring( mesh->mMaterialIndex )
                                  + TEXT(".material"));
+      newMat->Save( );
+
+      // @TODO: Get Diffuse/Specular Texture names
+
       renderComponent->SetMaterial( newMat );
    }
 }
