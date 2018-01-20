@@ -18,17 +18,6 @@ namespace Mile
    class MEAPI TextureLoader
    {
    public:
-      static TextureInfo LoadTexture( const String& filePath, const String& fileExtension )
-      {
-         if ( fileExtension == TEXT( "png" ) )
-         {
-            return std::move( LoadPNG( filePath ) );
-         }
-
-         return TextureInfo( );
-      }
-
-      static TextureInfo LoadPNG( const String& filePath );
-
+      static TextureInfo LoadTexture( const String& inFilePath, const String& fileExtension );
    };
 }
