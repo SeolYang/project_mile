@@ -9,7 +9,7 @@ namespace Mile
    class MEAPI Mesh
    {
    public:
-      Mesh( RendererDX11* renderer, const std::string& name, const String& modelPath) :
+      Mesh( RendererDX11* renderer, const std::wstring& name, const String& modelPath) :
          m_name( name ),
          m_vertexBuffer( nullptr ),
          m_indexBuffer( nullptr ),
@@ -61,7 +61,7 @@ namespace Mile
       unsigned int GetVertexCount( ) const { return m_vertexNum; }
       unsigned int GetIndexCount( ) const { return m_indexNum; }
 
-      std::string GetName( ) const { return m_name; }
+      std::wstring GetName( ) const { return m_name; }
       String GetModelPath( ) const { return m_modelPath; }
 
    private:
@@ -69,7 +69,7 @@ namespace Mile
       IndexBufferDX11*  m_indexBuffer;
       VertexBufferDX11* m_vertexBuffer;
 
-      std::string       m_name;
+      std::wstring      m_name;
       String            m_modelPath;
 
       unsigned int      m_vertexNum;
