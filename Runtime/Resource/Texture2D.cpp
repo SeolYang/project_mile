@@ -21,7 +21,7 @@ namespace Mile
    Texture2D::~Texture2D( )
    {
       SafeDelete( m_rawTexture );
-      SafeFree( m_rawData );
+      SafeArrayDelete( m_rawData );
    }
 
    bool Texture2D::Init( )
@@ -56,9 +56,9 @@ namespace Mile
       {
          return false;
       }
-
+      
       auto renderer = m_context->GetSubSystem<RendererDX11>( );
       m_rawTexture = new Texture2dDX11( renderer );
-      return m_rawTexture->Init( m_width, m_height, m_channels, m_rawData, DXGI_FORMAT_R8G8B8A8_UNORM );
+      return m_rawTexture->Init( m_width, m_height, m_channels, m_rawData, DXGI_FORMAT_B8G8R8A8_UNORM );
    }
 }
