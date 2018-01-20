@@ -172,12 +172,10 @@ namespace Mile
       _snwprintf( buf.get( ), size, str.c_str( ), args ... );
       return String( buf.get( ), buf.get( ) + size - 1 );
    }
-   
-   static std::string NowToString( )
+
+   static std::string TimeToString( std::chrono::system_clock::time_point t )
    {
       using namespace std;
-
-      chrono::system_clock::time_point t = chrono::system_clock::now( );
       time_t rawTime = chrono::system_clock::to_time_t( t );
 
       const auto timeInfo = localtime( &rawTime );
@@ -190,15 +188,13 @@ namespace Mile
                          timeInfo->tm_sec );
    }
 
-   static String NowToWString( )
+   static String TimeToWString( std::chrono::system_clock::time_point t )
    {
       using namespace std;
-
-      chrono::system_clock::time_point t = chrono::system_clock::now( );
       time_t rawTime = chrono::system_clock::to_time_t( t );
 
       const auto timeInfo = localtime( &rawTime );
-      return Formatting( std::wstring( TEXT( "%d/%d/%d %d:%d:%d" ) ) ,
+      return Formatting( std::wstring( TEXT( "%d/%d/%d %d:%d:%d" ) ),
                          timeInfo->tm_year + 1900,
                          timeInfo->tm_mon + 1,
                          timeInfo->tm_mday,
@@ -206,4 +202,19 @@ namespace Mile
                          timeInfo->tm_min,
                          timeInfo->tm_sec );
    }
+   
+   static std::string NowToString( )
+   {
+      using namespace std;
+      chrono::system_clock::time_point t = chrono::system_clock::now( );
+      return TimeToString( t );
+   }
+
+   static String NowToWString( )
+   {
+      using namespace std;
+      chrono::system_clock::time_point t = chrono::system_clock::now( );
+      return TimeToWString( t );
+   }
+
 }
