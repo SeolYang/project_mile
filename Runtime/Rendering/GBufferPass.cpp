@@ -7,6 +7,7 @@
 namespace Mile
 {
    GBufferPass::GBufferPass( RendererDX11* renderer ) :
+      m_gBuffer( nullptr ),
       m_normalTexture( nullptr ),
       m_transformBuffer( nullptr ),
       m_materialBuffer( nullptr ),
@@ -67,12 +68,12 @@ namespace Mile
          return false;
       }
 
-      if ( !m_transformBuffer->Bind( 0, ShaderType::VertexShader ) && !m_transformBuffer->Bind( 0, ShaderType::PixelShader ) )
+      if ( !m_transformBuffer->Bind( 0, ShaderType::VertexShader ) )
       {
          return false;
       }
 
-      if ( !m_materialBuffer->Bind( 1, ShaderType::VertexShader ) && !m_materialBuffer->Bind( 1, ShaderType::PixelShader ) )
+      if ( !m_materialBuffer->Bind( 0, ShaderType::PixelShader ) )
       {
          return false;
       }
@@ -82,13 +83,29 @@ namespace Mile
 
    void GBufferPass::Unbind( )
    {
-      RenderingPass::Unbind( );
       if ( m_renderer == nullptr )
       {
          return;
       }
 
+      if ( m_gBuffer != nullptr )
+      { 
+         m_gBuffer->UnbindRenderTarget( );
+      }
+
       UpdateNormalTexture( nullptr );
+
+      if ( m_transformBuffer != nullptr )
+      {
+         m_transformBuffer->Unbind( );
+      }
+
+      if ( m_materialBuffer != nullptr )
+      {
+         m_materialBuffer->Unbind( );
+      }
+
+      RenderingPass::Unbind( );
    }
 
    void GBufferPass::UpdateTransformBuffer( const Matrix& world, const Matrix& worldView, const Matrix& worldViewProj )

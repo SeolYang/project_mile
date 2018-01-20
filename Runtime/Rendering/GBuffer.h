@@ -18,7 +18,8 @@ namespace Mile
       
       bool BindAsRenderTarget( );
       bool BindAsShaderResource( unsigned int startSlot );
-      void Unbind( );
+      void UnbindRenderTarget( );
+      void UnbindShaderResource( );
 
    private:
       RendererDX11*        m_renderer;

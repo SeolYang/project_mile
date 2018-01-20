@@ -29,6 +29,11 @@ namespace Mile
          return false;
       }
 
+      if ( !RenderingPass::Init( filePath ) )
+      {
+         return false;
+      }
+
       m_lightParamBuffer = new ConstantBufferDX11( m_renderer );
       if ( !m_lightParamBuffer->Init( sizeof( LightParamConstantBuffer ) ) )
       {
@@ -84,14 +89,16 @@ namespace Mile
 
    void LightBufferPass::Unbind( )
    {
-      RenderingPass::Unbind( );
-
       if ( m_renderer == nullptr )
       {
          return;
       }
 
-      m_gBuffer->Unbind( );
+      m_lightParamBuffer->Unbind( );
+      m_cameraBuffer->Unbind( );
+      m_lightBuffer->UnbindRenderTarget( );
+      m_gBuffer->UnbindShaderResource( );
+      RenderingPass::Unbind( );
    }
 
    void LightBufferPass::SetGBuffer( GBuffer* gBuffer )

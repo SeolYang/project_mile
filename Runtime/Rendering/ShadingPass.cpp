@@ -51,26 +51,18 @@ namespace Mile
 
       bool bIsReadyToBind = m_transformBuffer != nullptr &&
          m_materialBuffer != nullptr &&
-         m_diffuseTexture != nullptr &&
          m_lightBuffer != nullptr;
       if ( !bIsReadyToBind )
       {
          return false;
       }
 
-      if ( !m_transformBuffer->Bind( 0, ShaderType::VertexShader ) 
-           || !m_transformBuffer->Bind( 0, ShaderType::PixelShader ) )
+      if ( !m_transformBuffer->Bind( 0, ShaderType::VertexShader ) )
       {
          return false;
       }
 
-      if ( !m_materialBuffer->Bind( 1, ShaderType::VertexShader ) 
-           || !m_materialBuffer->Bind( 1, ShaderType::PixelShader ) )
-      {
-         return false;
-      }
-
-      if ( !m_diffuseTexture->Bind( 0, ShaderType::PixelShader ) )
+      if ( !m_materialBuffer->Bind( 0, ShaderType::PixelShader ) )
       {
          return false;
       }
@@ -85,12 +77,13 @@ namespace Mile
 
    void ShadingPass::Unbind( )
    {
-      RenderingPass::Unbind( );
-
       if ( m_renderer == nullptr )
       {
          return;
       }
+
+      m_transformBuffer->Unbind( );
+      m_materialBuffer->Unbind( );
 
       if ( m_diffuseTexture != nullptr )
       {
@@ -99,8 +92,10 @@ namespace Mile
 
       if ( m_lightBuffer != nullptr )
       {
-         m_lightBuffer->Unbind( );
+         m_lightBuffer->UnbindShaderResource( );
       }
+
+      RenderingPass::Unbind( );
    }
 
    void ShadingPass::UpdateDiffuseTexture( Texture2dDX11* diffuseTexture )
@@ -113,6 +108,8 @@ namespace Mile
       if ( diffuseTexture != nullptr )
       {
          diffuseTexture->Unbind( );
+         m_diffuseTexture = diffuseTexture;
+         m_diffuseTexture->Bind( 0, ShaderType::PixelShader );
       }
    }
 
