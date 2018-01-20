@@ -21,8 +21,11 @@ namespace Mile
       {
       }
 
-      Quaternion( float real, const Vector3& imaginary ) :
-         Quaternion( real, imaginary.x, imaginary.y, imaginary.z )
+      Quaternion( float radian, const Vector3& axis ) :
+         Quaternion( cosf( ( radian / 2.0f ) ),
+                     sinf( ( radian / 2.0f ) ) * axis.x,
+                     sinf( ( radian / 2.0f ) ) * axis.y,
+                     sinf( ( radian / 2.0f ) ) * axis.z )
       {
       }
 
@@ -129,10 +132,10 @@ namespace Mile
 
       std::string Serialize( ) const
       {
-         return "{ \"x\": " + std::to_string( w ) + ", "
-            + "\"y\": " + std::to_string( x ) + ", "
-            + "\"z\": " + std::to_string( y ) + ", "
-            + "\"w\": " + std::to_string( z ) + " }";
+         return "{ \"x\": " + std::to_string( x ) + ", "
+            + "\"y\": " + std::to_string( y ) + ", "
+            + "\"z\": " + std::to_string( z ) + ", "
+            + "\"w\": " + std::to_string( w ) + " }";
       }
 
       void DeSerialize( const json& jsonData )
@@ -167,10 +170,11 @@ namespace Mile
       {
          float norm = NormSquared( );
          float normInv = 1.0f / norm;
-         return Quaternion( w * normInv,
-                            x * normInv,
-                            y * normInv,
-                            z * normInv );
+         auto conjugate = Conjugate( );
+         return Quaternion( conjugate.w * normInv,
+                            conjugate.x * normInv,
+                            conjugate.y * normInv,
+                            conjugate.z * normInv );
       }
 
       Quaternion Normalized( ) const
@@ -185,13 +189,15 @@ namespace Mile
 
       Quaternion& Rotate( const Quaternion& rot )
       {
-         ( *this ) = ( rot * ( *this ) * rot.Conjugate( ) );
+         auto inv = Inverse( );
+         ( *this ) = ( inv * rot * ( *this ) );
          return ( *this );
       }
 
       Quaternion Rotated( const Quaternion& rot ) const
       {
-         return ( rot * ( *this ) * rot.Conjugate( ) );
+         auto inv = Inverse( );
+         return ( inv * rot * ( *this ) );
       }
 
    public:
