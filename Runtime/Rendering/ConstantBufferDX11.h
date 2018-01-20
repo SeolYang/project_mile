@@ -8,6 +8,9 @@ namespace Mile
    {
    public:
       ConstantBufferDX11( RendererDX11* renderer ) :
+         m_bIsBinded( false ),
+         m_bindedSlot( 0 ),
+         m_bindedShader( ShaderType::PixelShader ),
          BufferDX11( renderer )
       {
       }
@@ -25,6 +28,12 @@ namespace Mile
       virtual bool UnMap( ) override;
 
       bool Bind( unsigned int slot, ShaderType shaderType );
+      void Unbind( );
+
+   private:
+      bool           m_bIsBinded;
+      unsigned int   m_bindedSlot;
+      ShaderType     m_bindedShader;
 
    };
 }
