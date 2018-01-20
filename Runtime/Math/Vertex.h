@@ -9,7 +9,7 @@ namespace Mile
    /*
    * @ Vector4(float4) : POSITION
    **/
-   struct MEAPI alignas( 16 ) VertexPos
+   struct MEAPI VertexPos
    {
       Vector4 Position;
    };
@@ -18,7 +18,7 @@ namespace Mile
    * @ Vector4(float4) : POSITION
    * @ Vector2(float2) : TEXCOORD0
    **/
-   struct MEAPI alignas( 16 ) VertexPosTex
+   struct MEAPI VertexPosTex
    {
       Vector4 Position;
       Vector2 TexCoord;
@@ -29,7 +29,7 @@ namespace Mile
    * @ Vector2(float2) : TEXCOORD0
    * @ Vector3(float3) : NORMAL
    **/
-   struct MEAPI alignas( 16 ) VertexPosTexNormal
+   struct MEAPI VertexPosTexNormal
    {
       Vector4 Position;
       Vector2 TexCoord;
@@ -44,7 +44,7 @@ namespace Mile
    * @ Vector3(float3) : NORMAL
    * @ Vector4(float4) : TANGENT
    **/
-   struct MEAPI alignas( 16 ) VertexPosTexNT
+   struct MEAPI VertexPosTexNT
    {
       Vector4 Position;
       Vector2 TexCoord;
@@ -59,7 +59,7 @@ namespace Mile
    * @ Vector4(float4) : TANGENT
    * @ Vector4(float4) : BITANGENT
    **/
-   struct MEAPI alignas( 16 ) VertexPosTexNTB
+   struct MEAPI VertexPosTexNTB
    {
       Vector4 Position;
       Vector2 TexCoord;
