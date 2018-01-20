@@ -38,7 +38,7 @@ struct PSInput
 VSOutput MileVS( in VSInput input )
 {
    VSOutput output;
-   output.PositionCS = mul( input.Position, WorldViewProj );
+   output.PositionCS = mul( WorldViewProj, input.Position );
    output.TexCoord = input.TexCoord;
 
    return output;
@@ -54,5 +54,7 @@ float4 MilePS( in PSInput input ) : SV_Target0
    float3 diffuse = lighting.xyz * diffuseAlbedo;
    float3 specular = lighting.w * SpecularAlbedo;
 
-   return float4( diffuse + specular, 1.0f );
+   float3 ambient = diffuseAlbedo * float3( 0.05f, 0.05f, 0.05f );
+
+   return float4( diffuse + specular + ambient, 1.0f );
 }

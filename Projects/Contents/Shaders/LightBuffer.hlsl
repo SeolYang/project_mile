@@ -2,7 +2,6 @@
 Texture2D   NormalTexture     : register( t0 );
 Texture2D   PositionTexture   : register( t1 );
 
-
 // Constants
 cbuffer LightParamsBuffer
 {
@@ -45,7 +44,7 @@ float4 CalcLighting( in float3 normal, in float3 position, in float specularPowe
 
    if ( LightType == 1 || LightType == 2 )
    {
-      L = LightPos - position;
+      L = normalize(LightPos - position);
 
       float dist = length( L );
       attenuation = max( 0, 1.0f - ( dist / LightRange.x ) );
@@ -72,16 +71,17 @@ float4 CalcLighting( in float3 normal, in float3 position, in float specularPowe
    float3 V = CameraPos - position;
    float3 H = normalize( L + V );
    float specular = pow( saturate( dot( normal, H ) ), specularPower ) * attenuation * nDotL;
-
+   
    return float4( diffuse, specular );
 }
 
-float4 MilePS( in float4 screenPos : SV_Postiion ) : SV_Target0
+float4 MilePS( in float4 screenPos : SV_Position ) : SV_Target0
 {
    float3 normal;
    float3 position;
    float specularPower;
 
    GetGBufferAttributes( screenPos.xy, normal, position, specularPower );
+
    return CalcLighting( normal, position, specularPower );
 }

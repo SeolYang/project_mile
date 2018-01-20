@@ -1,5 +1,4 @@
 // Light Pre Pass G-Buffer Shader
-
 Texture2D      NormalMap      : register( t0 );
 SamplerState   AnisoSampler   : register( s0 );
 
@@ -16,7 +15,6 @@ cbuffer MaterialPropertiesBuffer
    float SpecularPower;
 };
 
-
 // Structures
 struct VSInput
 {
@@ -24,6 +22,7 @@ struct VSInput
    float2 TexCoord      : TEXCOORDS0;
    float3 Normal        : NORMAL;
    float4 Tangent       : TANGENT;
+   float4 BiTangent     : BITANGENT;
 };
 
 // postfix WS meaning world space
@@ -53,21 +52,26 @@ struct PSOutput
    float4 Position      : SV_Target1;
 };
 
+SamplerState DefaultSampler
+{
+   AddressU = WRAP;
+   AddressV = WRAP;
+};
+
 VSOutput MileVS( in VSInput input )
 {
    VSOutput output;
 
-   float3 normalWS = normalize( mul( input.Normal, ( float3x3 )World ) );
+   float3 normalWS = normalize( mul( ( float3x3 )World, input.Normal ) );
+   float3 tangentWS = normalize( mul( ( float3x3 )World, input.Tangent.xyz ) );
+   float3 bitangentWS = normalize( mul( ( float3x3 )World, input.BiTangent.xyz ) );
+
    output.NormalWS = normalWS;
-
-   float3 tangentWS = normalize( mul( input.Tangent.xyz, ( float3x3 )World ) );
-   float3 bitangentWS = normalize( cross( normalWS, tangentWS ) ) * input.Tangent.w;
-
    output.TangentWS = tangentWS;
    output.BitangentWS = bitangentWS;
 
-   output.PositionWS = mul( input.Position, World ).xyz;
-   output.PositionCS = mul( input.Position, WorldViewProj );
+   output.PositionWS = mul( World, input.Position ).xyz;
+   output.PositionCS = mul( WorldViewProj, input.Position );
    output.TexCoord = input.TexCoord;
 
    return output;
