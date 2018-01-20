@@ -35,6 +35,16 @@ namespace Mile
       m_diffuseMap = resourceMng->Load<Texture2D>( String2WString( jsonData[ "DiffuseMap" ] ) );
       m_normalMap = resourceMng->Load<Texture2D>( String2WString( jsonData[ "NormalMap" ] ) );
 
+      if ( m_diffuseMap == nullptr )
+      {
+         m_diffuseMap = resourceMng->Load<Texture2D>( TEXT( "Contents/Textures/default_white.png" ) );
+      }
+
+      if ( m_normalMap == nullptr )
+      {
+         m_normalMap = resourceMng->Load<Texture2D>( TEXT( "Contents/Textures/default_black.png" ) );
+      }
+
       // @TODO: Load engine default textures if load texture does not exist
       return true;
    }
