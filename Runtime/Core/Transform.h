@@ -30,7 +30,8 @@ namespace Mile
       }
 
       Transform( Entity* entity ) :
-         Transform( entity, Vector3( ), Vector3( 1.0f, 1.0f, 1.0f ), Quaternion( ) )
+         Transform( entity, Vector3( ), Vector3( 1.0f, 1.0f, 1.0f ),
+                    Quaternion(1.0f, 0.0f, 0.0f, 0.0f))
       {
       }
 
@@ -101,6 +102,27 @@ namespace Mile
             m_scale = scale;
          }
          
+         if ( bImmediatelyUpdateMatrix )
+         {
+            ForceUpdateMatrix( );
+         }
+         else
+         {
+            m_bDirtyFlag = true;
+         }
+      }
+
+      void SetRotation( const Quaternion& rot, TransformSpace space = TransformSpace::Local, bool bImmediatelyUpdateMatrix = true )
+      {
+         if ( space == TransformSpace::World && HasParent( ) )
+         {
+            m_rotation = rot.Rotated( m_parent->GetRotation( space ).Inverse( ) );
+         }
+         else
+         {
+            m_rotation = rot;
+         }
+
          if ( bImmediatelyUpdateMatrix )
          {
             ForceUpdateMatrix( );
