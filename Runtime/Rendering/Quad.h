@@ -9,7 +9,7 @@ namespace Mile
    {
    public:
       Quad( RendererDX11* renderer ) :
-         Mesh( renderer, "Quad", TEXT( "" ) )
+         Mesh( renderer, TEXT("Quad"), TEXT( "" ) )
       {
       }
 
