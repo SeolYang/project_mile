@@ -7,6 +7,7 @@ namespace Mile
    {
    public:
       BufferDX11( RendererDX11* renderer ) : 
+         m_bIsMapped( false ),
          m_buffer( nullptr ),
          ResourceDX11( renderer )
       {
@@ -26,6 +27,7 @@ namespace Mile
    protected:
       ID3D11Buffer*     m_buffer;
       D3D11_BUFFER_DESC m_desc;
+      bool              m_bIsMapped;
 
    };
 }

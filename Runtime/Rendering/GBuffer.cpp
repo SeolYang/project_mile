@@ -29,12 +29,12 @@ namespace Mile
       m_normalBuffer = new RenderTargetDX11( m_renderer );
       m_positionBuffer = new RenderTargetDX11( m_renderer );
 
-      if ( !m_normalBuffer->Init( width, height ) )
+      if ( !m_normalBuffer->Init( width, height, DXGI_FORMAT_R32G32B32A32_FLOAT ) )
       {
          return false;
       }
 
-      if ( !m_positionBuffer->Init( width, height ) )
+      if ( !m_positionBuffer->Init( width, height, DXGI_FORMAT_R32G32B32A32_FLOAT ) )
       {
          return false;
       }
@@ -58,10 +58,14 @@ namespace Mile
          dsv = m_depthStencilBuffer->GetDSV( );
       }
 
+
       std::array<ID3D11RenderTargetView*, 2> targets{
          m_normalBuffer->GetRTV( ),
          m_positionBuffer->GetRTV( )
       };
+
+      const float clearColor[ 4 ] = { 0.0f, 0.0f, 0.0f, 1.0f };
+      deviceContext->ClearRenderTargetView( targets[ 0 ], clearColor );
 
       deviceContext->OMSetRenderTargets( 2, targets.data( ), dsv );
       return true;
@@ -81,13 +85,34 @@ namespace Mile
       return true;
    }
 
-   void GBuffer::Unbind( )
+   void GBuffer::UnbindShaderResource( )
    {
       bool bIsInitialized = m_normalBuffer != nullptr && m_positionBuffer != nullptr;
       if ( bIsInitialized )
       {
-         m_normalBuffer->Unbind( );
-         m_positionBuffer->Unbind( );
+         m_normalBuffer->UnbindShaderResource( );
+         m_positionBuffer->UnbindShaderResource( );
+
+         std::array<ID3D11RenderTargetView*, 2> targets{
+            nullptr,
+            nullptr,
+         };
+         auto deviceContext = m_renderer->GetDeviceContext( );
+         deviceContext->OMSetRenderTargets( 2, targets.data( ), nullptr );
+      }
+   }
+
+   void GBuffer::UnbindRenderTarget( )
+   {
+      bool bIsInitialized = m_normalBuffer != nullptr && m_positionBuffer != nullptr;
+      if ( bIsInitialized )
+      {
+         std::array<ID3D11RenderTargetView*, 2> targets{
+            nullptr,
+            nullptr,
+         };
+         auto deviceContext = m_renderer->GetDeviceContext( );
+         deviceContext->OMSetRenderTargets( 2, targets.data( ), nullptr );
       }
    }
 }

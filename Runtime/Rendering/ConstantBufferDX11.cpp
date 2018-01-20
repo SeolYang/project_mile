@@ -34,7 +34,7 @@ namespace Mile
 
    void* ConstantBufferDX11::Map( )
    {
-      if ( !m_bIsInitialized || m_renderer == nullptr )
+      if ( !m_bIsInitialized || m_renderer == nullptr || m_bIsMapped )
       {
          return nullptr;
       }
@@ -50,23 +50,25 @@ namespace Mile
          return nullptr;
       }
 
+      m_bIsMapped = true;
       return resource.pData;
    }
 
    bool ConstantBufferDX11::UnMap( )
    {
-      if ( !m_bIsInitialized || m_renderer == nullptr )
+      if ( !m_bIsInitialized || m_renderer == nullptr || !m_bIsMapped )
       {
          return false;
       }
 
       m_renderer->GetDeviceContext( )->Unmap( m_buffer, 0 );
+      m_bIsMapped = false;
       return true;
    }
 
    bool ConstantBufferDX11::Bind( unsigned int startSlot, ShaderType shaderType )
    {
-      if ( !m_bIsInitialized || m_renderer == nullptr )
+      if ( !m_bIsInitialized || m_renderer == nullptr || m_bIsBinded )
       {
          return false;
       }
@@ -93,6 +95,43 @@ namespace Mile
          return false;
       }
 
+      m_bindedSlot = startSlot;
+      m_bindedShader = shaderType;
+      m_bIsBinded = true;
       return true;
+   }
+
+   void ConstantBufferDX11::Unbind( )
+   {
+      if ( !m_bIsInitialized || m_renderer == nullptr || !m_bIsBinded )
+      {
+         return;
+      }
+
+      ID3D11Buffer* nullBuffer = nullptr;
+
+      auto deviceContext = m_renderer->GetDeviceContext( );
+      switch ( m_bindedShader )
+      {
+      case ShaderType::VertexShader:
+         deviceContext->VSSetConstantBuffers( m_bindedSlot, 1, &nullBuffer );
+         break;
+      case ShaderType::HullShader:
+         deviceContext->HSSetConstantBuffers( m_bindedSlot, 1, &nullBuffer );
+         break;
+      case ShaderType::DomainShader:
+         deviceContext->DSSetConstantBuffers( m_bindedSlot, 1, &nullBuffer );
+         break;
+      case ShaderType::GeometryShader:
+         deviceContext->GSSetConstantBuffers( m_bindedSlot, 1, &nullBuffer );
+         break;
+      case ShaderType::PixelShader:
+         deviceContext->PSSetConstantBuffers( m_bindedSlot, 1, &nullBuffer );
+         break;
+      default:
+         return;
+      }
+
+      m_bIsBinded = false;
    }
 }
