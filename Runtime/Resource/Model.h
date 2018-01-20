@@ -17,7 +17,7 @@ namespace Mile
       virtual bool Init( ) override;
 
       void AddMesh( Mesh* mesh );
-      Mesh* GetMeshByName( const std::string& name );
+      Mesh* GetMeshByName( const std::wstring& name );
 
       static Entity* Instantiate( Model* target, World* targetWorld );
 

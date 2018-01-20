@@ -41,7 +41,7 @@ namespace Mile
       m_meshes.push_back( mesh );
    }
 
-   Mesh* Model::GetMeshByName( const std::string& name )
+   Mesh* Model::GetMeshByName( const std::wstring& name )
    {
       for ( auto mesh : m_meshes )
       {
