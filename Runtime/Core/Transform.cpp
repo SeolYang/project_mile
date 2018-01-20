@@ -44,11 +44,11 @@ namespace Mile
       switch ( space )
       {
       case TransformSpace::Local:
-         res = Vector4::Forward * m_localMatrix;
+         res = Vector4::Forward( ) * m_localMatrix;
          break;
 
       case TransformSpace::World:
-         res = Vector4::Forward * m_worldMatrix;
+         res = Vector4::Forward( ) * m_worldMatrix;
          break;
       }
 

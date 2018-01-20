@@ -5,7 +5,7 @@ namespace Mile
 {
     Component::Component( Entity* entity ) :
         m_entity( entity ),
-        m_bIsActive( false )
+        m_bIsActive( true )
     {
 
     }

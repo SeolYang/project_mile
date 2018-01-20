@@ -8,7 +8,7 @@ namespace Mile
 {
    class MEAPI CameraComponent : public Component
    {
-      ComponentBegin( CameraComponent );
+      ComponentBegin( CameraComponent )
    public:
       CameraComponent( Entity* entity );
 

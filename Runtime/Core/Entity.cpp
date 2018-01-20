@@ -10,7 +10,7 @@ namespace Mile
       m_world( world ),
       m_context( nullptr ),
       m_name( name ),
-      m_bIsActive( false ),
+      m_bIsActive( true ),
       m_transform( new Transform( this ) ),
       m_parent( nullptr )
    {
