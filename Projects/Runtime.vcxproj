@@ -48,7 +48,7 @@
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
     <IntDir>..\Binaries\VSOBJ\Runtime\$(Configuration)\</IntDir>
     <TargetName>Runtime</TargetName>
-    <SourcePath>..\Runtime;..\ThirdParty\json\src;$(SourcePath)</SourcePath>
+    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;$(SourcePath)</SourcePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -56,7 +56,7 @@
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
     <IntDir>..\Binaries\VSOBJ\Runtime\$(Configuration)\</IntDir>
     <TargetName>Runtime</TargetName>
-    <SourcePath>..\Runtime;..\ThirdParty\json\src;$(SourcePath)</SourcePath>
+    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;$(SourcePath)</SourcePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -66,17 +66,16 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\zlib\include;..\ThirdParty\libpng\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\libpng\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>assimp-vc140-mt_d.lib;zlib_d.lib;libpng_d.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Binaries\$(Configuration)\;..\ThirdParty\zlib\libs;..\ThirdParty\libpng\libs;..\ThirdParty\assimp\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>FreeImage.lib;assimp_d.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\zlib\libs;..\ThirdParty\libpng\libs;..\ThirdParty\assimp\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy "..\ThirdParty\libpng\dlls\Debug" "..\Binaries\$(Configuration)\";
-copy "..\ThirdParty\assimp\dlls\Debug" "..\Binaries\$(Configuration)\";
-copy "..\ThirdParty\zlib\dlls\Debug" "..\Binaries\$(Configuration)\";</Command>
+      <Command>copy "..\ThirdParty\assimp\dlls\Debug" "..\Binaries\$(Configuration)\";
+copy "..\ThirdParty\FreeImage\dlls\Debug" "..\Binaries\$(Configuration)\";</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy Third Party dlls</Message>
@@ -91,19 +90,18 @@ copy "..\ThirdParty\zlib\dlls\Debug" "..\Binaries\$(Configuration)\";</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\zlib\include;..\ThirdParty\libpng\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\libpng\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>assimp-vc140-mt.lib;zlib.lib;libpng.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Binaries\$(Configuration)\;..\ThirdParty\zlib\libs;..\ThirdParty\libpng\libs;..\ThirdParty\assimp\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>FreeImage.lib;assimp.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\assimp\lib;..\ThirdParty\FreeImage\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy "..\ThirdParty\libpng\dlls\Release" "..\Binaries\$(Configuration)\";
-copy "..\ThirdParty\assimp\dlls\Release" "..\Binaries\$(Configuration)\";
-copy "..\ThirdParty\zlib\dlls\Release" "..\Binaries\$(Configuration)\";</Command>
+      <Command>copy "..\ThirdParty\assimp\dlls\Release" "..\Binaries\$(Configuration)\";
+copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy Third Party dlls</Message>
@@ -150,6 +148,7 @@ copy "..\ThirdParty\zlib\dlls\Release" "..\Binaries\$(Configuration)\";</Command
     <ClInclude Include="..\Runtime\Rendering\ResourceDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ShaderDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ShadingPass.h" />
+    <ClInclude Include="..\Runtime\Rendering\TestRenderPass.h" />
     <ClInclude Include="..\Runtime\Rendering\Texture2dDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\VertexShaderDX11.h" />
@@ -174,6 +173,7 @@ copy "..\ThirdParty\zlib\dlls\Release" "..\Binaries\$(Configuration)\";</Command
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\Compiler\poppack1.h" />
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\Compiler\pstdint.h" />
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\Compiler\pushpack1.h" />
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\config.h" />
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\DefaultIOStream.h" />
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\DefaultIOSystem.h" />
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\DefaultLogger.hpp" />
@@ -204,12 +204,9 @@ copy "..\ThirdParty\zlib\dlls\Release" "..\Binaries\$(Configuration)\";</Command
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\vector2.h" />
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\vector3.h" />
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\version.h" />
+    <ClInclude Include="..\ThirdParty\FreeImage\include\FreeImage.h" />
+    <ClInclude Include="..\ThirdParty\FreeImage\include\Utilities.h" />
     <ClInclude Include="..\ThirdParty\json\src\json.hpp" />
-    <ClInclude Include="..\ThirdParty\libpng\include\png.h" />
-    <ClInclude Include="..\ThirdParty\libpng\include\pngconf.h" />
-    <ClInclude Include="..\ThirdParty\libpng\include\pnglibconf.h" />
-    <ClInclude Include="..\ThirdParty\zlib\include\zconf.h" />
-    <ClInclude Include="..\ThirdParty\zlib\include\zlib.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Component\CameraComponent.cpp" />
@@ -245,6 +242,7 @@ copy "..\ThirdParty\zlib\dlls\Release" "..\Binaries\$(Configuration)\";</Command
     <ClCompile Include="..\Runtime\Rendering\RenderTargetDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\SamplerDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\ShadingPass.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\TestRenderPass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Texture2dDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\VertexBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\VertexShaderDX11.cpp" />
@@ -260,26 +258,32 @@ copy "..\ThirdParty\zlib\dlls\Release" "..\Binaries\$(Configuration)\";</Command
     <ClCompile Include="..\Runtime\Resource\TextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\ThirdParty\assimp\include\assimp\.editorconfig" />
+    <FxCompile Include="Contents\Shaders\GBuffer.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\LightBuffer.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\Shading.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\TestShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\ThirdParty\assimp\include\assimp\color4.inl" />
-    <None Include="..\ThirdParty\assimp\include\assimp\config.h" />
+    <None Include="..\ThirdParty\assimp\include\assimp\config.h.in" />
     <None Include="..\ThirdParty\assimp\include\assimp\material.inl" />
     <None Include="..\ThirdParty\assimp\include\assimp\matrix3x3.inl" />
     <None Include="..\ThirdParty\assimp\include\assimp\matrix4x4.inl" />
     <None Include="..\ThirdParty\assimp\include\assimp\quaternion.inl" />
     <None Include="..\ThirdParty\assimp\include\assimp\vector2.inl" />
     <None Include="..\ThirdParty\assimp\include\assimp\vector3.inl" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Contents\Shaders\GBuffer.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="Contents\Shaders\LightBuffer.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="Contents\Shaders\Shading.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

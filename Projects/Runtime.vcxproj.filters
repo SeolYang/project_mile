@@ -34,23 +34,23 @@
     <Filter Include="Core\GameFramework">
       <UniqueIdentifier>{7ab57107-4381-488a-af23-0b9a63b49ca7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ThirdParty\assimp">
-      <UniqueIdentifier>{bdda35a3-0e52-49d6-90cd-a9fdc918cd15}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\LightPrePass">
       <UniqueIdentifier>{7c2fe0e0-1738-4d2a-8131-9079fe36cf50}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resource">
       <UniqueIdentifier>{59186037-5e12-4276-ad89-04ba5e35c69f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ThirdParty\zlib">
-      <UniqueIdentifier>{ffd86714-8c1b-48fb-bb52-3217461516c4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ThirdParty\libpng">
-      <UniqueIdentifier>{6fc24fcb-976f-4e28-876e-32905fc8521a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{776385f7-c74f-4647-8275-8c2537b0f97d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\FreeImage">
+      <UniqueIdentifier>{083b41a3-3a5a-4ae5-9569-ef7dd4e6ece5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\TestRenderPass">
+      <UniqueIdentifier>{5e17b0c5-58eb-4d8e-b641-126170ae553b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\assimp">
+      <UniqueIdentifier>{8901785b-806b-45c4-b2d4-413b1226390d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -156,11 +156,74 @@
     <ClInclude Include="..\Runtime\Rendering\Mesh.h">
       <Filter>Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="..\ThirdParty\assimp\include\assimp\vector3.h">
-      <Filter>ThirdParty\assimp</Filter>
+    <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h">
+      <Filter>Rendering\Buffers</Filter>
     </ClInclude>
-    <ClInclude Include="..\ThirdParty\assimp\include\assimp\version.h">
-      <Filter>ThirdParty\assimp</Filter>
+    <ClInclude Include="..\Runtime\Component\MeshRenderComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\RenderingPass.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\GBuffer.h">
+      <Filter>Rendering\LightPrePass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\GBufferPass.h">
+      <Filter>Rendering\LightPrePass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\LightBufferPass.h">
+      <Filter>Rendering\LightPrePass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\ShadingPass.h">
+      <Filter>Rendering\LightPrePass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Component\LightComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\Quad.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Component\CameraComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\ModelLoader.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\PlainText.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\Resource.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\ResourceCache.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\ResourceManager.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\Texture2D.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\TextureLoader.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\Material.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\Model.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\Viewport.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\RasterizerState.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\FreeImage\include\FreeImage.h">
+      <Filter>ThirdParty\FreeImage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\TestRenderPass.h">
+      <Filter>Rendering\TestRenderPass</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\ai_assert.h">
       <Filter>ThirdParty\assimp</Filter>
@@ -181,6 +244,15 @@
       <Filter>ThirdParty\assimp</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\color4.h">
+      <Filter>ThirdParty\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\Compiler\poppack1.h">
+      <Filter>ThirdParty\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\Compiler\pstdint.h">
+      <Filter>ThirdParty\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\Compiler\pushpack1.h">
       <Filter>ThirdParty\assimp</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\DefaultIOStream.h">
@@ -240,6 +312,9 @@
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\NullLogger.hpp">
       <Filter>ThirdParty\assimp</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\port\AndroidJNI\AndroidJNIIOSystem.h">
+      <Filter>ThirdParty\assimp</Filter>
+    </ClInclude>
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\postprocess.h">
       <Filter>ThirdParty\assimp</Filter>
     </ClInclude>
@@ -264,95 +339,17 @@
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\vector2.h">
       <Filter>ThirdParty\assimp</Filter>
     </ClInclude>
-    <ClInclude Include="..\ThirdParty\assimp\include\assimp\Compiler\poppack1.h">
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\vector3.h">
       <Filter>ThirdParty\assimp</Filter>
     </ClInclude>
-    <ClInclude Include="..\ThirdParty\assimp\include\assimp\Compiler\pstdint.h">
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\version.h">
       <Filter>ThirdParty\assimp</Filter>
     </ClInclude>
-    <ClInclude Include="..\ThirdParty\assimp\include\assimp\Compiler\pushpack1.h">
+    <ClInclude Include="..\ThirdParty\assimp\include\assimp\config.h">
       <Filter>ThirdParty\assimp</Filter>
     </ClInclude>
-    <ClInclude Include="..\ThirdParty\assimp\include\assimp\port\AndroidJNI\AndroidJNIIOSystem.h">
-      <Filter>ThirdParty\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h">
-      <Filter>Rendering\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Component\MeshRenderComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\RenderingPass.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\GBuffer.h">
-      <Filter>Rendering\LightPrePass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\GBufferPass.h">
-      <Filter>Rendering\LightPrePass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\LightBufferPass.h">
-      <Filter>Rendering\LightPrePass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\ShadingPass.h">
-      <Filter>Rendering\LightPrePass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Component\LightComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\Quad.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Component\CameraComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Resource\ModelLoader.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Resource\PlainText.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Resource\Resource.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Resource\ResourceCache.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Resource\ResourceManager.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Resource\Texture2D.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Resource\TextureLoader.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Resource\Material.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Resource\Model.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\libpng\include\png.h">
-      <Filter>ThirdParty\libpng</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\libpng\include\pngconf.h">
-      <Filter>ThirdParty\libpng</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\libpng\include\pnglibconf.h">
-      <Filter>ThirdParty\libpng</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\zlib\include\zconf.h">
-      <Filter>ThirdParty\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\zlib\include\zlib.h">
-      <Filter>ThirdParty\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\Viewport.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\RasterizerState.h">
-      <Filter>Rendering</Filter>
+    <ClInclude Include="..\ThirdParty\FreeImage\include\Utilities.h">
+      <Filter>ThirdParty\FreeImage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -494,14 +491,25 @@
     <ClCompile Include="..\Runtime\Rendering\RasterizerState.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\TestRenderPass.cpp">
+      <Filter>Rendering\TestRenderPass</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\ThirdParty\assimp\include\assimp\vector3.inl">
-      <Filter>ThirdParty\assimp</Filter>
-    </None>
-    <None Include="..\ThirdParty\assimp\include\assimp\.editorconfig">
-      <Filter>ThirdParty\assimp</Filter>
-    </None>
+    <FxCompile Include="Contents\Shaders\GBuffer.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\LightBuffer.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\Shading.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\TestShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\ThirdParty\assimp\include\assimp\color4.inl">
       <Filter>ThirdParty\assimp</Filter>
     </None>
@@ -520,19 +528,11 @@
     <None Include="..\ThirdParty\assimp\include\assimp\vector2.inl">
       <Filter>ThirdParty\assimp</Filter>
     </None>
-    <None Include="..\ThirdParty\assimp\include\assimp\config.h">
+    <None Include="..\ThirdParty\assimp\include\assimp\vector3.inl">
       <Filter>ThirdParty\assimp</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Contents\Shaders\GBuffer.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Contents\Shaders\LightBuffer.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Contents\Shaders\Shading.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
+    <None Include="..\ThirdParty\assimp\include\assimp\config.h.in">
+      <Filter>ThirdParty\assimp</Filter>
+    </None>
   </ItemGroup>
 </Project>
