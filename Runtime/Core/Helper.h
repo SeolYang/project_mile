@@ -113,6 +113,16 @@ namespace Mile
    }
 
    template <typename T>
+   void SafeArrayDelete( T& target )
+   {
+      if ( target != nullptr )
+      {
+         delete[ ] target;
+         target = nullptr;
+      }
+   }
+
+   template <typename T>
    void SafeFree( T& target )
    {
       if ( target != nullptr )
