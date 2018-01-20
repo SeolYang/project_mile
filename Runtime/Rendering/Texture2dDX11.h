@@ -19,6 +19,8 @@ namespace Mile
       {
       }
 
+      ~Texture2dDX11( );
+
       bool Init( unsigned int width, unsigned int height, int channels, unsigned char* data, DXGI_FORMAT format );
       bool Init( ID3D11Texture2D* texture );
       bool Bind( unsigned int startSlot, ShaderType shader );

@@ -3,6 +3,12 @@
 
 namespace Mile
 {
+   Texture2dDX11::~Texture2dDX11( )
+   {
+      SafeRelease( m_srv );
+      SafeRelease( m_texture );
+   }
+
    bool Texture2dDX11::Init( unsigned int width, unsigned int height, int channels, unsigned char* data, DXGI_FORMAT format )
    {
       if ( m_bIsInitialized || m_renderer == nullptr
@@ -43,6 +49,7 @@ namespace Mile
          return false;
       }
 
+      m_bIsInitialized = true;
       return true;
    }
 
@@ -66,6 +73,7 @@ namespace Mile
          return false;
       }
 
+      m_bIsInitialized = true;
       return true;
    }
 
@@ -121,14 +129,15 @@ namespace Mile
          return;
       }
 
+      ID3D11ShaderResourceView* nullSRV = nullptr;
       auto immediateContext = m_renderer->GetDeviceContext( );
       switch ( m_bindedShader )
       {
       case ShaderType::VertexShader:
-         immediateContext->VSSetShaderResources( m_bindedSlot, 1, nullptr );
+         immediateContext->VSSetShaderResources( m_bindedSlot, 1, &nullSRV );
          break;
       case ShaderType::PixelShader:
-         immediateContext->PSSetShaderResources( m_bindedSlot, 1, nullptr );
+         immediateContext->PSSetShaderResources( m_bindedSlot, 1, &nullSRV );
          break;
       }
 
