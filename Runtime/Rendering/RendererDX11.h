@@ -21,6 +21,7 @@ namespace Mile
    class GBufferPass;
    class LightBufferPass;
    class ShadingPass;
+   class TestRenderPass;
    class Window;
    class World;
    class Entity;
@@ -46,6 +47,7 @@ namespace Mile
       void RenderGBuffer( );
       void RenderLightBuffer( );
       void RenderShading( );
+      void RenderTest( );
 
       void Clear( );
       void ClearDepthStencil( );
@@ -85,6 +87,10 @@ namespace Mile
       ShadingPass*      m_shadingPass;
       Quad*             m_screenQuad;
       // \Pre light pass Rendering
+
+      // Test Rendering Pass
+      TestRenderPass*   m_testPass;
+      // \Test Rendering Pass
 
       // Renderable objects
       std::vector<MeshRenderComponent*> m_meshRenderComponents;

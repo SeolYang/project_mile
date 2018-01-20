@@ -7,6 +7,7 @@
 #include "GBufferPass.h"
 #include "LightBufferPass.h"
 #include "ShadingPass.h"
+#include "TestRenderPass.h"
 #include "RasterizerState.h"
 #include "Core\Context.h"
 #include "Core\Window.h"
@@ -23,12 +24,13 @@
 namespace Mile
 {
    RendererDX11::RendererDX11( Context* context ) : SubSystem( context ),
-      m_window( nullptr ),
+      m_window( nullptr ), m_clearColor{ 0.0f, 0.0f, 0.0f, 1.0f },
       m_device( nullptr ), m_deviceContext( nullptr ),
       m_swapChain( nullptr ), m_renderTargetView( nullptr ),
       m_depthStencilBuffer( nullptr ), m_bDepthStencilEnabled( true ),
       m_gBuffer( nullptr ), m_gBufferPass( nullptr ),
       m_lightBuffer( nullptr ), m_lightBufferPass( nullptr ),
+      m_testPass( nullptr ),
       m_shadingPass( nullptr ),
       m_mainCamera( nullptr ),
       m_viewport( nullptr ),
@@ -41,6 +43,7 @@ namespace Mile
       SafeDelete( m_viewport );
       SafeDelete( m_defaultState );
       SafeDelete( m_screenQuad );
+      SafeDelete( m_testPass );
       SafeDelete( m_shadingPass );
       SafeDelete( m_lightBufferPass );
       SafeDelete( m_lightBuffer );
@@ -72,7 +75,8 @@ namespace Mile
       Vector2 screenRes{ m_window->GetResolution( ) };
 
       m_screenQuad = new Quad( this );
-      if ( !m_screenQuad->Init( 0.0f, 0.0f, screenRes.x, screenRes.y ) )
+
+      if ( !m_screenQuad->Init( -1.0f, -1.0f, 1.0f, 1.0f ) )
       {
          return false;
       }
@@ -128,6 +132,12 @@ namespace Mile
       m_shadingPass->SetLightBuffer( m_lightBuffer );
       m_shadingPass->AcquireTransformBuffer( m_gBufferPass );
       // #Initialize Pre Light pass
+
+      m_testPass = new TestRenderPass( this );
+      if ( !m_testPass->Init( TEXT( "Contents/Shaders/TestShader.hlsl" ) ) )
+      {
+         return false;
+      }
 
       return true;
    }
@@ -281,6 +291,8 @@ namespace Mile
    {
       Clear( );
 
+      m_deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+
       World* world = m_context->GetSubSystem<World>( );
       if ( world != nullptr )
       {
@@ -299,11 +311,12 @@ namespace Mile
 
             m_viewport->Bind( );
             m_defaultState->Bind( );
-
+            
             // light pre pass rendering
             RenderGBuffer( );
             RenderLightBuffer( );
             RenderShading( );
+            //RenderTest( );
          }
       }
 
@@ -342,14 +355,11 @@ namespace Mile
                   m_mainCamera->GetFarPlane( ) );
 
             m_gBufferPass->UpdateTransformBuffer( world, worldView, worldViewProj );  // per object
-            mesh->Bind( 0 );
 
             // @TODO: Implement instancing
+            mesh->Bind( 0 );
             m_deviceContext->DrawIndexed( mesh->GetIndexCount( ), 0, 0 );
          }
-
-         // Unbind shader resource
-         m_gBufferPass->UpdateNormalTexture( nullptr );
       }
 
       // End of gbuffer pass
@@ -364,11 +374,10 @@ namespace Mile
 
       // @TODO: Implement multi - camera rendering
       auto cameraTransform = m_cameras[ 0 ]->GetTransform( );
-      m_lightBufferPass->UpdateCameraBuffer( cameraTransform->GetPosition( ) );
+      m_lightBufferPass->UpdateCameraBuffer( cameraTransform->GetPosition( TransformSpace::World ) );
 
       for ( auto light : m_lightComponents )
       {
-         // @TODO: Add light type
          m_lightBufferPass->UpdateLightParamBuffer(
             light->GetLightPosition( ),
             light->GetLightColor( ),
@@ -378,7 +387,7 @@ namespace Mile
             LightComponent::LightTypeToIndex( light->GetLightType( ) ) );
 
          m_screenQuad->Bind( 0 );
-         m_deviceContext->DrawIndexed( 4, 0, 0 );
+         m_deviceContext->DrawIndexed( 6, 0, 0 );
       }
 
       m_lightBufferPass->Unbind( );
@@ -417,11 +426,10 @@ namespace Mile
                   m_window->GetAspectRatio( ),
                   m_mainCamera->GetNearPlane( ),
                   m_mainCamera->GetFarPlane( ) );
-            // @TODO: add camera
             m_shadingPass->UpdateTransformBuffer( world, worldView, worldViewProj );  // per object
-            mesh->Bind( 0 );
 
             // @TODO: Implement instancing
+            mesh->Bind( 0 );
             m_deviceContext->DrawIndexed( mesh->GetIndexCount( ), 0, 0 );
          }
 
@@ -430,6 +438,48 @@ namespace Mile
       }
 
       m_shadingPass->Unbind( );
+   }
+
+   void RendererDX11::RenderTest( )
+   {
+      m_testPass->Bind( );
+      SetBackbufferAsRenderTarget( );
+
+      auto camTransform = m_mainCamera->GetTransform( );
+
+      for ( auto batchedMaterial : m_materialMap )
+      {
+         auto material = batchedMaterial.first;
+         auto diffuseTexture = material->GetDiffuseMap( );
+         m_testPass->UpdateDiffuseMap( diffuseTexture->GetRawTexture( ) );
+
+         for ( auto meshRenderer : batchedMaterial.second )
+         {
+            auto transform = meshRenderer->GetTransform( );
+            auto mesh = meshRenderer->GetMesh( );
+
+            Matrix world = transform->GetWorldMatrix( );
+            Matrix worldView = world *
+               Matrix::CreateView(
+                  camTransform->GetPosition( TransformSpace::World ),
+                  camTransform->GetForward( ) );
+            Matrix worldViewProj = worldView *
+               Matrix::CreatePerspectiveProj(
+                  m_mainCamera->GetFov( ),
+                  m_window->GetAspectRatio( ),
+                  m_mainCamera->GetNearPlane( ),
+                  m_mainCamera->GetFarPlane( ) );
+            m_testPass->UpdateTransformBuffer( world, worldView, worldViewProj );  // per object
+
+            mesh->Bind( 0 );
+            m_deviceContext->DrawIndexed( mesh->GetIndexCount( ), 0, 0 );
+         }
+
+         // Unbind ShaderResource
+         m_testPass->UpdateDiffuseMap( nullptr );
+      }
+
+      m_testPass->Unbind( );
    }
 
    void RendererDX11::Clear( )
