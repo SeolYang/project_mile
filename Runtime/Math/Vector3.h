@@ -4,279 +4,121 @@
 
 namespace Mile
 {
-    class MEAPI alignas( 16 ) Vector3
-    {
-    public:
-        Vector3( float xx, float yy, float zz ) :
-            x( xx ),
-            y( yy ),
-            z( zz )
-        {
-        }
+   class MEAPI Vector3
+   {
+   public:
+      Vector3( float xx, float yy, float zz );
 
-        Vector3( ) :
-            Vector3( 0.0f, 0.0f, 0.0f )
-        {
-        }
+      Vector3( );
 
-        Vector3( const Vector3& vec ) :
-            Vector3( vec.x, vec.y, vec.z )
-        {
-        }
+      Vector3( const Vector3& vec );
 
-        Vector3 operator+( const Vector3& vec ) const
-        {
-            return Vector3( x + vec.x,
-                            y + vec.y,
-                            z + vec.z );
-        }
+      Vector3 operator+( const Vector3& vec ) const;
 
-        Vector3 operator+( float val ) const
-        {
-            return Vector3( x + val,
-                            y + val,
-                            z + val );
-        }
+      Vector3 operator+( float val ) const;
 
-        Vector3& operator+=( const Vector3& vec )
-        {
-            x += vec.x;
-            y += vec.y;
-            z += vec.z;
-            return ( *this );
-        }
+      Vector3& operator+=( const Vector3& vec );
 
-        Vector3& operator+=( float val )
-        {
-            x += val;
-            y += val;
-            z += val;
-            return ( *this );
-        }
+      Vector3& operator+=( float val );
 
-        Vector3 operator-( const Vector3& vec ) const
-        {
-            return Vector3( x - vec.x,
-                            y - vec.y,
-                            z - vec.z );
-        }
+      Vector3 operator-( const Vector3& vec ) const;
 
-        Vector3 operator-( float val ) const
-        {
-            return Vector3( x - val,
-                            y - val,
-                            z - val );
-        }
+      Vector3 operator-( float val ) const;
 
-        Vector3& operator-=( const Vector3& vec )
-        {
-            x -= vec.x;
-            y -= vec.y;
-            z -= vec.z;
-            return ( *this );
-        }
+      Vector3& operator-=( const Vector3& vec );
 
-        Vector3& operator-=( float val )
-        {
-            x -= val;
-            y -= val;
-            z -= val;
-            return ( *this );
-        }
+      Vector3& operator-=( float val );
 
-        Vector3 operator*( const Vector3& vec ) const
-        {
-            return Vector3( x * vec.x,
-                            y * vec.y,
-                            z * vec.z );
-        }
+      Vector3 operator*( const Vector3& vec ) const;
 
-        Vector3 operator*( float factor ) const
-        {
-            return Vector3( x * factor,
-                            y * factor,
-                            z * factor );
-        }
+      Vector3 operator*( float factor ) const;
 
-        Vector3& operator*=( const Vector3& vec )
-        {
-            x *= vec.x;
-            y *= vec.y;
-            z *= vec.z;
-            return ( *this );
-        }
+      Vector3& operator*=( const Vector3& vec );
 
-        Vector3& operator*=( float factor )
-        {
-            x *= factor;
-            y *= factor;
-            z *= factor;
-            return ( *this );
-        }
+      Vector3& operator*=( float factor );
 
-        Vector3 operator/( const Vector3& vec ) const
-        {
-            return Vector3( x / vec.x,
-                            y / vec.y,
-                            z / vec.z );
-        }
+      Vector3 operator/( const Vector3& vec ) const;
 
-        Vector3 operator/( float div ) const
-        {
-            float factor = 1.0f / div;
-            return Vector3( x * factor,
-                            y * factor,
-                            z * factor );
-        }
+      Vector3 operator/( float div ) const;
 
-        Vector3& operator/=( const Vector3& vec )
-        {
-            x /= vec.x;
-            y /= vec.y;
-            z /= vec.z;
-            return ( *this );
-        }
+      Vector3& operator/=( const Vector3& vec );
 
-        Vector3& operator/=( float div )
-        {
-            float factor = 1.0f / div;
-            x *= factor;
-            y *= factor;
-            z *= factor;
-            return ( *this );
-        }
+      Vector3& operator/=( float div );
 
-        Vector3& operator=( const Vector3& vec )
-        {
-            x = vec.x;
-            y = vec.y;
-            z = vec.z;
-            return ( *this );
-        }
+      Vector3& operator=( const Vector3& vec );
 
-        bool operator==( const Vector3& vec ) const
-        {
-            return ( x == vec.x ) && ( y == vec.y ) && ( z == vec.z );
-        }
+      bool operator==( const Vector3& vec ) const;
 
-        bool operator!=( const Vector3& vec ) const
-        {
-            return ( x != vec.x ) || ( y != vec.y ) || ( z != vec.z );
-        }
+      bool operator!=( const Vector3& vec ) const;
 
-        float operator|( const Vector3& vec ) const
-        {
-            // Dot product
-            return Dot( vec );
-        }
+      float operator|( const Vector3& vec ) const;
 
-        Vector3 operator^( const Vector3& vec ) const
-        {
-            // Cross product
-            return Cross( vec );
-        }
+      Vector3 operator^( const Vector3& vec ) const;
 
-        std::string Serialize( ) const
-        {
-           return "{ \"x\": " + std::to_string( x ) + ", "
-              + "\"y\": " + std::to_string( y ) + ", "
-              + "\"z\": " + std::to_string( z ) + " }";
-        }
+      std::string Serialize( ) const;
 
-        void DeSerialize( const json& jsonData )
-        {
-           x = jsonData[ "x" ];
-           y = jsonData[ "y" ];
-           z = jsonData[ "z" ];
-        }
+      void DeSerialize( const json& jsonData );
 
-        float GetX( ) const
-        {
-            return x;
-        }
+      float GetX( ) const;
 
-        float GetY( ) const
-        {
-            return y;
-        }
+      float GetY( ) const;
 
-        float GetZ( ) const
-        {
-            return z;
-        }
+      float GetZ( ) const;
 
-        void SetX( float xx )
-        {
-            x = xx;
-        }
+      void SetX( float xx );
 
-        void SetY( float yy )
-        {
-            y = yy;
-        }
+      void SetY( float yy );
 
-        void SetZ( float zz )
-        {
-            z = zz;
-        }
+      void SetZ( float zz );
 
-        float Dot( const Vector3& vec ) const
-        {
-            return ( x * vec.x ) + ( y * vec.y ) + ( z * vec.z );
-        }
+      float Dot( const Vector3& vec ) const;
 
-        Vector3 Cross( const Vector3& vec ) const
-        {
-            return Vector3( y * vec.z, z * vec.x, x * vec.y );
-        }
+      Vector3 Cross( const Vector3& vec ) const;
 
-        float SizeSquared( ) const
-        {
-            return ( x * x + y * y + z * z );
-        }
+      float SizeSquared( ) const;
 
-        float Size( ) const
-        {
-            return std::sqrt( SizeSquared( ) );
-        }
+      float Size( ) const;
 
-        void Normalize( )
-        {
-            float factor = ( 1.0f / Size( ) );
-            x *= factor;
-            y *= factor;
-            z *= factor;
-        }
+      void Normalize( );
 
-        Vector3 GetNormalized( ) const
-        {
-            Vector3 temp = ( *this );
-            temp.Normalize( );
-            return temp;
-        }
+      Vector3 GetNormalized( ) const;
 
-    public:
-       union
-       {
-          struct
-          {
-             float x;
-             float y;
-             float z;
-          };
+   public:
+      union
+      {
+         struct
+         {
+            float x;
+            float y;
+            float z;
+         };
 
-          float elements[ 3 ];
-       };
-        
-    public:
-        static Vector3 Up;
-        static Vector3 Down;
-        static Vector3 Left;
-        static Vector3 Right;
-        static Vector3 Forward;
-        static Vector3 Backward;
-        static Vector3 One;
-        static Vector3 Zero;
+         float elements[ 3 ];
+      };
 
-    };
+      static Vector3 Up( )
+      {
+         return Vector3( 0.0f, 1.0f, 0.0f );
+      }
+
+      static Vector3 Forward( )
+      {
+         return Vector3( 0.0f, 0.0f, 1.0f );
+      }
+
+      static Vector3 Right( )
+      {
+         return Vector3( 1.0f, 0.0f, 0.0f );
+      }
+
+      static Vector3 Zero( )
+      {
+         return Vector3( 0.0f, 0.0f, 0.0f );
+      }
+
+      static Vector3 One( )
+      {
+         return Vector3( 1.0f, 1.0f, 1.0f );
+      }
+   };
 }

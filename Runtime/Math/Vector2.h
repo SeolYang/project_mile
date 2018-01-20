@@ -5,7 +5,7 @@
 
 namespace Mile
 {
-   class MEAPI alignas(16) Vector2
+   class MEAPI Vector2
    {
    public:
       Vector2( float xx, float yy ) :

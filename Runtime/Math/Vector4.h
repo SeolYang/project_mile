@@ -4,7 +4,7 @@
 
 namespace Mile
 {
-    class MEAPI alignas( 16 ) Vector4
+    class MEAPI Vector4
     {
     public:
        Vector4( float xx, float yy, float zz, float ww );
@@ -111,15 +111,30 @@ namespace Mile
        };
 
     public:
-        static const Vector4 Up;
-        static const Vector4 Down;
-        static const Vector4 Left;
-        static const Vector4 Right;
-        static const Vector4 Forward;
-        static const Vector4 Backward;
-        static const Vector4 One;
-        static const Vector4 Zero;
+       static Vector4 Up( )
+       {
+          return Vector4( 0.0f, 1.0f, 0.0f, 0.0f );
+       }
 
+       static Vector4 Forward( )
+       {
+          return Vector4( 0.0f, 0.0f, 1.0f, 0.0f );
+       }
+
+       static Vector4 Right( )
+       {
+          return Vector4( 1.0f, 0.0f, 0.0f, 0.0f );
+       }
+
+       static Vector4 Zero( )
+       {
+          return Vector4( 0.0f, 0.0f, 0.0f, 0.0f );
+       }
+
+       static Vector4 One( )
+       {
+          return Vector4( 1.0f, 1.0f, 1.0f, 0.0f );
+       }
     };
 
 }
