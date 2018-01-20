@@ -19,7 +19,8 @@ namespace Mile
       SafeRelease( m_rtv );
       SafeDelete( m_texture );
    }
-   bool RenderTargetDX11::Init( unsigned int width, unsigned int height )
+
+   bool RenderTargetDX11::Init( unsigned int width, unsigned int height, DXGI_FORMAT format )
    {
       if ( m_texture != nullptr 
            || m_renderer == nullptr
@@ -37,7 +38,7 @@ namespace Mile
       texDesc.Height = height;
       texDesc.MipLevels = 1;
       texDesc.ArraySize = 1;
-      texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+      texDesc.Format = format;
       texDesc.SampleDesc.Count = 1;
       texDesc.SampleDesc.Quality = 0;
       texDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -57,7 +58,7 @@ namespace Mile
 
       D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
       ZeroMemory( &rtvDesc, sizeof( rtvDesc ) );
-      rtvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+      rtvDesc.Format = format;
       rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
       rtvDesc.Texture2D.MipSlice = 0;
 
@@ -105,7 +106,14 @@ namespace Mile
       return m_texture->Bind( startSlot, shader );
    }
 
-   void RenderTargetDX11::Unbind( )
+   void RenderTargetDX11::UnbindRenderTarget( )
+   {
+      ID3D11RenderTargetView* nullRTV = nullptr;
+      auto deviceContext = m_renderer->GetDeviceContext( );
+      deviceContext->OMSetRenderTargets( 1, &nullRTV, nullptr );
+   }
+
+   void RenderTargetDX11::UnbindShaderResource( )
    {
       if ( m_texture != nullptr )
       {

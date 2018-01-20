@@ -12,7 +12,7 @@ namespace Mile
       RenderTargetDX11( RendererDX11* renderer );
       virtual ~RenderTargetDX11( );
       
-      bool Init( unsigned int width, unsigned int height );
+      bool Init( unsigned int width, unsigned int height, DXGI_FORMAT format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM );
 
       unsigned int GetWidth( ) const { return m_width; }
       unsigned int GetHeight( ) const { return m_height; }
@@ -24,7 +24,8 @@ namespace Mile
 
       bool BindAsRenderTarget( );
       bool BindAsShaderResource( unsigned int startSlot, ShaderType shader );
-      void Unbind( );
+      void UnbindRenderTarget( );
+      void UnbindShaderResource( );
 
    private:
       RendererDX11*              m_renderer;
