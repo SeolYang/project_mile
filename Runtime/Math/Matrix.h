@@ -71,7 +71,7 @@ namespace Mile
       Matrix operator*( const Matrix& mat ) const
       {
          return Matrix( ( m11 * mat.m11 + m12 * mat.m21 + m13 * mat.m31 + m14 * mat.m41 ),
-            ( m11 * mat.m12 + m12 * mat.m22 + m13 * mat.m32 + m14 * mat.m42 ),
+                        ( m11 * mat.m12 + m12 * mat.m22 + m13 * mat.m32 + m14 * mat.m42 ),
                         ( m11 * mat.m13 + m12 * mat.m23 + m13 * mat.m33 + m14 * mat.m43 ),
                         ( m11 * mat.m14 + m12 * mat.m24 + m13 * mat.m34 + m14 * mat.m44 ),
                         ( m21 * mat.m11 + m22 * mat.m21 + m23 * mat.m31 + m24 * mat.m41 ),
@@ -246,6 +246,22 @@ namespace Mile
             std::to_wstring( m41 ) + TEXT( "\t" ) + std::to_wstring( m42 ) + TEXT( "\t" ) + std::to_wstring( m43 ) + TEXT( "\t" ) + std::to_wstring( m44 ) + TEXT( "\n" );
       }
 
+      Matrix& Transpose( )
+      {
+         Matrix mat{ ( *this ) };
+         m12 = mat.m21; m13 = mat.m31; m14 = mat.m41;
+         m21 = mat.m12; m23 = mat.m32; m24 = mat.m42;
+         m31 = mat.m13; m32 = mat.m23; m34 = mat.m43;
+         m41 = mat.m14; m42 = mat.m24; m43 = mat.m34;
+         return ( *this );
+      }
+
+      Matrix Transposed( ) const
+      {
+         Matrix mat{ ( *this ) };
+         return mat.Transpose( );
+      }
+
       static Matrix CreateTranslation( float x, float y, float z )
       {
          return Matrix{
@@ -283,24 +299,25 @@ namespace Mile
          float xSqrd = quat.x * quat.x;
          float ySqrd = quat.y * quat.y;
          float zSqrd = quat.z * quat.z;
-         return Matrix{
-            ( 1 - 2 * ySqrd - 2 * zSqrd ), ( 2 * x*y + 2 * w*z ), ( 2 * x*z - 2 * w*y ), 0.0f,
-            ( 2 * x*y - 2 * w*z ), ( 1 - 2 * xSqrd - 2 * zSqrd ), ( 2 * y*z + 2 * w*x ), 0.0f,
-            ( 2 * x*z + 2 * w*y ), ( 2 * y*z - 2 * w*z ), ( 1 - 2 * xSqrd - 2 * ySqrd ),   0.0f,
+         auto mat = Matrix{
+            ( 1.0f - 2.0f * ySqrd - 2.0f * zSqrd ), ( 2.0f * x*y + 2.0f * w*z ), ( 2.0f * x*z - 2.0f * w*y ), 0.0f,
+            ( 2.0f * x*y - 2.0f * w*z ), ( 1.0f - 2.0f * xSqrd - 2.0f * zSqrd ), ( 2.0f * y*z + 2.0f * w*x ), 0.0f,
+            ( 2.0f * x*z + 2.0f * w*y ), ( 2.0f * y*z - 2.0f * w*x ), ( 1.0f - 2.0f * xSqrd - 2.0f * ySqrd ),   0.0f,
             0.0f, 0.0f, 0.0f, 1.0f };
+         return mat.Transpose( );
       }
 
       static Matrix CreateTransformMatrix( const Vector3& position, Vector3& scale, const Quaternion& rot )
       {
-         return CreateScale( scale ) * CreateRotation( rot ) * CreateTranslation( position );
+         return  CreateRotation( rot ) * CreateScale( scale ) * CreateTranslation( position );
       }
 
-      static Matrix CreateView( const Vector3& camPosition, const Vector3& camDirection, const Vector3& up = Vector3::Up )
+      static Matrix CreateView( const Vector3& camPosition, const Vector3& camDirection, const Vector3& up = Vector3::Up( ) )
       {
          Vector3 upNor = up.GetNormalized( );
          Vector3 zAxis = camDirection.GetNormalized( );
          Vector3 xAxis = ( upNor ^ zAxis ).GetNormalized( );
-         Vector3 yAxis = ( zAxis ^ yAxis ).GetNormalized( );
+         Vector3 yAxis = ( zAxis ^ xAxis ).GetNormalized( );
 
          return Matrix{
             xAxis.x, yAxis.x, zAxis.x, 0.0f,
@@ -311,7 +328,7 @@ namespace Mile
 
       static Matrix CreatePerspectiveProj( float degreeFov, float aspectRatio, float nearPlane, float farPlane )
       {
-         float height = ( 1.0f / std::tanf( Math::DegreeToRadian( degreeFov ) ) );
+         float height = ( 1.0f / std::tan( Math::DegreeToRadian( degreeFov * 0.5f ) ) );
          float width = height / aspectRatio;
          float range = farPlane / ( farPlane - nearPlane );
 
