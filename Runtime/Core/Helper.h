@@ -13,6 +13,8 @@
 #include <codecvt>
 #include <string>
 
+#include <chrono>
+
 #define WIN32_MEAN_AND_LEAN
 #include <Windows.h>
 
@@ -151,5 +153,57 @@ namespace Mile
 
       std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
       return converter.to_bytes( str );
+   }
+
+   template <typename ... Args>
+   static std::string Formatting( const std::string& str, Args ... args )
+   {
+      size_t size = snprintf( nullptr, 0, str.c_str( ), args ... ) + 1;
+      std::unique_ptr< char[ ] > buf( new char[ size ] );
+      snprintf( buf.get( ), size, str.c_str( ), args ... );
+      return std::string( buf.get( ), buf.get( ) + size - 1 );
+   }
+
+   template < typename ... Args>
+   static String Formatting( const String& str, Args ... args )
+   {
+      size_t size = _snwprintf( nullptr, 0, str.c_str( ), args ... ) + 1;
+      std::unique_ptr< wchar_t > buf( new wchar_t[ size ] );
+      _snwprintf( buf.get( ), size, str.c_str( ), args ... );
+      return String( buf.get( ), buf.get( ) + size - 1 );
+   }
+   
+   static std::string NowToString( )
+   {
+      using namespace std;
+
+      chrono::system_clock::time_point t = chrono::system_clock::now( );
+      time_t rawTime = chrono::system_clock::to_time_t( t );
+
+      const auto timeInfo = localtime( &rawTime );
+      return Formatting( std::string( "%d/%d/%d %d:%d:%d" ),
+                         timeInfo->tm_year + 1900,
+                         timeInfo->tm_mon + 1,
+                         timeInfo->tm_mday,
+                         timeInfo->tm_hour,
+                         timeInfo->tm_min,
+                         timeInfo->tm_sec );
+   }
+
+   static String NowToWString( )
+   {
+      using namespace std;
+
+      chrono::system_clock::time_point t = chrono::system_clock::now( );
+      time_t rawTime = chrono::system_clock::to_time_t( t );
+
+      const auto timeInfo = localtime( &rawTime );
+      return Formatting( std::wstring( TEXT( "%d/%d/%d %d:%d:%d" ) ) ,
+                         timeInfo->tm_year + 1900,
+                         timeInfo->tm_mon + 1,
+                         timeInfo->tm_mday,
+                         timeInfo->tm_hour,
+                         timeInfo->tm_min,
+                         timeInfo->tm_sec );
    }
 }
