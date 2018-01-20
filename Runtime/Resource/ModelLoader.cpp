@@ -44,7 +44,9 @@ namespace Mile
                                       aiProcess_GenSmoothNormals |
                                       aiProcess_SplitLargeMeshes |
                                       aiProcess_ConvertToLeftHanded |
-                                      aiProcess_SortByPType );
+                                      aiProcess_SortByPType |
+                                      aiProcess_GenUVCoords |
+                                      aiProcess_PreTransformVertices );
 
       Entity* res = new Entity( nullptr, TEXT( "" ) );
       ReconstructEntityWithAiNode( scene, scene->mRootNode, target, res );
@@ -94,7 +96,7 @@ namespace Mile
       }
 
       // Reserve space
-      std::vector<VertexPosTexNT> verticies( mesh->mNumVertices );
+      std::vector<VertexPosTexNTB> verticies( mesh->mNumVertices );
       std::vector<unsigned int> indices( mesh->mNumFaces * 3 );
 
       bool bHasUV = mesh->HasTextureCoords( 0 );
@@ -126,6 +128,9 @@ namespace Mile
          {
             auto tan = mesh->mTangents[ idx ];
             vertex.Tangent = Vector4( tan.x, tan.y, tan.z, 0.0f );
+
+            auto biNormal = mesh->mBitangents[ idx ];
+            vertex.BiTangent = Vector4( biNormal.x, biNormal.y, biNormal.z, 0.0f );
          }
       }
 
@@ -137,9 +142,10 @@ namespace Mile
          indices[ idx * 3 + 2 ] = face.mIndices[ 2 ];
       }
 
+      auto meshName = String2WString( mesh->mName.C_Str( ) );
       // Create Material (or just load)
       Mesh* newMesh = new Mesh( rendererInst,
-                                mesh->mName.C_Str( ),
+                                meshName,
                                 target->GetPath( ) );
       newMesh->Init( verticies, indices );
       target->AddMesh( newMesh );
@@ -150,9 +156,13 @@ namespace Mile
       // Set Material
       // Create model dir + material name
       auto resMng = contextInst->GetSubSystem<ResourceManager>( );
-      auto newMat = resMng->Create<Material>( target->GetFolder() + target->GetName( ) + std::to_wstring( mesh->mMaterialIndex )
-                                 + TEXT(".material"));
+      auto newMat = resMng->Create<Material>( target->GetFolder( )
+                                              + target->GetName( )
+                                              + TEXT( "_" )
+                                              + meshName
+                                              + TEXT( ".material" ) );
       newMat->Save( );
+      newMat->Init( );
 
       // @TODO: Get Diffuse/Specular Texture names
 
