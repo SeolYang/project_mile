@@ -14,6 +14,7 @@
 #include "Core\World.h"
 #include "Core\Entity.h"
 #include "Core\Transform.h"
+#include "Core\Logger.h"
 #include "Math\Vector2.h"
 #include "Component\MeshRenderComponent.h"
 #include "Component\LightComponent.h"
@@ -139,6 +140,7 @@ namespace Mile
          return false;
       }
 
+      MELog( m_context, TEXT( "RendererDX11" ), ELogType::MESSAGE, TEXT( "RendererDX11 Initialized!" ), true );
       return true;
    }
 

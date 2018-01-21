@@ -2,6 +2,7 @@
 #include "Context.h"
 #include "Engine.h"
 #include "Config.h"
+#include "Logger.h"
 
 namespace Mile
 {
@@ -40,6 +41,7 @@ namespace Mile
                                posX, posY, m_resWidth, m_resHeight,
                                nullptr, nullptr, nullptr, nullptr );
 
+      MELog( m_context, TEXT( "Window" ), ELogType::MESSAGE, TEXT( "Window Initialized!" ), true );
       return true;
    }
 

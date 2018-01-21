@@ -2,6 +2,7 @@
 #include "Context.h"
 #include "Resource\ResourceManager.h"
 #include "Resource\PlainText.h"
+#include "Core\Logger.h"
 
 namespace Mile
 {
@@ -22,6 +23,7 @@ namespace Mile
          return false;
       }
 
+      MELog( m_context, TEXT( "ConfigSystem" ), ELogType::MESSAGE, TEXT( "Config System Initialized!" ), true );
       return true;
    }
 

@@ -1,6 +1,7 @@
 #include "World.h"
 #include "Context.h"
 #include "Entity.h"
+#include "Logger.h"
 #include "Resource\ResourceManager.h"
 #include "Config.h"
 #include "Resource\PlainText.h"
@@ -48,7 +49,14 @@ namespace Mile
       auto engineConfig = configSys->GetConfig( TEXT( "Engine" ) );
       String defaultPath = String2WString(engineConfig.second[ "World" ]);
 
-      return LoadFrom( defaultPath );
+      auto loaded = LoadFrom( defaultPath );
+      if ( !loaded )
+      {
+         return false;
+      }
+
+      MELog( m_context, TEXT( "World" ), ELogType::MESSAGE, TEXT( "World Initialized!" ), true );
+      return true;
    }
 
    void World::DeInit( )
@@ -120,9 +128,11 @@ namespace Mile
       {
          this->m_loadedData = res;
          this->DeSerialize( json::parse( res->GetData( ) ) );
+         MELog( m_context, TEXT( "World" ), ELogType::MESSAGE, TEXT( "World loaded. : " ) + filePath, true );
          return true;
       }
 
+      MELog( m_context, TEXT( "World" ), ELogType::FATAL, TEXT( "World load failed. : " ) + filePath, true );
       return false;
    }
 

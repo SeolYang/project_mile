@@ -51,30 +51,34 @@ namespace Mile
       // Initialize Resource manager
       if ( !m_context->GetSubSystem<ResourceManager>( )->Init( ) )
       {
+         m_logger->Logging( TEXT( "Engine" ), ELogType::FATAL, TEXT( "Resource Manager failed to intiialize!" ), true );
          return false;
       }
 
       // Initialize ConfigSystem
       if ( !m_context->GetSubSystem<ConfigSystem>( )->Init( ) )
       {
+         m_logger->Logging( TEXT( "Engine" ), ELogType::FATAL, TEXT( "Config System failed to intiialize!" ), true );
          return false;
       }
 
       // Initialize Window Subsystem
       if ( !m_context->GetSubSystem<Window>( )->Init( ) )
       {
+         m_logger->Logging( TEXT( "Engine" ), ELogType::FATAL, TEXT( "Resource Manager failed to intiialize!" ), true );
          return false;
       }
 
       if ( !m_context->GetSubSystem<RendererDX11>( )->Init( ) )
       {
+         m_logger->Logging( TEXT( "Engine" ), ELogType::FATAL, TEXT( "RendererDX11 failed to intiialize!" ), true );
          return false;
       }
 
       // Initialize World
       if ( !m_context->GetSubSystem<World>( )->Init( ) )
       {
-         //@TODO: Add Log
+         m_logger->Logging( TEXT( "Engine" ), ELogType::FATAL, TEXT( "World failed to intiialize!" ), true );
          return false;
       }
 
