@@ -1,6 +1,5 @@
 #pragma once
 #pragma warning( disable : 4251 )
-#define _CRT_SECURE_NO_WARNINGS
 
 #include <vector>
 #include <array>
@@ -180,7 +179,7 @@ namespace Mile
    *                 "%d/%d/%d %d:%d:%d" => "Year/Month/Day Hour:Min:Sec"
    **/
    static std::string TimeToString( const std::chrono::system_clock::time_point& t,
-                                    const std::string& format = "%d/%d/%d %d:%d:%d" )
+                                    const std::string& format = "%d/%02d/%02d %02d:%02d:%02d" )
    {
       using namespace std;
       time_t rawTime = chrono::system_clock::to_time_t( t );
@@ -201,7 +200,7 @@ namespace Mile
    *                 "%d/%d/%d %d:%d:%d" => "Year/Month/Day Hour:Min:Sec"
    **/
    static String TimeToWString( const std::chrono::system_clock::time_point& t,
-                                const String& format = TEXT( "%d/%d/%d %d:%d:%d" ) )
+                                const String& format = TEXT( "%d/%02d/%02d %02d:%02d:%02d" ) )
    {
       using namespace std;
       time_t rawTime = chrono::system_clock::to_time_t( t );
