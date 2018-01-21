@@ -12,7 +12,6 @@ namespace Mile
       template < typename Ty >
       void Register( const std::string& key )
       {
-         std::cout << key << std::endl;
          m_constructorMap.insert( std::make_pair( key, &Component::Create<Ty> ) );
       }
 

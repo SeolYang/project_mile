@@ -12,10 +12,8 @@ namespace Mile
 
    std::string MeshRenderComponent::Serialize( ) const
    {
-      //auto model = m_mesh->Ge
       // { "Mesh": { "Model": (Model filepath), "Name": (Mesh Name) },
       // "Material": (Material filepath) }
-      //std::string res = "{ \"Mesh\": " + 
       std::string res = "{ \"Type\": \"MeshRenderComponent\", "
          + Component::Serialize( ) +
          ", \"Mesh\": { \"Model\": \"" + WString2String( m_mesh->GetModelPath( ) ) + 
@@ -34,13 +32,6 @@ namespace Mile
       {
          m_mesh = loadedModel->GetMeshByName( String2WString( meshData[ "Name" ] ) );
          m_material = resMng->Load<Material>( String2WString( jsonData[ "Material" ] ) );
-         // Begin
-         //json meshData = jsonData[ "Mesh" ];
-         //meshData["Model"] -> Resource Load
-         // m_mesh = LoadedModel->GetMeshByName( meshData["Name"] )
-         //jsonData[ "Material" ] -> Resource Load
-         // m_material = LoadedMaterial
-         // End
       }
    }
 }
