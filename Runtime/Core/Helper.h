@@ -1,5 +1,6 @@
 #pragma once
 #pragma warning( disable : 4251 )
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <vector>
 #include <array>
@@ -174,36 +175,48 @@ namespace Mile
       return String( buf.get( ), buf.get( ) + size - 1 );
    }
 
-   static std::string TimeToString( const std::chrono::system_clock::time_point& t )
+   /*
+   * @param format   Require 6 integer formatting character( %d )
+   *                 "%d/%d/%d %d:%d:%d" => "Year/Month/Day Hour:Min:Sec"
+   **/
+   static std::string TimeToString( const std::chrono::system_clock::time_point& t,
+                                    const std::string& format = "%d/%d/%d %d:%d:%d" )
    {
       using namespace std;
       time_t rawTime = chrono::system_clock::to_time_t( t );
 
-      const auto timeInfo = localtime( &rawTime );
-      return Formatting( std::string( "%d/%d/%d %d:%d:%d" ),
-                         timeInfo->tm_year + 1900,
-                         timeInfo->tm_mon + 1,
-                         timeInfo->tm_mday,
-                         timeInfo->tm_hour,
-                         timeInfo->tm_min,
-                         timeInfo->tm_sec );
+      tm timeInfo{};
+      localtime_s( &timeInfo, &rawTime );
+      return Formatting( format,
+                         timeInfo.tm_year + 1900,
+                         timeInfo.tm_mon + 1,
+                         timeInfo.tm_mday,
+                         timeInfo.tm_hour,
+                         timeInfo.tm_min,
+                         timeInfo.tm_sec );
    }
 
-   static String TimeToWString( const std::chrono::system_clock::time_point& t )
+   /*
+   * @param format   Require 6 integer formatting character( %d )
+   *                 "%d/%d/%d %d:%d:%d" => "Year/Month/Day Hour:Min:Sec"
+   **/
+   static String TimeToWString( const std::chrono::system_clock::time_point& t,
+                                const String& format = TEXT( "%d/%d/%d %d:%d:%d" ) )
    {
       using namespace std;
       time_t rawTime = chrono::system_clock::to_time_t( t );
 
-      const auto timeInfo = localtime( &rawTime );
-      return Formatting( std::wstring( TEXT( "%d/%d/%d %d:%d:%d" ) ),
-                         timeInfo->tm_year + 1900,
-                         timeInfo->tm_mon + 1,
-                         timeInfo->tm_mday,
-                         timeInfo->tm_hour,
-                         timeInfo->tm_min,
-                         timeInfo->tm_sec );
+      tm timeInfo{};
+      localtime_s( &timeInfo, &rawTime );
+      return Formatting( format,
+                         timeInfo.tm_year + 1900,
+                         timeInfo.tm_mon + 1,
+                         timeInfo.tm_mday,
+                         timeInfo.tm_hour,
+                         timeInfo.tm_min,
+                         timeInfo.tm_sec );
    }
-   
+
    static std::string NowToString( )
    {
       using namespace std;
