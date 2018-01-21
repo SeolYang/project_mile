@@ -12,6 +12,7 @@
 #include <locale>
 #include <codecvt>
 #include <string>
+#include <algorithm>
 
 #include <chrono>
 
@@ -173,7 +174,7 @@ namespace Mile
       return String( buf.get( ), buf.get( ) + size - 1 );
    }
 
-   static std::string TimeToString( std::chrono::system_clock::time_point t )
+   static std::string TimeToString( const std::chrono::system_clock::time_point& t )
    {
       using namespace std;
       time_t rawTime = chrono::system_clock::to_time_t( t );
@@ -188,7 +189,7 @@ namespace Mile
                          timeInfo->tm_sec );
    }
 
-   static String TimeToWString( std::chrono::system_clock::time_point t )
+   static String TimeToWString( const std::chrono::system_clock::time_point& t )
    {
       using namespace std;
       time_t rawTime = chrono::system_clock::to_time_t( t );
@@ -217,4 +218,10 @@ namespace Mile
       return TimeToWString( t );
    }
 
+   static String ToLower( const String& target )
+   {
+      String temp = target;
+      std::transform( temp.begin( ), temp.end( ), temp.begin( ), ::tolower );
+      return temp;
+   }
 }
