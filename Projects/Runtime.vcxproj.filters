@@ -351,6 +351,9 @@
     <ClInclude Include="..\ThirdParty\FreeImage\include\Utilities.h">
       <Filter>ThirdParty\FreeImage</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Core\Logger.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -493,6 +496,9 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\TestRenderPass.cpp">
       <Filter>Rendering\TestRenderPass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Core\Logger.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

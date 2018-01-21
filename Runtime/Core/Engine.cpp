@@ -1,5 +1,6 @@
 #include "Engine.h"
 #include "Context.h"
+#include "Logger.h"
 #include "Config.h"
 #include "Window.h"
 #include "Resource\ResourceManager.h"
@@ -12,6 +13,9 @@ namespace Mile
       SubSystem( context ), m_bIsRunning( false ), m_bShutdownFlag( false )
    {
       m_context->RegisterSubSystem( this );
+
+      m_logger = new Logger( m_context );
+      m_context->RegisterSubSystem( m_logger );
 
       m_resourceManager = new ResourceManager( m_context );
       m_context->RegisterSubSystem( m_resourceManager );
@@ -31,7 +35,18 @@ namespace Mile
 
    bool Engine::Init( )
    {
+      if ( m_context == nullptr )
+      {
+         return false;
+      }
+
       // -* Initialize subsystems *-
+
+      // Initialize Logger
+      if ( !m_context->GetSubSystem<Logger>( )->Init( ) )
+      {
+         return false;
+      }
 
       // Initialize Resource manager
       if ( !m_context->GetSubSystem<ResourceManager>( )->Init( ) )
@@ -96,6 +111,7 @@ namespace Mile
    void Engine::ShutDown( )
    {
       m_bIsRunning = false;
+      m_logger = nullptr;
       m_resourceManager = nullptr;
       m_configSys = nullptr;
       m_window = nullptr;

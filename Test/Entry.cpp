@@ -1,5 +1,6 @@
 #include "Core\Context.h"
 #include "Core\Engine.h"
+#include "Core\Logger.h"
 #include "Core\World.h"
 #include "Core\Entity.h"
 #include "Component\CameraComponent.h"
@@ -17,7 +18,7 @@ using namespace Mile;
 int main( )
 {
    auto context = std::make_unique<Context>( );
-   auto engine = new Engine( context.get( ) );
+   auto engine = std::make_unique<Engine>( context.get( ) );
 
    if ( !engine->Init( ) )
    {
@@ -104,7 +105,8 @@ int main( )
       ++t;
    }
 
+   MELog( context.get( ), TEXT( "TestCategory" ), ELogType::DEBUG, TEXT( "TEST MESSAGE~" ), true );
+
    int execute = engine->Execute( );
-   SafeDelete( engine );
    return execute;
 }

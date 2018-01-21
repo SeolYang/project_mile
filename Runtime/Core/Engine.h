@@ -4,6 +4,7 @@
 
 namespace Mile
 {
+   class Logger;
    class ConfigSystem;
    class Window;
    class ResourceManager;
@@ -38,6 +39,7 @@ namespace Mile
    private:
       bool                m_bIsRunning;
       bool                m_bShutdownFlag;
+      Logger*             m_logger;
       ResourceManager*    m_resourceManager;
       ConfigSystem*       m_configSys;
       Window*             m_window;
