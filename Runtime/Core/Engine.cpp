@@ -3,9 +3,10 @@
 #include "Logger.h"
 #include "Config.h"
 #include "Window.h"
+#include "World.h"
 #include "Resource\ResourceManager.h"
 #include "Rendering\RendererDX11.h"
-#include "World.h"
+#include "MT\ThreadPool.h"
 
 namespace Mile
 {
@@ -16,6 +17,9 @@ namespace Mile
 
       m_logger = new Logger( m_context );
       m_context->RegisterSubSystem( m_logger );
+
+      m_threadPool = new ThreadPool( m_context );
+      m_context->RegisterSubSystem( m_threadPool );
 
       m_resourceManager = new ResourceManager( m_context );
       m_context->RegisterSubSystem( m_resourceManager );
@@ -45,6 +49,13 @@ namespace Mile
       // Initialize Logger
       if ( !m_context->GetSubSystem<Logger>( )->Init( ) )
       {
+         return false;
+      }
+
+      // Initialize Thread Pool
+      if ( !m_context->GetSubSystem<ThreadPool>( )->Init( ) )
+      {
+         m_logger->Logging( TEXT( "Engine" ), ELogType::FATAL, TEXT( "Thread Pool failed to intiialize!" ), true );
          return false;
       }
 
@@ -114,7 +125,9 @@ namespace Mile
 
    void Engine::ShutDown( )
    {
+      SubSystem::DeInit( );
       m_bIsRunning = false;
+      m_threadPool = nullptr;
       m_logger = nullptr;
       m_resourceManager = nullptr;
       m_configSys = nullptr;

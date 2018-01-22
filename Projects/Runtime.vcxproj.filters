@@ -52,6 +52,9 @@
     <Filter Include="ThirdParty\assimp">
       <UniqueIdentifier>{8901785b-806b-45c4-b2d4-413b1226390d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MT">
+      <UniqueIdentifier>{9f8b5cb0-39c5-441a-8fa9-ddd62c5ae18b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Core\Context.h">
@@ -353,6 +356,9 @@
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\Logger.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\MT\ThreadPool.h">
+      <Filter>MT</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

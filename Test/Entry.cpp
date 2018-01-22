@@ -12,6 +12,7 @@
 #include "Resource\Material.h"
 #include "Resource\Texture2D.h"
 #include "Math\Vector3.h"
+#include "MT\ThreadPool.h"
 
 using namespace Mile;
 
@@ -105,7 +106,14 @@ int main( )
       ++t;
    }
 
-   MELog( context, TEXT( "TestCategory" ), ELogType::DEBUG, TEXT( "TEST MESSAGE~" ), true );
+   MELog( context, TEXT( "Test" ), ELogType::DEBUG, TEXT( "TEST MESSAGE~" ), true );
+
+   auto tp = context->GetSubSystem<ThreadPool>( );
+   tp->AddTask( [ ]( )
+   {
+      std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
+      std::cout << "Hello! This is Thread Pool test~" << std::endl;
+   } );
 
    int execute = engine->Execute( );
    SafeDelete( context );
