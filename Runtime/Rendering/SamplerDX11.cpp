@@ -30,6 +30,7 @@ namespace Mile
          return false;
       }
 
+      m_bIsInit = true;
       return true;
    }
 
@@ -41,6 +42,21 @@ namespace Mile
       }
 
       m_renderer->GetDeviceContext( )->PSSetSamplers( startSlot, 1, &m_sampler );
+      m_bIsBinded = true;
+      m_bindedSlot = startSlot;
       return true;
+   }
+
+   void SamplerDX11::Unbind( )
+   {
+      if ( !m_bIsInit || !m_bIsBinded )
+      {
+         return;
+      }
+
+      ID3D11SamplerState* nullSampler = nullptr;
+      m_renderer->GetDeviceContext( )->PSSetSamplers( m_bindedSlot, 1, &nullSampler );
+      m_bIsBinded = false;
+      m_bindedSlot = 0;
    }
 }

@@ -71,6 +71,11 @@ namespace Mile
       if ( m_renderer != nullptr )
       {
          auto deviceContext = m_renderer->GetDeviceContext( );
+         for ( auto sampler : m_samplers )
+         {
+            sampler->Unbind( );
+         }
+
          deviceContext->PSSetShader( nullptr, nullptr, 0 );
       }
    }
