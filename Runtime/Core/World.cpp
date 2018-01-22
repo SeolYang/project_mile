@@ -2,8 +2,8 @@
 #include "Context.h"
 #include "Entity.h"
 #include "Logger.h"
-#include "Resource\ResourceManager.h"
 #include "Config.h"
+#include "Resource\ResourceManager.h"
 #include "Resource\PlainText.h"
 #include <iostream>
 
@@ -17,6 +17,7 @@ namespace Mile
 
    World::~World( )
    {
+      DeInit( );
    }
 
    std::string World::Serialize( ) const
@@ -62,6 +63,7 @@ namespace Mile
    void World::DeInit( )
    {
       //SaveTo( TEXT( "Contents/Worlds/Test.json" ) );
+      MELog( m_context, TEXT( "World" ), ELogType::MESSAGE, TEXT( "World deinitialized." ), true );
    }
 
    void World::Start( )

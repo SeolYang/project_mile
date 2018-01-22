@@ -12,6 +12,7 @@ namespace Mile
       virtual ~Window( );
 
       virtual bool Init( ) override;
+      virtual void DeInit( ) override;
 
       void* GetHandle( ) { return m_handle; }
 

@@ -12,6 +12,7 @@ namespace Mile
         ~ResourceManager( );
 
         virtual bool Init( ) override;
+        virtual void DeInit( ) override;
 
         template < typename Ty >
         Ty* Load( const String& relativePath )

@@ -33,6 +33,10 @@ namespace Mile
    {
    public:
       Logger( Context* context );
+      ~Logger( )
+      {
+         DeInit( );
+      }
 
       virtual bool Init( ) override;
       virtual void DeInit( ) override;
@@ -105,6 +109,7 @@ namespace Mile
       }
 
       logger->Logging( category, type, message, printConsole );
+
       return true;
    }
 }

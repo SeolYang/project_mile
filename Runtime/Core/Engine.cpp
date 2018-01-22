@@ -121,5 +121,6 @@ namespace Mile
       m_window = nullptr;
       m_renderer = nullptr;
       m_world = nullptr;
+      MELog( m_context, TEXT( "Engine" ), ELogType::MESSAGE, TEXT( "Engine shutting down." ), true );
    }
 }

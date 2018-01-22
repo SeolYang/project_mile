@@ -41,20 +41,7 @@ namespace Mile
 
    RendererDX11::~RendererDX11( )
    {
-      SafeDelete( m_viewport );
-      SafeDelete( m_defaultState );
-      SafeDelete( m_screenQuad );
-      SafeDelete( m_testPass );
-      SafeDelete( m_shadingPass );
-      SafeDelete( m_lightBufferPass );
-      SafeDelete( m_lightBuffer );
-      SafeDelete( m_gBufferPass );
-      SafeDelete( m_gBuffer );
-      SafeRelease( m_renderTargetView );
-      SafeDelete( m_depthStencilBuffer );
-      SafeRelease( m_swapChain );
-      SafeRelease( m_deviceContext );
-      SafeRelease( m_device );
+      DeInit( );
    }
 
    bool RendererDX11::Init( )
@@ -142,6 +129,26 @@ namespace Mile
 
       MELog( m_context, TEXT( "RendererDX11" ), ELogType::MESSAGE, TEXT( "RendererDX11 Initialized!" ), true );
       return true;
+   }
+
+   void RendererDX11::DeInit( )
+   {
+      SafeDelete( m_viewport );
+      SafeDelete( m_defaultState );
+      SafeDelete( m_screenQuad );
+      SafeDelete( m_testPass );
+      SafeDelete( m_shadingPass );
+      SafeDelete( m_lightBufferPass );
+      SafeDelete( m_lightBuffer );
+      SafeDelete( m_gBufferPass );
+      SafeDelete( m_gBuffer );
+      SafeRelease( m_renderTargetView );
+      SafeDelete( m_depthStencilBuffer );
+      SafeRelease( m_swapChain );
+      SafeRelease( m_deviceContext );
+      SafeRelease( m_device );
+
+      MELog( m_context, TEXT( "RendererDX11" ), ELogType::MESSAGE, TEXT( "RendererDX11 deinitialized." ), true );
    }
 
    bool RendererDX11::CreateDeviceAndSwapChain( )

@@ -17,8 +17,8 @@ using namespace Mile;
 
 int main( )
 {
-   auto context = std::make_unique<Context>( );
-   auto engine = std::make_unique<Engine>( context.get( ) );
+   auto context = new Context( );
+   auto engine = new Engine( context );
 
    if ( !engine->Init( ) )
    {
@@ -105,8 +105,9 @@ int main( )
       ++t;
    }
 
-   MELog( context.get( ), TEXT( "TestCategory" ), ELogType::DEBUG, TEXT( "TEST MESSAGE~" ), true );
+   MELog( context, TEXT( "TestCategory" ), ELogType::DEBUG, TEXT( "TEST MESSAGE~" ), true );
 
    int execute = engine->Execute( );
+   SafeDelete( context );
    return execute;
 }

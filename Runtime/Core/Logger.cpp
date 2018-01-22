@@ -31,6 +31,7 @@ namespace Mile
 
    void Logger::DeInit( )
    {
+      Logging( TEXT( "Logger" ), ELogType::MESSAGE, TEXT( "Logger deinitialized." ), true );
       Flush( );
    }
 
@@ -47,11 +48,13 @@ namespace Mile
       auto log = Log{ category, type, message };
       m_logs.push_front( log );
 
+#ifdef _DEBUG
       if ( printConsole )
       {
          auto formattedLog = LogToStr( log );
          std::wcout << formattedLog << std::endl;
       }
+#endif
    }
 
    LogList Logger::Filtering( const String& category, ELogType type = ELogType::None )

@@ -38,6 +38,7 @@ namespace Mile
       virtual ~RendererDX11( );
 
       virtual bool Init( ) override;
+      virtual void DeInit( ) override;
 
       void AcquireMeshRenderersAndMaterial( const std::vector<Entity*>& entities );
       void AcquireLights( const std::vector<Entity*>& entities );

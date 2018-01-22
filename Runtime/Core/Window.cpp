@@ -15,6 +15,7 @@ namespace Mile
 
    Window::~Window( )
    {
+      DeInit( );
    }
 
    bool Window::Init( )
@@ -43,6 +44,11 @@ namespace Mile
 
       MELog( m_context, TEXT( "Window" ), ELogType::MESSAGE, TEXT( "Window Initialized!" ), true );
       return true;
+   }
+
+   void Window::DeInit( )
+   {
+      MELog( m_context, TEXT( "Window" ), ELogType::MESSAGE, TEXT( "Window deinitialized." ), true );
    }
 
    void Window::Update( )

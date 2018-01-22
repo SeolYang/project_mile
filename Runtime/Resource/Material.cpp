@@ -1,8 +1,9 @@
 #include "Material.h"
-#include "json.hpp"
 #include "Core\Context.h"
+#include "Core\Logger.h"
 #include "ResourceManager.h"
 #include "Texture2D.h"
+#include "json.hpp"
 
 //{
 // "BaseColor": ....,
@@ -13,9 +14,16 @@ namespace Mile
 {
    bool Material::Init( )
    {
+      if ( m_context == nullptr || m_bIsInitialized )
+      {
+         MELog( m_context, TEXT( "Material" ), ELogType::WARNING, TEXT( "Already Initialized material." ), true );
+         return false;
+      }
+
       std::ifstream stream( this->m_path );
       if ( !stream.is_open( ) )
       {
+         MELog( m_context, TEXT( "Material" ), ELogType::WARNING, TEXT( "Failed to load material from " ) + m_path, true );
          return false;
       }
 
@@ -45,7 +53,6 @@ namespace Mile
          m_normalMap = resourceMng->Load<Texture2D>( TEXT( "Contents/Textures/default_black.png" ) );
       }
 
-      // @TODO: Load engine default textures if load texture does not exist
       return true;
    }
 

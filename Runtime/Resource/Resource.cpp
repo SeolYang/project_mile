@@ -12,6 +12,7 @@ namespace Mile
       m_ext( GetFileExtensionFromPath( m_path ) ),
       m_folder( GetFolderFromPath( path ) ),
       m_resourceType( resourceType ),
+      m_bIsInitialized( false ),
       m_id( ResCount )
    {
       ++ResCount;

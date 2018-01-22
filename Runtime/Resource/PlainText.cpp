@@ -1,51 +1,64 @@
 #include "PlainText.h"
+#include "Core/Logger.h"
 
 namespace Mile
 {
    template<>
    bool PlainText<String>::Init( )
    {
-      m_data = TEXT( "" );
+      if ( m_context == nullptr || m_bIsInitialized )
+      {
+         MELog( m_context, TEXT( "PlainText" ), ELogType::WARNING, TEXT( "Is already initialized." ), true );
+         return false;
+      }
 
       std::wifstream stream( this->m_path );
-      if ( stream.is_open( ) )
+      if ( !stream.is_open( ) )
       {
-         String tmp;
-         while ( std::getline( stream, tmp ) )
-         {
-            m_data += tmp;
-            m_data += '\n';
-         }
+         MELog( m_context, TEXT( "PlainText" ), ELogType::WARNING, TEXT( "Failed to load from " ) + m_path, true );
+         return false;
+      }
 
-         stream.close( );
-         return true;
+      m_data = TEXT( "" );
+      String tmp;
+      while ( std::getline( stream, tmp ) )
+      {
+         m_data += tmp;
+         m_data += '\n';
       }
 
       stream.close( );
-      return false;
+      return true;
+
    }
 
    template<>
    bool PlainText<std::string>::Init( )
    {
-      m_data = "";
+      if ( m_context == nullptr || m_bIsInitialized )
+      {
+         MELog( m_context, TEXT( "PlainText" ), ELogType::WARNING, TEXT( "Is already initialized." ), true );
+         return false;
+      }
+
 
       std::ifstream stream( this->m_path );
-      if ( stream.is_open( ) )
+      if ( !stream.is_open( ) )
       {
-         std::string tmp;
-         while ( std::getline( stream, tmp ) )
-         {
-            m_data += tmp;
-            m_data += '\n';
-         }
+         MELog( m_context, TEXT( "PlainText" ), ELogType::WARNING, TEXT( "Failed to load from " ) + m_path, true );
+         return false;
+      }
 
-         stream.close( );
-         return true;
+      m_data = "";
+      std::string tmp;
+      while ( std::getline( stream, tmp ) )
+      {
+         m_data += tmp;
+         m_data += '\n';
       }
 
       stream.close( );
-      return false;
+      return true;
    }
 
    template <>

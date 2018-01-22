@@ -3,6 +3,7 @@
 #include "Core\Entity.h"
 #include "Rendering\Mesh.h"
 #include "Core\World.h"
+#include "Core\Logger.h"
 #include <assimp\scene.h>
 #include <assimp\Importer.hpp>
 #include <assimp\postprocess.h>
@@ -31,8 +32,13 @@ namespace Mile
       }
 
       m_instance = ModelLoader::LoadModel( m_context, this, m_path );
-      m_serializedInstance = m_instance->Serialize( );
+      if ( m_instance == nullptr )
+      {
+         MELog( m_context, TEXT( "Model" ), ELogType::WARNING, TEXT( "Failed to load model from " ) + m_path, true );
+         return false;
+      }
 
+      m_serializedInstance = m_instance->Serialize( );
       return true;
    }
 

@@ -9,11 +9,16 @@ namespace Mile
 
    Context::~Context( )
    {
-      for ( size_t idx = m_subSystems.size( ) - 1; idx; --idx )
+      for ( auto itr = m_subSystems.end( ) - 1; itr != ( m_subSystems.begin( ) ); )
       {
-         m_subSystems[ idx ]->DeInit( );
-         SafeDelete( m_subSystems[ idx ] );
+         auto subSys = ( *itr );
+         SafeDelete( subSys );
+         itr = m_subSystems.erase( itr ) - 1;
       }
+
+      // Finally, delete Engine subsystem
+      SafeDelete( m_subSystems[ 0 ] );
+      m_subSystems.clear( );
 
       ComponentRegister::Destroy( );
    }

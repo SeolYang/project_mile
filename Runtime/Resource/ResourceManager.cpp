@@ -12,7 +12,7 @@ namespace Mile
 
    ResourceManager::~ResourceManager( )
    {
-      ClearCache( );
+      DeInit( );
    }
 
    bool ResourceManager::Init( )
@@ -25,6 +25,12 @@ namespace Mile
 
       MELog( m_context, TEXT( "ResourceManager" ), ELogType::MESSAGE, TEXT( "Resource Manager Initialized!" ), true );
       return true;
+   }
+
+   void ResourceManager::DeInit( )
+   {
+      ClearCache( );
+      MELog( m_context, TEXT( "ResourceManager" ), ELogType::MESSAGE, TEXT( "Resource Manager deinitialized!" ), true );
    }
 
    void ResourceManager::ClearCache( )
