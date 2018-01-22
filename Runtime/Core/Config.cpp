@@ -13,18 +13,36 @@ namespace Mile
 
    ConfigSystem::~ConfigSystem( )
    {
-      UnloadAllConfigs( );
+      DeInit( );
    }
 
    bool ConfigSystem::Init( )
    {
+      if ( m_context == nullptr || m_bIsInitialized )
+      {
+         MELog( m_context, TEXT( "ConfigSystem" ), ELogType::WARNING, TEXT( "Config System already initialized." ), true );
+         return false;
+      }
+
       if ( !LoadConfig( TEXT("Engine" )) )
       {
+         MELog( m_context, TEXT( "ConfigSystem" ), ELogType::FATAL, TEXT( "Faeild to load Engine default config. " ), true );
          return false;
       }
 
       MELog( m_context, TEXT( "ConfigSystem" ), ELogType::MESSAGE, TEXT( "Config System Initialized!" ), true );
+      m_bIsInitialized = true;
       return true;
+   }
+
+   void ConfigSystem::DeInit( )
+   {
+      if ( m_bIsInitialized )
+      {
+         UnloadAllConfigs( );
+         SubSystem::DeInit( );
+         MELog( m_context, TEXT( "ConfigSystem" ), ELogType::MESSAGE, TEXT( "Config System deintialized." ), true );
+      }
    }
 
    bool ConfigSystem::IsExist( const String & configName ) const

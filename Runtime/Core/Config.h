@@ -15,6 +15,7 @@ namespace Mile
       ~ConfigSystem( );
 
       virtual bool Init( ) override;
+      virtual void DeInit( ) override;
 
       bool IsExist( const String& configName ) const;
 

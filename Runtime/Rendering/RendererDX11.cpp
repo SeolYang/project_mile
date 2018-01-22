@@ -46,15 +46,38 @@ namespace Mile
 
    bool RendererDX11::Init( )
    {
+      if ( m_context == nullptr || m_bIsInitialized )
+      {
+         MELog( m_context, TEXT( "RendererDX11" ), ELogType::WARNING, TEXT( "RendererDX11 already initialized." ), true );
+         return false;
+      }
+
       // Initialize low level systems
       m_window = m_context->GetSubSystem<Window>( );
+      if ( m_window == nullptr )
+      {
+         MELog( m_context,
+                TEXT( "RendererDX11" ), 
+                ELogType::FATAL,
+                TEXT( "Cannot found Window subsystem from Context." ), true );
+         return false;
+      }
+
       if ( !CreateDeviceAndSwapChain( ) )
       {
+         MELog( m_context,
+                TEXT( "RendererDX11" ),
+                ELogType::FATAL,
+                TEXT( "Failed to create Device and SwapChain." ), true );
          return false;
       }
 
       if ( !CreateDepthStencilBuffer( ) )
       {
+         MELog( m_context,
+                TEXT( "RendererDX11" ),
+                ELogType::FATAL,
+                TEXT( "Failed to create Depth-Stencil Buffer." ), true );
          return false;
       }
       // #Initialize low level systems
@@ -63,9 +86,12 @@ namespace Mile
       Vector2 screenRes{ m_window->GetResolution( ) };
 
       m_screenQuad = new Quad( this );
-
       if ( !m_screenQuad->Init( -1.0f, -1.0f, 1.0f, 1.0f ) )
       {
+         MELog( m_context,
+                TEXT( "RendererDX11" ),
+                ELogType::FATAL,
+                TEXT( "Failed to create screen quad." ), true );
          return false;
       }
 
@@ -77,6 +103,10 @@ namespace Mile
       m_defaultState = new RasterizerState( this );
       if ( !m_defaultState->Init( ) )
       {
+         MELog( m_context,
+                TEXT( "RendererDX11" ),
+                ELogType::FATAL,
+                TEXT( "Failed to create Default RasteirzerState." ), true );
          return false;
       }
 
@@ -85,6 +115,10 @@ namespace Mile
          static_cast< unsigned int >( screenRes.x ),
          static_cast< unsigned int >( screenRes.y ) ) )
       {
+         MELog( m_context,
+                TEXT( "RendererDX11" ),
+                ELogType::FATAL,
+                TEXT( "Failed to create GBuffer." ), true );
          return false;
       }
       m_gBuffer->SetDepthStencilBuffer( m_depthStencilBuffer );
@@ -92,6 +126,10 @@ namespace Mile
       m_gBufferPass = new GBufferPass( this );
       if ( !m_gBufferPass->Init( TEXT( "Contents/Shaders/GBuffer.hlsl" ) ) )
       {
+         MELog( m_context,
+                TEXT( "RendererDX11" ),
+                ELogType::FATAL,
+                TEXT( "Failed to create GBuffer Rendering Pass." ), true );
          return false;
       }
       m_gBufferPass->SetGBuffer( m_gBuffer );
@@ -101,12 +139,20 @@ namespace Mile
          static_cast< unsigned int >( screenRes.x ),
          static_cast< unsigned int >( screenRes.y ) ) )
       {
+         MELog( m_context,
+                TEXT( "RendererDX11" ),
+                ELogType::FATAL,
+                TEXT( "Failed to create Light Buffer." ), true );
          return false;
       }
 
       m_lightBufferPass = new LightBufferPass( this );
       if ( !m_lightBufferPass->Init( TEXT( "Contents/Shaders/LightBuffer.hlsl" ) ) )
       {
+         MELog( m_context,
+                TEXT( "RendererDX11" ),
+                ELogType::FATAL,
+                TEXT( "Failed to create Light Buffer Rendering Pass." ), true );
          return false;
       }
       m_lightBufferPass->SetGBuffer( m_gBuffer );
@@ -115,6 +161,10 @@ namespace Mile
       m_shadingPass = new ShadingPass( this );
       if ( !m_shadingPass->Init( TEXT( "Contents/Shaders/Shading.hlsl" ) ) )
       {
+         MELog( m_context,
+                TEXT( "RendererDX11" ),
+                ELogType::FATAL,
+                TEXT( "Failed to create Shading Pass." ), true );
          return false;
       }
       m_shadingPass->SetLightBuffer( m_lightBuffer );
@@ -124,31 +174,40 @@ namespace Mile
       m_testPass = new TestRenderPass( this );
       if ( !m_testPass->Init( TEXT( "Contents/Shaders/TestShader.hlsl" ) ) )
       {
+         MELog( m_context,
+                TEXT( "RendererDX11" ),
+                ELogType::FATAL,
+                TEXT( "Failed to create Test Rendering Pass." ), true );
          return false;
       }
 
       MELog( m_context, TEXT( "RendererDX11" ), ELogType::MESSAGE, TEXT( "RendererDX11 Initialized!" ), true );
+      m_bIsInitialized = true;
       return true;
    }
 
    void RendererDX11::DeInit( )
    {
-      SafeDelete( m_viewport );
-      SafeDelete( m_defaultState );
-      SafeDelete( m_screenQuad );
-      SafeDelete( m_testPass );
-      SafeDelete( m_shadingPass );
-      SafeDelete( m_lightBufferPass );
-      SafeDelete( m_lightBuffer );
-      SafeDelete( m_gBufferPass );
-      SafeDelete( m_gBuffer );
-      SafeRelease( m_renderTargetView );
-      SafeDelete( m_depthStencilBuffer );
-      SafeRelease( m_swapChain );
-      SafeRelease( m_deviceContext );
-      SafeRelease( m_device );
+      if ( m_bIsInitialized )
+      {
+         SafeDelete( m_viewport );
+         SafeDelete( m_defaultState );
+         SafeDelete( m_screenQuad );
+         SafeDelete( m_testPass );
+         SafeDelete( m_shadingPass );
+         SafeDelete( m_lightBufferPass );
+         SafeDelete( m_lightBuffer );
+         SafeDelete( m_gBufferPass );
+         SafeDelete( m_gBuffer );
+         SafeRelease( m_renderTargetView );
+         SafeDelete( m_depthStencilBuffer );
+         SafeRelease( m_swapChain );
+         SafeRelease( m_deviceContext );
+         SafeRelease( m_device );
 
-      MELog( m_context, TEXT( "RendererDX11" ), ELogType::MESSAGE, TEXT( "RendererDX11 deinitialized." ), true );
+         MELog( m_context, TEXT( "RendererDX11" ), ELogType::MESSAGE, TEXT( "RendererDX11 deinitialized." ), true );
+         SubSystem::DeInit( );
+      }
    }
 
    bool RendererDX11::CreateDeviceAndSwapChain( )

@@ -20,6 +20,12 @@ namespace Mile
 
    bool Window::Init( )
    {
+      if ( m_context == nullptr || m_bIsInitialized )
+      {
+         MELog( m_context, TEXT( "Window" ), ELogType::WARNING, TEXT( "Window already initialized." ), true );
+         return false;
+      }
+
       auto configSys = m_context->GetSubSystem<ConfigSystem>( );
 
       auto config = configSys->GetConfig( TEXT( "Engine" ) );
@@ -43,12 +49,18 @@ namespace Mile
                                nullptr, nullptr, nullptr, nullptr );
 
       MELog( m_context, TEXT( "Window" ), ELogType::MESSAGE, TEXT( "Window Initialized!" ), true );
+      m_bIsInitialized = true;
       return true;
    }
 
    void Window::DeInit( )
    {
-      MELog( m_context, TEXT( "Window" ), ELogType::MESSAGE, TEXT( "Window deinitialized." ), true );
+      if ( m_bIsInitialized )
+      {
+         MELog( m_context, TEXT( "Window" ), ELogType::MESSAGE, TEXT( "Window deinitialized." ), true );
+
+         SubSystem::DeInit( );
+      }
    }
 
    void Window::Update( )

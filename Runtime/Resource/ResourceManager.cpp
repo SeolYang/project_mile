@@ -17,6 +17,11 @@ namespace Mile
 
    bool ResourceManager::Init( )
    {
+      if ( m_context == nullptr || m_bIsInitialized )
+      {
+         return false;
+      }
+
       m_cache = std::make_unique<ResourceCache>( m_context );
       if ( m_cache == nullptr )
       {
@@ -24,13 +29,18 @@ namespace Mile
       }
 
       MELog( m_context, TEXT( "ResourceManager" ), ELogType::MESSAGE, TEXT( "Resource Manager Initialized!" ), true );
+      m_bIsInitialized = true;
       return true;
    }
 
    void ResourceManager::DeInit( )
    {
-      ClearCache( );
-      MELog( m_context, TEXT( "ResourceManager" ), ELogType::MESSAGE, TEXT( "Resource Manager deinitialized!" ), true );
+      if ( m_bIsInitialized )
+      {
+         ClearCache( );
+         SubSystem::DeInit( );
+         MELog( m_context, TEXT( "ResourceManager" ), ELogType::MESSAGE, TEXT( "Resource Manager deinitialized!" ), true );
+      }
    }
 
    void ResourceManager::ClearCache( )

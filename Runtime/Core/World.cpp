@@ -46,6 +46,12 @@ namespace Mile
 
    bool World::Init( )
    {
+      if ( m_context == nullptr || m_bIsInitialized )
+      {
+         MELog( m_context, TEXT( "World" ), ELogType::WARNING, TEXT( "World already initialized." ), true );
+         return false;
+      }
+
       auto configSys = m_context->GetSubSystem<ConfigSystem>( );
       auto engineConfig = configSys->GetConfig( TEXT( "Engine" ) );
       String defaultPath = String2WString(engineConfig.second[ "World" ]);
@@ -53,17 +59,23 @@ namespace Mile
       auto loaded = LoadFrom( defaultPath );
       if ( !loaded )
       {
+         MELog( m_context, TEXT( "World" ), ELogType::FATAL, TEXT( "Failed to load world from " ) + defaultPath, true );
          return false;
       }
 
       MELog( m_context, TEXT( "World" ), ELogType::MESSAGE, TEXT( "World Initialized!" ), true );
+      m_bIsInitialized = true;
       return true;
    }
 
    void World::DeInit( )
    {
-      //SaveTo( TEXT( "Contents/Worlds/Test.json" ) );
-      MELog( m_context, TEXT( "World" ), ELogType::MESSAGE, TEXT( "World deinitialized." ), true );
+      if ( m_bIsInitialized )
+      {
+         //SaveTo( TEXT( "Contents/Worlds/Test.json" ) );
+         SubSystem::DeInit( );
+         MELog( m_context, TEXT( "World" ), ELogType::MESSAGE, TEXT( "World deinitialized." ), true );
+      }
    }
 
    void World::Start( )
