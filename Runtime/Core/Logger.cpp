@@ -19,20 +19,25 @@ namespace Mile
 
    bool Logger::Init( )
    {
-      if ( m_context == nullptr )
+      if ( m_context == nullptr || m_bIsInitialized )
       {
          return false;
       }
       
       m_loggingBeginTime = std::chrono::system_clock::now( );
-
+      Logging( TEXT( "Logger" ), ELogType::MESSAGE, TEXT( "Logger initialized!" ), true );
+      m_bIsInitialized = true;
       return true;
    }
 
    void Logger::DeInit( )
    {
-      Logging( TEXT( "Logger" ), ELogType::MESSAGE, TEXT( "Logger deinitialized." ), true );
-      Flush( );
+      if ( m_bIsInitialized )
+      {
+         Logging( TEXT( "Logger" ), ELogType::MESSAGE, TEXT( "Logger deinitialized." ), true );
+         Flush( );
+         SubSystem::DeInit( );
+      }
    }
 
    void Logger::SetLogFolderPath( const Mile::String& folderPath )
@@ -45,7 +50,7 @@ namespace Mile
                          const Mile::String& message,
                          bool printConsole )
    {
-      auto log = Log{ category, type, message };
+      auto log = Log{ category, type, message, std::chrono::system_clock::now( ) };
       m_logs.push_front( log );
 
 #ifdef _DEBUG

@@ -20,6 +20,7 @@ namespace Mile
       Mile::String Category;
       ELogType Type;
       Mile::String Message;
+      std::chrono::system_clock::time_point  Time;
    };
 
    struct MEAPI LogFilter
@@ -75,7 +76,7 @@ namespace Mile
       {
          // [Category][Type][Time] Message
          auto typeStr = Logger::LogTypeToStr( log.Type );
-         auto timeStr = NowToWString( );
+         auto timeStr = TimeToWString( log.Time );
          auto result = Formatting( TEXT( "[%s][%s][%s] %s" ),
                                    log.Category.c_str( ),
                                    typeStr.c_str( ),
