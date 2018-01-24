@@ -25,7 +25,7 @@ namespace Mile
       return viewport;
    }
 
-   bool Viewport::Bind( )
+   bool Viewport::Bind( ID3D11DeviceContext& const deviceContext )
    {
       if ( m_renderer == nullptr )
       {
@@ -33,9 +33,7 @@ namespace Mile
       }
 
       D3D11_VIEWPORT viewport = GetD3DViewport( );
-
-      auto deviceContext = m_renderer->GetDeviceContext( );
-      deviceContext->RSSetViewports( 1, &viewport );
+      deviceContext.RSSetViewports( 1, &viewport );
 
       return true;
    }

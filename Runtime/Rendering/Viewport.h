@@ -30,7 +30,7 @@ namespace Mile
 
       D3D11_VIEWPORT GetD3DViewport( ) const;
 
-      bool Bind( );
+      bool Bind( ID3D11DeviceContext& const deviceContext );
 
    public:
       RendererDX11 * m_renderer;

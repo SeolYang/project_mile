@@ -377,7 +377,7 @@ namespace Mile
             // @TODO: Implement Multiple camera rendering
             m_mainCamera = m_cameras[ 0 ];
 
-            m_viewport->Bind( );
+            m_viewport->Bind( ( *m_deviceContext ) );
             m_defaultState->Bind( );
             
             // light pre pass rendering
