@@ -357,7 +357,7 @@ namespace Mile
 
    void RendererDX11::Render( )
    {
-      Clear( );
+      Clear( *m_deviceContext );
 
       m_deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
@@ -378,12 +378,12 @@ namespace Mile
             m_mainCamera = m_cameras[ 0 ];
 
             m_viewport->Bind( ( *m_deviceContext ) );
-            m_defaultState->Bind( );
+            m_defaultState->Bind( ( *m_deviceContext ) );
             
             // light pre pass rendering
-            RenderGBuffer( );
-            RenderLightBuffer( );
-            RenderShading( );
+            RenderGBuffer( *m_deviceContext );
+            RenderLightBuffer( *m_deviceContext );
+            RenderShading( *m_deviceContext );
             //RenderTest( );
          }
       }
@@ -391,10 +391,10 @@ namespace Mile
       Present( );
    }
 
-   void RendererDX11::RenderGBuffer( )
+   void RendererDX11::RenderGBuffer( ID3D11DeviceContext& deviceContext )
    {
       m_gBuffer->SetDepthStencilBuffer( m_depthStencilBuffer );
-      m_gBufferPass->Bind( );
+      m_gBufferPass->Bind( deviceContext );
 
       auto camTransform = m_mainCamera->GetTransform( );
 
@@ -402,8 +402,10 @@ namespace Mile
       {
          auto material = batchedMaterial.first;
          auto normalTexture = material->GetNormalMap( );
-         m_gBufferPass->UpdateMaterialBuffer( material->GetSpecularExp( ) ); // per material
-         m_gBufferPass->UpdateNormalTexture( normalTexture->GetRawTexture( ) ); // per material
+         m_gBufferPass->UpdateMaterialBuffer( deviceContext,
+                                              material->GetSpecularExp( ) ); // per material
+         m_gBufferPass->UpdateNormalTexture( deviceContext,
+                                             normalTexture->GetRawTexture( ) ); // per material
 
          for ( auto meshRenderer : batchedMaterial.second )
          {
@@ -422,31 +424,36 @@ namespace Mile
                   m_mainCamera->GetNearPlane( ),
                   m_mainCamera->GetFarPlane( ) );
 
-            m_gBufferPass->UpdateTransformBuffer( world, worldView, worldViewProj );  // per object
+            m_gBufferPass->UpdateTransformBuffer( deviceContext,
+                                                  world,
+                                                  worldView,
+                                                  worldViewProj );  // per object
 
             // @TODO: Implement instancing
-            mesh->Bind( 0 );
-            m_deviceContext->DrawIndexed( mesh->GetIndexCount( ), 0, 0 );
+            mesh->Bind( deviceContext, 0 );
+            deviceContext.DrawIndexed( mesh->GetIndexCount( ), 0, 0 );
          }
       }
 
       // End of gbuffer pass
-      m_gBufferPass->Unbind( );
+      m_gBufferPass->Unbind( deviceContext );
    }
 
-   void RendererDX11::RenderLightBuffer( )
+   void RendererDX11::RenderLightBuffer( ID3D11DeviceContext& deviceContext )
    {
       m_lightBufferPass->SetGBuffer( m_gBuffer );
       m_lightBufferPass->SetLightBuffer( m_lightBuffer );
-      m_lightBufferPass->Bind( );
+      m_lightBufferPass->Bind( deviceContext );
 
       // @TODO: Implement multi - camera rendering
       auto cameraTransform = m_cameras[ 0 ]->GetTransform( );
-      m_lightBufferPass->UpdateCameraBuffer( cameraTransform->GetPosition( TransformSpace::World ) );
+      m_lightBufferPass->UpdateCameraBuffer( deviceContext,
+                                             cameraTransform->GetPosition( TransformSpace::World ) );
 
       for ( auto light : m_lightComponents )
       {
          m_lightBufferPass->UpdateLightParamBuffer(
+            deviceContext,
             light->GetLightPosition( ),
             light->GetLightColor( ),
             light->GetLightDirection( ),
@@ -454,20 +461,20 @@ namespace Mile
             Vector3( light->GetLightRange( ), 0.0f, 0.0f ),
             LightComponent::LightTypeToIndex( light->GetLightType( ) ) );
 
-         m_screenQuad->Bind( 0 );
-         m_deviceContext->DrawIndexed( 6, 0, 0 );
+         m_screenQuad->Bind( deviceContext, 0 );
+         deviceContext.DrawIndexed( 6, 0, 0 );
       }
 
-      m_lightBufferPass->Unbind( );
+      m_lightBufferPass->Unbind( deviceContext );
    }
 
-   void RendererDX11::RenderShading( )
+   void RendererDX11::RenderShading( ID3D11DeviceContext& deviceContext )
    {
       m_shadingPass->SetLightBuffer( m_lightBuffer );
       m_shadingPass->AcquireTransformBuffer( m_gBufferPass );
-      m_shadingPass->Bind( );
-      SetBackbufferAsRenderTarget( );
-      ClearDepthStencil( );
+      m_shadingPass->Bind( deviceContext );
+      SetBackbufferAsRenderTarget( deviceContext );
+      ClearDepthStencil( deviceContext );
 
       auto camTransform = m_mainCamera->GetTransform( );
 
@@ -475,8 +482,10 @@ namespace Mile
       {
          auto material = batchedMaterial.first;
          auto diffuseTexture = material->GetDiffuseMap( );
-         m_shadingPass->UpdateMaterialBuffer( material->GetSpecularAlbedo( ) );
-         m_shadingPass->UpdateDiffuseTexture( diffuseTexture->GetRawTexture( ) );
+         m_shadingPass->UpdateMaterialBuffer( deviceContext,
+                                              material->GetSpecularAlbedo( ) );
+         m_shadingPass->UpdateDiffuseTexture( deviceContext,
+                                              diffuseTexture->GetRawTexture( ) );
 
          for ( auto meshRenderer : batchedMaterial.second )
          {
@@ -494,24 +503,28 @@ namespace Mile
                   m_window->GetAspectRatio( ),
                   m_mainCamera->GetNearPlane( ),
                   m_mainCamera->GetFarPlane( ) );
-            m_shadingPass->UpdateTransformBuffer( world, worldView, worldViewProj );  // per object
+
+            m_shadingPass->UpdateTransformBuffer( deviceContext,
+                                                  world,
+                                                  worldView,
+                                                  worldViewProj );  // per object
 
             // @TODO: Implement instancing
-            mesh->Bind( 0 );
-            m_deviceContext->DrawIndexed( mesh->GetIndexCount( ), 0, 0 );
+            mesh->Bind( deviceContext, 0 );
+            deviceContext.DrawIndexed( mesh->GetIndexCount( ), 0, 0 );
          }
 
          // Unbind ShaderResource
-         m_shadingPass->UpdateDiffuseTexture( nullptr );
+         m_shadingPass->UpdateDiffuseTexture( deviceContext, nullptr );
       }
 
-      m_shadingPass->Unbind( );
+      m_shadingPass->Unbind( deviceContext );
    }
 
-   void RendererDX11::RenderTest( )
+   void RendererDX11::RenderTest( ID3D11DeviceContext& deviceContext )
    {
-      m_testPass->Bind( );
-      SetBackbufferAsRenderTarget( );
+      m_testPass->Bind( deviceContext );
+      SetBackbufferAsRenderTarget( deviceContext );
 
       auto camTransform = m_mainCamera->GetTransform( );
 
@@ -519,7 +532,8 @@ namespace Mile
       {
          auto material = batchedMaterial.first;
          auto diffuseTexture = material->GetDiffuseMap( );
-         m_testPass->UpdateDiffuseMap( diffuseTexture->GetRawTexture( ) );
+         m_testPass->UpdateDiffuseMap( deviceContext,
+                                       diffuseTexture->GetRawTexture( ) );
 
          for ( auto meshRenderer : batchedMaterial.second )
          {
@@ -537,36 +551,36 @@ namespace Mile
                   m_window->GetAspectRatio( ),
                   m_mainCamera->GetNearPlane( ),
                   m_mainCamera->GetFarPlane( ) );
-            m_testPass->UpdateTransformBuffer( world, worldView, worldViewProj );  // per object
+            m_testPass->UpdateTransformBuffer( deviceContext, 
+                                               world,
+                                               worldView,
+                                               worldViewProj );  // per object
 
-            mesh->Bind( 0 );
-            m_deviceContext->DrawIndexed( mesh->GetIndexCount( ), 0, 0 );
+            mesh->Bind( deviceContext, 0 );
+            deviceContext.DrawIndexed( mesh->GetIndexCount( ), 0, 0 );
          }
 
          // Unbind ShaderResource
-         m_testPass->UpdateDiffuseMap( nullptr );
+         m_testPass->UpdateDiffuseMap( deviceContext, nullptr );
       }
 
-      m_testPass->Unbind( );
+      m_testPass->Unbind( deviceContext );
    }
 
-   void RendererDX11::Clear( )
+   void RendererDX11::Clear( ID3D11DeviceContext& deviceContext )
    {
-      if ( m_deviceContext != nullptr )
-      {
-         float clearColor[ 4 ] = { m_clearColor.x, m_clearColor.y, m_clearColor.z, m_clearColor.w };
-         m_deviceContext->ClearRenderTargetView( m_renderTargetView,
-                                                 clearColor );
+      float clearColor[ 4 ] = { m_clearColor.x, m_clearColor.y, m_clearColor.z, m_clearColor.w };
+      deviceContext.ClearRenderTargetView( m_renderTargetView,
+                                           clearColor );
 
-         ClearDepthStencil( );
-      }
+      ClearDepthStencil( deviceContext );
    }
 
-   void RendererDX11::ClearDepthStencil( )
+   void RendererDX11::ClearDepthStencil( ID3D11DeviceContext& deviceContext )
    {
       if ( m_bDepthStencilEnabled )
       {
-         m_deviceContext->ClearDepthStencilView(
+         deviceContext.ClearDepthStencilView(
             m_depthStencilBuffer->GetDSV( ),
             D3D11_CLEAR_DEPTH, 1.0f, 0 );
       }
@@ -586,21 +600,21 @@ namespace Mile
       m_clearColor = clearColor;
    }
 
-   void RendererDX11::SetDepthStencilEnable( bool bDepthStencilEnable )
+   void RendererDX11::SetDepthStencilEnable( ID3D11DeviceContext& deviceContext, bool bDepthStencilEnable )
    {
       m_bDepthStencilEnabled = bDepthStencilEnable;
-      SetBackbufferAsRenderTarget( );
+      SetBackbufferAsRenderTarget( deviceContext  );
    }
 
-   void RendererDX11::SetBackbufferAsRenderTarget( )
+   void RendererDX11::SetBackbufferAsRenderTarget( ID3D11DeviceContext& deviceContext )
    {
       if ( m_bDepthStencilEnabled )
       {
-         m_deviceContext->OMSetRenderTargets( 1, &m_renderTargetView, m_depthStencilBuffer->GetDSV( ) );
+         deviceContext.OMSetRenderTargets( 1, &m_renderTargetView, m_depthStencilBuffer->GetDSV( ) );
       }
       else
       {
-         m_deviceContext->OMSetRenderTargets( 1, &m_renderTargetView, nullptr );
+         deviceContext.OMSetRenderTargets( 1, &m_renderTargetView, nullptr );
       }
    }
 }

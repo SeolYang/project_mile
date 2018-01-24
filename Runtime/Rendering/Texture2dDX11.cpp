@@ -96,22 +96,20 @@ namespace Mile
       return true;
    }
 
-   bool Texture2dDX11::Bind( unsigned int startSlot, ShaderType shader )
+   bool Texture2dDX11::Bind( ID3D11DeviceContext& deviceContext, unsigned int startSlot, ShaderType shader )
    {
       if ( !m_bIsInitialized || m_renderer == nullptr || m_bIsBinded )
       {
          return false;
       }
 
-      auto immediateContext = m_renderer->GetDeviceContext( );
-
       switch ( shader )
       {
       case ShaderType::VertexShader:
-         immediateContext->VSSetShaderResources( startSlot, 1, &m_srv );
+         deviceContext.VSSetShaderResources( startSlot, 1, &m_srv );
          break;
       case ShaderType::PixelShader:
-         immediateContext->PSSetShaderResources( startSlot, 1, &m_srv );
+         deviceContext.PSSetShaderResources( startSlot, 1, &m_srv );
          break;
       }
 
@@ -122,7 +120,7 @@ namespace Mile
       return true;
    }
 
-   void Texture2dDX11::Unbind( )
+   void Texture2dDX11::Unbind( ID3D11DeviceContext& deviceContext )
    {
       if ( !m_bIsBinded )
       {
@@ -130,14 +128,13 @@ namespace Mile
       }
 
       ID3D11ShaderResourceView* nullSRV = nullptr;
-      auto immediateContext = m_renderer->GetDeviceContext( );
       switch ( m_bindedShader )
       {
       case ShaderType::VertexShader:
-         immediateContext->VSSetShaderResources( m_bindedSlot, 1, &nullSRV );
+         deviceContext.VSSetShaderResources( m_bindedSlot, 1, &nullSRV );
          break;
       case ShaderType::PixelShader:
-         immediateContext->PSSetShaderResources( m_bindedSlot, 1, &nullSRV );
+         deviceContext.PSSetShaderResources( m_bindedSlot, 1, &nullSRV );
          break;
       }
 

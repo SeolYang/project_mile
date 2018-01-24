@@ -18,11 +18,11 @@ namespace Mile
       ~TestRenderPass( );
 
       virtual bool Init( const String& filePath );
-      virtual bool Bind( ) override;
-      virtual void Unbind( ) override;
+      virtual bool Bind( ID3D11DeviceContext& deviceContext ) override;
+      virtual void Unbind( ID3D11DeviceContext& deviceContext ) override;
 
-      void UpdateDiffuseMap( Texture2dDX11* texture );
-      void UpdateTransformBuffer( const Matrix& world, const Matrix& view, const Matrix& proj );
+      void UpdateDiffuseMap( ID3D11DeviceContext& deviceContext, Texture2dDX11* texture );
+      void UpdateTransformBuffer( ID3D11DeviceContext& deviceContext, const Matrix& world, const Matrix& view, const Matrix& proj );
 
    private:
       CBufferPtr      m_transformBuffer;

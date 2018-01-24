@@ -23,16 +23,16 @@ namespace Mile
       ~ShadingPass( );
 
       virtual bool Init( const String& filePath ) override;
-      virtual bool Bind( ) override;
-      virtual void Unbind( ) override;
+      virtual bool Bind( ID3D11DeviceContext& deviceContext ) override;
+      virtual void Unbind( ID3D11DeviceContext& deviceContext ) override;
 
       void SetLightBuffer( RenderTargetDX11* lightBuffer ) { m_lightBuffer = lightBuffer; }
-      void UpdateDiffuseTexture( Texture2dDX11* diffuseTexture );
+      void UpdateDiffuseTexture( ID3D11DeviceContext& deviceContext, Texture2dDX11* diffuseTexture );
 
       // To reuse transform constant buffer from GBufferPass
       void AcquireTransformBuffer( GBufferPass* gBufferPass );
-      void UpdateTransformBuffer( const Matrix& world, const Matrix& worldView, const Matrix& worldViewProj );
-      void UpdateMaterialBuffer( const Vector3& specularAlbedo );
+      void UpdateTransformBuffer( ID3D11DeviceContext& deviceContext, const Matrix& world, const Matrix& worldView, const Matrix& worldViewProj );
+      void UpdateMaterialBuffer( ID3D11DeviceContext& deviceContext, const Vector3& specularAlbedo );
 
    private:
       CBufferPtr        m_transformBuffer;

@@ -22,7 +22,7 @@ namespace Mile
       }
 
       bool Init( InputLayoutElementList&& intputLayoutDescs, VertexShaderDX11* shader );
-      bool Bind( );
+      bool Bind( ID3D11DeviceContext& deviceContext );
 
       InputLayoutElementList GetElementDescs( ) const { return m_elementDescs; }
 

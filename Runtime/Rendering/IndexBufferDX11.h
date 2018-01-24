@@ -12,7 +12,7 @@ namespace Mile
       }
 
       bool Init( const std::vector<unsigned int>& indicies );
-      bool Bind( );
+      bool Bind( ID3D11DeviceContext& deviceContext );
 
       virtual RenderResourceType GetResourceType( ) const override { return RenderResourceType::RDRT_IndexBuffer; }
       

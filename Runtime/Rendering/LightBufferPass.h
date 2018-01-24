@@ -30,20 +30,20 @@ namespace Mile
       ~LightBufferPass( );
 
       virtual bool Init( const String& filePath );
-      bool Bind( );
-      virtual void Unbind( ) override;
+      virtual bool Bind( ID3D11DeviceContext& deviceContext ) override;
+      virtual void Unbind( ID3D11DeviceContext& deviceContext ) override;
 
       void SetGBuffer( GBuffer* gBuffer );
       void SetLightBuffer( RenderTargetDX11* lightBuffer );
 
-      void UpdateLightParamBuffer( const Vector3& lightPos, 
+      void UpdateLightParamBuffer( ID3D11DeviceContext& deviceContext, const Vector3& lightPos,
                               const Vector3& lightColor,
                               const Vector3& lightDirection,
                               const Vector2& spotlightAngles,
                               const Vector3& lightRange,
                               unsigned int lightType );
 
-      void UpdateCameraBuffer( const Vector3& camPos );
+      void UpdateCameraBuffer( ID3D11DeviceContext& deviceContext, const Vector3& camPos );
 
    private:
       ConstantBufferDX11*  m_lightParamBuffer;

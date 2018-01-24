@@ -21,8 +21,9 @@ namespace Mile
       virtual ID3D11Resource* GetResource( ) override;
       D3D11_BUFFER_DESC GetDesc( ) const { return m_desc; }
 
-      virtual void* Map( ) { return nullptr;  }
-      virtual bool UnMap( ) { return false; }
+      virtual void* Map( ID3D11DeviceContext& deviceContext ) { return nullptr;  }
+      virtual bool UnMap( ID3D11DeviceContext& deviceContext ) { return false; }
+      virtual bool UnMapImmediately( ) final;
 
    protected:
       ID3D11Buffer*     m_buffer;

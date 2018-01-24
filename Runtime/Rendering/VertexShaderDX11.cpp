@@ -47,7 +47,7 @@ namespace Mile
       return true;
    }
 
-   bool VertexShaderDX11::Bind( )
+   bool VertexShaderDX11::Bind( ID3D11DeviceContext& deviceContext )
    {
       if ( !m_bIsCompiled || m_renderer == nullptr )
       {
@@ -55,21 +55,20 @@ namespace Mile
       }
 
       // Set Input Layout
-      if ( !m_inputLayout->Bind( ) )
+      if ( !m_inputLayout->Bind( deviceContext ) )
       {
          return false;
       }
 
-      m_renderer->GetDeviceContext( )->VSSetShader( m_shader, nullptr, 0 );
+      deviceContext.VSSetShader( m_shader, nullptr, 0 );
       return true;
    }
 
-   void VertexShaderDX11::Unbind( )
+   void VertexShaderDX11::Unbind( ID3D11DeviceContext& deviceContext )
    {
       if ( m_renderer != nullptr )
       {
-         auto deviceContext = m_renderer->GetDeviceContext( );
-         deviceContext->VSSetShader( nullptr, nullptr, 0 );
+         deviceContext.VSSetShader( nullptr, nullptr, 0 );
       }
    }
 

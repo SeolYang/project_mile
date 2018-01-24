@@ -49,9 +49,9 @@ namespace Mile
       return true;
    }
 
-   bool LightBufferPass::Bind( )
+   bool LightBufferPass::Bind( ID3D11DeviceContext& deviceContext )
    {
-      if ( !RenderingPass::Bind( ) )
+      if ( !RenderingPass::Bind( deviceContext ) )
       {
          return false;
       }
@@ -64,22 +64,22 @@ namespace Mile
          return false;
       }
 
-      if ( !m_lightBuffer->BindAsRenderTarget( ) )
+      if ( !m_lightBuffer->BindAsRenderTarget( deviceContext ) )
       {
          return false;
       }
 
-      if ( !m_gBuffer->BindAsShaderResource( 0 ) )
+      if ( !m_gBuffer->BindAsShaderResource( deviceContext, 0 ) )
       {
          return false;
       }
 
-      if ( !m_lightParamBuffer->Bind( 0, ShaderType::PixelShader ) )
+      if ( !m_lightParamBuffer->Bind( deviceContext, 0, ShaderType::PixelShader ) )
       {
          return false;
       }
 
-      if ( !m_cameraBuffer->Bind( 1, ShaderType::PixelShader ) )
+      if ( !m_cameraBuffer->Bind( deviceContext, 1, ShaderType::PixelShader ) )
       {
          return false;
       }
@@ -87,18 +87,18 @@ namespace Mile
       return true;
    }
 
-   void LightBufferPass::Unbind( )
+   void LightBufferPass::Unbind( ID3D11DeviceContext& deviceContext )
    {
       if ( m_renderer == nullptr )
       {
          return;
       }
 
-      m_lightParamBuffer->Unbind( );
-      m_cameraBuffer->Unbind( );
-      m_lightBuffer->UnbindRenderTarget( );
-      m_gBuffer->UnbindShaderResource( );
-      RenderingPass::Unbind( );
+      m_lightParamBuffer->Unbind( deviceContext );
+      m_cameraBuffer->Unbind( deviceContext );
+      m_lightBuffer->UnbindRenderTarget( deviceContext );
+      m_gBuffer->UnbindShaderResource( deviceContext );
+      RenderingPass::Unbind( deviceContext );
    }
 
    void LightBufferPass::SetGBuffer( GBuffer* gBuffer )
@@ -111,7 +111,7 @@ namespace Mile
       m_lightBuffer = lightBuffer;
    }
 
-   void LightBufferPass::UpdateLightParamBuffer( const Vector3& lightPos,
+   void LightBufferPass::UpdateLightParamBuffer( ID3D11DeviceContext& deviceContext, const Vector3& lightPos,
                                             const Vector3& lightColor,
                                             const Vector3& lightDirection,
                                             const Vector2& spotlightAngles,
@@ -120,7 +120,7 @@ namespace Mile
    {
       if ( m_lightBuffer != nullptr )
       {
-         auto buffer = reinterpret_cast< LightParamConstantBuffer* >( m_lightParamBuffer->Map( ) );
+         auto buffer = reinterpret_cast< LightParamConstantBuffer* >( m_lightParamBuffer->Map( deviceContext ) );
          buffer->LightPos = lightPos;
          buffer->LightColor = lightColor;
          buffer->LightDirection = lightDirection;
@@ -128,18 +128,18 @@ namespace Mile
          buffer->LightRange = lightRange;
          buffer->LightType = lightType;
 
-         m_lightParamBuffer->UnMap( );
+         m_lightParamBuffer->UnMap( deviceContext );
       }
    }
 
-   void LightBufferPass::UpdateCameraBuffer( const Vector3& camPos )
+   void LightBufferPass::UpdateCameraBuffer( ID3D11DeviceContext& deviceContext, const Vector3& camPos )
    {
       if ( m_cameraBuffer != nullptr )
       {
-         auto buffer = reinterpret_cast< CameraConstantBuffer* >( m_cameraBuffer->Map( ) );
+         auto buffer = reinterpret_cast< CameraConstantBuffer* >( m_cameraBuffer->Map( deviceContext ) );
          buffer->CameraPos = camPos;
 
-         m_cameraBuffer->UnMap( );
+         m_cameraBuffer->UnMap( deviceContext );
       }
    }
 }

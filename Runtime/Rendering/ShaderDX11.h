@@ -22,8 +22,8 @@ namespace Mile
       }
 
       virtual bool Init( const String& shaderPath ) = 0;
-      virtual bool Bind( ) = 0;
-      virtual void Unbind( ) = 0;
+      virtual bool Bind( ID3D11DeviceContext& deviceContext ) = 0;
+      virtual void Unbind( ID3D11DeviceContext& deviceContext ) = 0;
 
       ID3D10Blob* GetBlob( ) { return m_blob; }
 

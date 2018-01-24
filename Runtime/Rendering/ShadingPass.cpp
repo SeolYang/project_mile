@@ -42,9 +42,9 @@ namespace Mile
       return true;
    }
 
-   bool ShadingPass::Bind( )
+   bool ShadingPass::Bind( ID3D11DeviceContext& deviceContext )
    {
-      if ( !RenderingPass::Bind( ) )
+      if ( !RenderingPass::Bind( deviceContext ) )
       {
          return false;
       }
@@ -57,17 +57,17 @@ namespace Mile
          return false;
       }
 
-      if ( !m_transformBuffer->Bind( 0, ShaderType::VertexShader ) )
+      if ( !m_transformBuffer->Bind( deviceContext, 0, ShaderType::VertexShader ) )
       {
          return false;
       }
 
-      if ( !m_materialBuffer->Bind( 0, ShaderType::PixelShader ) )
+      if ( !m_materialBuffer->Bind( deviceContext, 0, ShaderType::PixelShader ) )
       {
          return false;
       }
 
-      if ( !m_lightBuffer->BindAsShaderResource( 1, ShaderType::PixelShader ) )
+      if ( !m_lightBuffer->BindAsShaderResource( deviceContext, 1, ShaderType::PixelShader ) )
       {
          return false;
       }
@@ -75,41 +75,41 @@ namespace Mile
       return true;
    }
 
-   void ShadingPass::Unbind( )
+   void ShadingPass::Unbind( ID3D11DeviceContext& deviceContext )
    {
       if ( m_renderer == nullptr )
       {
          return;
       }
 
-      m_transformBuffer->Unbind( );
-      m_materialBuffer->Unbind( );
+      m_transformBuffer->Unbind( deviceContext );
+      m_materialBuffer->Unbind( deviceContext );
 
       if ( m_diffuseTexture != nullptr )
       {
-         m_diffuseTexture->Unbind( );
+         m_diffuseTexture->Unbind( deviceContext );
       }
 
       if ( m_lightBuffer != nullptr )
       {
-         m_lightBuffer->UnbindShaderResource( );
+         m_lightBuffer->UnbindShaderResource( deviceContext );
       }
 
-      RenderingPass::Unbind( );
+      RenderingPass::Unbind( deviceContext );
    }
 
-   void ShadingPass::UpdateDiffuseTexture( Texture2dDX11* diffuseTexture )
+   void ShadingPass::UpdateDiffuseTexture( ID3D11DeviceContext& deviceContext, Texture2dDX11* diffuseTexture )
    {
       if ( m_diffuseTexture != nullptr )
       {
-         m_diffuseTexture->Unbind( );
+         m_diffuseTexture->Unbind( deviceContext );
       }
 
       if ( diffuseTexture != nullptr )
       {
-         diffuseTexture->Unbind( );
+         diffuseTexture->Unbind( deviceContext );
          m_diffuseTexture = diffuseTexture;
-         m_diffuseTexture->Bind( 0, ShaderType::PixelShader );
+         m_diffuseTexture->Bind( deviceContext, 0, ShaderType::PixelShader );
       }
    }
 
@@ -121,25 +121,25 @@ namespace Mile
       }
    }
 
-   void ShadingPass::UpdateTransformBuffer( const Matrix& world, const Matrix& worldView, const Matrix& worldViewProj )
+   void ShadingPass::UpdateTransformBuffer( ID3D11DeviceContext& deviceContext, const Matrix& world, const Matrix& worldView, const Matrix& worldViewProj )
    {
       if ( m_transformBuffer != nullptr )
       {
-         auto buffer = reinterpret_cast< TransformConstantBuffer* >( m_transformBuffer->Map( ) );
+         auto buffer = reinterpret_cast< TransformConstantBuffer* >( m_transformBuffer->Map( deviceContext ) );
          buffer->m_worldMatrix = world;
          buffer->m_worldViewMatrix = worldView;
          buffer->m_worldViewProjMatrix = worldViewProj;
-         m_transformBuffer->UnMap( );
+         m_transformBuffer->UnMap( deviceContext );
       }
    }
 
-   void ShadingPass::UpdateMaterialBuffer( const Vector3& specAlbedo )
+   void ShadingPass::UpdateMaterialBuffer( ID3D11DeviceContext& deviceContext, const Vector3& specAlbedo )
    {
       if ( m_materialBuffer != nullptr )
       {
-         auto buffer = reinterpret_cast< MaterialConstantBuffer* >( m_materialBuffer->Map( ) );
+         auto buffer = reinterpret_cast< MaterialConstantBuffer* >( m_materialBuffer->Map( deviceContext ) );
          buffer->SpecularAlbedo = specAlbedo;
-         m_materialBuffer->UnMap( );
+         m_materialBuffer->UnMap( deviceContext );
       }
    }
 }

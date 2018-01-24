@@ -12,8 +12,8 @@ namespace Mile
       ~PixelShaderDX11( );
 
       virtual bool Init( const String& shaderPath ) override;
-      virtual bool Bind( ) override;
-      virtual void Unbind( ) override;
+      virtual bool Bind( ID3D11DeviceContext& deviceContext ) override;
+      virtual void Unbind( ID3D11DeviceContext& deviceContext ) override;
 
       virtual ShaderType GetShaderType( ) const override { return ShaderType::PixelShader; }
 

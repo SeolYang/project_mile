@@ -79,7 +79,7 @@ namespace Mile
       return true;
    }
 
-   bool RenderTargetDX11::BindAsRenderTarget( )
+   bool RenderTargetDX11::BindAsRenderTarget( ID3D11DeviceContext& const deviceContext )
    {
       if ( m_texture == nullptr || m_renderer == nullptr )
       {
@@ -92,32 +92,31 @@ namespace Mile
          dsv = m_depthStencilBuffer->GetDSV( );
       }
 
-      m_renderer->GetDeviceContext( )->OMSetRenderTargets( 1, &m_rtv, dsv );
+      deviceContext.OMSetRenderTargets( 1, &m_rtv, dsv );
       return true;
    }
 
-   bool RenderTargetDX11::BindAsShaderResource( unsigned int startSlot, ShaderType shader )
+   bool RenderTargetDX11::BindAsShaderResource( ID3D11DeviceContext& const deviceContext, unsigned int startSlot, ShaderType shader )
    {
       if ( m_texture == nullptr )
       {
          return false;
       }
 
-      return m_texture->Bind( startSlot, shader );
+      return m_texture->Bind( deviceContext, startSlot, shader );
    }
 
-   void RenderTargetDX11::UnbindRenderTarget( )
+   void RenderTargetDX11::UnbindRenderTarget( ID3D11DeviceContext& const deviceContext )
    {
       ID3D11RenderTargetView* nullRTV = nullptr;
-      auto deviceContext = m_renderer->GetDeviceContext( );
-      deviceContext->OMSetRenderTargets( 1, &nullRTV, nullptr );
+      deviceContext.OMSetRenderTargets( 1, &nullRTV, nullptr );
    }
 
-   void RenderTargetDX11::UnbindShaderResource( )
+   void RenderTargetDX11::UnbindShaderResource( ID3D11DeviceContext& const deviceContext )
    {
       if ( m_texture != nullptr )
       {
-         m_texture->Unbind( );
+         m_texture->Unbind( deviceContext );
       }
    }
 }

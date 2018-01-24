@@ -17,18 +17,18 @@ namespace Mile
 
       ~ConstantBufferDX11( )
       {
-         this->UnMap( );
+         this->UnMapImmediately( );
       }
 
       bool Init( unsigned int size );
       
       virtual RenderResourceType GetResourceType( ) const override { return RenderResourceType::RDRT_ConstantBuffer; }
 
-      virtual void* Map( ) override;
-      virtual bool UnMap( ) override;
+      virtual void* Map( ID3D11DeviceContext& deviceContext ) override;
+      virtual bool UnMap( ID3D11DeviceContext& deviceContext ) override;
 
-      bool Bind( unsigned int slot, ShaderType shaderType );
-      void Unbind( );
+      bool Bind( ID3D11DeviceContext& deviceContext, unsigned int slot, ShaderType shaderType );
+      void Unbind( ID3D11DeviceContext& deviceContext );
 
    private:
       bool           m_bIsBinded;

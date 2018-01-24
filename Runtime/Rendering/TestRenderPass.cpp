@@ -14,7 +14,6 @@ namespace Mile
 
    TestRenderPass::~TestRenderPass( )
    {
-      Unbind( );
       SafeDelete( m_transformBuffer );
    }
 
@@ -39,14 +38,14 @@ namespace Mile
       return true;
    }
 
-   bool TestRenderPass::Bind( )
+   bool TestRenderPass::Bind( ID3D11DeviceContext& deviceContext )
    {
-      if ( !RenderingPass::Bind( ) )
+      if ( !RenderingPass::Bind( deviceContext ) )
       {
          return false;
       }
 
-      if ( !m_transformBuffer->Bind( 0, ShaderType::VertexShader ) && !m_transformBuffer->Bind( 0, ShaderType::PixelShader ) )
+      if ( !m_transformBuffer->Bind( deviceContext, 0, ShaderType::VertexShader ) && !m_transformBuffer->Bind( deviceContext, 0, ShaderType::PixelShader ) )
       {
          return false;
       }
@@ -54,37 +53,37 @@ namespace Mile
       return true;
    }
 
-   void TestRenderPass::Unbind( )
+   void TestRenderPass::Unbind( ID3D11DeviceContext& deviceContext )
    {
-      RenderingPass::Unbind( );
+      RenderingPass::Unbind( deviceContext );
    }
 
-   void TestRenderPass::UpdateDiffuseMap( Texture2dDX11* texture )
+   void TestRenderPass::UpdateDiffuseMap( ID3D11DeviceContext& deviceContext, Texture2dDX11* texture )
    {
       if ( m_diffuseMap != nullptr )
       {
-         m_diffuseMap->Unbind( );
+         m_diffuseMap->Unbind( deviceContext );
          m_diffuseMap = nullptr;
       }
 
       if ( texture != nullptr )
       {
-         texture->Unbind( );
+         texture->Unbind( deviceContext );
          m_diffuseMap = texture;
-         m_diffuseMap->Bind( 0, ShaderType::PixelShader );
+         m_diffuseMap->Bind( deviceContext, 0, ShaderType::PixelShader );
       }
    }
 
-   void TestRenderPass::UpdateTransformBuffer( const Matrix& world, const Matrix& worldView, const Matrix& worldViewProj )
+   void TestRenderPass::UpdateTransformBuffer( ID3D11DeviceContext& deviceContext, const Matrix& world, const Matrix& worldView, const Matrix& worldViewProj )
    {
       if ( m_transformBuffer != nullptr )
       {
-         auto buffer = reinterpret_cast< TransformConstantBuffer* >( m_transformBuffer->Map( ) );
+         auto buffer = reinterpret_cast< TransformConstantBuffer* >( m_transformBuffer->Map( deviceContext ) );
          buffer->m_worldMatrix = world;
          buffer->m_worldViewMatrix = worldView;
          buffer->m_worldViewProjMatrix = worldViewProj;
 
-         m_transformBuffer->UnMap( );
+         m_transformBuffer->UnMap( deviceContext );
       }
    }
 }

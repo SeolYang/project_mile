@@ -38,7 +38,7 @@ namespace Mile
       return true;
    }
 
-   bool RenderingPass::Bind( )
+   bool RenderingPass::Bind( ID3D11DeviceContext& deviceContext )
    {
       if ( m_renderer == nullptr )
       {
@@ -47,29 +47,29 @@ namespace Mile
 
       if ( m_vertexShader != nullptr )
       {
-         m_vertexShader->Bind( );
+         m_vertexShader->Bind( deviceContext );
       }
 
       if ( m_pixelShader != nullptr )
       {
-         m_pixelShader->Bind( );
+         m_pixelShader->Bind( deviceContext );
       }
 
       return true;
    }
 
-   void RenderingPass::Unbind( )
+   void RenderingPass::Unbind( ID3D11DeviceContext& deviceContext )
    {
       if ( m_renderer != nullptr )
       {
          if ( m_vertexShader != nullptr )
          {
-            m_vertexShader->Unbind( );
+            m_vertexShader->Unbind( deviceContext );
          }
          
          if ( m_pixelShader != nullptr )
          {
-            m_pixelShader->Unbind( );
+            m_pixelShader->Unbind( deviceContext );
          }
       }
    }

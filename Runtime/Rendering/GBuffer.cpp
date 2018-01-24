@@ -42,15 +42,13 @@ namespace Mile
       return true;
    }
 
-   bool GBuffer::BindAsRenderTarget( )
+   bool GBuffer::BindAsRenderTarget( ID3D11DeviceContext& deviceContext )
    {
       bool bIsInitialized = m_normalBuffer != nullptr && m_positionBuffer != nullptr;
       if ( m_renderer == nullptr || !bIsInitialized )
       {
          return false;
       }
-
-      auto deviceContext = m_renderer->GetDeviceContext( );
 
       ID3D11DepthStencilView* dsv = nullptr;
       if ( m_depthStencilBuffer != nullptr )
@@ -65,13 +63,13 @@ namespace Mile
       };
 
       const float clearColor[ 4 ] = { 0.0f, 0.0f, 0.0f, 1.0f };
-      deviceContext->ClearRenderTargetView( targets[ 0 ], clearColor );
+      deviceContext.ClearRenderTargetView( targets[ 0 ], clearColor );
+      deviceContext.OMSetRenderTargets( 2, targets.data( ), dsv );
 
-      deviceContext->OMSetRenderTargets( 2, targets.data( ), dsv );
       return true;
    }
 
-   bool GBuffer::BindAsShaderResource( unsigned int startSlot )
+   bool GBuffer::BindAsShaderResource( ID3D11DeviceContext& deviceContext, unsigned int startSlot )
    {
       bool bIsInitialized = m_normalBuffer != nullptr && m_positionBuffer != nullptr;
       if ( m_renderer == nullptr || !bIsInitialized )
@@ -79,30 +77,30 @@ namespace Mile
          return false;
       }
 
-      m_normalBuffer->BindAsShaderResource( startSlot + 0, ShaderType::PixelShader );
-      m_positionBuffer->BindAsShaderResource( startSlot + 1, ShaderType::PixelShader );
+      m_normalBuffer->BindAsShaderResource( deviceContext, startSlot + 0, ShaderType::PixelShader );
+      m_positionBuffer->BindAsShaderResource( deviceContext, startSlot + 1, ShaderType::PixelShader );
 
       return true;
    }
 
-   void GBuffer::UnbindShaderResource( )
+   void GBuffer::UnbindShaderResource( ID3D11DeviceContext& deviceContext )
    {
       bool bIsInitialized = m_normalBuffer != nullptr && m_positionBuffer != nullptr;
       if ( bIsInitialized )
       {
-         m_normalBuffer->UnbindShaderResource( );
-         m_positionBuffer->UnbindShaderResource( );
+         m_normalBuffer->UnbindShaderResource( deviceContext );
+         m_positionBuffer->UnbindShaderResource( deviceContext );
 
          std::array<ID3D11RenderTargetView*, 2> targets{
             nullptr,
             nullptr,
          };
-         auto deviceContext = m_renderer->GetDeviceContext( );
-         deviceContext->OMSetRenderTargets( 2, targets.data( ), nullptr );
+
+         deviceContext.OMSetRenderTargets( 2, targets.data( ), nullptr );
       }
    }
 
-   void GBuffer::UnbindRenderTarget( )
+   void GBuffer::UnbindRenderTarget( ID3D11DeviceContext& deviceContext )
    {
       bool bIsInitialized = m_normalBuffer != nullptr && m_positionBuffer != nullptr;
       if ( bIsInitialized )
@@ -111,8 +109,8 @@ namespace Mile
             nullptr,
             nullptr,
          };
-         auto deviceContext = m_renderer->GetDeviceContext( );
-         deviceContext->OMSetRenderTargets( 2, targets.data( ), nullptr );
+
+         deviceContext.OMSetRenderTargets( 2, targets.data( ), nullptr );
       }
    }
 }

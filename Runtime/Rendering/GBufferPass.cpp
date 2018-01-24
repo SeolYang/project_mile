@@ -17,7 +17,6 @@ namespace Mile
 
    GBufferPass::~GBufferPass( )
    {
-      Unbind( );
       SafeDelete( m_transformBuffer );
       SafeDelete( m_materialBuffer );
    }
@@ -48,9 +47,9 @@ namespace Mile
       return true;
    }
 
-   bool GBufferPass::Bind( )
+   bool GBufferPass::Bind( ID3D11DeviceContext& deviceContext )
    {
-      if ( !RenderingPass::Bind( ) )
+      if ( !RenderingPass::Bind( deviceContext ) )
       {
          return false;
       }
@@ -63,17 +62,17 @@ namespace Mile
          return false;
       }
 
-      if ( !m_gBuffer->BindAsRenderTarget( ) )
+      if ( !m_gBuffer->BindAsRenderTarget( deviceContext ) )
       {
          return false;
       }
 
-      if ( !m_transformBuffer->Bind( 0, ShaderType::VertexShader ) )
+      if ( !m_transformBuffer->Bind(deviceContext, 0, ShaderType::VertexShader ) )
       {
          return false;
       }
 
-      if ( !m_materialBuffer->Bind( 0, ShaderType::PixelShader ) )
+      if ( !m_materialBuffer->Bind( deviceContext, 0, ShaderType::PixelShader ) )
       {
          return false;
       }
@@ -81,7 +80,7 @@ namespace Mile
       return true;
    }
 
-   void GBufferPass::Unbind( )
+   void GBufferPass::Unbind( ID3D11DeviceContext& deviceContext )
    {
       if ( m_renderer == nullptr )
       {
@@ -90,60 +89,60 @@ namespace Mile
 
       if ( m_gBuffer != nullptr )
       { 
-         m_gBuffer->UnbindRenderTarget( );
+         m_gBuffer->UnbindRenderTarget( deviceContext );
       }
 
-      UpdateNormalTexture( nullptr );
+      UpdateNormalTexture( deviceContext, nullptr );
 
       if ( m_transformBuffer != nullptr )
       {
-         m_transformBuffer->Unbind( );
+         m_transformBuffer->Unbind( deviceContext );
       }
 
       if ( m_materialBuffer != nullptr )
       {
-         m_materialBuffer->Unbind( );
+         m_materialBuffer->Unbind( deviceContext );
       }
 
-      RenderingPass::Unbind( );
+      RenderingPass::Unbind( deviceContext );
    }
 
-   void GBufferPass::UpdateTransformBuffer( const Matrix& world, const Matrix& worldView, const Matrix& worldViewProj )
+   void GBufferPass::UpdateTransformBuffer( ID3D11DeviceContext& deviceContext, const Matrix& world, const Matrix& worldView, const Matrix& worldViewProj )
    {
       if ( m_transformBuffer != nullptr )
       {
-         auto buffer = reinterpret_cast< TransformConstantBuffer* >( m_transformBuffer->Map( ) );
+         auto buffer = reinterpret_cast< TransformConstantBuffer* >( m_transformBuffer->Map( deviceContext ) );
          buffer->m_worldMatrix = world;
          buffer->m_worldViewMatrix = worldView;
          buffer->m_worldViewProjMatrix = worldViewProj;
 
-         m_transformBuffer->UnMap( );
+         m_transformBuffer->UnMap( deviceContext );
       }
    }
 
-   void GBufferPass::UpdateMaterialBuffer( float specExp )
+   void GBufferPass::UpdateMaterialBuffer( ID3D11DeviceContext& deviceContext, float specExp )
    {
       if ( m_materialBuffer != nullptr )
       {
-         auto buffer = reinterpret_cast< MaterialConstantBuffer* >( m_materialBuffer->Map( ) );
+         auto buffer = reinterpret_cast< MaterialConstantBuffer* >( m_materialBuffer->Map( deviceContext ) );
          buffer->specularExp = specExp;
 
-         m_materialBuffer->UnMap( );
+         m_materialBuffer->UnMap( deviceContext );
       }
    }
 
-   void GBufferPass::UpdateNormalTexture( Texture2dDX11* texture )
+   void GBufferPass::UpdateNormalTexture( ID3D11DeviceContext& deviceContext, Texture2dDX11* texture )
    {
       if ( m_normalTexture != nullptr )
       {
-         m_normalTexture->Unbind( );
+         m_normalTexture->Unbind( deviceContext );
       }
 
       if ( texture != nullptr )
       {
-         texture->Unbind( );
+         texture->Unbind( deviceContext );
          m_normalTexture = texture;
-         m_normalTexture->Bind( 0, ShaderType::PixelShader );
+         m_normalTexture->Bind( deviceContext, 0, ShaderType::PixelShader );
       }
    }
 }

@@ -20,7 +20,7 @@ namespace Mile
 
       bool Init( );
 
-      bool Bind( );
+      bool Bind( ID3D11DeviceContext& deviceContext );
 
       void SetWireframeRender( bool bIsWireframe ) 
       { 

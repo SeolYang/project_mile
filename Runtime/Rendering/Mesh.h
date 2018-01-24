@@ -53,7 +53,7 @@ namespace Mile
          return true;
       }
 
-      bool Bind( unsigned int startSlot );
+      bool Bind( ID3D11DeviceContext& deviceContext, unsigned int startSlot );
 
       IndexBufferDX11* GetIndexBuffer( ) { return m_indexBuffer; }
       VertexBufferDX11* GetVertexBuffer( ) { return m_vertexBuffer; }

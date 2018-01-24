@@ -35,15 +35,14 @@ namespace Mile
       return true;
    }
 
-   bool IndexBufferDX11::Bind( )
+   bool IndexBufferDX11::Bind( ID3D11DeviceContext& deviceContext )
    {
       if ( !m_bIsInitialized )
       {
          return false;
       }
 
-      auto deviceContext = m_renderer->GetDeviceContext( );
-      deviceContext->IASetIndexBuffer( m_buffer, DXGI_FORMAT_R32_UINT, 0 );
+      deviceContext.IASetIndexBuffer( m_buffer, DXGI_FORMAT_R32_UINT, 0 );
 
       return true;
    }

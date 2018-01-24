@@ -44,20 +44,20 @@ namespace Mile
       return true;
    }
 
-   bool PixelShaderDX11::Bind( )
+   bool PixelShaderDX11::Bind( ID3D11DeviceContext& deviceContext )
    {
       if ( !m_bIsCompiled || m_renderer == nullptr )
       {
          return false;
       }
 
-      m_renderer->GetDeviceContext( )->PSSetShader( m_shader,
-                                                    nullptr,
-                                                    0 );
+      deviceContext.PSSetShader( m_shader,
+                                 nullptr,
+                                 0 );
 
       for ( int idx = 0; idx < m_samplers.size( ); ++idx )
       {
-         if ( !m_samplers[ idx ]->Bind( idx ) )
+         if ( !m_samplers[ idx ]->Bind( deviceContext, idx ) )
          {
             return false;
          }
@@ -66,17 +66,16 @@ namespace Mile
       return true;
    }
 
-   void PixelShaderDX11::Unbind( )
+   void PixelShaderDX11::Unbind( ID3D11DeviceContext& deviceContext )
    {
       if ( m_renderer != nullptr )
       {
-         auto deviceContext = m_renderer->GetDeviceContext( );
          for ( auto sampler : m_samplers )
          {
-            sampler->Unbind( );
+            sampler->Unbind( deviceContext );
          }
 
-         deviceContext->PSSetShader( nullptr, nullptr, 0 );
+         deviceContext.PSSetShader( nullptr, nullptr, 0 );
       }
    }
 

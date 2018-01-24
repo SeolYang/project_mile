@@ -45,25 +45,25 @@ namespace Mile
       void AcquireCameras( const std::vector<Entity*>& entities );
 
       void Render( );
-      void RenderGBuffer( );
-      void RenderLightBuffer( );
-      void RenderShading( );
-      void RenderTest( );
+      void RenderGBuffer( ID3D11DeviceContext& deviceContext );
+      void RenderLightBuffer( ID3D11DeviceContext& deviceContext );
+      void RenderShading( ID3D11DeviceContext& deviceContext );
+      void RenderTest( ID3D11DeviceContext& deviceContext );
 
-      void Clear( );
-      void ClearDepthStencil( );
+      void Clear( ID3D11DeviceContext& deviceContext );
+      void ClearDepthStencil( ID3D11DeviceContext& deviceContext );
       void Present( );
 
       ID3D11Device* GetDevice( ) { return m_device; }
-      ID3D11DeviceContext* GetDeviceContext( ) { return m_deviceContext; }
+      ID3D11DeviceContext* GetImmediateContext( ) { return m_deviceContext; }
 
       void SetClearColor( Vector4 clearColor );
       Vector4 GetClearColor( ) const { return m_clearColor; }
 
-      void SetDepthStencilEnable( bool bDepthEnabled );
+      void SetDepthStencilEnable( ID3D11DeviceContext& deviceContext, bool bDepthEnabled );
       bool IsDepthStencilEnabled( ) const { return m_bDepthStencilEnabled; }
 
-      void SetBackbufferAsRenderTarget( );
+      void SetBackbufferAsRenderTarget(ID3D11DeviceContext& deviceContext );
 
    private:
       bool CreateDeviceAndSwapChain( );

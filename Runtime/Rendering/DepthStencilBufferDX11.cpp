@@ -41,8 +41,8 @@ namespace Mile
 
       auto device = m_renderer->GetDevice( );
       auto result = device->CreateTexture2D( &bufferDesc,
-                                                               nullptr,
-                                                               &m_depthStencilBuffer );
+                                             nullptr,
+                                             &m_depthStencilBuffer );
       if ( FAILED( result ) )
       {
          /* Failed to create Depth-Stencil Buffer. **/

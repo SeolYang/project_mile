@@ -21,8 +21,8 @@ namespace Mile
 
       virtual bool Init( const String& shaderPath );
 
-      virtual bool Bind( );
-      virtual void Unbind( );
+      virtual bool Bind( ID3D11DeviceContext& deviceContext );
+      virtual void Unbind( ID3D11DeviceContext& deviceContext );
       
    private:
       bool InitVS( const String& filePath );

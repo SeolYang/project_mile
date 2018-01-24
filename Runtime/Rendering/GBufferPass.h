@@ -25,14 +25,14 @@ namespace Mile
       ~GBufferPass( );
 
       virtual bool Init( const String& filePath );
-      virtual bool Bind( ) override;
-      virtual void Unbind( ) override;
+      virtual bool Bind( ID3D11DeviceContext& deviceContext ) override;
+      virtual void Unbind( ID3D11DeviceContext& deviceContext ) override;
 
       void SetGBuffer( GBuffer* buffer ) { this->m_gBuffer = buffer; }
 
-      void UpdateTransformBuffer( const Matrix& world, const Matrix& view, const Matrix& proj );
-      void UpdateMaterialBuffer( float specExp );
-      void UpdateNormalTexture( Texture2dDX11* texture );
+      void UpdateTransformBuffer( ID3D11DeviceContext& deviceContext, const Matrix& world, const Matrix& view, const Matrix& proj );
+      void UpdateMaterialBuffer( ID3D11DeviceContext& deviceContext, float specExp );
+      void UpdateNormalTexture( ID3D11DeviceContext& deviceContext, Texture2dDX11* texture );
 
       CBufferPtr GetTransformBuffer( ) { return m_transformBuffer; }
 

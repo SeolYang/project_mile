@@ -23,8 +23,8 @@ namespace Mile
 
       bool Init( unsigned int width, unsigned int height, int channels, unsigned char* data, DXGI_FORMAT format );
       bool Init( ID3D11Texture2D* texture );
-      bool Bind( unsigned int startSlot, ShaderType shader );
-      void Unbind( );
+      bool Bind( ID3D11DeviceContext& deviceContext, unsigned int startSlot, ShaderType shader );
+      void Unbind( ID3D11DeviceContext& deviceContext );
 
       virtual ID3D11Resource* GetResource( ) override { return m_texture; }
       virtual RenderResourceType GetResourceType( ) const override { return RenderResourceType::RDRT_Texture2D; }

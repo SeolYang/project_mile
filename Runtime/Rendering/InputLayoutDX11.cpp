@@ -27,14 +27,14 @@ namespace Mile
       return true;
    }
 
-   bool InputLayoutDX11::Bind( )
+   bool InputLayoutDX11::Bind( ID3D11DeviceContext& deviceContext )
    {
       if ( !m_bIsInitialized || m_renderer == nullptr )
       {
          return false;
       }
 
-      m_renderer->GetDeviceContext( )->IASetInputLayout( m_inputLayout );
+      deviceContext.IASetInputLayout( m_inputLayout );
       return true;
    }
 }

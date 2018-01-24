@@ -69,7 +69,7 @@ namespace Mile
       return true;
    }
 
-   bool RasterizerState::Bind( )
+   bool RasterizerState::Bind( ID3D11DeviceContext& deviceContext )
    {
       if ( m_renderer == nullptr )
       {
@@ -85,8 +85,7 @@ namespace Mile
          }
       }
 
-      auto deviceContext = m_renderer->GetDeviceContext( );
-      deviceContext->RSSetState( m_rasterizerState );
+      deviceContext.RSSetState( m_rasterizerState );
 
       return true;
    }

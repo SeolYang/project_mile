@@ -22,8 +22,8 @@ namespace Mile
       }
 
       bool Init( D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE AddressModeU, D3D11_TEXTURE_ADDRESS_MODE AddressModeV, D3D11_TEXTURE_ADDRESS_MODE AddressModeW, D3D11_COMPARISON_FUNC compFunc );
-      bool Bind( unsigned int startSlot );
-      void Unbind( );
+      bool Bind( ID3D11DeviceContext& deviceContext, unsigned int startSlot );
+      void Unbind( ID3D11DeviceContext& deviceContext );
 
       bool IsInitialized( ) const { return m_bIsInit; }
 

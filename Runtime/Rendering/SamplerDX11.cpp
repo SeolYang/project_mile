@@ -34,20 +34,20 @@ namespace Mile
       return true;
    }
 
-   bool SamplerDX11::Bind( unsigned int startSlot )
+   bool SamplerDX11::Bind( ID3D11DeviceContext& deviceContext, unsigned int startSlot )
    {
       if ( !m_bIsInit || m_renderer == nullptr )
       {
          return false;
       }
 
-      m_renderer->GetDeviceContext( )->PSSetSamplers( startSlot, 1, &m_sampler );
+      deviceContext.PSSetSamplers( startSlot, 1, &m_sampler );
       m_bIsBinded = true;
       m_bindedSlot = startSlot;
       return true;
    }
 
-   void SamplerDX11::Unbind( )
+   void SamplerDX11::Unbind( ID3D11DeviceContext& deviceContext )
    {
       if ( !m_bIsInit || !m_bIsBinded )
       {
@@ -55,7 +55,7 @@ namespace Mile
       }
 
       ID3D11SamplerState* nullSampler = nullptr;
-      m_renderer->GetDeviceContext( )->PSSetSamplers( m_bindedSlot, 1, &nullSampler );
+      deviceContext.PSSetSamplers( m_bindedSlot, 1, &nullSampler );
       m_bIsBinded = false;
       m_bindedSlot = 0;
    }

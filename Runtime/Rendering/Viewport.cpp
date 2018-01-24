@@ -25,7 +25,7 @@ namespace Mile
       return viewport;
    }
 
-   bool Viewport::Bind( ID3D11DeviceContext& const deviceContext )
+   bool Viewport::Bind( ID3D11DeviceContext& deviceContext )
    {
       if ( m_renderer == nullptr )
       {

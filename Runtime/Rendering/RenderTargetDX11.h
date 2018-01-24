@@ -22,10 +22,10 @@ namespace Mile
 
       void SetDepthStencilBuffer( DepthStencilBufferDX11* buffer ) { this->m_depthStencilBuffer = buffer; }
 
-      bool BindAsRenderTarget( );
-      bool BindAsShaderResource( unsigned int startSlot, ShaderType shader );
-      void UnbindRenderTarget( );
-      void UnbindShaderResource( );
+      bool BindAsRenderTarget( ID3D11DeviceContext& deviceContext );
+      bool BindAsShaderResource( ID3D11DeviceContext& deviceContext, unsigned int startSlot, ShaderType shader );
+      void UnbindRenderTarget( ID3D11DeviceContext& deviceContext );
+      void UnbindShaderResource( ID3D11DeviceContext& deviceContext );
 
    private:
       RendererDX11*              m_renderer;
