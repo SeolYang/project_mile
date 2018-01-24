@@ -55,7 +55,7 @@ namespace Mile
       void Present( );
 
       ID3D11Device* GetDevice( ) { return m_device; }
-      ID3D11DeviceContext* GetImmediateContext( ) { return m_deviceContext; }
+      ID3D11DeviceContext* GetImmediateContext( ) { return m_immediateContext; }
 
       void SetClearColor( Vector4 clearColor );
       Vector4 GetClearColor( ) const { return m_clearColor; }
@@ -72,7 +72,7 @@ namespace Mile
    private:
       Window*                 m_window;
       ID3D11Device*           m_device;
-      ID3D11DeviceContext*    m_deviceContext;
+      ID3D11DeviceContext*    m_immediateContext;
 
       // Back Buffer Variables
       IDXGISwapChain*           m_swapChain;

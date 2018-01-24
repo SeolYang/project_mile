@@ -26,7 +26,7 @@ namespace Mile
 {
    RendererDX11::RendererDX11( Context* context ) : SubSystem( context ),
       m_window( nullptr ), m_clearColor{ 0.0f, 0.0f, 0.0f, 1.0f },
-      m_device( nullptr ), m_deviceContext( nullptr ),
+      m_device( nullptr ), m_immediateContext( nullptr ),
       m_swapChain( nullptr ), m_renderTargetView( nullptr ),
       m_depthStencilBuffer( nullptr ), m_bDepthStencilEnabled( true ),
       m_gBuffer( nullptr ), m_gBufferPass( nullptr ),
@@ -202,7 +202,7 @@ namespace Mile
          SafeRelease( m_renderTargetView );
          SafeDelete( m_depthStencilBuffer );
          SafeRelease( m_swapChain );
-         SafeRelease( m_deviceContext );
+         SafeRelease( m_immediateContext );
          SafeRelease( m_device );
 
          MELog( m_context, TEXT( "RendererDX11" ), ELogType::MESSAGE, TEXT( "RendererDX11 deinitialized." ), true );
@@ -246,7 +246,7 @@ namespace Mile
                                                &m_swapChain,
                                                &m_device,
                                                &featureLevel,
-                                               &m_deviceContext );
+                                               &m_immediateContext );
 
       if ( FAILED( hr ) )
       {
@@ -357,9 +357,9 @@ namespace Mile
 
    void RendererDX11::Render( )
    {
-      Clear( *m_deviceContext );
+      Clear( *m_immediateContext );
 
-      m_deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+      m_immediateContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
       World* world = m_context->GetSubSystem<World>( );
       if ( world != nullptr )
@@ -377,13 +377,13 @@ namespace Mile
             // @TODO: Implement Multiple camera rendering
             m_mainCamera = m_cameras[ 0 ];
 
-            m_viewport->Bind( ( *m_deviceContext ) );
-            m_defaultState->Bind( ( *m_deviceContext ) );
+            m_viewport->Bind( ( *m_immediateContext ) );
+            m_defaultState->Bind( ( *m_immediateContext ) );
             
             // light pre pass rendering
-            RenderGBuffer( *m_deviceContext );
-            RenderLightBuffer( *m_deviceContext );
-            RenderShading( *m_deviceContext );
+            RenderGBuffer( *m_immediateContext );
+            RenderLightBuffer( *m_immediateContext );
+            RenderShading( *m_immediateContext );
             //RenderTest( );
          }
       }

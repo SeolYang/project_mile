@@ -79,7 +79,7 @@ namespace Mile
       return true;
    }
 
-   bool RenderTargetDX11::BindAsRenderTarget( ID3D11DeviceContext& const deviceContext )
+   bool RenderTargetDX11::BindAsRenderTarget( ID3D11DeviceContext& deviceContext )
    {
       if ( m_texture == nullptr || m_renderer == nullptr )
       {
@@ -96,7 +96,7 @@ namespace Mile
       return true;
    }
 
-   bool RenderTargetDX11::BindAsShaderResource( ID3D11DeviceContext& const deviceContext, unsigned int startSlot, ShaderType shader )
+   bool RenderTargetDX11::BindAsShaderResource( ID3D11DeviceContext& deviceContext, unsigned int startSlot, ShaderType shader )
    {
       if ( m_texture == nullptr )
       {
@@ -106,13 +106,13 @@ namespace Mile
       return m_texture->Bind( deviceContext, startSlot, shader );
    }
 
-   void RenderTargetDX11::UnbindRenderTarget( ID3D11DeviceContext& const deviceContext )
+   void RenderTargetDX11::UnbindRenderTarget( ID3D11DeviceContext& deviceContext )
    {
       ID3D11RenderTargetView* nullRTV = nullptr;
       deviceContext.OMSetRenderTargets( 1, &nullRTV, nullptr );
    }
 
-   void RenderTargetDX11::UnbindShaderResource( ID3D11DeviceContext& const deviceContext )
+   void RenderTargetDX11::UnbindShaderResource( ID3D11DeviceContext& deviceContext )
    {
       if ( m_texture != nullptr )
       {
