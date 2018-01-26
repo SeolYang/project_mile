@@ -21,6 +21,7 @@
 #include "Component\CameraComponent.h"
 #include "Resource\Material.h"
 #include "Resource\Texture2D.h"
+#include "MT\ThreadPool.h"
 
 namespace Mile
 {
@@ -357,6 +358,7 @@ namespace Mile
 
    void RendererDX11::Render( )
    {
+      auto threadPool = m_context->GetSubSystem<ThreadPool>( );
       Clear( *m_immediateContext );
 
       m_immediateContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
@@ -364,13 +366,21 @@ namespace Mile
       World* world = m_context->GetSubSystem<World>( );
       if ( world != nullptr )
       {
-         auto entities = world->GetEntities( );
+         std::vector<Entity*> entities = world->GetEntities( );
 
-         // @TODO: Multi-threaded resource acquire
          // Acquire necessarry informations
-         AcquireMeshRenderersAndMaterial( entities );
-         AcquireLights( entities );
-         AcquireCameras( entities );
+         auto acquireMeshRenderersAndMatBinder = std::bind( &RendererDX11::AcquireMeshRenderersAndMaterial, this, entities );
+         auto acquireMeshRenderersAndMatTask = threadPool->AddTask( acquireMeshRenderersAndMatBinder );
+
+         auto acquireLightBinder = std::bind( &RendererDX11::AcquireLights, this, entities );
+         auto acquireLightTask = threadPool->AddTask( acquireLightBinder );
+
+         auto acquireCamerasBinder = std::bind( &RendererDX11::AcquireCameras, this, entities );
+         auto acquireCamerasTask = threadPool->AddTask( acquireCamerasBinder );
+
+         acquireMeshRenderersAndMatTask.get( );
+         acquireLightTask.get( );
+         acquireCamerasTask.get( );
 
          if ( !m_cameras.empty( ) )
          {
