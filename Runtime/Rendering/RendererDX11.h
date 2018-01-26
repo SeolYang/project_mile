@@ -2,6 +2,7 @@
 
 #include "Rendering.h"
 #include "Viewport.h"
+#include <array>
 
 namespace Mile
 {
@@ -11,7 +12,17 @@ namespace Mile
       HullShader,
       DomainShader,
       GeometryShader,
-      PixelShader
+      PixelShader,
+      EnumSize
+   };
+
+   enum class EDeviceContextType : uint32_t
+   {
+      GBufferPass,
+      LBufferPass, // Light Buffer Pass
+      ShadingPass,
+      Immediate,
+      EnumSize = 4
    };
 
    class DepthStencilBufferDX11;
@@ -30,6 +41,7 @@ namespace Mile
    class CameraComponent;
    class Material;
    class RasterizerState;
+   class CommandListDX11;
    class MEAPI RendererDX11 : public SubSystem
    {
       using MaterialMap = std::map<Material*, std::vector<MeshRenderComponent*>>;
@@ -45,9 +57,10 @@ namespace Mile
       void AcquireCameras( const std::vector<Entity*>& entities );
 
       void Render( );
-      void RenderGBuffer( ID3D11DeviceContext& deviceContext );
-      void RenderLightBuffer( ID3D11DeviceContext& deviceContext );
-      void RenderShading( ID3D11DeviceContext& deviceContext );
+      void RenderLightPrePass( );
+      ID3D11CommandList* RenderGBuffer( ID3D11DeviceContext* deviceContext );
+      ID3D11CommandList* RenderLightBuffer( ID3D11DeviceContext* deviceContext );
+      ID3D11CommandList* RenderShading( ID3D11DeviceContext* deviceContext );
       void RenderTest( ID3D11DeviceContext& deviceContext );
 
       void Clear( ID3D11DeviceContext& deviceContext );
@@ -65,6 +78,8 @@ namespace Mile
 
       void SetBackbufferAsRenderTarget(ID3D11DeviceContext& deviceContext );
 
+      ID3D11DeviceContext* GetDeviceContextByType( EDeviceContextType type );
+
    private:
       bool CreateDeviceAndSwapChain( );
       bool CreateDepthStencilBuffer( );
@@ -74,11 +89,13 @@ namespace Mile
       ID3D11Device*           m_device;
       ID3D11DeviceContext*    m_immediateContext;
 
+      // Deferred Contexts
+      std::array<ID3D11DeviceContext*, 3> m_deferredContexts;
+
       // Back Buffer Variables
       IDXGISwapChain*           m_swapChain;
       ID3D11RenderTargetView*   m_renderTargetView;
       DepthStencilBufferDX11*   m_depthStencilBuffer;
-      // \Back Buffer Variables
 
       // Pre light pass Rendering
       GBuffer*          m_gBuffer;
@@ -87,11 +104,9 @@ namespace Mile
       LightBufferPass*  m_lightBufferPass;
       ShadingPass*      m_shadingPass;
       Quad*             m_screenQuad;
-      // \Pre light pass Rendering
 
       // Test Rendering Pass
       TestRenderPass*   m_testPass;
-      // \Test Rendering Pass
 
       // Renderable objects
       std::vector<MeshRenderComponent*> m_meshRenderComponents;
@@ -100,13 +115,12 @@ namespace Mile
       std::vector<CameraComponent*>     m_cameras;
 
       CameraComponent*                  m_mainCamera;
-      // \Renderable objects
 
+      // Render State
       bool      m_bDepthStencilEnabled;
       Vector4   m_clearColor;
 
-      // @TODO: Multiple Viewports
-      Viewport*  m_viewport;
+      Viewport*  m_viewport; // @TODO: Multiple Viewports
 
       // Rasterizer State
       RasterizerState*   m_defaultState;

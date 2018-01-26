@@ -132,7 +132,6 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\Runtime\Math\Vertex.h" />
     <ClInclude Include="..\Runtime\MT\ThreadPool.h" />
     <ClInclude Include="..\Runtime\Rendering\BufferDX11.h" />
-    <ClInclude Include="..\Runtime\Rendering\CommandListDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ConstantBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\DepthStencilBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\GBuffer.h" />
@@ -230,7 +229,6 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Math\Vector3.cpp" />
     <ClCompile Include="..\Runtime\Math\Vector4.cpp" />
     <ClCompile Include="..\Runtime\Rendering\BufferDX11.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\CommandListDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\ConstantBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\DepthStencilBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\GBuffer.cpp" />

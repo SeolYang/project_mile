@@ -51,6 +51,11 @@ namespace Mile
 
    bool LightBufferPass::Bind( ID3D11DeviceContext& deviceContext )
    {
+      if ( m_renderer == nullptr )
+      {
+         return false;
+      }
+
       if ( !RenderingPass::Bind( deviceContext ) )
       {
          return false;
@@ -112,11 +117,11 @@ namespace Mile
    }
 
    void LightBufferPass::UpdateLightParamBuffer( ID3D11DeviceContext& deviceContext, const Vector3& lightPos,
-                                            const Vector3& lightColor,
-                                            const Vector3& lightDirection,
-                                            const Vector2& spotlightAngles,
-                                            const Vector3& lightRange,
-                                            unsigned int lightType )
+                                                 const Vector3& lightColor,
+                                                 const Vector3& lightDirection,
+                                                 const Vector2& spotlightAngles,
+                                                 const Vector3& lightRange,
+                                                 unsigned int lightType )
    {
       if ( m_lightBuffer != nullptr )
       {

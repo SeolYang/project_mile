@@ -23,7 +23,7 @@ namespace Mile
 
       virtual bool Bind( ID3D11DeviceContext& deviceContext );
       virtual void Unbind( ID3D11DeviceContext& deviceContext );
-      
+
    private:
       bool InitVS( const String& filePath );
       bool InitPS( const String& filePath );

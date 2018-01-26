@@ -369,9 +369,6 @@
     <ClInclude Include="..\Runtime\Rendering\Mesh.h">
       <Filter>Rendering\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\CommandListDX11.h">
-      <Filter>Rendering\Renderer</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -517,9 +514,6 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\Mesh.cpp">
       <Filter>Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\CommandListDX11.cpp">
-      <Filter>Rendering\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

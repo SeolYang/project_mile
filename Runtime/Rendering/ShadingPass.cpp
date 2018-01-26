@@ -44,6 +44,11 @@ namespace Mile
 
    bool ShadingPass::Bind( ID3D11DeviceContext& deviceContext )
    {
+      if ( m_renderer == nullptr )
+      {
+         return false;
+      }
+
       if ( !RenderingPass::Bind( deviceContext ) )
       {
          return false;

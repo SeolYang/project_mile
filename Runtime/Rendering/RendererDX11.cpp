@@ -1,4 +1,5 @@
 #include "RendererDX11.h"
+#include "RasterizerState.h"
 #include "DepthStencilBufferDX11.h"
 #include "RenderTargetDX11.h"
 #include "Mesh.h"
@@ -8,7 +9,6 @@
 #include "LightBufferPass.h"
 #include "ShadingPass.h"
 #include "TestRenderPass.h"
-#include "RasterizerState.h"
 #include "Core\Context.h"
 #include "Core\Window.h"
 #include "Core\World.h"
@@ -25,9 +25,11 @@
 
 namespace Mile
 {
-   RendererDX11::RendererDX11( Context* context ) : SubSystem( context ),
+   RendererDX11::RendererDX11( Context* context ) : 
+      SubSystem( context ),
       m_window( nullptr ), m_clearColor{ 0.0f, 0.0f, 0.0f, 1.0f },
       m_device( nullptr ), m_immediateContext( nullptr ),
+      m_deferredContexts{ nullptr, nullptr, nullptr },
       m_swapChain( nullptr ), m_renderTargetView( nullptr ),
       m_depthStencilBuffer( nullptr ), m_bDepthStencilEnabled( true ),
       m_gBuffer( nullptr ), m_gBufferPass( nullptr ),
@@ -203,11 +205,17 @@ namespace Mile
          SafeRelease( m_renderTargetView );
          SafeDelete( m_depthStencilBuffer );
          SafeRelease( m_swapChain );
+
+         for ( auto deferredContext : m_deferredContexts )
+         {
+            SafeRelease( deferredContext );
+         }
+
          SafeRelease( m_immediateContext );
          SafeRelease( m_device );
 
-         MELog( m_context, TEXT( "RendererDX11" ), ELogType::MESSAGE, TEXT( "RendererDX11 deinitialized." ), true );
          SubSystem::DeInit( );
+         MELog( m_context, TEXT( "RendererDX11" ), ELogType::MESSAGE, TEXT( "RendererDX11 deinitialized." ), true );
       }
    }
 
@@ -276,6 +284,19 @@ namespace Mile
       {
          /* Failed to create render target view with backbuffer. **/
          return false;
+      }
+
+      // Create Deferred Contexts
+      for ( auto idx = 0;
+            idx < static_cast< uint32_t >( EDeviceContextType::EnumSize ) - 1;
+            ++idx )
+      {
+         hr = m_device->CreateDeferredContext( 0, &m_deferredContexts[ idx ] );
+         if ( FAILED( hr ) )
+         {
+            // Failed to create deferred contexts.
+            return false;
+         }
       }
 
       return true;
@@ -361,15 +382,15 @@ namespace Mile
       auto threadPool = m_context->GetSubSystem<ThreadPool>( );
       Clear( *m_immediateContext );
 
-      m_immediateContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-
       World* world = m_context->GetSubSystem<World>( );
       if ( world != nullptr )
       {
          std::vector<Entity*> entities = world->GetEntities( );
 
          // Acquire necessarry informations
-         auto acquireMeshRenderersAndMatBinder = std::bind( &RendererDX11::AcquireMeshRenderersAndMaterial, this, entities );
+         auto acquireMeshRenderersAndMatBinder = std::bind( &RendererDX11::AcquireMeshRenderersAndMaterial,
+                                                            this, 
+                                                            entities );
          auto acquireMeshRenderersAndMatTask = threadPool->AddTask( acquireMeshRenderersAndMatBinder );
 
          auto acquireLightBinder = std::bind( &RendererDX11::AcquireLights, this, entities );
@@ -386,24 +407,54 @@ namespace Mile
          {
             // @TODO: Implement Multiple camera rendering
             m_mainCamera = m_cameras[ 0 ];
-
-            m_viewport->Bind( ( *m_immediateContext ) );
-            m_defaultState->Bind( ( *m_immediateContext ) );
-            
-            // light pre pass rendering
-            RenderGBuffer( *m_immediateContext );
-            RenderLightBuffer( *m_immediateContext );
-            RenderShading( *m_immediateContext );
-            //RenderTest( );
+            RenderLightPrePass( );
          }
       }
 
       Present( );
    }
 
-   void RendererDX11::RenderGBuffer( ID3D11DeviceContext& deviceContext )
+   void RendererDX11::RenderLightPrePass( )
    {
-      m_gBufferPass->Bind( deviceContext );
+      auto threadPool = m_context->GetSubSystem<ThreadPool>( );
+
+      // light pre pass rendering
+      auto gBufferPassBinder = std::bind( &RendererDX11::RenderGBuffer,
+                                          this,
+                                          GetDeviceContextByType( EDeviceContextType::GBufferPass ) );
+      auto gBufferPassTask = threadPool->AddTask( gBufferPassBinder );
+
+      auto lBufferPassBinder = std::bind( &RendererDX11::RenderLightBuffer,
+                                          this,
+                                          GetDeviceContextByType( EDeviceContextType::LBufferPass ) );
+      auto lBufferPassTask = threadPool->AddTask( lBufferPassBinder );
+
+      ID3D11CommandList* gBufferPassCommandList = gBufferPassTask.get( );
+      ID3D11CommandList* lBufferPassCommandList = lBufferPassTask.get( );
+
+      // Has dependency with G-Buffer
+      auto shadingPassBinder = std::bind( &RendererDX11::RenderShading,
+                                          this,
+                                          GetDeviceContextByType( EDeviceContextType::ShadingPass ) );
+      auto shadingPassTask = threadPool->AddTask( shadingPassBinder );
+
+      ID3D11CommandList* shadingPassCommandList = shadingPassTask.get( );
+
+      m_immediateContext->ExecuteCommandList( gBufferPassCommandList, false );
+      m_immediateContext->ExecuteCommandList( lBufferPassCommandList, false );
+      m_immediateContext->ExecuteCommandList( shadingPassCommandList, false );
+
+      SafeRelease( gBufferPassCommandList );
+      SafeRelease( lBufferPassCommandList );
+      SafeRelease( shadingPassCommandList );
+   }
+
+   ID3D11CommandList* RendererDX11::RenderGBuffer( ID3D11DeviceContext* deviceContext )
+   {
+      deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+      m_defaultState->Bind( ( *deviceContext ) );
+      m_viewport->Bind( ( *deviceContext ) );
+      m_gBufferPass->Bind( *deviceContext );
 
       auto camTransform = m_mainCamera->GetTransform( );
 
@@ -411,9 +462,9 @@ namespace Mile
       {
          auto material = batchedMaterial.first;
          auto normalTexture = material->GetNormalMap( );
-         m_gBufferPass->UpdateMaterialBuffer( deviceContext,
+         m_gBufferPass->UpdateMaterialBuffer( *deviceContext,
                                               material->GetSpecularExp( ) ); // per material
-         m_gBufferPass->UpdateNormalTexture( deviceContext,
+         m_gBufferPass->UpdateNormalTexture( *deviceContext,
                                              normalTexture->GetRawTexture( ) ); // per material
 
          for ( auto meshRenderer : batchedMaterial.second )
@@ -433,34 +484,46 @@ namespace Mile
                   m_mainCamera->GetNearPlane( ),
                   m_mainCamera->GetFarPlane( ) );
 
-            m_gBufferPass->UpdateTransformBuffer( deviceContext,
+            m_gBufferPass->UpdateTransformBuffer( *deviceContext,
                                                   world,
                                                   worldView,
                                                   worldViewProj );  // per object
 
             // @TODO: Implement instancing
-            mesh->Bind( deviceContext, 0 );
-            deviceContext.DrawIndexed( mesh->GetIndexCount( ), 0, 0 );
+            mesh->Bind( *deviceContext, 0 );
+            deviceContext->DrawIndexed( mesh->GetIndexCount( ), 0, 0 );
          }
       }
 
       // End of gbuffer pass
-      m_gBufferPass->Unbind( deviceContext );
+      m_gBufferPass->Unbind( *deviceContext );
+
+      ID3D11CommandList* commandList = nullptr;
+      auto hr = deviceContext->FinishCommandList( false, &commandList );
+      if ( FAILED( hr ) )
+      {
+         return nullptr;
+      }
+
+      return commandList;
    }
 
-   void RendererDX11::RenderLightBuffer( ID3D11DeviceContext& deviceContext )
+   ID3D11CommandList* RendererDX11::RenderLightBuffer( ID3D11DeviceContext* deviceContext )
    {
-      m_lightBufferPass->Bind( deviceContext );
+      deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+      m_defaultState->Bind( ( *deviceContext ) );
+      m_viewport->Bind( ( *deviceContext ) );
+      m_lightBufferPass->Bind( *deviceContext );
 
       // @TODO: Implement multi - camera rendering
       auto cameraTransform = m_cameras[ 0 ]->GetTransform( );
-      m_lightBufferPass->UpdateCameraBuffer( deviceContext,
+      m_lightBufferPass->UpdateCameraBuffer( *deviceContext,
                                              cameraTransform->GetPosition( TransformSpace::World ) );
 
       for ( auto light : m_lightComponents )
       {
          m_lightBufferPass->UpdateLightParamBuffer(
-            deviceContext,
+            *deviceContext,
             light->GetLightPosition( ),
             light->GetLightColor( ),
             light->GetLightDirection( ),
@@ -468,18 +531,30 @@ namespace Mile
             Vector3( light->GetLightRange( ), 0.0f, 0.0f ),
             LightComponent::LightTypeToIndex( light->GetLightType( ) ) );
 
-         m_screenQuad->Bind( deviceContext, 0 );
-         deviceContext.DrawIndexed( 6, 0, 0 );
+         m_screenQuad->Bind( *deviceContext, 0 );
+         deviceContext->DrawIndexed( 6, 0, 0 );
       }
 
-      m_lightBufferPass->Unbind( deviceContext );
+      m_lightBufferPass->Unbind( *deviceContext );
+
+      ID3D11CommandList* commandList = nullptr;
+      auto hr = deviceContext->FinishCommandList( false, &commandList );
+      if ( FAILED( hr ) )
+      {
+         return nullptr;
+      }
+
+      return commandList;
    }
 
-   void RendererDX11::RenderShading( ID3D11DeviceContext& deviceContext )
+   ID3D11CommandList* RendererDX11::RenderShading( ID3D11DeviceContext* deviceContext )
    {
-      m_shadingPass->Bind( deviceContext );
-      SetBackbufferAsRenderTarget( deviceContext );
-      ClearDepthStencil( deviceContext );
+      deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+      m_defaultState->Bind( ( *deviceContext ) );
+      m_viewport->Bind( ( *deviceContext ) );
+      m_shadingPass->Bind( *deviceContext );
+      SetBackbufferAsRenderTarget( *deviceContext );
+      ClearDepthStencil( *deviceContext );
 
       auto camTransform = m_mainCamera->GetTransform( );
 
@@ -487,9 +562,9 @@ namespace Mile
       {
          auto material = batchedMaterial.first;
          auto diffuseTexture = material->GetDiffuseMap( );
-         m_shadingPass->UpdateMaterialBuffer( deviceContext,
+         m_shadingPass->UpdateMaterialBuffer( *deviceContext,
                                               material->GetSpecularAlbedo( ) );
-         m_shadingPass->UpdateDiffuseTexture( deviceContext,
+         m_shadingPass->UpdateDiffuseTexture( *deviceContext,
                                               diffuseTexture->GetRawTexture( ) );
 
          for ( auto meshRenderer : batchedMaterial.second )
@@ -509,21 +584,30 @@ namespace Mile
                   m_mainCamera->GetNearPlane( ),
                   m_mainCamera->GetFarPlane( ) );
 
-            m_shadingPass->UpdateTransformBuffer( deviceContext,
+            m_shadingPass->UpdateTransformBuffer( *deviceContext,
                                                   world,
                                                   worldView,
                                                   worldViewProj );  // per object
 
             // @TODO: Implement instancing
-            mesh->Bind( deviceContext, 0 );
-            deviceContext.DrawIndexed( mesh->GetIndexCount( ), 0, 0 );
+            mesh->Bind( *deviceContext, 0 );
+            deviceContext->DrawIndexed( mesh->GetIndexCount( ), 0, 0 );
          }
 
          // Unbind ShaderResource
-         m_shadingPass->UpdateDiffuseTexture( deviceContext, nullptr );
+         m_shadingPass->UpdateDiffuseTexture( *deviceContext, nullptr );
       }
 
-      m_shadingPass->Unbind( deviceContext );
+      m_shadingPass->Unbind( *deviceContext );
+
+      ID3D11CommandList* commandList = nullptr;
+      auto hr = deviceContext->FinishCommandList( false, &commandList );
+      if ( FAILED( hr ) )
+      {
+         return nullptr;
+      }
+
+      return commandList;
    }
 
    void RendererDX11::RenderTest( ID3D11DeviceContext& deviceContext )
@@ -622,4 +706,25 @@ namespace Mile
          deviceContext.OMSetRenderTargets( 1, &m_renderTargetView, nullptr );
       }
    }
+
+   ID3D11DeviceContext* RendererDX11::GetDeviceContextByType( EDeviceContextType type )
+   {
+      if ( type == EDeviceContextType::Immediate )
+      {
+         return ( m_immediateContext );
+      }
+      switch ( type )
+      {
+      case EDeviceContextType::Immediate:
+      default:
+         return m_immediateContext;
+      case EDeviceContextType::GBufferPass:
+         return m_deferredContexts[ 0 ];
+      case EDeviceContextType::LBufferPass:
+         return m_deferredContexts[ 1 ];
+      case EDeviceContextType::ShadingPass:
+         return m_deferredContexts[ 2 ];
+      }
+   }
+
 }

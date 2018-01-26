@@ -41,7 +41,7 @@ namespace Mile
       }
 
       m_pixelShader->AddSampler( D3D11_FILTER_ANISOTROPIC,
-                                 D3D11_TEXTURE_ADDRESS_BORDER, 
+                                 D3D11_TEXTURE_ADDRESS_BORDER,
                                  D3D11_COMPARISON_ALWAYS );
 
       return true;
@@ -49,12 +49,16 @@ namespace Mile
 
    bool GBufferPass::Bind( ID3D11DeviceContext& deviceContext )
    {
+      if ( m_renderer == nullptr )
+      {
+         return false;
+      }
       if ( !RenderingPass::Bind( deviceContext ) )
       {
          return false;
       }
 
-      bool bIsReadyToBind = m_transformBuffer != nullptr && 
+      bool bIsReadyToBind = m_transformBuffer != nullptr &&
          m_materialBuffer != nullptr &&
          m_gBuffer != nullptr;
       if ( !bIsReadyToBind )
@@ -67,7 +71,7 @@ namespace Mile
          return false;
       }
 
-      if ( !m_transformBuffer->Bind(deviceContext, 0, ShaderType::VertexShader ) )
+      if ( !m_transformBuffer->Bind( deviceContext, 0, ShaderType::VertexShader ) )
       {
          return false;
       }
@@ -88,7 +92,7 @@ namespace Mile
       }
 
       if ( m_gBuffer != nullptr )
-      { 
+      {
          m_gBuffer->UnbindRenderTarget( deviceContext );
       }
 
