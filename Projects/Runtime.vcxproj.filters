@@ -22,20 +22,11 @@
     <Filter Include="ThirdParty\json">
       <UniqueIdentifier>{058221c6-d62e-4c78-899f-32d2a0c45c1f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Buffers">
-      <UniqueIdentifier>{39cf7b4e-c6cf-4245-aece-4c33c6a97d20}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Textures">
-      <UniqueIdentifier>{3cb3f96e-3de6-4787-8dcf-9fb3a400d637}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Shaders">
       <UniqueIdentifier>{72d4f322-50ea-48c3-88aa-8b17e771855b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\GameFramework">
       <UniqueIdentifier>{7ab57107-4381-488a-af23-0b9a63b49ca7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\LightPrePass">
-      <UniqueIdentifier>{7c2fe0e0-1738-4d2a-8131-9079fe36cf50}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resource">
       <UniqueIdentifier>{59186037-5e12-4276-ad89-04ba5e35c69f}</UniqueIdentifier>
@@ -46,14 +37,32 @@
     <Filter Include="ThirdParty\FreeImage">
       <UniqueIdentifier>{083b41a3-3a5a-4ae5-9569-ef7dd4e6ece5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\TestRenderPass">
-      <UniqueIdentifier>{5e17b0c5-58eb-4d8e-b641-126170ae553b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ThirdParty\assimp">
       <UniqueIdentifier>{8901785b-806b-45c4-b2d4-413b1226390d}</UniqueIdentifier>
     </Filter>
     <Filter Include="MT">
       <UniqueIdentifier>{9f8b5cb0-39c5-441a-8fa9-ddd62c5ae18b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Rendering Passes">
+      <UniqueIdentifier>{d924a07d-0ef7-4a29-83d8-0ccc9918ff63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Rendering Passes\LightPrePass">
+      <UniqueIdentifier>{7c2fe0e0-1738-4d2a-8131-9079fe36cf50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Rendering Passes\TestRenderPass">
+      <UniqueIdentifier>{5e17b0c5-58eb-4d8e-b641-126170ae553b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Renderer">
+      <UniqueIdentifier>{76497997-e791-46a5-8772-b2aa7326f759}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Resources">
+      <UniqueIdentifier>{0638094a-97d4-4b8e-b68e-27662969bb60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Resources\Buffers">
+      <UniqueIdentifier>{39cf7b4e-c6cf-4245-aece-4c33c6a97d20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Resources\Textures">
+      <UniqueIdentifier>{3cb3f96e-3de6-4787-8dcf-9fb3a400d637}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -84,23 +93,17 @@
     <ClInclude Include="..\Runtime\Math\Matrix.h">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\ResourceDX11.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="..\Runtime\Math\Math.h">
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\BufferDX11.h">
-      <Filter>Rendering\Buffers</Filter>
+      <Filter>Rendering\Resources\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\IndexBufferDX11.h">
-      <Filter>Rendering\Buffers</Filter>
+      <Filter>Rendering\Resources\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\ConstantBufferDX11.h">
-      <Filter>Rendering\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\RendererDX11.h">
-      <Filter>Rendering</Filter>
+      <Filter>Rendering\Resources\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\Window.h">
       <Filter>Core</Filter>
@@ -112,13 +115,13 @@
       <Filter>ThirdParty\json</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\Texture2dDX11.h">
-      <Filter>Rendering\Textures</Filter>
+      <Filter>Rendering\Resources\Textures</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\RenderTargetDX11.h">
-      <Filter>Rendering\Textures</Filter>
+      <Filter>Rendering\Resources\Textures</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\DepthStencilBufferDX11.h">
-      <Filter>Rendering\Buffers</Filter>
+      <Filter>Rendering\Resources\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\Rendering.h">
       <Filter>Rendering</Filter>
@@ -156,35 +159,26 @@
     <ClInclude Include="..\Runtime\Core\ComponentRegister.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\Mesh.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h">
-      <Filter>Rendering\Buffers</Filter>
+      <Filter>Rendering\Resources\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Component\MeshRenderComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\RenderingPass.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\GBuffer.h">
-      <Filter>Rendering\LightPrePass</Filter>
+      <Filter>Rendering\Rendering Passes\LightPrePass</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\GBufferPass.h">
-      <Filter>Rendering\LightPrePass</Filter>
+      <Filter>Rendering\Rendering Passes\LightPrePass</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\LightBufferPass.h">
-      <Filter>Rendering\LightPrePass</Filter>
+      <Filter>Rendering\Rendering Passes\LightPrePass</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\ShadingPass.h">
-      <Filter>Rendering\LightPrePass</Filter>
+      <Filter>Rendering\Rendering Passes\LightPrePass</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Component\LightComponent.h">
       <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\Quad.h">
-      <Filter>Rendering</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Component\CameraComponent.h">
       <Filter>Components</Filter>
@@ -216,17 +210,11 @@
     <ClInclude Include="..\Runtime\Resource\Model.h">
       <Filter>Resource</Filter>
     </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\Viewport.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\RasterizerState.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="..\ThirdParty\FreeImage\include\FreeImage.h">
       <Filter>ThirdParty\FreeImage</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\TestRenderPass.h">
-      <Filter>Rendering\TestRenderPass</Filter>
+      <Filter>Rendering\Rendering Passes\TestRenderPass</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\ai_assert.h">
       <Filter>ThirdParty\assimp</Filter>
@@ -360,6 +348,30 @@
     <ClInclude Include="..\Runtime\MT\ThreadPool.h">
       <Filter>MT</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\RenderingPass.h">
+      <Filter>Rendering\Rendering Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\RasterizerState.h">
+      <Filter>Rendering\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\RendererDX11.h">
+      <Filter>Rendering\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\Viewport.h">
+      <Filter>Rendering\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\ResourceDX11.h">
+      <Filter>Rendering\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\Quad.h">
+      <Filter>Rendering\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\Mesh.h">
+      <Filter>Rendering\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\CommandListDX11.h">
+      <Filter>Rendering\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -387,7 +399,7 @@
       <Filter>Math</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\BufferDX11.cpp">
-      <Filter>Rendering\Buffers</Filter>
+      <Filter>Rendering\Resources\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Core\Window.cpp">
       <Filter>Core</Filter>
@@ -395,23 +407,20 @@
     <ClCompile Include="..\Runtime\Core\Config.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\RendererDX11.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\IndexBufferDX11.cpp">
-      <Filter>Rendering\Buffers</Filter>
+      <Filter>Rendering\Resources\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\Texture2dDX11.cpp">
-      <Filter>Rendering\Textures</Filter>
+      <Filter>Rendering\Resources\Textures</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\ConstantBufferDX11.cpp">
-      <Filter>Rendering\Buffers</Filter>
+      <Filter>Rendering\Resources\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\RenderTargetDX11.cpp">
-      <Filter>Rendering\Textures</Filter>
+      <Filter>Rendering\Resources\Textures</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\DepthStencilBufferDX11.cpp">
-      <Filter>Rendering\Buffers</Filter>
+      <Filter>Rendering\Resources\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\VertexShaderDX11.cpp">
       <Filter>Rendering\Shaders</Filter>
@@ -434,35 +443,26 @@
     <ClCompile Include="..\Runtime\Core\ComponentRegister.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\Mesh.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\VertexBufferDX11.cpp">
-      <Filter>Rendering\Buffers</Filter>
+      <Filter>Rendering\Resources\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Component\MeshRenderComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\RenderingPass.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\GBuffer.cpp">
-      <Filter>Rendering\LightPrePass</Filter>
+      <Filter>Rendering\Rendering Passes\LightPrePass</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\GBufferPass.cpp">
-      <Filter>Rendering\LightPrePass</Filter>
+      <Filter>Rendering\Rendering Passes\LightPrePass</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\LightBufferPass.cpp">
-      <Filter>Rendering\LightPrePass</Filter>
+      <Filter>Rendering\Rendering Passes\LightPrePass</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\ShadingPass.cpp">
-      <Filter>Rendering\LightPrePass</Filter>
+      <Filter>Rendering\Rendering Passes\LightPrePass</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Component\LightComponent.cpp">
       <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\Quad.cpp">
-      <Filter>Rendering</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Component\CameraComponent.cpp">
       <Filter>Components</Filter>
@@ -494,17 +494,32 @@
     <ClCompile Include="..\Runtime\Resource\ModelLoader.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\Viewport.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\RasterizerState.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\TestRenderPass.cpp">
-      <Filter>Rendering\TestRenderPass</Filter>
+      <Filter>Rendering\Rendering Passes\TestRenderPass</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Core\Logger.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\RenderingPass.cpp">
+      <Filter>Rendering\Rendering Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\RasterizerState.cpp">
+      <Filter>Rendering\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\RendererDX11.cpp">
+      <Filter>Rendering\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\Viewport.cpp">
+      <Filter>Rendering\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\Quad.cpp">
+      <Filter>Rendering\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\Mesh.cpp">
+      <Filter>Rendering\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\CommandListDX11.cpp">
+      <Filter>Rendering\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
