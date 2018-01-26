@@ -403,7 +403,6 @@ namespace Mile
 
    void RendererDX11::RenderGBuffer( ID3D11DeviceContext& deviceContext )
    {
-      m_gBuffer->SetDepthStencilBuffer( m_depthStencilBuffer );
       m_gBufferPass->Bind( deviceContext );
 
       auto camTransform = m_mainCamera->GetTransform( );
@@ -451,8 +450,6 @@ namespace Mile
 
    void RendererDX11::RenderLightBuffer( ID3D11DeviceContext& deviceContext )
    {
-      m_lightBufferPass->SetGBuffer( m_gBuffer );
-      m_lightBufferPass->SetLightBuffer( m_lightBuffer );
       m_lightBufferPass->Bind( deviceContext );
 
       // @TODO: Implement multi - camera rendering
@@ -480,8 +477,6 @@ namespace Mile
 
    void RendererDX11::RenderShading( ID3D11DeviceContext& deviceContext )
    {
-      m_shadingPass->SetLightBuffer( m_lightBuffer );
-      m_shadingPass->AcquireTransformBuffer( m_gBufferPass );
       m_shadingPass->Bind( deviceContext );
       SetBackbufferAsRenderTarget( deviceContext );
       ClearDepthStencil( deviceContext );
