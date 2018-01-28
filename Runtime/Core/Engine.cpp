@@ -1,6 +1,7 @@
 #include "Engine.h"
 #include "Context.h"
 #include "Logger.h"
+#include "Timer.h"
 #include "Config.h"
 #include "Window.h"
 #include "World.h"
@@ -11,12 +12,16 @@
 namespace Mile
 {
    Engine::Engine( Context* context ) :
-      SubSystem( context ), m_bIsRunning( false ), m_bShutdownFlag( false )
+      SubSystem( context ), m_bIsRunning( false ), m_bShutdownFlag( false ),
+      m_maxFPS( 0 ), m_frameTime( 0 )
    {
       m_context->RegisterSubSystem( this );
 
       m_logger = new Logger( m_context );
       m_context->RegisterSubSystem( m_logger );
+
+      m_timer = new Timer( m_context );
+      m_context->RegisterSubSystem( m_timer );
 
       m_threadPool = new ThreadPool( m_context );
       m_context->RegisterSubSystem( m_threadPool );
@@ -49,6 +54,13 @@ namespace Mile
       // Initialize Logger
       if ( !m_context->GetSubSystem<Logger>( )->Init( ) )
       {
+         return false;
+      }
+
+      // Initialize Timer
+      if ( !m_context->GetSubSystem<Timer>( )->Init( ) )
+      {
+         m_logger->Logging( TEXT( "Engine" ), ELogType::FATAL, TEXT( "Timer failed to intiialize!" ), true );
          return false;
       }
 
@@ -93,6 +105,10 @@ namespace Mile
          return false;
       }
 
+      auto engineConfig = m_configSys->GetConfig( TEXT( "Engine" ) );
+      m_maxFPS = engineConfig.second[ "MaxFPS" ];
+      m_frameTime = static_cast< long long > ( ( 1.0f / static_cast< float >( m_maxFPS ) ) * 1000.0f );
+
       return true;
    }
 
@@ -108,8 +124,18 @@ namespace Mile
          }
          else
          {
+            m_timer->BeginFrame( );
             this->Update( );
             m_renderer->Render( );
+            m_timer->Update( );
+            m_timer->EndFrame( );
+
+            auto deltaTime = m_timer->GetDeltaTimeMS( );
+            if ( deltaTime < m_frameTime )
+            {
+               std::this_thread::sleep_for( std::chrono::milliseconds( m_frameTime - deltaTime ) );
+            }
+
          }
       }
 
@@ -127,8 +153,9 @@ namespace Mile
    {
       SubSystem::DeInit( );
       m_bIsRunning = false;
-      m_threadPool = nullptr;
       m_logger = nullptr;
+      m_timer = nullptr;
+      m_threadPool = nullptr;
       m_resourceManager = nullptr;
       m_configSys = nullptr;
       m_window = nullptr;

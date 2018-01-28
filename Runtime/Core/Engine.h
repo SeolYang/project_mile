@@ -5,6 +5,7 @@
 namespace Mile
 {
    class Logger;
+   class Timer;
    class ThreadPool;
    class ConfigSystem;
    class Window;
@@ -40,8 +41,11 @@ namespace Mile
    private:
       bool                m_bIsRunning;
       bool                m_bShutdownFlag;
-      ThreadPool*         m_threadPool;
+      unsigned int        m_maxFPS;
+      long long           m_frameTime;
       Logger*             m_logger;
+      Timer*              m_timer;
+      ThreadPool*         m_threadPool;
       ResourceManager*    m_resourceManager;
       ConfigSystem*       m_configSys;
       Window*             m_window;

@@ -4,5 +4,6 @@
     "PosY": 500,
     "ResolutionWidth": 1280,
     "ResolutionHeight": 720,
-    "World": "Contents/Worlds/Test.json"
+    "World": "Contents/Worlds/Test.json",
+    "MaxFPS": 60
 }

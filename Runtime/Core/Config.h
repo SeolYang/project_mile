@@ -4,7 +4,7 @@
 
 namespace Mile
 {
-   using Config = std::pair<String, json >;
+   using Config = std::pair<String, json>;
    
    // Engine Config file must be Engine.json
    // Contents/Configs/Engine.json
