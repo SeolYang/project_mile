@@ -51,7 +51,10 @@ namespace Mile
          res = Vector4::Forward( ) * m_worldMatrix;
          break;
       }
+      
+      auto ret = Vector3( res.x, res.y, res.z );
+      ret.Normalize( );
 
-      return Vector3( res.x, res.y, res.z );
+      return ret;
    }
 }

@@ -5,6 +5,7 @@
 namespace Mile
 {
    class Entity;
+   class Context;
    class Transform;
    class MEAPI Component
    {
@@ -34,6 +35,7 @@ namespace Mile
       virtual void OnDisable( ) { }
 
       Entity* GetEntity( ) const { return m_entity; }
+      Context* GetContext( ) const;
       Transform* GetTransform( ) const;
 
    protected:

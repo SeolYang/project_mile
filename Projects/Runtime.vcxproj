@@ -112,6 +112,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\Runtime\Component\Component.h" />
     <ClInclude Include="..\Runtime\Component\LightComponent.h" />
     <ClInclude Include="..\Runtime\Component\MeshRenderComponent.h" />
+    <ClInclude Include="..\Runtime\CoreMinimal.h" />
     <ClInclude Include="..\Runtime\Core\ComponentRegister.h" />
     <ClInclude Include="..\Runtime\Core\Config.h" />
     <ClInclude Include="..\Runtime\Core\Context.h" />

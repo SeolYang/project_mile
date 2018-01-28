@@ -26,6 +26,11 @@ namespace Mile
         }
     }
 
+    Context* Component::GetContext( ) const
+    {
+       return m_entity->GetContext( );
+    }
+
     Transform* Component::GetTransform( ) const
     {
        return m_entity->GetTransform( );

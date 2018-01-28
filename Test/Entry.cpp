@@ -13,6 +13,7 @@
 #include "Resource\Texture2D.h"
 #include "Math\Vector3.h"
 #include "MT\ThreadPool.h"
+#include "RotateComponent.h"
 
 using namespace Mile;
 
@@ -33,11 +34,13 @@ int main( )
    auto camComp = camera->AddComponent<CameraComponent>( );
    auto camTransform = camera->GetTransform( );
    camTransform->SetPosition( Vector3( 0.0f, 0.0f, 0.0f ) );
+   //camTransform->SetRotation( Quaternion( Math::Pi * 0.5f, Vector3::Up( ) ) );
 
    camComp->SetNearPlane( 1.0f );
    camComp->SetFarPlane( 1000.0f );
    camComp->SetFov( 70.0f );
 
+   //camera->AddComponent<RotateComponent>( );
    // Camera setup
 
    auto light = world->CreateEntity( TEXT( "DirectionalLight" ) );
@@ -46,7 +49,7 @@ int main( )
    lightTransform->SetPosition( Vector3( 0.0f, 0.0f, 0.0f ) );
    //lightTransform->SetRotation( Quaternion(
    //   Math::DegreeToRadian( 90.0f ), Vector3::Up( ) ) );
-
+   light->AddComponent<RotateComponent>( );
    // Light setup
 
    auto model = resMng->Load<Model>( TEXT( "Contents/Models/Sphere.3ds" ) );
@@ -108,12 +111,7 @@ int main( )
 
    MELog( context, TEXT( "Test" ), ELogType::DEBUG, TEXT( "TEST MESSAGE~" ), true );
 
-   auto tp = context->GetSubSystem<ThreadPool>( );
-   tp->AddTask( [ ]( )
-   {
-      std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
-      std::cout << "Hello! This is Thread Pool test~" << std::endl;
-   } );
+   //modelEntities[ 2 ]->AddComponent<RotateComponent>( );
 
    int execute = engine->Execute( );
    SafeDelete( context );

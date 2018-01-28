@@ -1,35 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Core">
-      <UniqueIdentifier>{5cfaab77-c9fe-42bd-aa80-f722eb33613d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Math">
-      <UniqueIdentifier>{de67a36c-e7a7-4d56-84cb-2ec42365dc82}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Components">
-      <UniqueIdentifier>{5a159d47-a33e-434f-b54b-8bd8ca48aa49}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering">
-      <UniqueIdentifier>{d1f9d1d8-950f-421a-a286-64300b2e45ea}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="EventSystem">
-      <UniqueIdentifier>{41ebf61a-c65f-4cdf-b618-787f880bcbee}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ThirdParty">
       <UniqueIdentifier>{5406f72d-f47b-4710-88b6-111d3153388c}</UniqueIdentifier>
     </Filter>
     <Filter Include="ThirdParty\json">
       <UniqueIdentifier>{058221c6-d62e-4c78-899f-32d2a0c45c1f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Shaders">
-      <UniqueIdentifier>{72d4f322-50ea-48c3-88aa-8b17e771855b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\GameFramework">
-      <UniqueIdentifier>{7ab57107-4381-488a-af23-0b9a63b49ca7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource">
-      <UniqueIdentifier>{59186037-5e12-4276-ad89-04ba5e35c69f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{776385f7-c74f-4647-8275-8c2537b0f97d}</UniqueIdentifier>
@@ -40,181 +16,208 @@
     <Filter Include="ThirdParty\assimp">
       <UniqueIdentifier>{8901785b-806b-45c4-b2d4-413b1226390d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MT">
-      <UniqueIdentifier>{9f8b5cb0-39c5-441a-8fa9-ddd62c5ae18b}</UniqueIdentifier>
+    <Filter Include="Sources">
+      <UniqueIdentifier>{174de3b0-6525-49ad-af3b-d4b403b79e25}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Rendering Passes">
+    <Filter Include="Sources\Resource">
+      <UniqueIdentifier>{59186037-5e12-4276-ad89-04ba5e35c69f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Rendering">
+      <UniqueIdentifier>{d1f9d1d8-950f-421a-a286-64300b2e45ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Rendering\Shaders">
+      <UniqueIdentifier>{72d4f322-50ea-48c3-88aa-8b17e771855b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Rendering\Rendering Passes">
       <UniqueIdentifier>{d924a07d-0ef7-4a29-83d8-0ccc9918ff63}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Rendering Passes\LightPrePass">
+    <Filter Include="Sources\Rendering\Rendering Passes\LightPrePass">
       <UniqueIdentifier>{7c2fe0e0-1738-4d2a-8131-9079fe36cf50}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Rendering Passes\TestRenderPass">
+    <Filter Include="Sources\Rendering\Rendering Passes\TestRenderPass">
       <UniqueIdentifier>{5e17b0c5-58eb-4d8e-b641-126170ae553b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Renderer">
+    <Filter Include="Sources\Rendering\Renderer">
       <UniqueIdentifier>{76497997-e791-46a5-8772-b2aa7326f759}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Resources">
+    <Filter Include="Sources\Rendering\Resources">
       <UniqueIdentifier>{0638094a-97d4-4b8e-b68e-27662969bb60}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Resources\Buffers">
+    <Filter Include="Sources\Rendering\Resources\Buffers">
       <UniqueIdentifier>{39cf7b4e-c6cf-4245-aece-4c33c6a97d20}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering\Resources\Textures">
+    <Filter Include="Sources\Rendering\Resources\Textures">
       <UniqueIdentifier>{3cb3f96e-3de6-4787-8dcf-9fb3a400d637}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\MT">
+      <UniqueIdentifier>{9f8b5cb0-39c5-441a-8fa9-ddd62c5ae18b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Components">
+      <UniqueIdentifier>{5a159d47-a33e-434f-b54b-8bd8ca48aa49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Core">
+      <UniqueIdentifier>{5cfaab77-c9fe-42bd-aa80-f722eb33613d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Core\GameFramework">
+      <UniqueIdentifier>{7ab57107-4381-488a-af23-0b9a63b49ca7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\EventSystem">
+      <UniqueIdentifier>{41ebf61a-c65f-4cdf-b618-787f880bcbee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Math">
+      <UniqueIdentifier>{de67a36c-e7a7-4d56-84cb-2ec42365dc82}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Core\Context.h">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\SubSystem.h">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\Helper.h">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\Engine.h">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Component\Component.h">
-      <Filter>Components</Filter>
+      <Filter>Sources\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\World.h">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Math\Vector3.h">
-      <Filter>Math</Filter>
+      <Filter>Sources\Math</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Math\Vector4.h">
-      <Filter>Math</Filter>
+      <Filter>Sources\Math</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Math\Matrix.h">
-      <Filter>Math</Filter>
+      <Filter>Sources\Math</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Math\Math.h">
-      <Filter>Math</Filter>
+      <Filter>Sources\Math</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\BufferDX11.h">
-      <Filter>Rendering\Resources\Buffers</Filter>
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\IndexBufferDX11.h">
-      <Filter>Rendering\Resources\Buffers</Filter>
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\ConstantBufferDX11.h">
-      <Filter>Rendering\Resources\Buffers</Filter>
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\Window.h">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\Config.h">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\json\src\json.hpp">
       <Filter>ThirdParty\json</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\Texture2dDX11.h">
-      <Filter>Rendering\Resources\Textures</Filter>
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\RenderTargetDX11.h">
-      <Filter>Rendering\Resources\Textures</Filter>
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\DepthStencilBufferDX11.h">
-      <Filter>Rendering\Resources\Buffers</Filter>
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\Rendering.h">
-      <Filter>Rendering</Filter>
+      <Filter>Sources\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\ShaderDX11.h">
-      <Filter>Rendering\Shaders</Filter>
+      <Filter>Sources\Rendering\Shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\VertexShaderDX11.h">
-      <Filter>Rendering\Shaders</Filter>
+      <Filter>Sources\Rendering\Shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\InputLayoutDX11.h">
-      <Filter>Rendering\Shaders</Filter>
+      <Filter>Sources\Rendering\Shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\PixelShaderDX11.h">
-      <Filter>Rendering\Shaders</Filter>
+      <Filter>Sources\Rendering\Shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\SamplerDX11.h">
-      <Filter>Rendering\Shaders</Filter>
+      <Filter>Sources\Rendering\Shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Math\Vertex.h">
-      <Filter>Math</Filter>
+      <Filter>Sources\Math</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Math\Vector2.h">
-      <Filter>Math</Filter>
+      <Filter>Sources\Math</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\Entity.h">
-      <Filter>Core\GameFramework</Filter>
+      <Filter>Sources\Core\GameFramework</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\Transform.h">
-      <Filter>Core\GameFramework</Filter>
+      <Filter>Sources\Core\GameFramework</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Math\Quaternion.h">
-      <Filter>Math</Filter>
+      <Filter>Sources\Math</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\ComponentRegister.h">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h">
-      <Filter>Rendering\Resources\Buffers</Filter>
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Component\MeshRenderComponent.h">
-      <Filter>Components</Filter>
+      <Filter>Sources\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\GBuffer.h">
-      <Filter>Rendering\Rendering Passes\LightPrePass</Filter>
+      <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\GBufferPass.h">
-      <Filter>Rendering\Rendering Passes\LightPrePass</Filter>
+      <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\LightBufferPass.h">
-      <Filter>Rendering\Rendering Passes\LightPrePass</Filter>
+      <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\ShadingPass.h">
-      <Filter>Rendering\Rendering Passes\LightPrePass</Filter>
+      <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Component\LightComponent.h">
-      <Filter>Components</Filter>
+      <Filter>Sources\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Component\CameraComponent.h">
-      <Filter>Components</Filter>
+      <Filter>Sources\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Resource\ModelLoader.h">
-      <Filter>Resource</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Resource\PlainText.h">
-      <Filter>Resource</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Resource\Resource.h">
-      <Filter>Resource</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Resource\ResourceCache.h">
-      <Filter>Resource</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Resource\ResourceManager.h">
-      <Filter>Resource</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Resource\Texture2D.h">
-      <Filter>Resource</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Resource\TextureLoader.h">
-      <Filter>Resource</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Resource\Material.h">
-      <Filter>Resource</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Resource\Model.h">
-      <Filter>Resource</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\FreeImage\include\FreeImage.h">
       <Filter>ThirdParty\FreeImage</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\TestRenderPass.h">
-      <Filter>Rendering\Rendering Passes\TestRenderPass</Filter>
+      <Filter>Sources\Rendering\Rendering Passes\TestRenderPass</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\ai_assert.h">
       <Filter>ThirdParty\assimp</Filter>
@@ -343,183 +346,186 @@
       <Filter>ThirdParty\FreeImage</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\Logger.h">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\MT\ThreadPool.h">
-      <Filter>MT</Filter>
+      <Filter>Sources\MT</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\RenderingPass.h">
-      <Filter>Rendering\Rendering Passes</Filter>
+      <Filter>Sources\Rendering\Rendering Passes</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\RasterizerState.h">
-      <Filter>Rendering\Renderer</Filter>
+      <Filter>Sources\Rendering\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\RendererDX11.h">
-      <Filter>Rendering\Renderer</Filter>
+      <Filter>Sources\Rendering\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\Viewport.h">
-      <Filter>Rendering\Renderer</Filter>
+      <Filter>Sources\Rendering\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\ResourceDX11.h">
-      <Filter>Rendering\Resources</Filter>
+      <Filter>Sources\Rendering\Resources</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\Quad.h">
-      <Filter>Rendering\Resources</Filter>
+      <Filter>Sources\Rendering\Resources</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\Mesh.h">
-      <Filter>Rendering\Resources</Filter>
+      <Filter>Sources\Rendering\Resources</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\Timer.h">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\CoreMinimal.h">
+      <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Core\SubSystem.cpp">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Core\Engine.cpp">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Core\World.cpp">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Component\Component.cpp">
-      <Filter>Components</Filter>
+      <Filter>Sources\Components</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Math\Vector3.cpp">
-      <Filter>Math</Filter>
+      <Filter>Sources\Math</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Math\Vector4.cpp">
-      <Filter>Math</Filter>
+      <Filter>Sources\Math</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Math\Matrix.cpp">
-      <Filter>Math</Filter>
+      <Filter>Sources\Math</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\BufferDX11.cpp">
-      <Filter>Rendering\Resources\Buffers</Filter>
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Core\Window.cpp">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Core\Config.cpp">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\IndexBufferDX11.cpp">
-      <Filter>Rendering\Resources\Buffers</Filter>
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\Texture2dDX11.cpp">
-      <Filter>Rendering\Resources\Textures</Filter>
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\ConstantBufferDX11.cpp">
-      <Filter>Rendering\Resources\Buffers</Filter>
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\RenderTargetDX11.cpp">
-      <Filter>Rendering\Resources\Textures</Filter>
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\DepthStencilBufferDX11.cpp">
-      <Filter>Rendering\Resources\Buffers</Filter>
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\VertexShaderDX11.cpp">
-      <Filter>Rendering\Shaders</Filter>
+      <Filter>Sources\Rendering\Shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\InputLayoutDX11.cpp">
-      <Filter>Rendering\Shaders</Filter>
+      <Filter>Sources\Rendering\Shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\PixelShaderDX11.cpp">
-      <Filter>Rendering\Shaders</Filter>
+      <Filter>Sources\Rendering\Shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\SamplerDX11.cpp">
-      <Filter>Rendering\Shaders</Filter>
+      <Filter>Sources\Rendering\Shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Core\Entity.cpp">
-      <Filter>Core\GameFramework</Filter>
+      <Filter>Sources\Core\GameFramework</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Core\Transform.cpp">
-      <Filter>Core\GameFramework</Filter>
+      <Filter>Sources\Core\GameFramework</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Core\ComponentRegister.cpp">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\VertexBufferDX11.cpp">
-      <Filter>Rendering\Resources\Buffers</Filter>
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Component\MeshRenderComponent.cpp">
-      <Filter>Components</Filter>
+      <Filter>Sources\Components</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\GBuffer.cpp">
-      <Filter>Rendering\Rendering Passes\LightPrePass</Filter>
+      <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\GBufferPass.cpp">
-      <Filter>Rendering\Rendering Passes\LightPrePass</Filter>
+      <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\LightBufferPass.cpp">
-      <Filter>Rendering\Rendering Passes\LightPrePass</Filter>
+      <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\ShadingPass.cpp">
-      <Filter>Rendering\Rendering Passes\LightPrePass</Filter>
+      <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Component\LightComponent.cpp">
-      <Filter>Components</Filter>
+      <Filter>Sources\Components</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Component\CameraComponent.cpp">
-      <Filter>Components</Filter>
+      <Filter>Sources\Components</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Resource\PlainText.cpp">
-      <Filter>Resource</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Resource\Resource.cpp">
-      <Filter>Resource</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Resource\ResourceCache.cpp">
-      <Filter>Resource</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Resource\ResourceManager.cpp">
-      <Filter>Resource</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Resource\Texture2D.cpp">
-      <Filter>Resource</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Resource\TextureLoader.cpp">
-      <Filter>Resource</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Resource\Material.cpp">
-      <Filter>Resource</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Resource\Model.cpp">
-      <Filter>Resource</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Resource\ModelLoader.cpp">
-      <Filter>Resource</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\TestRenderPass.cpp">
-      <Filter>Rendering\Rendering Passes\TestRenderPass</Filter>
+      <Filter>Sources\Rendering\Rendering Passes\TestRenderPass</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Core\Logger.cpp">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\RenderingPass.cpp">
-      <Filter>Rendering\Rendering Passes</Filter>
+      <Filter>Sources\Rendering\Rendering Passes</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\RasterizerState.cpp">
-      <Filter>Rendering\Renderer</Filter>
+      <Filter>Sources\Rendering\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\RendererDX11.cpp">
-      <Filter>Rendering\Renderer</Filter>
+      <Filter>Sources\Rendering\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\Viewport.cpp">
-      <Filter>Rendering\Renderer</Filter>
+      <Filter>Sources\Rendering\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\Quad.cpp">
-      <Filter>Rendering\Resources</Filter>
+      <Filter>Sources\Rendering\Resources</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\Mesh.cpp">
-      <Filter>Rendering\Resources</Filter>
+      <Filter>Sources\Rendering\Resources</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Core\Timer.cpp">
-      <Filter>Core</Filter>
+      <Filter>Sources\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
