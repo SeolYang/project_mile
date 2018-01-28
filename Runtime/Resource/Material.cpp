@@ -58,13 +58,13 @@ namespace Mile
 
    bool Material::SaveTo( const String& filePath )
    {
-      std::string diffuseMapPath = "\"None\"";
+      std::string diffuseMapPath = "\"Contents/Textures/default_white.png\"";
       if ( m_diffuseMap != nullptr )
       {
          diffuseMapPath = "\"" + WString2String( m_diffuseMap->GetPath( ) ) + "\"";
       }
 
-      std::string normalMapPath = "\"None\"";
+      std::string normalMapPath = "\"Contents/Textures/default_black.png\"";
       if ( m_normalMap != nullptr )
       {
          normalMapPath = "\"" + WString2String( m_normalMap->GetPath( ) ) + "\"";

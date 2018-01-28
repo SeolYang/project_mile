@@ -222,7 +222,9 @@ namespace Mile
 
    Vector3 Vector3::Cross( const Vector3& vec ) const
    {
-      return Vector3( y * vec.z, z * vec.x, x * vec.y );
+      return Vector3( y * vec.z - z * vec.y,
+                      z * vec.x - x * vec.z,
+                      x * vec.y - y * vec.x );
    }
 
    float Vector3::SizeSquared( ) const

@@ -380,7 +380,7 @@ namespace Mile
    void RendererDX11::Render( )
    {
       auto threadPool = m_context->GetSubSystem<ThreadPool>( );
-      Clear( *m_immediateContext );
+      //Clear( *m_immediateContext );
 
       World* world = m_context->GetSubSystem<World>( );
       if ( world != nullptr )
@@ -407,7 +407,12 @@ namespace Mile
          {
             // @TODO: Implement Multiple camera rendering
             m_mainCamera = m_cameras[ 0 ];
+
+            SetClearColor( m_mainCamera->GetClearColor( ) );
+            Clear( *m_immediateContext );
+
             RenderLightPrePass( );
+            //RenderTest( *m_immediateContext );
          }
       }
 
@@ -473,16 +478,18 @@ namespace Mile
             auto mesh = meshRenderer->GetMesh( );
             
             Matrix world = transform->GetWorldMatrix( );
-            Matrix worldView = world * 
-               Matrix::CreateView( 
-                  camTransform->GetPosition( TransformSpace::World ),
-                  camTransform->GetForward( ) );
-            Matrix worldViewProj = worldView *
-               Matrix::CreatePerspectiveProj(
-                  m_mainCamera->GetFov( ),
-                  m_window->GetAspectRatio( ),
-                  m_mainCamera->GetNearPlane( ),
-                  m_mainCamera->GetFarPlane( ) );
+            Matrix view = Matrix::CreateView(
+               camTransform->GetPosition( TransformSpace::World ),
+               camTransform->GetForward( ),
+               camTransform->GetUp( ) );
+            Matrix proj = Matrix::CreatePerspectiveProj(
+               m_mainCamera->GetFov( ),
+               m_window->GetAspectRatio( ),
+               m_mainCamera->GetNearPlane( ),
+               m_mainCamera->GetFarPlane( ) );
+
+            Matrix worldView = world * view;
+            Matrix worldViewProj = worldView * proj;
 
             m_gBufferPass->UpdateTransformBuffer( *deviceContext,
                                                   world,
@@ -573,16 +580,19 @@ namespace Mile
             auto mesh = meshRenderer->GetMesh( );
 
             Matrix world = transform->GetWorldMatrix( );
-            Matrix worldView = world *
-               Matrix::CreateView(
-                  camTransform->GetPosition( TransformSpace::World ),
-                  camTransform->GetForward( ) );
-            Matrix worldViewProj = worldView *
-               Matrix::CreatePerspectiveProj(
-                  m_mainCamera->GetFov( ),
-                  m_window->GetAspectRatio( ),
-                  m_mainCamera->GetNearPlane( ),
-                  m_mainCamera->GetFarPlane( ) );
+            Matrix view = Matrix::CreateView(
+               camTransform->GetPosition( TransformSpace::World ),
+               camTransform->GetForward( ),
+               camTransform->GetUp( ) );
+            Matrix proj = Matrix::CreatePerspectiveProj(
+               m_mainCamera->GetFov( ),
+               m_window->GetAspectRatio( ),
+               m_mainCamera->GetNearPlane( ),
+               m_mainCamera->GetFarPlane( ) );
+
+            Matrix worldView = world * view;
+            Matrix worldViewProj = worldView * proj;
+
 
             m_shadingPass->UpdateTransformBuffer( *deviceContext,
                                                   world,
@@ -612,6 +622,10 @@ namespace Mile
 
    void RendererDX11::RenderTest( ID3D11DeviceContext& deviceContext )
    {
+      deviceContext.IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+      m_defaultState->Bind( ( deviceContext ) );
+      m_viewport->Bind( ( deviceContext ) );
+
       m_testPass->Bind( deviceContext );
       SetBackbufferAsRenderTarget( deviceContext );
 

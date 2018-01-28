@@ -36,25 +36,22 @@ namespace Mile
       m_bDirtyFlag = false;
    }
 
-   Vector3 Transform::GetForward( TransformSpace space )
+   Vector3 Transform::GetForward( TransformSpace space ) const
    {
-      UpdateMatrix( );
+      //Vector3 res = GetRotation( space ) * Vector3::Forward( );
+      //res.Normalize( );
+      //return res;
 
-      Vector4 res;
-      switch ( space )
-      {
-      case TransformSpace::Local:
-         res = Vector4::Forward( ) * m_localMatrix;
-         break;
-
-      case TransformSpace::World:
-         res = Vector4::Forward( ) * m_worldMatrix;
-         break;
-      }
-      
-      auto ret = Vector3( res.x, res.y, res.z );
+      Vector4 res = Vector4::Forward( ) * Matrix::CreateRotation( GetRotation( space ) );
+      Vector3 ret{ res.x, res.y, res.z };
       ret.Normalize( );
-
       return ret;
+   }
+
+   Vector3 Transform::GetUp( TransformSpace space ) const
+   {
+      Vector3 res = GetRotation( space ) * Vector3::Up( );
+      res.Normalize( );
+      return res;
    }
 }

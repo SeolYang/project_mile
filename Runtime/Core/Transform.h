@@ -267,7 +267,8 @@ namespace Mile
          }
       }
 
-      Vector3 GetForward( TransformSpace space = TransformSpace::World );
+      Vector3 GetForward( TransformSpace space = TransformSpace::World ) const;
+      Vector3 GetUp( TransformSpace space = TransformSpace::World ) const;
 
    private:
       void SetParent( Transform* parent )

@@ -187,9 +187,9 @@ namespace Mile
     Vector4 Vector4::operator^( const Vector4& vec ) const
     {
        // Cross product ( 3-Dimension )
-       return Vector4( y * vec.z,
-                       z * vec.x,
-                       x * vec.y,
+       return Vector4( y * vec.z - z * vec.y, 
+                       z * vec.x - x * vec.z,
+                       x * vec.y - y * vec.x,
                        1.0f );
     }
 

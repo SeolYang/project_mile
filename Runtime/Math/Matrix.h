@@ -328,7 +328,7 @@ namespace Mile
 
       static Matrix CreatePerspectiveProj( float degreeFov, float aspectRatio, float nearPlane, float farPlane )
       {
-         float height = ( 1.0f / std::tan( Math::DegreeToRadian( degreeFov * 0.5f ) ) );
+         float height = ( 1.0f / std::tan( Math::DegreeToRadian( degreeFov / 2.0f ) ) );
          float width = height / aspectRatio;
          float range = farPlane / ( farPlane - nearPlane );
 

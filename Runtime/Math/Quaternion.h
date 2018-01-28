@@ -21,12 +21,17 @@ namespace Mile
       {
       }
 
-      Quaternion( float radian, const Vector3& axis ) :
-         Quaternion( cosf( ( radian / 2.0f ) ),
-                     sinf( ( radian / 2.0f ) ) * axis.x,
-                     sinf( ( radian / 2.0f ) ) * axis.y,
-                     sinf( ( radian / 2.0f ) ) * axis.z )
+      Quaternion( float degree, const Vector3& axis )
       {
+         Vector3 normalizedAxis = axis.GetNormalized( );
+         float radian = ( Math::DegreeToRadian( degree ) ) / 2.0f;
+         float sinVal = sinf( radian );
+         float cosVal = cosf( radian );
+
+         this->w = cosVal;
+         this->x = sinVal * normalizedAxis.x;
+         this->y = sinVal * normalizedAxis.y;
+         this->z = sinVal * normalizedAxis.z;
       }
 
       Quaternion( const Vector3& imaginary ) :
@@ -92,6 +97,15 @@ namespace Mile
             ( x * quat.w + y * quat.z - z * quat.y + w * quat.x ),
             ( -x * quat.z + y * quat.w + z * quat.x + w * quat.y ),
             ( x * quat.y - y * quat.x + z * quat.w + w * quat.z ) );
+      }
+
+      Vector3 operator*( const Vector3& rhs )
+      {
+         Vector3 quatVec{ x, y, z };
+         Vector3 norm{ quatVec ^ rhs };
+         Vector3 tangent{ quatVec ^ norm };
+
+         return rhs + ( ( norm * w + tangent ) * 2.0f );
       }
 
       Quaternion& operator*=( const Quaternion& quat )
@@ -188,9 +202,20 @@ namespace Mile
                             z * normInv );
       }
 
+      Quaternion& Normalize( )
+      {
+         float norm = Norm( );
+         float normInv = 1.0f / norm;
+         this->w *= normInv;
+         this->x *= normInv;
+         this->y *= normInv;
+         this->z *= normInv;
+         return ( *this );
+      }
+
       Quaternion& Rotate( const Quaternion& rot )
       {
-         ( *this ) = rot * ( *this );
+         ( *this) = ( *this ) * this->Inverse( ) * rot * ( *this );
          return ( *this );
       }
 

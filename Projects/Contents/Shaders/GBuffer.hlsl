@@ -52,12 +52,6 @@ struct PSOutput
    float4 Position      : SV_Target1;
 };
 
-SamplerState DefaultSampler
-{
-   AddressU = WRAP;
-   AddressV = WRAP;
-};
-
 VSOutput MileVS( in VSInput input )
 {
    VSOutput output;

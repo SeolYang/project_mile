@@ -10,6 +10,7 @@ class RotateComponent : public Component
 
 public:
    RotateComponent( Entity* entity ) :
+      m_degree( 0.0f ),
       Component( entity )
    {
    }
@@ -18,7 +19,7 @@ public:
    {
       auto timer = GetContext( )->GetSubSystem<Timer>( );
       auto transform = m_entity->GetTransform( );
-      auto rot = Quaternion( Math::Pi * 0.3f * timer->GetDeltaTime( ), Vector3(1, 0, 0 ) );
-      transform->Rotate( rot );
+      transform->Rotate( Quaternion( 180.0f * 0.2f * timer->GetDeltaTime( ), Vector3::Up( ) ) );
    }
+
 };
