@@ -120,6 +120,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\Runtime\Core\Helper.h" />
     <ClInclude Include="..\Runtime\Core\Logger.h" />
     <ClInclude Include="..\Runtime\Core\SubSystem.h" />
+    <ClInclude Include="..\Runtime\Core\Timer.h" />
     <ClInclude Include="..\Runtime\Core\Transform.h" />
     <ClInclude Include="..\Runtime\Core\Window.h" />
     <ClInclude Include="..\Runtime\Core\World.h" />
@@ -222,6 +223,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Core\Entity.cpp" />
     <ClCompile Include="..\Runtime\Core\Logger.cpp" />
     <ClCompile Include="..\Runtime\Core\SubSystem.cpp" />
+    <ClCompile Include="..\Runtime\Core\Timer.cpp" />
     <ClCompile Include="..\Runtime\Core\Transform.cpp" />
     <ClCompile Include="..\Runtime\Core\Window.cpp" />
     <ClCompile Include="..\Runtime\Core\World.cpp" />

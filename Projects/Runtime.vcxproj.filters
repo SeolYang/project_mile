@@ -369,6 +369,9 @@
     <ClInclude Include="..\Runtime\Rendering\Mesh.h">
       <Filter>Rendering\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Core\Timer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -514,6 +517,9 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\Mesh.cpp">
       <Filter>Rendering\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Core\Timer.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
