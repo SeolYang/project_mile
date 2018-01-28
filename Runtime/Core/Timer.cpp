@@ -1,6 +1,5 @@
 #include "Timer.h"
 #include "Logger.h"
-#include <iostream>
 
 namespace Mile
 {
@@ -17,6 +16,8 @@ namespace Mile
    bool Timer::Init( )
    {
       m_frameBeginTime = m_frameEndTime = std::chrono::steady_clock::now( );
+      m_deltaTime = std::chrono::duration_cast<std::chrono::nanoseconds>
+         ( m_frameEndTime - m_frameBeginTime );
       m_frameCount = 0;
       MELog( m_context, TEXT( "Timer" ), ELogType::MESSAGE, TEXT( "Timer initialized." ), true );
       return true;
@@ -38,8 +39,6 @@ namespace Mile
       // 1000 ms = 1 sec
       if ( duration.count( ) > 1000 )
       {
-         // @TODO: remove debug output message
-         std::cout << "FPS: " << m_framePerSec << std::endl;
          m_framePerSec = m_frameCount;
          m_frameCount = 0;
       }
@@ -53,5 +52,6 @@ namespace Mile
    void Timer::EndFrame( )
    {
       m_frameEndTime = std::chrono::steady_clock::now( );
+      m_deltaTime = std::chrono::duration_cast<std::chrono::nanoseconds>(m_frameEndTime - m_frameBeginTime);
    }
 }

@@ -20,20 +20,18 @@ namespace Mile
 
       float GetDeltaTime( ) const
       {
-         auto deltaTime = m_frameEndTime - m_frameBeginTime;
-         return ( std::chrono::duration_cast< std::chrono::duration<float> >( deltaTime ).count( ) );
+         return GetDeltaTimeMS( ) * 0.001f;
       }
 
       long long GetDeltaTimeMS( ) const
       {
-         auto deltaTime = m_frameEndTime - m_frameBeginTime;
-         return ( std::chrono::duration_cast< std::chrono::milliseconds >( deltaTime ).count( ) );
+         return ( std::chrono::duration_cast< std::chrono::milliseconds >( m_deltaTime ).count( ) );
       }
 
       long long GetDeltaTimeNS( ) const
       {
          auto deltaTime = m_frameEndTime - m_frameBeginTime;
-         return ( std::chrono::duration_cast< std::chrono::nanoseconds >( deltaTime ).count( ) );
+         return ( ( m_deltaTime ).count( ) );
       }
 
       long long GetFPS( ) const
@@ -44,6 +42,7 @@ namespace Mile
    private:
       std::chrono::steady_clock::time_point m_frameBeginTime;
       std::chrono::steady_clock::time_point m_frameEndTime;
+      std::chrono::nanoseconds m_deltaTime;
 
       std::chrono::steady_clock::time_point m_frameMeasureBeginTime;
       long long   m_frameCount;

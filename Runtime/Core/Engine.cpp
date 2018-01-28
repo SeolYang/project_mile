@@ -124,18 +124,21 @@ namespace Mile
          }
          else
          {
+            auto loopBegin = std::chrono::steady_clock::now( );
             m_timer->BeginFrame( );
+
             this->Update( );
             m_renderer->Render( );
             m_timer->Update( );
-            m_timer->EndFrame( );
 
-            auto deltaTime = m_timer->GetDeltaTimeMS( );
+            auto loopEnd = std::chrono::steady_clock::now( );
+            auto deltaTime = std::chrono::duration_cast< std::chrono::milliseconds >( loopEnd - loopBegin ).count( );
             if ( deltaTime < m_frameTime )
             {
                std::this_thread::sleep_for( std::chrono::milliseconds( m_frameTime - deltaTime ) );
             }
 
+            m_timer->EndFrame( );
          }
       }
 
