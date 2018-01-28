@@ -48,7 +48,7 @@ int main( )
    auto lightTransform = light->GetTransform( );
    lightTransform->SetPosition( Vector3( 0.0f, 0.0f, 0.0f ) );
    //lightTransform->SetRotation( Quaternion( 90.0f, Vector3::Up( ) ) );
-   //light->AddComponent<RotateComponent>( );
+   light->AddComponent<RotateComponent>( );
    // Light setup
 
    auto cube_model = resMng->Load<Model>( TEXT( "Contents/Models/cube.obj" ) );

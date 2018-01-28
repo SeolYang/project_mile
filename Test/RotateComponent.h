@@ -10,7 +10,6 @@ class RotateComponent : public Component
 
 public:
    RotateComponent( Entity* entity ) :
-      m_degree( 0.0f ),
       Component( entity )
    {
    }
