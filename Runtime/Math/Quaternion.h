@@ -87,10 +87,11 @@ namespace Mile
 
       Quaternion operator*( const Quaternion& quat ) const
       {
-         return Quaternion( w * quat.w - ( x*quat.x + y*quat.y + z*quat.z ),
-                          ( w * quat.x + quat.w * x ) + ( y * quat.z - z * quat.y ),
-                          ( w * quat.y + quat.w * y ) + ( z * quat.x - x * quat.z ),
-                          ( w * quat.z + quat.w * z ) + ( x * quat.y - y * quat.x ) );
+         return Quaternion(
+            ( w * quat.w - ( x * quat.x + y * quat.y + z * quat.z ) ),
+            ( x * quat.w + y * quat.z - z * quat.y + w * quat.x ),
+            ( -x * quat.z + y * quat.w + z * quat.x + w * quat.y ),
+            ( x * quat.y - y * quat.x + z * quat.w + w * quat.z ) );
       }
 
       Quaternion& operator*=( const Quaternion& quat )
@@ -189,8 +190,7 @@ namespace Mile
 
       Quaternion& Rotate( const Quaternion& rot )
       {
-         auto inv = Inverse( );
-         ( *this ) = ( inv * rot * ( *this ) );
+         ( *this ) = rot * ( *this );
          return ( *this );
       }
 
