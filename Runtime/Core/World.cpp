@@ -26,8 +26,11 @@ namespace Mile
       /* Entity serialize */
       for ( auto entity : m_entities )
       {
-         res += entity->Serialize( );
-         res += ", ";
+         if ( !entity->HasParent( ) )
+         {
+            res += entity->Serialize( );
+            res += ", ";
+         }
       }
       res[ res.length( ) - 2 ] = ']';
       res += "}";

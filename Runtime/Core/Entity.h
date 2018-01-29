@@ -102,6 +102,7 @@ namespace Mile
 
       Entity* GetParent( ) { return m_parent; }
       Entity* GetChildByName( const String& name );
+      bool HasParent( ) { return m_parent != nullptr; }
 
       std::vector<Entity*> GetChildren( ) const { return m_children; }
 
