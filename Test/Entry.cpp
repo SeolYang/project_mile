@@ -51,7 +51,7 @@ int main( )
    light->AddComponent<RotateComponent>( );
    // Light setup
 
-   auto cube_model = resMng->Load<Model>( TEXT( "Contents/Models/cube.obj" ) );
+   //auto cube_model = resMng->Load<Model>( TEXT( "Contents/Models/cube.obj" ) );
    auto model = resMng->Load<Model>( TEXT( "Contents/Models/sphere.3ds" ) );
    auto diffuse = resMng->Load<Texture2D>( TEXT( "Contents/Textures/Pebbles_002_COLOR.jpg" ) );
    //auto diffuse = resMng->Load<Texture2D>( TEXT( "Contents/Textures/su0.png" ) );
