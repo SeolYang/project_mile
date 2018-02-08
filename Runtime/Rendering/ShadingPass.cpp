@@ -44,11 +44,6 @@ namespace Mile
 
    bool ShadingPass::Bind( ID3D11DeviceContext& deviceContext )
    {
-      if ( m_renderer == nullptr )
-      {
-         return false;
-      }
-
       if ( !RenderingPass::Bind( deviceContext ) )
       {
          return false;
@@ -56,7 +51,8 @@ namespace Mile
 
       bool bIsReadyToBind = m_transformBuffer != nullptr &&
          m_materialBuffer != nullptr &&
-         m_lightBuffer != nullptr;
+         m_lightBuffer != nullptr &&
+         m_renderTarget != nullptr;
       if ( !bIsReadyToBind )
       {
          return false;
@@ -72,7 +68,17 @@ namespace Mile
          return false;
       }
 
+      if ( !m_checkerBoardBuffer->Bind( deviceContext, 1, ShaderType::PixelShader ) )
+      {
+         return false;
+      }
+
       if ( !m_lightBuffer->BindAsShaderResource( deviceContext, 1, ShaderType::PixelShader ) )
+      {
+         return false;
+      }
+
+      if ( !m_renderTarget->BindAsRenderTarget( deviceContext ) )
       {
          return false;
       }
@@ -90,6 +96,11 @@ namespace Mile
       m_transformBuffer->Unbind( deviceContext );
       m_materialBuffer->Unbind( deviceContext );
 
+      if ( m_checkerBoardBuffer != nullptr )
+      {
+         m_checkerBoardBuffer->Unbind( deviceContext );
+      }
+
       if ( m_diffuseTexture != nullptr )
       {
          m_diffuseTexture->Unbind( deviceContext );
@@ -98,6 +109,11 @@ namespace Mile
       if ( m_lightBuffer != nullptr )
       {
          m_lightBuffer->UnbindShaderResource( deviceContext );
+      }
+
+      if ( m_renderTarget != nullptr )
+      {
+         m_renderTarget->UnbindRenderTarget( deviceContext );
       }
 
       RenderingPass::Unbind( deviceContext );

@@ -15,7 +15,7 @@
     <ProjectGuid>{6742BECA-60F9-4DF9-9B98-4F684457CCE8}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Runtime</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -134,6 +134,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\Runtime\Math\Vertex.h" />
     <ClInclude Include="..\Runtime\MT\ThreadPool.h" />
     <ClInclude Include="..\Runtime\Rendering\BufferDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\CheckerBoardInterpolatePass.h" />
     <ClInclude Include="..\Runtime\Rendering\ConstantBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\DepthStencilBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\GBuffer.h" />
@@ -232,6 +233,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Math\Vector3.cpp" />
     <ClCompile Include="..\Runtime\Math\Vector4.cpp" />
     <ClCompile Include="..\Runtime\Rendering\BufferDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\CheckerBoardInterpolatePass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\ConstantBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\DepthStencilBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\GBuffer.cpp" />
@@ -264,21 +266,31 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Resource\TextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Contents\Shaders\CheckerBoardInterpolate.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="Contents\Shaders\GBuffer.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\LightBuffer.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\Shading.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\TestShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

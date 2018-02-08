@@ -9,6 +9,7 @@
 #include "LightBufferPass.h"
 #include "ShadingPass.h"
 #include "TestRenderPass.h"
+#include "CheckerBoardInterpolatePass.h"
 #include "Core\Context.h"
 #include "Core\Window.h"
 #include "Core\World.h"
@@ -29,12 +30,14 @@ namespace Mile
       SubSystem( context ),
       m_window( nullptr ), m_clearColor{ 0.0f, 0.0f, 0.0f, 1.0f },
       m_device( nullptr ), m_immediateContext( nullptr ),
-      m_deferredContexts{ nullptr, nullptr, nullptr },
+      m_deferredContexts{ nullptr, nullptr, nullptr, nullptr },
       m_swapChain( nullptr ), m_renderTargetView( nullptr ),
       m_depthStencilBuffer( nullptr ), m_bDepthStencilEnabled( true ),
       m_gBuffer( nullptr ), m_gBufferPass( nullptr ),
       m_lightBuffer( nullptr ), m_lightBufferPass( nullptr ),
       m_testPass( nullptr ),
+      m_bCheckerBoardRenderingEnabled( false ),
+      m_checkerBoard(nullptr), m_checkerBoardInterpolatePass( nullptr ),
       m_shadingPass( nullptr ),
       m_mainCamera( nullptr ),
       m_viewport( nullptr ),
@@ -55,7 +58,7 @@ namespace Mile
          return false;
       }
 
-      // Initialize low level systems
+      /* Initialize low level rendering api **/
       m_window = m_context->GetSubSystem<Window>( );
       if ( m_window == nullptr )
       {
@@ -83,11 +86,14 @@ namespace Mile
                 TEXT( "Failed to create Depth-Stencil Buffer." ), true );
          return false;
       }
-      // #Initialize low level systems
 
-      // Initialize Pre Light pass
-      Vector2 screenRes{ m_window->GetResolution( ) };
+      m_backBuffer = new RenderTargetDX11( this );
+      if ( !m_backBuffer->Init( m_renderTargetView, m_depthStencilBuffer ) )
+      {
+         return false;
+      }
 
+      /* Initialize Pre Light Pass **/
       m_screenQuad = new Quad( this );
       if ( !m_screenQuad->Init( -1.0f, -1.0f, 1.0f, 1.0f ) )
       {
@@ -99,6 +105,7 @@ namespace Mile
       }
 
       // @TODO: Multiple viewports
+      Vector2 screenRes{ m_window->GetResolution( ) };
       m_viewport = new Viewport( this );
       m_viewport->SetWidth( screenRes.x );
       m_viewport->SetHeight( screenRes.y );
@@ -159,6 +166,7 @@ namespace Mile
          return false;
       }
       m_lightBufferPass->SetGBuffer( m_gBuffer );
+      m_lightBufferPass->SetCheckerBoardBuffer( m_gBufferPass->GetCheckerBoardConstantBuffer( ) );
       m_lightBufferPass->SetLightBuffer( m_lightBuffer );
 
       m_shadingPass = new ShadingPass( this );
@@ -171,9 +179,34 @@ namespace Mile
          return false;
       }
       m_shadingPass->SetLightBuffer( m_lightBuffer );
+      m_shadingPass->SetCheckerBoardBuffer( m_gBufferPass->GetCheckerBoardConstantBuffer( ) );
       m_shadingPass->AcquireTransformBuffer( m_gBufferPass );
-      // #Initialize Pre Light pass
+      m_shadingPass->SetRenderTarget( m_backBuffer );
 
+
+      /* Initialize Checker Board Rendering **/
+      m_checkerBoard = new RenderTargetDX11( this );
+      if ( !m_checkerBoard->Init(
+           static_cast< unsigned int >( screenRes.x ),
+           static_cast< unsigned int >( screenRes.y ) ) )
+      {
+         MELog( m_context,
+                TEXT( "RendererDX11" ),
+                ELogType::FATAL,
+                TEXT( "Failed to create checker board." ), true );
+         return false;
+      }
+
+      m_checkerBoardInterpolatePass = new CheckerBoardInterpolatePass( this );
+      if ( !m_checkerBoardInterpolatePass->Init( TEXT( "Contents/Shaders/CheckerBoardInterpolate.hlsl" ) ) )
+      {
+         return false;
+      }
+      m_checkerBoardInterpolatePass->SetCheckerBoard( m_checkerBoard );
+      m_checkerBoardInterpolatePass->SetRenderTarget( m_backBuffer );
+      // @TODO: Set Shading Pass Render Target depending on checker board settings
+
+      /* Initialize Test render pass **/
       m_testPass = new TestRenderPass( this );
       if ( !m_testPass->Init( TEXT( "Contents/Shaders/TestShader.hlsl" ) ) )
       {
@@ -409,49 +442,54 @@ namespace Mile
             m_mainCamera = m_cameras[ 0 ];
 
             SetClearColor( m_mainCamera->GetClearColor( ) );
-            Clear( *m_immediateContext );
 
-            RenderLightPrePass( );
-            //RenderTest( *m_immediateContext );
+            auto threadPool = m_context->GetSubSystem<ThreadPool>( );
+
+            /* Light Pre Pass **/
+            auto gBufferPassBinder = std::bind( &RendererDX11::RenderGBuffer,
+                                                this,
+                                                GetDeviceContextByType( EDeviceContextType::GBufferPass ) );
+            auto gBufferPassTask = threadPool->AddTask( gBufferPassBinder );
+
+            auto lBufferPassBinder = std::bind( &RendererDX11::RenderLightBuffer,
+                                                this,
+                                                GetDeviceContextByType( EDeviceContextType::LBufferPass ) );
+            auto lBufferPassTask = threadPool->AddTask( lBufferPassBinder );
+
+            auto checkerBoardPassBinder = std::bind( &RendererDX11::RenderCheckerBoardInterpolate,
+                                                     this,
+                                                     GetDeviceContextByType( EDeviceContextType::CheckerBoardInterpolatePass ) );
+            auto checkerBoardPassTask = threadPool->AddTask( checkerBoardPassBinder );
+
+            ID3D11CommandList* gBufferPassCommandList = gBufferPassTask.get( );
+            ID3D11CommandList* lBufferPassCommandList = lBufferPassTask.get( );
+            ID3D11CommandList* checkerBoardCommandList = checkerBoardPassTask.get( );
+
+            // Has dependency with G-Buffer
+            auto shadingPassBinder = std::bind( &RendererDX11::RenderShading,
+                                                this,
+                                                GetDeviceContextByType( EDeviceContextType::ShadingPass ) );
+            auto shadingPassTask = threadPool->AddTask( shadingPassBinder );
+
+            ID3D11CommandList* shadingPassCommandList = shadingPassTask.get( );
+
+            m_immediateContext->ExecuteCommandList( gBufferPassCommandList, false );
+            m_immediateContext->ExecuteCommandList( lBufferPassCommandList, false );
+            m_immediateContext->ExecuteCommandList( shadingPassCommandList, false );
+
+            if ( checkerBoardCommandList != nullptr )
+            {
+               m_immediateContext->ExecuteCommandList( checkerBoardCommandList, false );
+            }
+
+            SafeRelease( gBufferPassCommandList );
+            SafeRelease( lBufferPassCommandList );
+            SafeRelease( shadingPassCommandList );
+            SafeRelease( checkerBoardCommandList );
          }
       }
 
       Present( );
-   }
-
-   void RendererDX11::RenderLightPrePass( )
-   {
-      auto threadPool = m_context->GetSubSystem<ThreadPool>( );
-
-      // light pre pass rendering
-      auto gBufferPassBinder = std::bind( &RendererDX11::RenderGBuffer,
-                                          this,
-                                          GetDeviceContextByType( EDeviceContextType::GBufferPass ) );
-      auto gBufferPassTask = threadPool->AddTask( gBufferPassBinder );
-
-      auto lBufferPassBinder = std::bind( &RendererDX11::RenderLightBuffer,
-                                          this,
-                                          GetDeviceContextByType( EDeviceContextType::LBufferPass ) );
-      auto lBufferPassTask = threadPool->AddTask( lBufferPassBinder );
-
-      ID3D11CommandList* gBufferPassCommandList = gBufferPassTask.get( );
-      ID3D11CommandList* lBufferPassCommandList = lBufferPassTask.get( );
-
-      // Has dependency with G-Buffer
-      auto shadingPassBinder = std::bind( &RendererDX11::RenderShading,
-                                          this,
-                                          GetDeviceContextByType( EDeviceContextType::ShadingPass ) );
-      auto shadingPassTask = threadPool->AddTask( shadingPassBinder );
-
-      ID3D11CommandList* shadingPassCommandList = shadingPassTask.get( );
-
-      m_immediateContext->ExecuteCommandList( gBufferPassCommandList, false );
-      m_immediateContext->ExecuteCommandList( lBufferPassCommandList, false );
-      m_immediateContext->ExecuteCommandList( shadingPassCommandList, false );
-
-      SafeRelease( gBufferPassCommandList );
-      SafeRelease( lBufferPassCommandList );
-      SafeRelease( shadingPassCommandList );
    }
 
    ID3D11CommandList* RendererDX11::RenderGBuffer( ID3D11DeviceContext* deviceContext )
@@ -459,6 +497,7 @@ namespace Mile
       deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
       m_defaultState->Bind( ( *deviceContext ) );
       m_viewport->Bind( ( *deviceContext ) );
+      m_gBufferPass->UpdateCheckerBoardBuffer( *deviceContext, m_bCheckerBoardRenderingEnabled );
       m_gBufferPass->Bind( *deviceContext );
 
       auto camTransform = m_mainCamera->GetTransform( );
@@ -559,9 +598,19 @@ namespace Mile
       deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
       m_defaultState->Bind( ( *deviceContext ) );
       m_viewport->Bind( ( *deviceContext ) );
+
+      if ( m_bCheckerBoardRenderingEnabled )
+      {
+         m_checkerBoard->SetClearColor( m_clearColor );
+         m_shadingPass->SetRenderTarget( m_checkerBoard );
+      }
+      else
+      {
+         m_backBuffer->SetClearColor( m_clearColor );
+         m_shadingPass->SetRenderTarget( m_backBuffer );
+      }
+
       m_shadingPass->Bind( *deviceContext );
-      SetBackbufferAsRenderTarget( *deviceContext );
-      ClearDepthStencil( *deviceContext );
 
       auto camTransform = m_mainCamera->GetTransform( );
 
@@ -609,6 +658,38 @@ namespace Mile
       }
 
       m_shadingPass->Unbind( *deviceContext );
+
+      ID3D11CommandList* commandList = nullptr;
+      auto hr = deviceContext->FinishCommandList( false, &commandList );
+      if ( FAILED( hr ) )
+      {
+         return nullptr;
+      }
+
+      return commandList;
+   }
+
+   ID3D11CommandList* RendererDX11::RenderCheckerBoardInterpolate( ID3D11DeviceContext* deviceContext )
+   {
+      if ( !m_bCheckerBoardRenderingEnabled )
+      {
+         return nullptr;
+      }
+
+      deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+      m_defaultState->Bind( ( *deviceContext ) );
+      m_viewport->Bind( ( *deviceContext ) );
+      m_checkerBoardInterpolatePass->Bind( *deviceContext );
+
+      Vector2 screenRes{ m_window->GetResolution( ) };
+      m_checkerBoardInterpolatePass->UpdateRenderTargetInfoBuffer( *deviceContext,
+                                                                   static_cast< int >( screenRes.x ),
+                                                                   static_cast< int >( screenRes.y ) );
+
+      m_screenQuad->Bind( *deviceContext, 0 );
+      deviceContext->DrawIndexed( 6, 0, 0 );
+
+      m_checkerBoardInterpolatePass->Unbind( *deviceContext );
 
       ID3D11CommandList* commandList = nullptr;
       auto hr = deviceContext->FinishCommandList( false, &commandList );
@@ -738,6 +819,8 @@ namespace Mile
          return m_deferredContexts[ 1 ];
       case EDeviceContextType::ShadingPass:
          return m_deferredContexts[ 2 ];
+      case EDeviceContextType::CheckerBoardInterpolatePass:
+         return m_deferredContexts[ 3 ];
       }
    }
 

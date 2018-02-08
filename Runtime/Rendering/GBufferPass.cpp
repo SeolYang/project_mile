@@ -40,6 +40,12 @@ namespace Mile
          return false;
       }
 
+      m_checkerBoardBuffer = new ConstantBufferDX11( m_renderer );
+      if ( !m_checkerBoardBuffer->Init( sizeof( CheckerBoardConstantBuffer ) ) )
+      {
+         return false;
+      }
+
       m_pixelShader->AddSampler( D3D11_FILTER_ANISOTROPIC,
                                  D3D11_TEXTURE_ADDRESS_BORDER,
                                  D3D11_COMPARISON_ALWAYS );
@@ -81,6 +87,11 @@ namespace Mile
          return false;
       }
 
+      if ( !m_checkerBoardBuffer->Bind( deviceContext, 1, ShaderType::PixelShader ) )
+      {
+         return false;
+      }
+
       return true;
    }
 
@@ -96,8 +107,6 @@ namespace Mile
          m_gBuffer->UnbindRenderTarget( deviceContext );
       }
 
-      UpdateNormalTexture( deviceContext, nullptr );
-
       if ( m_transformBuffer != nullptr )
       {
          m_transformBuffer->Unbind( deviceContext );
@@ -108,6 +117,7 @@ namespace Mile
          m_materialBuffer->Unbind( deviceContext );
       }
 
+      UpdateNormalTexture( deviceContext, nullptr );
       RenderingPass::Unbind( deviceContext );
    }
 
@@ -132,6 +142,17 @@ namespace Mile
          buffer->specularExp = specExp;
 
          m_materialBuffer->UnMap( deviceContext );
+      }
+   }
+
+   void GBufferPass::UpdateCheckerBoardBuffer( ID3D11DeviceContext& deviceContext, bool checkerBoardEnable )
+   {
+      if ( m_checkerBoardBuffer != nullptr )
+      {
+         auto buffer = reinterpret_cast< CheckerBoardConstantBuffer* >( m_checkerBoardBuffer->Map( deviceContext ) );
+         buffer->checkerBoardEnable = checkerBoardEnable;
+
+         m_checkerBoardBuffer->UnMap( deviceContext );
       }
    }
 

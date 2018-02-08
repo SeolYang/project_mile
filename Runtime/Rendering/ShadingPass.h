@@ -27,6 +27,9 @@ namespace Mile
       virtual void Unbind( ID3D11DeviceContext& deviceContext ) override;
 
       void SetLightBuffer( RenderTargetDX11* lightBuffer ) { m_lightBuffer = lightBuffer; }
+      void SetRenderTarget( RenderTargetDX11* renderTarget ) { m_renderTarget = renderTarget; }
+      // CheckerBoard Setting does not change after decided at GBuffer-Pass
+      void SetCheckerBoardBuffer( CBufferPtr checkerBoardBuffer ) { m_checkerBoardBuffer = checkerBoardBuffer; }
       void UpdateDiffuseTexture( ID3D11DeviceContext& deviceContext, Texture2dDX11* diffuseTexture );
 
       // To reuse transform constant buffer from GBufferPass
@@ -38,8 +41,13 @@ namespace Mile
       CBufferPtr        m_transformBuffer;
       CBufferPtr        m_materialBuffer;
 
+      /* External Constant Buffer*/
+      ConstantBufferDX11*  m_checkerBoardBuffer;
+
       Texture2dDX11*    m_diffuseTexture;
       RenderTargetDX11* m_lightBuffer;
+
+      RenderTargetDX11* m_renderTarget;
 
    };
 }

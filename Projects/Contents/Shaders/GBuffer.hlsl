@@ -15,6 +15,11 @@ cbuffer MaterialPropertiesBuffer
    float SpecularPower;
 };
 
+cbuffer CheckerBoardBuffer
+{
+   bool CheckerBoardEnabled;
+};
+
 // Structures
 struct VSInput
 {
@@ -73,6 +78,10 @@ VSOutput MileVS( in VSInput input )
 
 PSOutput MilePS( in PSInput input )
 {
+   /* Checkerboard Rendering (Discard needless pixels) */
+   bool discardPixel = ( ( input.PositionSS.x + input.PositionSS.y ) % 2 ) == 0;
+   clip( CheckerBoardEnabled && discardPixel ? -1 : 1 );
+
    float3x3 tangentFrameWS = float3x3( normalize( input.TangentWS ),
                                        normalize( input.BitangentWS ),
                                        normalize( input.NormalWS ) );

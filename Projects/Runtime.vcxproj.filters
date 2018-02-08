@@ -67,6 +67,9 @@
     <Filter Include="Sources\Math">
       <UniqueIdentifier>{de67a36c-e7a7-4d56-84cb-2ec42365dc82}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Rendering\Rendering Passes\CheckerBoardRenderPass">
+      <UniqueIdentifier>{d63831ba-e766-4950-b9bf-b66fab76909f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Core\Context.h">
@@ -378,6 +381,9 @@
     <ClInclude Include="..\Runtime\CoreMinimal.h">
       <Filter>Sources</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\CheckerBoardInterpolatePass.h">
+      <Filter>Sources\Rendering\Rendering Passes\CheckerBoardRenderPass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -527,6 +533,9 @@
     <ClCompile Include="..\Runtime\Core\Timer.cpp">
       <Filter>Sources\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\CheckerBoardInterpolatePass.cpp">
+      <Filter>Sources\Rendering\Rendering Passes\CheckerBoardRenderPass</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Contents\Shaders\GBuffer.hlsl">
@@ -539,6 +548,9 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\TestShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\CheckerBoardInterpolate.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

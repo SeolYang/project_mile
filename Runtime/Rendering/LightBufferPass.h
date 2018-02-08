@@ -34,6 +34,8 @@ namespace Mile
       virtual void Unbind( ID3D11DeviceContext& deviceContext ) override;
 
       void SetGBuffer( GBuffer* gBuffer );
+      // CheckerBoard Setting does not change after decided at GBuffer-Pass
+      void SetCheckerBoardBuffer( CBufferPtr checkerBoardBuffer ) { m_checkerBoardBuffer = checkerBoardBuffer; }
       void SetLightBuffer( RenderTargetDX11* lightBuffer );
 
       void UpdateLightParamBuffer( ID3D11DeviceContext& deviceContext, const Vector3& lightPos,
@@ -46,8 +48,12 @@ namespace Mile
       void UpdateCameraBuffer( ID3D11DeviceContext& deviceContext, const Vector3& camPos );
 
    private:
+      /* Light Buffer pass Constant buffers */
       ConstantBufferDX11*  m_lightParamBuffer;
       ConstantBufferDX11*  m_cameraBuffer;
+
+      /* External Constant Buffer*/
+      ConstantBufferDX11*  m_checkerBoardBuffer;
       
       GBuffer*             m_gBuffer;
       RenderTargetDX11*    m_lightBuffer;

@@ -16,6 +16,11 @@ cbuffer MaterialPropertiesBuffer
    float3 SpecularAlbedo;
 };
 
+cbuffer CheckerBoardBuffer
+{
+   bool CheckerBoardEnabled;
+};
+
 // Structures
 struct VSInput
 {
@@ -46,6 +51,10 @@ VSOutput MileVS( in VSInput input )
 
 float4 MilePS( in PSInput input ) : SV_Target0
 {
+   /* Checkerboard Rendering (Discard needless pixels) */
+   bool discardPixel = ( ( input.ScreenPos.x + input.ScreenPos.y ) % 2 ) == 0;
+   clip( CheckerBoardEnabled && discardPixel ? -1 : 1 );
+
    float3 diffuseAlbedo = DiffuseMap.Sample( AnisoSampler, input.TexCoord ).rgb;
    int3 sampleIndices = int3( input.ScreenPos.xy, 0 );
 

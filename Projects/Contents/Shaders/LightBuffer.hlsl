@@ -18,6 +18,11 @@ cbuffer CameraParamsBuffer
    float3   CameraPos;
 };
 
+cbuffer CheckerBoardBuffer
+{
+   bool CheckerBoardEnabled;
+};
+
 float4 MileVS( in float4 Position : POSITION ) : SV_Position
 {
    return Position;
@@ -77,6 +82,10 @@ float4 CalcLighting( in float3 normal, in float3 position, in float specularPowe
 
 float4 MilePS( in float4 screenPos : SV_Position ) : SV_Target0
 {
+   /* Checkerboard Rendering (Discard needless pixels) */
+   bool discardPixel = ( ( screenPos.x + screenPos.y ) % 2 ) == 0;
+   clip( CheckerBoardEnabled && discardPixel ? -1 : 1 );
+
    float3 normal;
    float3 position;
    float specularPower;

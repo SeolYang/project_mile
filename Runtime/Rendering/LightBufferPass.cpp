@@ -24,7 +24,7 @@ namespace Mile
    bool LightBufferPass::Init( const String& filePath )
    {
       bool bIsInitialized = m_lightParamBuffer != nullptr || m_cameraBuffer != nullptr;
-      if ( m_renderer == nullptr || bIsInitialized )
+      if ( bIsInitialized )
       {
          return false;
       }
@@ -51,11 +51,6 @@ namespace Mile
 
    bool LightBufferPass::Bind( ID3D11DeviceContext& deviceContext )
    {
-      if ( m_renderer == nullptr )
-      {
-         return false;
-      }
-
       if ( !RenderingPass::Bind( deviceContext ) )
       {
          return false;
@@ -89,6 +84,11 @@ namespace Mile
          return false;
       }
 
+      if ( !m_checkerBoardBuffer->Bind( deviceContext, 2, ShaderType::PixelShader ) )
+      {
+         return false;
+      }
+
       return true;
    }
 
@@ -101,6 +101,8 @@ namespace Mile
 
       m_lightParamBuffer->Unbind( deviceContext );
       m_cameraBuffer->Unbind( deviceContext );
+      m_checkerBoardBuffer->Unbind( deviceContext );
+
       m_lightBuffer->UnbindRenderTarget( deviceContext );
       m_gBuffer->UnbindShaderResource( deviceContext );
       RenderingPass::Unbind( deviceContext );
