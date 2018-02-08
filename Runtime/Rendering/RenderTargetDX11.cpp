@@ -10,7 +10,8 @@ namespace Mile
       m_texture( nullptr ),
       m_rtv( nullptr ),
       m_width( 0 ),
-      m_height( 0 )
+      m_height( 0 ),
+      m_clearColor{ 0.0f, 0.0f, 0.0f, 1.0f }
    {
    }
 
@@ -20,7 +21,7 @@ namespace Mile
       SafeDelete( m_texture );
    }
 
-   bool RenderTargetDX11::Init( unsigned int width, unsigned int height, DXGI_FORMAT format )
+   bool RenderTargetDX11::Init( unsigned int width, unsigned int height, DXGI_FORMAT format, DepthStencilBufferDX11* depthStencilBuffer )
    {
       if ( m_texture != nullptr 
            || m_renderer == nullptr
@@ -76,12 +77,44 @@ namespace Mile
          return false;
       }
 
+      m_depthStencilBuffer = depthStencilBuffer;
+      return true;
+   }
+
+   bool RenderTargetDX11::Init( ID3D11RenderTargetView* rtv, DepthStencilBufferDX11* depthStencilBuffer )
+   {
+      if ( m_texture != nullptr ||
+           m_renderer == nullptr ||
+           rtv == nullptr )
+      {
+         return false;
+      }
+
+      m_rtv = rtv;
+
+      ID3D11Resource* rtvResource = nullptr;
+      rtv->GetResource( &rtvResource );
+
+      if ( rtvResource == nullptr )
+      {
+         return false;
+      }
+
+      ID3D11Texture2D* texture = static_cast< ID3D11Texture2D* >( rtvResource );
+      D3D11_TEXTURE2D_DESC desc{ };
+      texture->GetDesc( &desc );
+      m_width = desc.Width;
+      m_height = desc.Height;
+       
+      m_depthStencilBuffer = depthStencilBuffer;
+
+      SafeRelease( texture );
       return true;
    }
 
    bool RenderTargetDX11::BindAsRenderTarget( ID3D11DeviceContext& deviceContext )
    {
-      if ( m_texture == nullptr || m_renderer == nullptr )
+      if ( m_rtv == nullptr || m_renderer == nullptr )
       {
          return false;
       }
@@ -90,8 +123,14 @@ namespace Mile
       if ( m_depthStencilBuffer != nullptr )
       {
          dsv = m_depthStencilBuffer->GetDSV( );
+         deviceContext.ClearDepthStencilView( dsv,
+                                              D3D11_CLEAR_DEPTH,
+                                              1.0f,
+                                              0 );
       }
 
+      const float clearColor[ 4 ] = { m_clearColor.x, m_clearColor.y, m_clearColor.z, 1.0f };
+      deviceContext.ClearRenderTargetView( m_rtv, clearColor );
       deviceContext.OMSetRenderTargets( 1, &m_rtv, dsv );
       return true;
    }
@@ -118,5 +157,10 @@ namespace Mile
       {
          m_texture->Unbind( deviceContext );
       }
+   }
+
+   void RenderTargetDX11::SetClearColor( const Vector4& color )
+   {
+      m_clearColor = color;
    }
 }
