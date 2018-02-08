@@ -54,8 +54,11 @@ namespace Mile
       if ( m_depthStencilBuffer != nullptr )
       {
          dsv = m_depthStencilBuffer->GetDSV( );
+         deviceContext.ClearDepthStencilView( dsv, 
+                                              D3D11_CLEAR_DEPTH, 
+                                              1.0f,
+                                              0 );
       }
-
 
       std::array<ID3D11RenderTargetView*, 2> targets{
          m_normalBuffer->GetRTV( ),
@@ -64,6 +67,7 @@ namespace Mile
 
       const float clearColor[ 4 ] = { 0.0f, 0.0f, 0.0f, 1.0f };
       deviceContext.ClearRenderTargetView( targets[ 0 ], clearColor );
+      deviceContext.ClearRenderTargetView( targets[ 1 ], clearColor );
       deviceContext.OMSetRenderTargets( 2, targets.data( ), dsv );
 
       return true;
