@@ -1,7 +1,6 @@
 # project_mile
 -------------------------------------
 - Mile Engine: High performance 3D Game Engine.
-- Mile: Realistic 3D nature/civilization simulation.
 # Mile Engine Workload
 -------------------------------------
 - Deferred Rendering
