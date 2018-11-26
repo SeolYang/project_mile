@@ -1,19 +1,17 @@
-# MileEngine
+# project_mile
 -------------------------------------
-Mile Engine is a Game Engine to develope high-performance 3D Simulator and Game. It is written in C++11.
-
-# Workload
+- Mile Engine: High performance 3D Game Engine.
+- Mile: Realistic 3D nature/civilization simulation.
+# Mile Engine Workload
 -------------------------------------
 - Deferred Rendering
 - Physically Based Shading
 - Multi-Thread Rendering
 - Exclusive Physics Engine
-- Engine Editor
+- Engine Editor(Terrain editing.. etc)
 - Support Basic network library and framework for multiplay.
-- Procedural 3D Map Generation
-- Map Streaming
-- Flight Simulator Example
-
+- Deep Learning based map generating.
+- Reinforcement-learning agent
 # License
 -------------------------------------
 This software is provided under the **MIT License**.
