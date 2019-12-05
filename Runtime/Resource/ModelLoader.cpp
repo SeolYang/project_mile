@@ -41,11 +41,11 @@ namespace Mile
       auto scene = importer.ReadFile( WString2String( filePath ),
                                       aiProcess_CalcTangentSpace |
                                       aiProcess_Triangulate |
-                                      aiProcess_GenSmoothNormals |
-                                      aiProcess_SplitLargeMeshes |
+                                      //aiProcess_GenSmoothNormals |
+                                      //aiProcess_SplitLargeMeshes |
                                       aiProcess_ConvertToLeftHanded |
                                       aiProcess_SortByPType |
-                                      aiProcess_GenUVCoords |
+                                      //aiProcess_GenUVCoords |
                                       aiProcess_PreTransformVertices );
 
       Entity* res = new Entity( nullptr, TEXT( "" ) );

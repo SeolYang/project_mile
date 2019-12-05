@@ -75,7 +75,6 @@ namespace Mile
    {
       if ( m_bIsInitialized )
       {
-         //SaveTo( TEXT( "Contents/Worlds/Test.json" ) );
          SubSystem::DeInit( );
          MELog( m_context, TEXT( "World" ), ELogType::MESSAGE, TEXT( "World deinitialized." ), true );
       }
