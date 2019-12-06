@@ -12,7 +12,11 @@ namespace Mile
    class DepthStencilBufferDX11;
    using CBufferPtr = ConstantBufferDX11*;
    
-   // If bind once, you must call unbind before bind other rendering pass.
+   /**
+    * @brief	렌더러에서 최종 결과물을 만들어 내기 위해 실행될 각 단계들을 나타내는 클래스 입니다.
+	* @todo		다른 셰이더들(GS, Tessellation stage, CS.. )도 렌더링 패스에서 사용할수 있도록 하기.
+	* @todo		각 셰이더들의 file path 분리 (셰이버 파일내부에서 include 하는 방법도 고려)
+    */
    class MEAPI RenderingPass
    {
    public:
