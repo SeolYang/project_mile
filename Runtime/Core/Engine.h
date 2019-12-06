@@ -12,6 +12,9 @@ namespace Mile
    class ResourceManager;
    class RendererDX11;
    class World;
+   /**
+    * @brief	모든 Subsystem 들의 root 역할을 합니다. Subsystem 들의 초기화, 업데이트 그리고 할당 해제를 당담하는 클래스 입니다.
+    */
    class MEAPI Engine : public SubSystem
    {
    public:
