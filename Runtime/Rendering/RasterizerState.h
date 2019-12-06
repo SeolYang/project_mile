@@ -133,7 +133,7 @@ namespace Mile
 
       bool           m_bIsWireframe;
       CullMode       m_cullMode;
-	  WindingOrder      m_frontFaceWise;
+	  WindingOrder   m_frontFaceWise;
       int            m_depthBias;
       float          m_slopeScaledDepthBias;
       float          m_depthBiasClamp;
