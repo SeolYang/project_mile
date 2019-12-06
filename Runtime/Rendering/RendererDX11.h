@@ -44,6 +44,11 @@ namespace Mile
    class Material;
    class RasterizerState;
    class CommandListDX11;
+   /**
+    * @brief	Mile 엔진의 렌더러 서브 시스템입니다. 렌더링시 World 에 생성되어있는 Entity로 부터 Mesh Renderer 정보, 빛 정보,
+	*			그리고 카메라 정보와 같은 렌더링에 필요한 정보를 매 프레임마다 취득하여 화면을 렌더링 하는 역할을 가지고 있습니다.
+	*			또한 초기화시에 Direct3D 11의 초기화도 같이 진행하게 됩니다.
+    */
    class MEAPI RendererDX11 : public SubSystem
    {
       using MaterialMap = std::map<Material*, std::vector<MeshRenderComponent*>>;

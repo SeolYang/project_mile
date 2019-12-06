@@ -5,6 +5,10 @@
 
 namespace Mile
 {
+	/**
+	 * @brief	모든 subsystem 들을 가지고있는 일종의 subsystem 들의 컨테이너 입니다. 엔진에서 사용할 모든 서브 시스템을 Context가
+	 *			소유하고 있어야하며, 최종적으로 할당 해제 책임도 지게 됩니다.
+	 */
    class MEAPI Context
    {
    public:

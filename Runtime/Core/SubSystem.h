@@ -5,6 +5,9 @@
 namespace Mile
 {
     class Context;
+	/**
+	 * @brief	엔진을 구성하는 기본적인 시스템, 기능들을 표현하는 클래스입니다.
+	 */
     class MEAPI SubSystem
     {
     public:
