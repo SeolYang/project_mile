@@ -6,12 +6,21 @@ namespace Mile
 {
    enum class CullMode
    {
-      CULL_NONE,
-      CULL_FRONT,
-      CULL_BACK
+      NONE,
+      FRONT,
+      BACK
+   };
+
+   enum class WindingOrder
+   {
+	   CCW,
+	   CW
    };
 
    class RendererDX11;
+   /**
+    * @brief	렌더러가 Rasterizer 단계에서 어떻게 동작할지에 대해 기술하는 클래스 입니다.
+    */
    class MEAPI RasterizerState
    {
    public:
@@ -22,6 +31,10 @@ namespace Mile
 
       bool Bind( ID3D11DeviceContext& deviceContext );
 
+	  /**
+	   * @brief	Mesh와 같은 물체들을 모두 와이어 프레임 형태로 그리도록 합니다.
+	   * @param	와이어 프레임으로 렌더링 할지 여부
+	   */
       void SetWireframeRender( bool bIsWireframe ) 
       { 
          if ( m_bIsWireframe != bIsWireframe )
@@ -34,6 +47,10 @@ namespace Mile
 
       bool IsWireframeRender( ) const { return m_bIsWireframe; }
 
+	  /**
+	   * @brief 렌더링시 물체의 어떤면을 제외할지 설정합니다.
+	   * @param	cullMode	제외할 면
+	   */
       void SetCullMode( CullMode cullMode ) 
       { 
          if ( m_cullMode != cullMode )
@@ -46,17 +63,21 @@ namespace Mile
 
       CullMode GetCullMode( ) const { return m_cullMode; }
 
-      void SetFrontCounterClockwise( bool bFrontCounterClockwise )
+	  /**
+	   * @brief 시계방향 또는 반시계방향중 어느 방향으로 감긴 정점들을 앞면으로 볼지 설정합니다.
+	   * @param bFrontCounterClockwise	앞면으로 설정할 정점들의 감김 방향
+	   */
+      void SetFrontCounterClockwise(WindingOrder frontFaceWise )
       { 
-         if ( m_bFrontCounterClockwise != bFrontCounterClockwise )
+         if ( m_frontFaceWise != frontFaceWise )
          {
             m_bIsDirty = true;
          }
 
-         m_bFrontCounterClockwise = bFrontCounterClockwise; 
+		 m_frontFaceWise = frontFaceWise;
       }
 
-      bool IsFrontCounterClockwise( ) const { return m_bFrontCounterClockwise; }
+	  FrontFace IsFrontCounterClockwise( ) const { return m_frontFaceWise; }
 
       void SetDepthBias( int depthBias )
       { 
@@ -112,7 +133,7 @@ namespace Mile
 
       bool           m_bIsWireframe;
       CullMode       m_cullMode;
-      bool           m_bFrontCounterClockwise;
+	  WindingOrder      m_frontFaceWise;
       int            m_depthBias;
       float          m_slopeScaledDepthBias;
       float          m_depthBiasClamp;
