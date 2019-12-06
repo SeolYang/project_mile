@@ -9,7 +9,7 @@ namespace Mile
       m_bIsDirty( true ),
       m_bIsWireframe( false ),
       m_cullMode( CullMode::BACK ),
-      m_frontFaceWise( FrontFace::CW ),
+      m_frontFaceWise( WindingOrder::CW ),
       m_depthBias( 0 ),
       m_slopeScaledDepthBias( 0.0f ),
       m_depthBiasClamp( 0.0f ),
