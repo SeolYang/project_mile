@@ -9,7 +9,7 @@ namespace Mile
       m_bIsDirty( true ),
       m_bIsWireframe( false ),
       m_cullMode( CullMode::BACK ),
-      m_frontFaceWise( WindingOrder::CW ),
+      m_windingOrder( WindingOrder::CW ),
       m_depthBias( 0 ),
       m_slopeScaledDepthBias( 0.0f ),
       m_depthBiasClamp( 0.0f ),
@@ -48,7 +48,7 @@ namespace Mile
          break;
       }
 
-	  desc.FrontCounterClockwise = (m_frontFaceWise == WindingOrder::CCW);
+	  desc.FrontCounterClockwise = (m_windingOrder == WindingOrder::CCW);
       desc.DepthBias = m_depthBias;
       desc.SlopeScaledDepthBias = m_slopeScaledDepthBias;
       desc.DepthBiasClamp = m_depthBiasClamp;

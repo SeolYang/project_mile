@@ -65,19 +65,19 @@ namespace Mile
 
 	  /**
 	   * @brief 시계방향 또는 반시계방향중 어느 방향으로 감긴 정점들을 앞면으로 볼지 설정합니다.
-	   * @param bFrontCounterClockwise	앞면으로 설정할 정점들의 감김 방향
+	   * @param windingOrder  앞면으로 설정할 정점들의 감김 방향
 	   */
-      void SetFrontCounterClockwise(WindingOrder frontFaceWise )
+      void SetWindingOrder(WindingOrder windingOrder )
       { 
-         if ( m_frontFaceWise != frontFaceWise )
+         if (m_windingOrder != windingOrder)
          {
             m_bIsDirty = true;
          }
 
-		 m_frontFaceWise = frontFaceWise;
+		 m_windingOrder = windingOrder;
       }
 
-	  FrontFace IsFrontCounterClockwise( ) const { return m_frontFaceWise; }
+	  WindingOrder GetWindingOrder( ) const { return m_windingOrder; }
 
       void SetDepthBias( int depthBias )
       { 
@@ -133,7 +133,7 @@ namespace Mile
 
       bool           m_bIsWireframe;
       CullMode       m_cullMode;
-	  WindingOrder   m_frontFaceWise;
+	  WindingOrder   m_windingOrder;
       int            m_depthBias;
       float          m_slopeScaledDepthBias;
       float          m_depthBiasClamp;
