@@ -34,10 +34,10 @@ namespace Mile
       }
 
       auto info = TextureLoader::LoadTexture( m_path, m_ext );
-      m_rawData = std::get<TextureInfoTag::TIT_RAWDATA>( info );
-      m_width = std::get<TextureInfoTag::TIT_WIDTH>( info );
-      m_height = std::get<TextureInfoTag::TIT_HEIGHT>( info );
-      m_channels = std::get<TextureInfoTag::TIT_CHANNELS>( info );
+      m_rawData = std::get<TextureInfoTag::RAWDATA>( info );
+      m_width = std::get<TextureInfoTag::WIDTH>( info );
+      m_height = std::get<TextureInfoTag::HEIGHT>( info );
+      m_channels = std::get<TextureInfoTag::CHANNELS>( info );
       
       if ( m_rawData == nullptr )
       {

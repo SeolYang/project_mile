@@ -5,14 +5,16 @@
 
 namespace Mile
 {
-   // <RawData, Width, Height, Channels>
+	/**
+	 * @brief	텍스쳐에 대한 정보를 담고있는 튜플 객체 입니다. <RawData, Width, Height, Channels>
+	 */
    using TextureInfo = std::tuple<unsigned char*, unsigned int, unsigned int, int>;
    enum TextureInfoTag
    {
-      TIT_RAWDATA = 0,
-      TIT_WIDTH = 1,
-      TIT_HEIGHT = 2,
-      TIT_CHANNELS = 3,
+		RAWDATA = 0,
+		WIDTH = 1,
+		HEIGHT = 2,
+		CHANNELS = 3,
    };
 
    class MEAPI TextureLoader
