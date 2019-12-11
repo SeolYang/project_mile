@@ -8,79 +8,55 @@ namespace Mile
    {
    public:
       Vector3( float xx, float yy, float zz );
-
       Vector3( );
-
       Vector3( const Vector3& vec );
 
       Vector3 operator+( const Vector3& vec ) const;
-
       Vector3 operator+( float val ) const;
-
       Vector3& operator+=( const Vector3& vec );
-
       Vector3& operator+=( float val );
 
       Vector3 operator-( const Vector3& vec ) const;
-
       Vector3 operator-( float val ) const;
-
       Vector3& operator-=( const Vector3& vec );
-
       Vector3& operator-=( float val );
 
       Vector3 operator*( const Vector3& vec ) const;
-
       Vector3 operator*( float factor ) const;
-
       Vector3& operator*=( const Vector3& vec );
-
       Vector3& operator*=( float factor );
 
       Vector3 operator/( const Vector3& vec ) const;
-
       Vector3 operator/( float div ) const;
-
       Vector3& operator/=( const Vector3& vec );
-
       Vector3& operator/=( float div );
 
       Vector3& operator=( const Vector3& vec );
 
       bool operator==( const Vector3& vec ) const;
-
       bool operator!=( const Vector3& vec ) const;
 
       float operator|( const Vector3& vec ) const;
-
       Vector3 operator^( const Vector3& vec ) const;
 
-      std::string Serialize( ) const;
-
+	  json Serialize() const;
       void DeSerialize( const json& jsonData );
 
       float GetX( ) const;
-
       float GetY( ) const;
-
       float GetZ( ) const;
 
       void SetX( float xx );
-
       void SetY( float yy );
-
       void SetZ( float zz );
 
       float Dot( const Vector3& vec ) const;
-
       Vector3 Cross( const Vector3& vec ) const;
 
       float SizeSquared( ) const;
-
       float Size( ) const;
 
       void Normalize( );
-
       Vector3 GetNormalized( ) const;
 
    public:

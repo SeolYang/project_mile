@@ -18,7 +18,8 @@ namespace Mile
       {
       }
 
-      virtual std::string Serialize( ) const override;
+      //virtual std::string Serialize( ) const override;
+	  virtual json Serialize() const override;
       virtual void DeSerialize( const json& jsonData ) override;
 
       void SetMesh( Mesh* mesh ) { m_mesh = mesh; }

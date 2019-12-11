@@ -37,7 +37,8 @@ namespace Mile
       Vector3 GetLightDirection( ) const;
       Vector3 GetLightPosition( ) const;
 
-      virtual std::string Serialize( ) const override;
+      //virtual std::string Serialize( ) const override;
+	  virtual json Serialize() const override;
       virtual void DeSerialize( const json& jsonData ) override;
 
       static std::string LightTypeToString( LightType type )

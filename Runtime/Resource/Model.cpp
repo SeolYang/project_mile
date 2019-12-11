@@ -38,7 +38,7 @@ namespace Mile
          return false;
       }
 
-      m_serializedInstance = m_instance->Serialize( );
+      m_serializedInstance = m_instance->Serialize( ).dump();
       return true;
    }
 

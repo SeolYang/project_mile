@@ -137,11 +137,19 @@ namespace Mile
          return ( *this );
       }
 
-      std::string Serialize( ) const
-      {
-         return "{ \"x\": " + std::to_string( x ) + ", "
-            + "\"y\": " + std::to_string( y ) + " }";
-      }
+      //std::string Serialize( ) const
+      //{
+      //   return "{ \"x\": " + std::to_string( x ) + ", "
+      //      + "\"y\": " + std::to_string( y ) + " }";
+      //}
+
+	  json Serialize() const
+	  {
+		  json serialized;
+		  serialized["x"] = x;
+		  serialized["y"] = y;
+		  return serialized;
+	  }
 
       void DeSerialize( const json& jsonData )
       {

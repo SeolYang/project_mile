@@ -9,176 +9,192 @@
 
 namespace Mile
 {
-   World::World( Context* context ) :
-      SubSystem( context )
-   {
+	World::World(Context* context) :
+		SubSystem(context)
+	{
 
-   }
+	}
 
-   World::~World( )
-   {
-      DeInit( );
-   }
+	World::~World()
+	{
+		DeInit();
+	}
 
-   std::string World::Serialize( ) const
-   {
-      std::string res = "{ \"Entities\": [  ";
-      /* Entity serialize */
-      for ( auto entity : m_entities )
-      {
-         if ( !entity->HasParent( ) )
-         {
-            res += entity->Serialize( );
-            res += ", ";
-         }
-      }
-      res[ res.length( ) - 2 ] = ']';
-      res += "}";
-      return res;
-   }
+	json World::Serialize() const
+	{
+		json serialized;
+		std::vector<json> serializedEntities;
+		for (auto entity : m_entities)
+		{
+			if (!entity->HasParent())
+			{
+				serializedEntities.push_back(entity->Serialize());
+			}
+		}
 
-   void World::DeSerialize( const json& jsonData )
-   {
-      std::vector<json> entities = jsonData[ "Entities" ];
-      for ( auto entity : entities )
-      {
-         Entity* temp = CreateEntity( TEXT( "" ) );
-         temp->DeSerialize( entity );
-      }
-   }
+		serialized["Entities"] = serializedEntities;
+		return serialized;
+	}
 
-   bool World::Init( )
-   {
-      if ( m_context == nullptr || m_bIsInitialized )
-      {
-         MELog( m_context, TEXT( "World" ), ELogType::WARNING, TEXT( "World already initialized." ), true );
-         return false;
-      }
+	//std::string World::Serialize() const
+	//{
+	//	std::string res = "{ \"Entities\": [  ";
+	//	/* Entity serialize */
+	//	for (auto entity : m_entities)
+	//	{
+	//		if (!entity->HasParent())
+	//		{
+	//			res += entity->Serialize();
+	//			res += ", ";
+	//		}
+	//	}
+	//	res[res.length() - 2] = ']';
+	//	res += "}";
+	//	return res;
+	//}
 
-      auto configSys = m_context->GetSubSystem<ConfigSystem>( );
-      auto engineConfig = configSys->GetConfig( TEXT( "Engine" ) );
-      String defaultPath = String2WString(engineConfig.second[ "World" ]);
+	void World::DeSerialize(const json& jsonData)
+	{
+		std::vector<json> entities = jsonData["Entities"];
+		for (auto entity : entities)
+		{
+			Entity* temp = CreateEntity(TEXT(""));
+			temp->DeSerialize(entity);
+		}
+	}
 
-      auto loaded = LoadFrom( defaultPath );
-      if ( !loaded )
-      {
-         MELog( m_context, TEXT( "World" ), ELogType::FATAL, TEXT( "Failed to load world from " ) + defaultPath, true );
-         return false;
-      }
+	bool World::Init()
+	{
+		if (m_context == nullptr || m_bIsInitialized)
+		{
+			MELog(m_context, TEXT("World"), ELogType::WARNING, TEXT("World already initialized."), true);
+			return false;
+		}
 
-      MELog( m_context, TEXT( "World" ), ELogType::MESSAGE, TEXT( "World Initialized!" ), true );
-      m_bIsInitialized = true;
-      return true;
-   }
+		auto configSys = m_context->GetSubSystem<ConfigSystem>();
+		auto engineConfig = configSys->GetConfig(TEXT("Engine"));
+		String defaultPath = String2WString(engineConfig.second["World"]);
 
-   void World::DeInit( )
-   {
-      if ( m_bIsInitialized )
-      {
-         SubSystem::DeInit( );
-         MELog( m_context, TEXT( "World" ), ELogType::MESSAGE, TEXT( "World deinitialized." ), true );
-      }
-   }
+		auto loaded = LoadFrom(defaultPath);
+		if (!loaded)
+		{
+			MELog(m_context, TEXT("World"), ELogType::FATAL, TEXT("Failed to load world from ") + defaultPath, true);
+			return false;
+		}
 
-   void World::Start( )
-   {
-      for ( auto entity : m_entities )
-      {
-         entity->Start( );
-      }
-   }
+		MELog(m_context, TEXT("World"), ELogType::MESSAGE, TEXT("World Initialized!"), true);
+		m_bIsInitialized = true;
+		return true;
+	}
 
-   void World::Update( )
-   {
-      for ( auto entity : m_entities )
-      {
-         entity->Update( );
-      }
-   }
+	void World::DeInit()
+	{
+		if (m_bIsInitialized)
+		{
+			SubSystem::DeInit();
+			MELog(m_context, TEXT("World"), ELogType::MESSAGE, TEXT("World deinitialized."), true);
+		}
+	}
 
-   Entity* World::CreateEntity( const String& name )
-   {
-      auto newEntity = new Entity( this, name );
-      m_entities.push_back( newEntity );
+	void World::Start()
+	{
+		for (auto entity : m_entities)
+		{
+			entity->Start();
+		}
+	}
 
-      return newEntity;
-   }
+	void World::Update()
+	{
+		for (auto entity : m_entities)
+		{
+			entity->Update();
+		}
+	}
 
-   Entity* World::GetEntityByName( const String& name )
-   {
-      for ( const auto& entity : m_entities )
-      {
-         if ( name == ( entity )->GetName( ) )
-         {
-            return entity;
-         }
-      }
+	Entity* World::CreateEntity(const String& name)
+	{
+		auto newEntity = new Entity(this, name);
+		m_entities.push_back(newEntity);
 
-      return nullptr;
-   }
+		return newEntity;
+	}
 
-   std::vector<Entity*> World::GetEntities( )
-   {
-      return m_entities;
-   }
+	Entity* World::GetEntityByName(const String& name)
+	{
+		for (const auto& entity : m_entities)
+		{
+			if (name == (entity)->GetName())
+			{
+				return entity;
+			}
+		}
 
-   std::vector<Entity*> World::GetRootEntities( )
-   {
-      std::vector<Entity*> rootEntities{ };
-      for ( auto entity : m_entities )
-      {
-         if ( entity->GetParent( ) == nullptr )
-         {
-            rootEntities.push_back( entity );
-         }
-      }
+		return nullptr;
+	}
 
-      return rootEntities;
-   }
+	std::vector<Entity*> World::GetEntities()
+	{
+		return m_entities;
+	}
 
-   bool World::LoadFrom( const String& filePath )
-   {
-      auto resMng = m_context->GetSubSystem<ResourceManager>( );
-      auto res = resMng->Create<PlainText<std::string>>( filePath );
-      if ( res != nullptr )
-      {
-         this->m_loadedData = res;
-         this->DeSerialize( json::parse( res->GetData( ) ) );
-         MELog( m_context, TEXT( "World" ), ELogType::MESSAGE, TEXT( "World loaded. : " ) + filePath, true );
-         return true;
-      }
+	std::vector<Entity*> World::GetRootEntities()
+	{
+		std::vector<Entity*> rootEntities{ };
+		for (auto entity : m_entities)
+		{
+			if (entity->GetParent() == nullptr)
+			{
+				rootEntities.push_back(entity);
+			}
+		}
 
-      MELog( m_context, TEXT( "World" ), ELogType::FATAL, TEXT( "World load failed. : " ) + filePath, true );
-      return false;
-   }
+		return rootEntities;
+	}
 
-   bool World::SaveTo( const String& filePath )
-   {
-      auto resMng = m_context->GetSubSystem<ResourceManager>( );
-      auto res = resMng->GetByPath<PlainText<std::string>>( filePath );
+	bool World::LoadFrom(const String& filePath)
+	{
+		auto resMng = m_context->GetSubSystem<ResourceManager>();
+		auto res = resMng->Create<PlainText<std::string>>(filePath);
+		if (res != nullptr)
+		{
+			this->m_loadedData = res;
+			this->DeSerialize(json::parse(res->GetData()));
+			MELog(m_context, TEXT("World"), ELogType::MESSAGE, TEXT("World loaded. : ") + filePath, true);
+			return true;
+		}
 
-      if ( res == nullptr )
-      {
-         res = resMng->Create<PlainText<std::string>>( filePath );
-      }
+		MELog(m_context, TEXT("World"), ELogType::FATAL, TEXT("World load failed. : ") + filePath, true);
+		return false;
+	}
 
-      if ( res != nullptr )
-      {
-         res->SetData( this->Serialize( ) );
-         return res->Save( );
-      }
+	bool World::SaveTo(const String& filePath)
+	{
+		auto resMng = m_context->GetSubSystem<ResourceManager>();
+		auto res = resMng->GetByPath<PlainText<std::string>>(filePath);
 
-      return false;
-   }
+		if (res == nullptr)
+		{
+			res = resMng->Create<PlainText<std::string>>(filePath);
+		}
 
-   bool World::Save( )
-   {
-      if ( m_loadedData != nullptr )
-      {
-         m_loadedData->SetData( this->Serialize( ) );
-         return m_loadedData->Save( );
-      }
+		if (res != nullptr)
+		{
+			res->SetData(this->Serialize().dump());
+			return res->Save();
+		}
 
-      return false;
-   }
+		return false;
+	}
+
+	bool World::Save()
+	{
+		if (m_loadedData != nullptr)
+		{
+			m_loadedData->SetData(this->Serialize().dump());
+			return m_loadedData->Save();
+		}
+
+		return false;
+	}
 }

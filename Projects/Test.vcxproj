@@ -89,6 +89,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Test\Entry.cpp" />
+    <ClCompile Include="..\Test\RotateComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Test\RotateComponent.h" />

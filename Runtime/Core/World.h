@@ -14,7 +14,8 @@ namespace Mile
         World( Context* context );
         virtual ~World( );
 
-        std::string Serialize( ) const;
+        //std::string Serialize( ) const;
+		json Serialize() const;
         void DeSerialize( const json& jsonData );
 
         /**

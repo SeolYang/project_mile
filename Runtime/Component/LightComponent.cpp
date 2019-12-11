@@ -27,22 +27,33 @@ namespace Mile
       return transform->GetPosition( TransformSpace::World );
    }
 
-   std::string LightComponent::Serialize( ) const
-   {
-      auto res = "{ " + Component::Serialize() + 
-         ", \"Type\": " + LightTypeToString(m_type) + 
-         ", \"Color\": " + m_color.Serialize( ) + 
-         ", \"SpotlightAngles\": " + m_spotlightAngles.Serialize( ) +
-         ", \"LightRange\": " + std::to_string( m_lightRange )
-         + " }";
+   //std::string LightComponent::Serialize( ) const
+   //{
+   //   auto res = "{ " + Component::Serialize() + 
+   //      ", \"Type\": " + LightTypeToString(m_type) + 
+   //      ", \"Color\": " + m_color.Serialize( ) + 
+   //      ", \"SpotlightAngles\": " + m_spotlightAngles.Serialize( ) +
+   //      ", \"LightRange\": " + std::to_string( m_lightRange )
+   //      + " }";
 
-      return res;
+   //   return res;
+   //}
+
+   json LightComponent::Serialize() const
+   {
+	   json serialized = Component::Serialize();
+	   serialized["Type"] = "LightComponent";
+	   serialized["LightType"] = LightTypeToString(m_type);
+	   serialized["Color"] = m_color.Serialize();
+	   serialized["SpotlightAngles"] = m_spotlightAngles.Serialize();
+	   serialized["LightRange"] = m_lightRange;
+	   return serialized;
    }
 
    void LightComponent::DeSerialize( const json& jsonData )
    {
       Component::DeSerialize( jsonData );
-      m_type = StringToLightType( jsonData[ "Type" ] );
+      m_type = StringToLightType( jsonData[ "LightType" ] );
       m_color.DeSerialize( jsonData[ "Color" ] );
       m_spotlightAngles.DeSerialize( jsonData[ "SpotlightAngles" ] );
       m_lightRange = jsonData[ "LightRange" ];

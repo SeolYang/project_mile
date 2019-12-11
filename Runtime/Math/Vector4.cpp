@@ -193,13 +193,23 @@ namespace Mile
                        1.0f );
     }
 
-    std::string Vector4::Serialize( ) const
-    {
-       return "{ \"x\": " + std::to_string( x ) + ", "
-          + "\"y\": " + std::to_string( y ) + ", "
-          + "\"z\": " + std::to_string( z ) + ", "
-          + "\"w\": " + std::to_string( w ) + " }";
-    }
+	/*std::string Vector4::Serialize( ) const
+	{
+	   return "{ \"x\": " + std::to_string( x ) + ", "
+		  + "\"y\": " + std::to_string( y ) + ", "
+		  + "\"z\": " + std::to_string( z ) + ", "
+		  + "\"w\": " + std::to_string( w ) + " }";
+	}*/
+
+	json Vector4::Serialize() const
+	{
+		json serialized;
+		serialized["x"] = x;
+		serialized["y"] = y;
+		serialized["z"] = z;
+		serialized["w"] = w;
+		return serialized;
+	}
 
     void Vector4::DeSerialize( const json& jsonData )
     {

@@ -64,7 +64,7 @@ namespace Mile
    template <>
    bool PlainText<String>::SaveTo( const String& filePath )
    {
-      std::wofstream stream( filePath );
+      std::wofstream stream( filePath, std::ios::trunc);
       stream << m_data;
       stream.close( );
       return true;
@@ -73,7 +73,7 @@ namespace Mile
    template <>
    bool PlainText<std::string>::SaveTo( const String& filePath )
    {
-      std::ofstream stream( filePath );
+      std::ofstream stream( filePath, std::ios::trunc );
       stream << m_data;
       stream.close( );
       return true;

@@ -171,11 +171,20 @@ namespace Mile
       return Cross( vec );
    }
 
-   std::string Vector3::Serialize( ) const
+   //std::string Vector3::Serialize( ) const
+   //{
+   //   return "{ \"x\": " + std::to_string( x ) + ", "
+   //      + "\"y\": " + std::to_string( y ) + ", "
+   //      + "\"z\": " + std::to_string( z ) + " }";
+   //}
+
+   json Vector3::Serialize() const
    {
-      return "{ \"x\": " + std::to_string( x ) + ", "
-         + "\"y\": " + std::to_string( y ) + ", "
-         + "\"z\": " + std::to_string( z ) + " }";
+	   json serialized;
+	   serialized["x"] = x;
+	   serialized["y"] = y;
+	   serialized["z"] = z;
+	   return serialized;
    }
 
    void Vector3::DeSerialize( const json& jsonData )

@@ -57,6 +57,9 @@ namespace Mile
 	  */
       void SetClearColor( const Vector4& clearColor ) { m_clearColor = clearColor; }
 
+	  virtual json Serialize() const override;
+	  virtual void DeSerialize(const json& jsonData) override;
+
    private:
       float m_fov;
       float m_nearPlane;

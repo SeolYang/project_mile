@@ -31,6 +31,9 @@ namespace Mile
       virtual bool SaveTo( const String& filePath ) { return false; }
       virtual bool Save( ) { return SaveTo( this->m_path ); }
 
+	  virtual json Serialize() const { return json(); }
+	  virtual void DeSerialize(const json& jsonData) { /* Nothing to do */ }
+
       ResourceType GetType( ) const { return m_resourceType; }
       String GetName( ) const { return m_name; }
       String GetFolder( ) const { return m_folder; }

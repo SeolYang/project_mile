@@ -40,6 +40,9 @@ namespace Mile
       Texture2D* GetNormalMap( ) const { return m_normalMap; }
       void SetNormalMap( Texture2D* normalMap ) { m_normalMap = normalMap; }
 
+	  virtual json Serialize() const override;
+	  virtual void DeSerialize(const json& jsonData) override;
+
    private:
       float                      m_specExp;
       Vector3                    m_specAlbedo;

@@ -35,12 +35,21 @@ namespace Mile
       {
       }
 
-      std::string Serialize( ) const
-      {
-         return "{ \"Position\":" + m_position.Serialize( ) +
-            ", \"Scale\":" + m_scale.Serialize( ) +
-            ", \"Rotation\":" + m_rotation.Serialize( ) + " }";
-      }
+      //std::string Serialize( ) const
+      //{
+      //   return "{ \"Position\":" + m_position.Serialize( ) +
+      //      ", \"Scale\":" + m_scale.Serialize( ) +
+      //      ", \"Rotation\":" + m_rotation.Serialize( ) + " }";
+      //}
+
+	  json Serialize() const
+	  {
+		  json serialized;
+		  serialized["Position"] = m_position.Serialize();
+		  serialized["Scale"] = m_scale.Serialize();
+		  serialized["Rotation"] = m_rotation.Serialize();
+		  return serialized;
+	  }
 
       void DeSerialize( const json& jsonObj )
       {

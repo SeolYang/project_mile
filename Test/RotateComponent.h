@@ -21,4 +21,11 @@ public:
       transform->Rotate( Quaternion( 180.0f * 0.2f * timer->GetDeltaTime( ), Vector3::Up( ) ) );
    }
 
+   virtual json Serialize() const override
+   {
+	   json serialized = Component::Serialize();
+	   serialized["Type"] = "RotateComponent";
+	   return serialized;
+   }
+
 };

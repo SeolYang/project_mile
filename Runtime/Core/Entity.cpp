@@ -33,34 +33,56 @@ namespace Mile
       }
    }
 
-   std::string Entity::Serialize( ) const
+   json Entity::Serialize() const
    {
-      std::string res = "{ \"Name\": \"" + Mile::WString2String(m_name) +"\", \"IsActivated\": " + BoolSerialize( m_bIsActive ) +
-         ", \"Transform\": " + m_transform->Serialize( ) + ", \"Components\": [  ";
-      for ( auto comp : m_components )
-      {
-         res += comp->Serialize( ) + ", ";
-      }
-      res[ res.length( ) - 2 ] = ']';
+	   json serialized;
+	   serialized["Name"] = Mile::WString2String(m_name);
+	   serialized["IsActivated"] = m_bIsActive;
+	   serialized["Transform"] = m_transform->Serialize();
 
-      res += ", \"Children\": [  ";
-      for ( auto child : m_children )
-      {
-         res += child->Serialize( ) + ", ";
-      }
-      res[ res.length( ) - 2 ] = ']';
+	   std::vector<json> components;
+	   for (auto comp : m_components)
+	   {
+		   components.push_back(comp->Serialize());
+	   }
+	   serialized["Components"] = components;
 
-      res += '}';
+	   std::vector<json> children;
+	   for (auto child : m_children)
+	   {
+		   children.push_back(child->Serialize());
+	   }
+	   serialized["Children"] = children;
 
-      return res;
+	   return serialized;
    }
+
+   //std::string Entity::Serialize( ) const
+   //{
+   //   std::string res = "{ \"Name\": \"" + Mile::WString2String(m_name) +"\", \"IsActivated\": " + BoolSerialize( m_bIsActive ) +
+   //      ", \"Transform\": " + m_transform->Serialize( ) + ", \"Components\": [  ";
+   //   for ( auto comp : m_components )
+   //   {
+   //      res += comp->Serialize( ) + ", ";
+   //   }
+   //   res[ res.length( ) - 2 ] = ']';
+
+   //   res += ", \"Children\": [  ";
+   //   for ( auto child : m_children )
+   //   {
+   //      res += child->Serialize( ) + ", ";
+   //   }
+   //   res[ res.length( ) - 2 ] = ']';
+
+   //   res += '}';
+
+   //   return res;
+   //}
 
    void Entity::DeSerialize( const json& jsonData )
    {
       m_name = Mile::String2WString( jsonData[ "Name" ] );
       m_bIsActive = jsonData[ "IsActivated" ];
-
-      m_transform->DeSerialize( jsonData[ "Transform" ] );
 
       std::vector<json> components = jsonData[ "Components" ];
       for ( auto component : components )
@@ -78,6 +100,8 @@ namespace Mile
          tempChild->DeSerialize( child );
          this->AttachChild( tempChild );
       }
+
+	  m_transform->DeSerialize(jsonData["Transform"]);
    }
 
    bool Entity::Init( )
@@ -103,11 +127,13 @@ namespace Mile
 
    bool Entity::AttachChild( Entity* child )
    {
-      bool bIsValidPtr = child != nullptr && child != this;
-      bool bIsValidChild = child->m_parent != this;
-      if ( !( bIsValidPtr && bIsValidChild ) )
+      bool bIsNotValidPtr = child == nullptr || child == this;
+      if (bIsNotValidPtr)
       {
-         return false;
+		  if (child->m_parent == this)
+		  {
+			  return false;
+		  }
       }
 
       Entity* oldParent = child->m_parent;
@@ -127,12 +153,14 @@ namespace Mile
 
    bool Entity::DetachChild( Entity* child )
    {
-      bool bIsValidPtr = child != nullptr && child != this;
-      bool bIsValidChild = child->m_parent == this;
-      if ( !( bIsValidPtr && bIsValidChild ) )
-      {
-         return false;
-      }
+      bool bIsNotValidPtr = child != nullptr && child != this;
+	  if (bIsNotValidPtr)
+	  {
+		  if (child->m_parent == this)
+		  {
+			  return false;
+		  }
+	  }
 
       m_children.erase( std::find( m_children.begin( ), m_children.end( ), child ) );
       child->GetTransform( )->SetParent( nullptr );

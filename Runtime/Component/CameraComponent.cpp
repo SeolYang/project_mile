@@ -2,14 +2,35 @@
 
 namespace Mile
 {
-   RegisterComponent( CameraComponent )
+	RegisterComponent(CameraComponent)
 
-   CameraComponent::CameraComponent( Entity* entity ) :
-      m_fov( 45.0f ),
-      m_nearPlane( 1.0f ),
-      m_farPlane( 500.0f ),
-      m_clearColor( Vector4( 0.133f, 0.137f, 0.15f, 1.0f ) ),
-      Component( entity )
-   {
-   }
+	CameraComponent::CameraComponent(Entity* entity) :
+		m_fov(45.0f),
+		m_nearPlane(1.0f),
+		m_farPlane(500.0f),
+		m_clearColor(Vector4(0.133f, 0.137f, 0.15f, 1.0f)),
+		Component(entity)
+	{
+	}
+
+	json CameraComponent::Serialize() const
+	{
+		json serialized = Component::Serialize();
+		serialized["Type"] = "CameraComponent";
+		serialized["FOV"] = m_fov;
+		serialized["NearPlane"] = m_nearPlane;
+		serialized["FarPlane"] = m_farPlane;
+		serialized["ClearColor"] = m_clearColor.Serialize();
+		return serialized;
+	}
+
+	void CameraComponent::DeSerialize(const json& jsonData)
+	{
+		Component::DeSerialize(jsonData);
+		m_fov = jsonData["FOV"];
+		m_nearPlane = jsonData["NearPlane"];
+		m_farPlane = jsonData["FarPlane"];
+		m_clearColor.DeSerialize(jsonData["ClearColor"]);
+	}
+
 }
