@@ -2,31 +2,36 @@
 
 namespace Mile
 {
-   ComponentRegister* ComponentRegister::m_instance = nullptr;
+	ComponentRegister* ComponentRegister::m_instance = nullptr;
 
-   Component* ComponentRegister::Acquire( const std::string& key, Entity* entity )
-   {
-      auto itr = m_constructorMap.find( key );
-      if ( itr == m_constructorMap.end( ) )
-      {
-         return nullptr;
-      }
+	Component* ComponentRegister::Acquire(const std::string& key, Entity* entity)
+	{
+		if (entity == nullptr)
+		{
+			return nullptr;
+		}
 
-      return ( *itr ).second( entity );
-   }
+		auto itr = m_constructorMap.find(key);
+		if (itr == m_constructorMap.end())
+		{
+			return nullptr;
+		}
 
-   ComponentRegister& ComponentRegister::GetInstance( )
-   {
-      if ( ComponentRegister::m_instance == nullptr )
-      {
-         ComponentRegister::m_instance = new ComponentRegister( );
-      }
+		return (*itr).second(entity);
+	}
 
-      return ( *ComponentRegister::m_instance );
-   }
+	ComponentRegister& ComponentRegister::GetInstance()
+	{
+		if (ComponentRegister::m_instance == nullptr)
+		{
+			ComponentRegister::m_instance = new ComponentRegister();
+		}
 
-   void ComponentRegister::Destroy( )
-   {
-      SafeDelete( m_instance );
-   }
+		return (*ComponentRegister::m_instance);
+	}
+
+	void ComponentRegister::Destroy()
+	{
+		SafeDelete(m_instance);
+	}
 }
