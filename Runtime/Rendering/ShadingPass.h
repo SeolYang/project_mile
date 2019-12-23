@@ -13,6 +13,7 @@ namespace Mile
          Matrix m_worldViewProjMatrix;
       };
 
+	  // @TODO: PBR Material 에 맞춰서 변경 / constant buffer padding 신경쓰기
       struct alignas( 16 ) MaterialConstantBuffer
       {
          Vector3 SpecularAlbedo;
