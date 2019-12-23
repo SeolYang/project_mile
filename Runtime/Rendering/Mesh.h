@@ -29,7 +29,7 @@ namespace Mile
       template <typename Vertex>
       bool Init( const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices )
       {
-         if ( m_indexBuffer != nullptr || m_indexBuffer != nullptr )
+         if ( m_vertexBuffer != nullptr || m_indexBuffer != nullptr )
          {
             return false;
          }
