@@ -101,7 +101,7 @@ namespace Mile
       // Open Stream
       String targetFileName = m_folderPath + 
          Mile::TimeToWString( std::chrono::system_clock::now( ),
-                              TEXT( "[%d_%02d_%02d] %02d_%02d_%02d.txt" ) );
+                              TEXT( "[%d_%02d_%02d] %02d_%02d_%02d.mlog" ) );
 
       // @TODO: Locale setting
       std::locale::global( std::locale( "Korean" ) );
