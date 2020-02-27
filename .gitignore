@@ -40,3 +40,5 @@
 *.ilk
 *.idb
 *.mlog
+Binaries/
+Projects/.vs
