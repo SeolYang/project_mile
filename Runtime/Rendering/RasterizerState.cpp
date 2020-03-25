@@ -24,7 +24,7 @@ namespace Mile
 
    bool RasterizerState::Init()
    {
-      if (m_renderer == nullptr)
+      if (m_renderer == nullptr || m_rasterizerState != nullptr)
       {
          return false;
       }
@@ -86,7 +86,6 @@ namespace Mile
       }
 
       deviceContext.RSSetState(m_rasterizerState);
-
       return true;
    }
 }

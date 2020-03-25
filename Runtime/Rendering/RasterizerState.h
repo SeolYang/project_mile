@@ -27,7 +27,6 @@ namespace Mile
       ~RasterizerState();
 
       bool Init();
-
       bool Bind(ID3D11DeviceContext& deviceContext);
 
       /**
