@@ -110,22 +110,22 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
   <ItemGroup>
     <ClInclude Include="..\Runtime\Component\CameraComponent.h" />
     <ClInclude Include="..\Runtime\Component\Component.h" />
+    <ClInclude Include="..\Runtime\Component\ComponentRegister.h" />
     <ClInclude Include="..\Runtime\Component\LightComponent.h" />
     <ClInclude Include="..\Runtime\Component\MeshRenderComponent.h" />
-    <ClInclude Include="..\Runtime\CoreMinimal.h" />
-    <ClInclude Include="..\Runtime\Core\ComponentRegister.h" />
     <ClInclude Include="..\Runtime\Core\Config.h" />
     <ClInclude Include="..\Runtime\Core\Context.h" />
+    <ClInclude Include="..\Runtime\Core\CoreMinimal.h" />
     <ClInclude Include="..\Runtime\Core\Engine.h" />
-    <ClInclude Include="..\Runtime\Core\Entity.h" />
     <ClInclude Include="..\Runtime\Core\Helper.h" />
     <ClInclude Include="..\Runtime\Core\Logger.h" />
     <ClInclude Include="..\Runtime\Core\SubSystem.h" />
     <ClInclude Include="..\Runtime\Core\Timer.h" />
-    <ClInclude Include="..\Runtime\Core\Transform.h" />
     <ClInclude Include="..\Runtime\Core\Window.h" />
-    <ClInclude Include="..\Runtime\Core\World.h" />
-    <ClInclude Include="..\Runtime\Math\Math.h" />
+    <ClInclude Include="..\Runtime\GameFramework\Entity.h" />
+    <ClInclude Include="..\Runtime\GameFramework\Transform.h" />
+    <ClInclude Include="..\Runtime\GameFramework\World.h" />
+    <ClInclude Include="..\Runtime\Math\MathCore.h" />
     <ClInclude Include="..\Runtime\Math\Matrix.h" />
     <ClInclude Include="..\Runtime\Math\Quaternion.h" />
     <ClInclude Include="..\Runtime\Math\Vector2.h" />
@@ -133,27 +133,29 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\Runtime\Math\Vector4.h" />
     <ClInclude Include="..\Runtime\Math\Vertex.h" />
     <ClInclude Include="..\Runtime\MT\ThreadPool.h" />
+    <ClInclude Include="..\Runtime\Rendering\BlendState.h" />
     <ClInclude Include="..\Runtime\Rendering\BufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\CheckerBoardInterpolatePass.h" />
     <ClInclude Include="..\Runtime\Rendering\ConstantBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\DepthStencilBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\GBuffer.h" />
     <ClInclude Include="..\Runtime\Rendering\GBufferPass.h" />
+    <ClInclude Include="..\Runtime\Rendering\GeometryPass.h" />
     <ClInclude Include="..\Runtime\Rendering\IndexBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\InputLayoutDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\LightBufferPass.h" />
+    <ClInclude Include="..\Runtime\Rendering\LightingPass.h" />
     <ClInclude Include="..\Runtime\Rendering\Mesh.h" />
     <ClInclude Include="..\Runtime\Rendering\PixelShaderDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\Quad.h" />
     <ClInclude Include="..\Runtime\Rendering\RasterizerState.h" />
     <ClInclude Include="..\Runtime\Rendering\RenderingPass.h" />
     <ClInclude Include="..\Runtime\Rendering\RendererDX11.h" />
-    <ClInclude Include="..\Runtime\Rendering\Rendering.h" />
+    <ClInclude Include="..\Runtime\Rendering\RenderingCore.h" />
     <ClInclude Include="..\Runtime\Rendering\RenderTargetDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ResourceDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ShaderDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ShadingPass.h" />
-    <ClInclude Include="..\Runtime\Rendering\TestRenderPass.h" />
     <ClInclude Include="..\Runtime\Rendering\Texture2dDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\VertexShaderDX11.h" />
@@ -252,19 +254,19 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
   <ItemGroup>
     <ClCompile Include="..\Runtime\Component\CameraComponent.cpp" />
     <ClCompile Include="..\Runtime\Component\Component.cpp" />
+    <ClCompile Include="..\Runtime\Component\ComponentRegister.cpp" />
     <ClCompile Include="..\Runtime\Component\LightComponent.cpp" />
     <ClCompile Include="..\Runtime\Component\MeshRenderComponent.cpp" />
-    <ClCompile Include="..\Runtime\Core\ComponentRegister.cpp" />
     <ClCompile Include="..\Runtime\Core\Config.cpp" />
     <ClCompile Include="..\Runtime\Core\Context.cpp" />
     <ClCompile Include="..\Runtime\Core\Engine.cpp" />
-    <ClCompile Include="..\Runtime\Core\Entity.cpp" />
     <ClCompile Include="..\Runtime\Core\Logger.cpp" />
     <ClCompile Include="..\Runtime\Core\SubSystem.cpp" />
     <ClCompile Include="..\Runtime\Core\Timer.cpp" />
-    <ClCompile Include="..\Runtime\Core\Transform.cpp" />
     <ClCompile Include="..\Runtime\Core\Window.cpp" />
-    <ClCompile Include="..\Runtime\Core\World.cpp" />
+    <ClCompile Include="..\Runtime\GameFramework\Entity.cpp" />
+    <ClCompile Include="..\Runtime\GameFramework\Transform.cpp" />
+    <ClCompile Include="..\Runtime\GameFramework\World.cpp" />
     <ClCompile Include="..\Runtime\Math\Matrix.cpp" />
     <ClCompile Include="..\Runtime\Math\Vector3.cpp" />
     <ClCompile Include="..\Runtime\Math\Vector4.cpp" />
@@ -286,7 +288,6 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Rendering\RenderTargetDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\SamplerDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\ShadingPass.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\TestRenderPass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Texture2dDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\VertexBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\VertexShaderDX11.cpp" />
@@ -312,10 +313,24 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="Contents\Shaders\GeometryPass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="Contents\Shaders\LightBuffer.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\LightingPass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\Shading.hlsl">
@@ -338,6 +353,14 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <None Include="..\ThirdParty\assimp\include\assimp\SmoothingGroups.inl" />
     <None Include="..\ThirdParty\assimp\include\assimp\vector2.inl" />
     <None Include="..\ThirdParty\assimp\include\assimp\vector3.inl" />
+    <None Include="Contents\Shaders\BRDFs.hlsli">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
+    <None Include="Contents\Shaders\Common.hlsli">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

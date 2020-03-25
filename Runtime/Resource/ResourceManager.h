@@ -1,88 +1,87 @@
 #pragma once
-
-#include "Resource.h"
-#include "ResourceCache.h"
+#include "Resource/Resource.h"
+#include "Resource/ResourceCache.h"
 
 namespace Mile
 {
-    class MEAPI ResourceManager : public SubSystem
-    {
-    public:
-        ResourceManager( Context* context );
-        ~ResourceManager( );
+   class MEAPI ResourceManager : public SubSystem
+   {
+   public:
+      ResourceManager(Context* context);
+      ~ResourceManager();
 
-        virtual bool Init( ) override;
-        virtual void DeInit( ) override;
+      virtual bool Init() override;
+      virtual void DeInit() override;
 
-        template < typename Ty >
-        Ty* Load( const String& relativePath )
-        {
-            if ( m_cache->HasByPath( relativePath ) )
-            {
-                return GetByPath<Ty>( relativePath );
-            }
+      template < typename Ty >
+      Ty* Load(const String& relativePath)
+      {
+         if (m_cache->HasByPath(relativePath))
+         {
+            return GetByPath<Ty>(relativePath);
+         }
 
-            auto newResource = new Ty( m_context, relativePath );
-            if ( newResource->Init( ) )
-            {
-                m_cache->Add( static_cast< ResourcePtr >( newResource ) );
-                return newResource;
-            }
+         auto newResource = new Ty(m_context, relativePath);
+         if (newResource->Init())
+         {
+            m_cache->Add(static_cast<ResourcePtr>(newResource));
+            return newResource;
+         }
 
-            return nullptr;
-        }
+         return nullptr;
+      }
 
-        template < typename Ty >
-        Ty* GetByPath( const String& filePath )
-        {
-            if ( m_cache->HasByPath( filePath ) )
-            {
-                return static_cast< Ty* >( m_cache->GetByPath( filePath ) );
-            }
+      template < typename Ty >
+      Ty* GetByPath(const String& filePath)
+      {
+         if (m_cache->HasByPath(filePath))
+         {
+            return static_cast<Ty*>(m_cache->GetByPath(filePath));
+         }
 
-            return nullptr;
-        }
+         return nullptr;
+      }
 
-        template < typename Ty >
-        Ty* GetByName( const String& name )
-        {
-            if ( m_cache->HasByName( relativePath ) )
-            {
-               return static_cast< Ty* >( m_cache->GetByName( name ) );
-            }
+      template < typename Ty >
+      Ty* GetByName(const String& name)
+      {
+         if (m_cache->HasByName(name))
+         {
+            return static_cast<Ty*>(m_cache->GetByName(name));
+         }
 
-            return nullptr;
-        }
+         return nullptr;
+      }
 
-        template < typename Ty >
-        Ty* Create( const String& relativePath )
-        {
-           if ( m_cache->HasByPath( relativePath ) )
-           {
-              return GetByPath<Ty>( relativePath );
-           }
+      template < typename Ty >
+      Ty* Create(const String& relativePath)
+      {
+         if (m_cache->HasByPath(relativePath))
+         {
+            return GetByPath<Ty>(relativePath);
+         }
 
-           auto res = Load<Ty>( relativePath );
-           if ( res != nullptr )
-           {
-              return res;
-           }
+         auto res = Load<Ty>(relativePath);
+         if (res != nullptr)
+         {
+            return res;
+         }
 
-           auto newResource = new Ty( m_context, relativePath );
-           if ( newResource->Save( ) )
-           {
-              m_cache->Add( static_cast< Resource* >( newResource ) );
-              return newResource;
-           }
-           
-           return nullptr;
-        }
+         auto newResource = new Ty(m_context, relativePath);
+         if (newResource->Save())
+         {
+            m_cache->Add(static_cast<Resource*>(newResource));
+            return newResource;
+         }
 
-        void ClearCache( );
+         return nullptr;
+      }
+
+      void ClearCache();
 
 
-    private:
-        ResourceCachePtr    m_cache;
+   private:
+      ResourceCachePtr    m_cache;
 
-    };
+   };
 }

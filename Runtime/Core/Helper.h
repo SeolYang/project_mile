@@ -29,13 +29,13 @@ namespace Mile
    using String = std::wstring;
    using Float = float;
 
-   static std::string BoolSerialize( bool value )
+   static std::string BoolSerialize(bool value)
    {
-      if ( value )
+      if (value)
       {
          return "true";
       }
-      
+
       return "false";
    }
 
@@ -46,24 +46,24 @@ namespace Mile
    * @param    토큰
    * @return   나누어진 문자열들의 배열
    */
-   static std::vector<String> SplitStr( const String& str, char token )
+   static std::vector<String> SplitStr(const String& str, char token)
    {
       std::vector<String> tempArr{ };
       String tempStr{ };
 
-      size_t length = str.length( );
+      size_t length = str.length();
 
-      for ( size_t idx = 0; idx < length; ++idx )
+      for (size_t idx = 0; idx < length; ++idx)
       {
-         if ( str[ idx ] != token )
+         if (str[idx] != token)
          {
-            tempStr += str[ idx ];
+            tempStr += str[idx];
          }
 
-         if ( str[ idx ] == token || idx == ( length - 1 ) )
+         if (str[idx] == token || idx == (length - 1))
          {
-            tempArr.push_back( tempStr );
-            tempStr.clear( );
+            tempArr.push_back(tempStr);
+            tempStr.clear();
          }
       }
 
@@ -76,11 +76,11 @@ namespace Mile
    * @param    문자열들을 합치면서 중간에 들어갈 토큰
    * @return   합쳐진 문자열
    */
-   static String CombineStr( std::vector<String> strings, const String& token = TEXT("") )
+   static String CombineStr(std::vector<String> strings, const String& token = TEXT(""))
    {
       String temp{ };
 
-      for ( auto str : strings )
+      for (auto str : strings)
       {
          temp += str;
          temp += token;
@@ -93,11 +93,11 @@ namespace Mile
    * @brief  Release를 통해 메모리 할당 해제를 하는 인스턴스를 안전하게 해제시켜줍니다.
    */
    template <typename T>
-   void SafeRelease( T& target )
+   void SafeRelease(T& target)
    {
-      if ( target != nullptr )
+      if (target != nullptr)
       {
-         target->Release( );
+         target->Release();
          target = nullptr;
       }
    }
@@ -106,9 +106,9 @@ namespace Mile
    * @brief Delete를 통해 메모리를 할당 해제 해야하는 인스턴스를 안전하게 해제시켜줍니다.
    */
    template <typename T>
-   void SafeDelete( T& target )
+   void SafeDelete(T& target)
    {
-      if ( target != nullptr )
+      if (target != nullptr)
       {
          delete target;
          target = nullptr;
@@ -116,124 +116,124 @@ namespace Mile
    }
 
    template <typename T>
-   void SafeArrayDelete( T& target )
+   void SafeArrayDelete(T& target)
    {
-      if ( target != nullptr )
+      if (target != nullptr)
       {
-         delete[ ] target;
+         delete[] target;
          target = nullptr;
       }
    }
 
    template <typename T>
-   void SafeFree( T& target )
+   void SafeFree(T& target)
    {
-      if ( target != nullptr )
+      if (target != nullptr)
       {
-         std::free( target );
+         std::free(target);
          target = nullptr;
       }
    }
 
-   static String String2WString( const std::string& str )
+   static String String2WString(const std::string& str)
    {
-      if ( str.empty( ) )
+      if (str.empty())
       {
-         return TEXT( "" );
+         return TEXT("");
       }
       std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-      return converter.from_bytes( str );
+      return converter.from_bytes(str);
    }
 
-   static std::string WString2String( const String& str )
+   static std::string WString2String(const String& str)
    {
-      if ( str.empty( ) )
+      if (str.empty())
       {
-         return std::string( );
+         return std::string();
       }
 
       std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-      return converter.to_bytes( str );
+      return converter.to_bytes(str);
    }
 
    template <typename ... Args>
-   static std::string Formatting( const std::string& str, Args ... args )
+   static std::string Formatting(const std::string& str, Args ... args)
    {
-      size_t size = snprintf( nullptr, 0, str.c_str( ), args ... ) + 1;
-      std::unique_ptr< char[ ] > buf( new char[ size ] );
-      snprintf( buf.get( ), size, str.c_str( ), args ... );
-      return std::string( buf.get( ), buf.get( ) + size - 1 );
+      size_t size = snprintf(nullptr, 0, str.c_str(), args ...) + 1;
+      std::unique_ptr< char[] > buf(new char[size]);
+      snprintf(buf.get(), size, str.c_str(), args ...);
+      return std::string(buf.get(), buf.get() + size - 1);
    }
 
    template < typename ... Args>
-   static String Formatting( const String& str, Args ... args )
+   static String Formatting(const String & str, Args ... args)
    {
-      size_t size = _snwprintf( nullptr, 0, str.c_str( ), args ... ) + 1;
-      std::unique_ptr< wchar_t > buf( new wchar_t[ size ] );
-      _snwprintf( buf.get( ), size, str.c_str( ), args ... );
-      return String( buf.get( ), buf.get( ) + size - 1 );
+      size_t size = _snwprintf(nullptr, 0, str.c_str(), args ...) + 1;
+      std::unique_ptr< wchar_t > buf(new wchar_t[size]);
+      _snwprintf(buf.get(), size, str.c_str(), args ...);
+      return String(buf.get(), buf.get() + size - 1);
    }
 
    /*
    * @param format   Require 6 integer formatting character( %d )
    *                 "%d/%d/%d %d:%d:%d" => "Year/Month/Day Hour:Min:Sec"
    **/
-   static std::string TimeToString( const std::chrono::system_clock::time_point& t,
-                                    const std::string& format = "%d/%02d/%02d %02d:%02d:%02d" )
+   static std::string TimeToString(const std::chrono::system_clock::time_point & t,
+      const std::string & format = "%d/%02d/%02d %02d:%02d:%02d")
    {
       using namespace std;
-      time_t rawTime = chrono::system_clock::to_time_t( t );
+      time_t rawTime = chrono::system_clock::to_time_t(t);
 
       tm timeInfo{};
-      localtime_s( &timeInfo, &rawTime );
-      return Formatting( format,
-                         timeInfo.tm_year + 1900,
-                         timeInfo.tm_mon + 1,
-                         timeInfo.tm_mday,
-                         timeInfo.tm_hour,
-                         timeInfo.tm_min,
-                         timeInfo.tm_sec );
+      localtime_s(&timeInfo, &rawTime);
+      return Formatting(format,
+         timeInfo.tm_year + 1900,
+         timeInfo.tm_mon + 1,
+         timeInfo.tm_mday,
+         timeInfo.tm_hour,
+         timeInfo.tm_min,
+         timeInfo.tm_sec);
    }
 
    /*
    * @param format   Require 6 integer formatting character( %d )
    *                 "%d/%d/%d %d:%d:%d" => "Year/Month/Day Hour:Min:Sec"
    **/
-   static String TimeToWString( const std::chrono::system_clock::time_point& t,
-                                const String& format = TEXT( "%d/%02d/%02d %02d:%02d:%02d" ) )
+   static String TimeToWString(const std::chrono::system_clock::time_point & t,
+      const String & format = TEXT("%d/%02d/%02d %02d:%02d:%02d"))
    {
       using namespace std;
-      time_t rawTime = chrono::system_clock::to_time_t( t );
+      time_t rawTime = chrono::system_clock::to_time_t(t);
 
       tm timeInfo{};
-      localtime_s( &timeInfo, &rawTime );
-      return Formatting( format,
-                         timeInfo.tm_year + 1900,
-                         timeInfo.tm_mon + 1,
-                         timeInfo.tm_mday,
-                         timeInfo.tm_hour,
-                         timeInfo.tm_min,
-                         timeInfo.tm_sec );
+      localtime_s(&timeInfo, &rawTime);
+      return Formatting(format,
+         timeInfo.tm_year + 1900,
+         timeInfo.tm_mon + 1,
+         timeInfo.tm_mday,
+         timeInfo.tm_hour,
+         timeInfo.tm_min,
+         timeInfo.tm_sec);
    }
 
-   static std::string NowToString( )
+   static std::string NowToString()
    {
       using namespace std;
-      chrono::system_clock::time_point t = chrono::system_clock::now( );
-      return TimeToString( t );
+      chrono::system_clock::time_point t = chrono::system_clock::now();
+      return TimeToString(t);
    }
 
-   static String NowToWString( )
+   static String NowToWString()
    {
       using namespace std;
-      chrono::system_clock::time_point t = chrono::system_clock::now( );
-      return TimeToWString( t );
+      chrono::system_clock::time_point t = chrono::system_clock::now();
+      return TimeToWString(t);
    }
 
-   static String ToLower( const String& target )
+   static String ToLower(const String & target)
    {
       String temp = target;
-      std::transform( temp.begin( ), temp.end( ), temp.begin( ), ::tolower );
+      std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
       return temp;
    }
 }

@@ -1,19 +1,19 @@
-#include "ConstantBufferDX11.h"
-#include "RendererDX11.h"
+#include "Rendering/ConstantBufferDX11.h"
+#include "Rendering/RendererDX11.h"
 
 namespace Mile
 {
-   bool ConstantBufferDX11::Init( unsigned int size )
+   bool ConstantBufferDX11::Init(unsigned int size)
    {
-      if ( m_bIsInitialized
-           || ( m_renderer == nullptr )
-           || ( size == 0 ) )
+      if (m_bIsInitialized
+         || (m_renderer == nullptr)
+         || (size == 0))
       {
          return false;
       }
 
       D3D11_BUFFER_DESC desc;
-      ZeroMemory( &desc, sizeof( desc ) );
+      ZeroMemory(&desc, sizeof(desc));
       desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
       desc.ByteWidth = size;
       desc.StructureByteStride = 0;
@@ -21,8 +21,8 @@ namespace Mile
       desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
       desc.MiscFlags = 0;
 
-      auto result = m_renderer->GetDevice( )->CreateBuffer( &desc, nullptr, &m_buffer );
-      if ( FAILED( result ) )
+      auto result = m_renderer->GetDevice()->CreateBuffer(&desc, nullptr, &m_buffer);
+      if (FAILED(result))
       {
          return false;
       }
@@ -32,20 +32,20 @@ namespace Mile
       return true;
    }
 
-   void* ConstantBufferDX11::Map( ID3D11DeviceContext& deviceContext )
+   void* ConstantBufferDX11::Map(ID3D11DeviceContext& deviceContext)
    {
-      if ( !m_bIsInitialized || m_renderer == nullptr || m_bIsMapped )
+      if (!m_bIsInitialized || m_renderer == nullptr || m_bIsMapped)
       {
          return nullptr;
       }
 
       D3D11_MAPPED_SUBRESOURCE resource;
       auto result = deviceContext.Map(
-         m_buffer, 
+         m_buffer,
          0, D3D11_MAP_WRITE_DISCARD, 0,
-         &resource );
+         &resource);
 
-      if ( FAILED( result ) )
+      if (FAILED(result))
       {
          return nullptr;
       }
@@ -54,41 +54,41 @@ namespace Mile
       return resource.pData;
    }
 
-   bool ConstantBufferDX11::UnMap( ID3D11DeviceContext& deviceContext )
+   bool ConstantBufferDX11::UnMap(ID3D11DeviceContext& deviceContext)
    {
-      if ( !m_bIsInitialized || m_renderer == nullptr || !m_bIsMapped )
+      if (!m_bIsInitialized || m_renderer == nullptr || !m_bIsMapped)
       {
          return false;
       }
 
-      deviceContext.Unmap( m_buffer, 0 );
+      deviceContext.Unmap(m_buffer, 0);
       m_bIsMapped = false;
       return true;
    }
 
-   bool ConstantBufferDX11::Bind( ID3D11DeviceContext& deviceContext, unsigned int startSlot, ShaderType shaderType )
+   bool ConstantBufferDX11::Bind(ID3D11DeviceContext& deviceContext, unsigned int startSlot, EShaderType shaderType)
    {
-      if ( !m_bIsInitialized || m_renderer == nullptr || m_bIsBinded )
+      if (!m_bIsInitialized || m_renderer == nullptr || m_bIsBinded)
       {
          return false;
       }
 
-      switch ( shaderType )
+      switch (shaderType)
       {
-      case ShaderType::VertexShader:
-         deviceContext.VSSetConstantBuffers( startSlot, 1, &m_buffer );
+      case EShaderType::VertexShader:
+         deviceContext.VSSetConstantBuffers(startSlot, 1, &m_buffer);
          break;
-      case ShaderType::HullShader:
-         deviceContext.HSSetConstantBuffers( startSlot, 1, &m_buffer );
+      case EShaderType::HullShader:
+         deviceContext.HSSetConstantBuffers(startSlot, 1, &m_buffer);
          break;
-      case ShaderType::DomainShader:
-         deviceContext.DSSetConstantBuffers( startSlot, 1, &m_buffer );
+      case EShaderType::DomainShader:
+         deviceContext.DSSetConstantBuffers(startSlot, 1, &m_buffer);
          break;
-      case ShaderType::GeometryShader:
-         deviceContext.GSSetConstantBuffers( startSlot, 1, &m_buffer );
+      case EShaderType::GeometryShader:
+         deviceContext.GSSetConstantBuffers(startSlot, 1, &m_buffer);
          break;
-      case ShaderType::PixelShader:
-         deviceContext.PSSetConstantBuffers( startSlot, 1, &m_buffer );
+      case EShaderType::PixelShader:
+         deviceContext.PSSetConstantBuffers(startSlot, 1, &m_buffer);
          break;
       default:
          return false;
@@ -100,31 +100,31 @@ namespace Mile
       return true;
    }
 
-   void ConstantBufferDX11::Unbind( ID3D11DeviceContext& deviceContext )
+   void ConstantBufferDX11::Unbind(ID3D11DeviceContext& deviceContext)
    {
-      if ( !m_bIsInitialized || m_renderer == nullptr || !m_bIsBinded )
+      if (!m_bIsInitialized || m_renderer == nullptr || !m_bIsBinded)
       {
          return;
       }
 
       ID3D11Buffer* nullBuffer = nullptr;
 
-      switch ( m_bindedShader )
+      switch (m_bindedShader)
       {
-      case ShaderType::VertexShader:
-         deviceContext.VSSetConstantBuffers( m_bindedSlot, 1, &nullBuffer );
+      case EShaderType::VertexShader:
+         deviceContext.VSSetConstantBuffers(m_bindedSlot, 1, &nullBuffer);
          break;
-      case ShaderType::HullShader:
-         deviceContext.HSSetConstantBuffers( m_bindedSlot, 1, &nullBuffer );
+      case EShaderType::HullShader:
+         deviceContext.HSSetConstantBuffers(m_bindedSlot, 1, &nullBuffer);
          break;
-      case ShaderType::DomainShader:
-         deviceContext.DSSetConstantBuffers( m_bindedSlot, 1, &nullBuffer );
+      case EShaderType::DomainShader:
+         deviceContext.DSSetConstantBuffers(m_bindedSlot, 1, &nullBuffer);
          break;
-      case ShaderType::GeometryShader:
-         deviceContext.GSSetConstantBuffers( m_bindedSlot, 1, &nullBuffer );
+      case EShaderType::GeometryShader:
+         deviceContext.GSSetConstantBuffers(m_bindedSlot, 1, &nullBuffer);
          break;
-      case ShaderType::PixelShader:
-         deviceContext.PSSetConstantBuffers( m_bindedSlot, 1, &nullBuffer );
+      case EShaderType::PixelShader:
+         deviceContext.PSSetConstantBuffers(m_bindedSlot, 1, &nullBuffer);
          break;
       default:
          return;

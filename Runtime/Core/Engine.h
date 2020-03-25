@@ -1,6 +1,5 @@
 #pragma once
-
-#include "SubSystem.h"
+#include "Core/SubSystem.h"
 
 namespace Mile
 {
@@ -18,42 +17,42 @@ namespace Mile
    class MEAPI Engine : public SubSystem
    {
    public:
-      Engine( Context* context );
+      Engine(Context* context);
 
       /**
       * @brief Engine의 Subsystem 들을 초기화합니다.
       * @return 초기화 성공 여부
       */
-      virtual bool Init( ) override;
+      virtual bool Init() override;
 
-      int Execute( );
+      int Execute();
 
       /**
       * @brief Engine의 Subsystem 들을 업데이트합니다.
       */
-      void Update( );
+      void Update();
 
       /**
       * @brief Engine의 Subsystem 들을 해제합니다.
       */
-      void ShutDown( );
-      void ShutDownFlagEnable( ) { m_bShutdownFlag = true; }
+      void ShutDown();
+      void ShutDownFlagEnable() { m_bShutdownFlag = true; }
 
-      bool IsRunning( ) const { return m_bIsRunning; }
+      bool IsRunning() const { return m_bIsRunning; }
 
    private:
-      bool                m_bIsRunning;
-      bool                m_bShutdownFlag;
-      unsigned int        m_maxFPS;
-      long long           m_frameTime;
-      Logger*             m_logger;
-      Timer*              m_timer;
-      ThreadPool*         m_threadPool;
-      ResourceManager*    m_resourceManager;
-      ConfigSystem*       m_configSys;
-      Window*             m_window;
-      RendererDX11*       m_renderer;
-      World*              m_world;
+      bool              m_bIsRunning;
+      bool              m_bShutdownFlag;
+      unsigned int      m_maxFPS;
+      long long         m_frameTime;
+      Logger*           m_logger;
+      Timer*            m_timer;
+      ThreadPool*       m_threadPool;
+      ResourceManager*  m_resourceManager;
+      ConfigSystem*     m_configSys;
+      Window*           m_window;
+      RendererDX11*     m_renderer;
+      World*            m_world;
 
    };
 }

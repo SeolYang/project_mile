@@ -1,64 +1,64 @@
-#include "ResourceCache.h"
+#include "Resource/ResourceCache.h"
 #include "Core/Context.h"
 
 namespace Mile
 {
-   ResourceCache::ResourceCache( Context* context ) :
-      m_context( context ),
-      m_resources( )
+   ResourceCache::ResourceCache(Context* context) :
+      m_context(context),
+      m_resources()
    {
    }
 
-   ResourceCache::~ResourceCache( )
+   ResourceCache::~ResourceCache()
    {
-      Clear( );
+      Clear();
    }
 
-   void ResourceCache::Add( ResourcePtr res )
+   void ResourceCache::Add(ResourcePtr res)
    {
-      if ( res != nullptr )
+      if (res != nullptr)
       {
-         m_resources.push_back( res );
+         m_resources.push_back(res);
       }
    }
 
-   void ResourceCache::Clear( )
+   void ResourceCache::Clear()
    {
-      m_resources.clear( );
-      m_resources.shrink_to_fit( );
+      m_resources.clear();
+      m_resources.shrink_to_fit();
    }
 
-   ResourcePtr ResourceCache::GetByPath( const String& path )
+   ResourcePtr ResourceCache::GetByPath(const String& path)
    {
-      for ( auto res : m_resources )
+      for (auto res : m_resources)
       {
-         if ( res->GetPath( ) == path )
+         if (res->GetPath() == path)
          {
             return res;
          }
       }
 
-      return ResourcePtr( );
+      return ResourcePtr();
    }
 
-   ResourcePtr ResourceCache::GetByName( const String& name )
+   ResourcePtr ResourceCache::GetByName(const String& name)
    {
-      for ( auto res : m_resources )
+      for (auto res : m_resources)
       {
-         if ( res->GetName( ) == name )
+         if (res->GetName() == name)
          {
             return res;
          }
       }
 
-      return ResourcePtr( );
+      return ResourcePtr();
    }
 
-   bool ResourceCache::HasByPath( const String& name )
+   bool ResourceCache::HasByPath(const String& name)
    {
-      for ( auto res : m_resources )
+      for (auto res : m_resources)
       {
-         if ( res->GetPath( ) == name )
+         if (res->GetPath() == name)
          {
             return true;
          }
@@ -67,11 +67,11 @@ namespace Mile
       return false;
    }
 
-   bool ResourceCache::HasByName( const String& name )
+   bool ResourceCache::HasByName(const String& name)
    {
-      for ( auto res : m_resources )
+      for (auto res : m_resources)
       {
-         if ( res->GetName( ) == name )
+         if (res->GetName() == name)
          {
             return true;
          }

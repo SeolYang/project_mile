@@ -1,99 +1,94 @@
 // Light Pre Pass G-Buffer Shader
-Texture2D      NormalMap      : register( t0 );
-SamplerState   AnisoSampler   : register( s0 );
-
-// Constants
-cbuffer TransformBuffer
-{
-   matrix World;
-   matrix WorldView;
-   matrix WorldViewProj;
-};
-
-cbuffer MaterialPropertiesBuffer
-{
-   float SpecularPower;
-};
-
-cbuffer CheckerBoardBuffer
-{
-   bool CheckerBoardEnabled;
-};
-
 // Structures
 struct VSInput
 {
-   float4 Position      : POSITION;
-   float2 TexCoord      : TEXCOORDS0;
-   float3 Normal        : NORMAL;
-   float4 Tangent       : TANGENT;
-   float4 BiTangent     : BITANGENT;
+	float4 Position : POSITION;
+	float2 TexCoord : TEXCOORDS0;
+	float3 Normal : NORMAL;
+	float4 Tangent : TANGENT;
+	float4 BiTangent : BITANGENT;
 };
 
 // postfix WS meaning world space
 struct VSOutput
 {
-   float4 PositionCS    : SV_Position; // Clip Space
-   float2 TexCoord      : TEXCOORD;
-   float3 NormalWS      : NORMALWS;
-   float3 TangentWS     : TANGENTWS;
-   float3 BitangentWS   : BITANGENTWS;
-   float3 PositionWS    : POSITIONWS;
+	float4 PositionCS : SV_Position; // Clip Space
+	float2 TexCoord : TEXCOORD;
+	float3 NormalWS : NORMALWS;
+	float3 TangentWS : TANGENTWS;
+	float3 BitangentWS : BITANGENTWS;
+	float3 PositionWS : POSITIONWS;
 };
 
 struct PSInput
 {
-   float4 PositionSS    : SV_Position; // Screen Space
-   float2 TexCoord      : TEXCOORD;
-   float3 NormalWS      : NORMALWS;
-   float3 TangentWS     : TANGENTWS;
-   float3 BitangentWS   : BITANGENTWS;
-   float3 PositionWS    : POSITIONWS;
+	float4 PositionSS : SV_Position; // Screen Space
+	float2 TexCoord : TEXCOORD;
+	float3 NormalWS : NORMALWS;
+	float3 TangentWS : TANGENTWS;
+	float3 BitangentWS : BITANGENTWS;
+	float3 PositionWS : POSITIONWS;
 };
 
 struct PSOutput
 {
-   float4 Normal        : SV_Target0;
-   float4 Position      : SV_Target1;
+	float4 Normal : SV_Target0;
+	float4 Position : SV_Target1;
 };
 
-VSOutput MileVS( in VSInput input )
+Texture2D NormalMap : register(t0);
+SamplerState AnisoSampler : register(s0);
+
+// Constants
+cbuffer TransformBuffer
 {
-   VSOutput output;
+	matrix World;
+	matrix WorldView;
+	matrix WorldViewProj;
+};
 
-   float3 normalWS = normalize( mul( ( float3x3 )World, input.Normal ) );
-   float3 tangentWS = normalize( mul( ( float3x3 )World, input.Tangent.xyz ) );
-   float3 bitangentWS = normalize( mul( ( float3x3 )World, input.BiTangent.xyz ) );
+cbuffer CheckerBoardBuffer
+{
+	bool CheckerBoardEnabled;
+};
 
-   output.NormalWS = normalWS;
-   output.TangentWS = tangentWS;
-   output.BitangentWS = bitangentWS;
+VSOutput MileVS(in VSInput input)
+{
+	VSOutput output;
 
-   output.PositionWS = mul( World, input.Position ).xyz;
-   output.PositionCS = mul( WorldViewProj, input.Position );
-   output.TexCoord = input.TexCoord;
+	float3 normalWS = normalize(mul((float3x3) World, input.Normal));
+	float3 tangentWS = normalize(mul((float3x3) World, input.Tangent.xyz));
+	float3 bitangentWS = normalize(mul((float3x3) World, input.BiTangent.xyz));
 
-   return output;
+	output.NormalWS = normalWS;
+	output.TangentWS = tangentWS;
+	output.BitangentWS = bitangentWS;
+
+	output.PositionWS = mul(World, input.Position).xyz;
+	output.PositionCS = mul(WorldViewProj, input.Position);
+	output.TexCoord = input.TexCoord;
+
+	return output;
 }
 
-PSOutput MilePS( in PSInput input )
+PSOutput MilePS(in PSInput input)
 {
    /* Checkerboard Rendering (Discard needless pixels) */
-   bool discardPixel = ( ( input.PositionSS.x + input.PositionSS.y ) % 2 ) == 0;
-   clip( CheckerBoardEnabled && discardPixel ? -1 : 1 );
+	bool discardPixel = ((input.PositionSS.x + input.PositionSS.y) % 2) == 0;
+	clip(CheckerBoardEnabled && discardPixel ? -1 : 1);
 
-   float3x3 tangentFrameWS = float3x3( normalize( input.TangentWS ),
-                                       normalize( input.BitangentWS ),
-                                       normalize( input.NormalWS ) );
+	float3x3 tangentFrameWS = float3x3(normalize(input.TangentWS),
+                                       normalize(input.BitangentWS),
+                                       normalize(input.NormalWS));
 
-   float3 normalTS = NormalMap.Sample( AnisoSampler, input.TexCoord ).rgb;
-   normalTS = normalize( normalTS * 2.0f - 1.0f );
+	float3 normalTS = NormalMap.Sample(AnisoSampler, input.TexCoord).rgb;
+	normalTS = normalize(normalTS * 2.0f - 1.0f);
 
-   float3 normalWS = mul( normalTS, tangentFrameWS );
+	float3 normalWS = mul(normalTS, tangentFrameWS);
 
-   PSOutput output;
-   output.Normal = float4( normalWS, SpecularPower );
-   output.Position = float4( input.PositionWS, 1.0f );
+	PSOutput output;
+	output.Normal = float4(normalWS, 1.0f);
+	output.Position = float4(input.PositionWS, 1.0f);
 
-   return output;
+	return output;
 }

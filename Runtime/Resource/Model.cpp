@@ -1,18 +1,18 @@
-#include "Model.h"
-#include "ModelLoader.h"
-#include "Core\Entity.h"
-#include "Rendering\Mesh.h"
-#include "Core\World.h"
-#include "Core\Logger.h"
-#include <assimp\scene.h>
-#include <assimp\Importer.hpp>
-#include <assimp\postprocess.h>
+#include "Resource/Model.h"
+#include "Resource/ModelLoader.h"
+#include "Rendering/Mesh.h"
+#include "Core/Logger.h"
+#include "GameFramework/Entity.h"
+#include "GameFramework/World.h"
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
 
 namespace Mile
 {
    Model::Model( Context* context, const String& filePath ) :
       m_instance( nullptr ),
-      Resource( context, filePath, ResourceType::RT_Model )
+      Resource( context, filePath, ResourceType::Model )
    {
    }
 

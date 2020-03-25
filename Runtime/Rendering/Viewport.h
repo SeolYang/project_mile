@@ -1,6 +1,5 @@
 #pragma once
-
-#include "Rendering.h"
+#include "Rendering/RenderingCore.h"
 
 namespace Mile
 {
@@ -8,32 +7,32 @@ namespace Mile
    class MEAPI Viewport
    {
    public:
-      Viewport( RendererDX11* renderer );
+      Viewport(RendererDX11* renderer);
 
-      void SetWidth( float width ) { m_width = width; }
-      float GetWidth( ) const { return m_width; }
+      void SetWidth(float width) { m_width = width; }
+      float GetWidth() const { return m_width; }
 
-      void SetHeight( float height ) { m_height = height; }
-      float GetHeight( ) const { return m_height; }
+      void SetHeight(float height) { m_height = height; }
+      float GetHeight() const { return m_height; }
 
-      void SetMinDepth( float minDepth ) { m_minDepth = minDepth; }
-      float GetMinDepth( ) const { return m_minDepth; }
+      void SetMinDepth(float minDepth) { m_minDepth = minDepth; }
+      float GetMinDepth() const { return m_minDepth; }
 
-      void SetMaxDepth( float maxDepth ) { m_maxDepth = maxDepth; }
-      float GetMaxDepth( ) const { return m_maxDepth; }
+      void SetMaxDepth(float maxDepth) { m_maxDepth = maxDepth; }
+      float GetMaxDepth() const { return m_maxDepth; }
 
-      void SetTopLeftX( float topLeftX ) { m_topLeftX = topLeftX; }
-      float GetTopLeftX( ) const { return m_topLeftX; }
+      void SetTopLeftX(float topLeftX) { m_topLeftX = topLeftX; }
+      float GetTopLeftX() const { return m_topLeftX; }
 
-      void SetTopLeftY( float topLeftY ) { m_topLeftY = topLeftY; }
-      float GetTopLeftY( ) const { return m_topLeftY; }
+      void SetTopLeftY(float topLeftY) { m_topLeftY = topLeftY; }
+      float GetTopLeftY() const { return m_topLeftY; }
 
-      D3D11_VIEWPORT GetD3DViewport( ) const;
+      D3D11_VIEWPORT GetD3DViewport() const;
 
-      bool Bind( ID3D11DeviceContext& deviceContext );
+      bool Bind(ID3D11DeviceContext& deviceContext);
 
    public:
-      RendererDX11 * m_renderer;
+      RendererDX11* m_renderer;
 
       float m_width;
       float m_height;

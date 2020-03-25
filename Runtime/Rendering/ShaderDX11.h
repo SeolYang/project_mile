@@ -1,39 +1,38 @@
 #pragma once
-
-#include "ResourceDX11.h"
+#include "Rendering/ResourceDX11.h"
 
 namespace Mile
 {
    class MEAPI ShaderDX11
    {
    public:
-      ShaderDX11( RendererDX11* renderer ) :
-         m_renderer( renderer ),
-         m_blob( nullptr ),
-         m_errorBlob( nullptr ),
-         m_bIsCompiled( false )
+      ShaderDX11(RendererDX11* renderer) :
+         m_renderer(renderer),
+         m_blob(nullptr),
+         m_errorBlob(nullptr),
+         m_bIsCompiled(false)
       {
       }
 
-      virtual ~ShaderDX11( )
+      virtual ~ShaderDX11()
       {
-         SafeRelease( m_blob );
-         SafeRelease( m_errorBlob );
+         SafeRelease(m_blob);
+         SafeRelease(m_errorBlob);
       }
 
-      virtual bool Init( const String& shaderPath ) = 0;
-      virtual bool Bind( ID3D11DeviceContext& deviceContext ) = 0;
-      virtual void Unbind( ID3D11DeviceContext& deviceContext ) = 0;
+      virtual bool Init(const String& shaderPath) = 0;
+      virtual bool Bind(ID3D11DeviceContext& deviceContext) = 0;
+      virtual void Unbind(ID3D11DeviceContext& deviceContext) = 0;
 
-      ID3D10Blob* GetBlob( ) { return m_blob; }
+      ID3D10Blob* GetBlob() { return m_blob; }
 
-      bool IsCompiled( ) const { return m_bIsCompiled; }
-      virtual ShaderType GetShaderType( ) const = 0;
+      bool IsCompiled() const { return m_bIsCompiled; }
+      virtual EShaderType GetShaderType() const = 0;
 
    protected:
-      virtual bool Compile( const String& shaderPath, ShaderType shaderType ) final
+      virtual bool Compile(const String& shaderPath, EShaderType shaderType) final
       {
-         if ( m_bIsCompiled || m_renderer == nullptr )
+         if (m_bIsCompiled || m_renderer == nullptr)
          {
             return false;
          }
@@ -41,25 +40,25 @@ namespace Mile
          std::string entryPoint = "Mile";
          std::string target = "_5_0";
 
-         switch ( shaderType )
+         switch (shaderType)
          {
-         case ShaderType::VertexShader:
+         case EShaderType::VertexShader:
             entryPoint += "VS";
             target = "vs" + target;
             break;
-         case ShaderType::HullShader:
+         case EShaderType::HullShader:
             entryPoint += "HS";
             target = "hs" + target;
             break;
-         case ShaderType::DomainShader:
+         case EShaderType::DomainShader:
             entryPoint += "DS";
             target = "ds" + target;
             break;
-         case ShaderType::GeometryShader:
+         case EShaderType::GeometryShader:
             entryPoint += "GS";
             target = "gs" + target;
             break;
-         case ShaderType::PixelShader:
+         case EShaderType::PixelShader:
             entryPoint += "PS";
             target = "ps" + target;
             break;
@@ -71,16 +70,16 @@ namespace Mile
          compileFlags |= D3D10_SHADER_DEBUG;
 #endif
 
-         auto result = D3DCompileFromFile( shaderPath.c_str( ),
-                             nullptr,
-                             D3D_COMPILE_STANDARD_FILE_INCLUDE,
-                             entryPoint.c_str( ),
-                             target.c_str( ),
-                             compileFlags, 0,
-                             &m_blob,
-                             &m_errorBlob );
+         auto result = D3DCompileFromFile(shaderPath.c_str(),
+            nullptr,
+            D3D_COMPILE_STANDARD_FILE_INCLUDE,
+            entryPoint.c_str(),
+            target.c_str(),
+            compileFlags, 0,
+            &m_blob,
+            &m_errorBlob);
 
-         if ( FAILED( result ) )
+         if (FAILED(result))
          {
             /*@TODO: logging shader compile error **/
             return false;
@@ -91,12 +90,11 @@ namespace Mile
       }
 
    protected:
-      RendererDX11*     m_renderer;
+      RendererDX11* m_renderer;
 
-      ID3D10Blob*       m_blob;
-      ID3D10Blob*       m_errorBlob;
-
-      bool              m_bIsCompiled;
+      ID3D10Blob* m_blob;
+      ID3D10Blob* m_errorBlob;
+      bool        m_bIsCompiled;
 
    };
 }

@@ -1,26 +1,26 @@
-#include "Texture2dDX11.h"
-#include "RendererDX11.h"
+#include "Rendering/Texture2dDX11.h"
+#include "Rendering/RendererDX11.h"
 
 namespace Mile
 {
-   Texture2dDX11::~Texture2dDX11( )
+   Texture2dDX11::~Texture2dDX11()
    {
-      SafeRelease( m_srv );
-      SafeRelease( m_texture );
+      SafeRelease(m_srv);
+      SafeRelease(m_texture);
    }
 
-   bool Texture2dDX11::Init( unsigned int width, unsigned int height, int channels, unsigned char* data, DXGI_FORMAT format )
+   bool Texture2dDX11::Init(unsigned int width, unsigned int height, int channels, unsigned char* data, DXGI_FORMAT format)
    {
-      if ( m_bIsInitialized || m_renderer == nullptr
-           || width == 0 || height == 0 )
+      if (m_bIsInitialized || m_renderer == nullptr
+         || width == 0 || height == 0)
       {
          return false;
       }
 
-      auto device = m_renderer->GetDevice( );
+      auto device = m_renderer->GetDevice();
 
       D3D11_TEXTURE2D_DESC desc;
-      ZeroMemory( &desc, sizeof( desc ) );
+      ZeroMemory(&desc, sizeof(desc));
       desc.Width = width;
       desc.Height = height;
       desc.MipLevels = m_mipLevels;
@@ -35,16 +35,16 @@ namespace Mile
 
       D3D11_SUBRESOURCE_DATA resource;
       resource.pSysMem = data;
-      resource.SysMemPitch = ( width * channels ) * sizeof( unsigned char );
-      resource.SysMemSlicePitch = ( width * height * channels ) * sizeof( unsigned char );
+      resource.SysMemPitch = (width * channels) * sizeof(unsigned char);
+      resource.SysMemSlicePitch = (width * height * channels) * sizeof(unsigned char);
 
-      auto result = device->CreateTexture2D( &desc, &resource, &m_texture );
-      if ( FAILED( result ) )
+      auto result = device->CreateTexture2D(&desc, &resource, &m_texture);
+      if (FAILED(result))
       {
          return false;
       }
 
-      if ( !InitSRV( desc ) )
+      if (!InitSRV(desc))
       {
          return false;
       }
@@ -53,9 +53,9 @@ namespace Mile
       return true;
    }
 
-   bool Texture2dDX11::Init( ID3D11Texture2D* texture )
+   bool Texture2dDX11::Init(ID3D11Texture2D* texture)
    {
-      if ( texture == nullptr || m_renderer == nullptr )
+      if (texture == nullptr || m_renderer == nullptr)
       {
          return false;
       }
@@ -63,12 +63,12 @@ namespace Mile
       m_texture = texture;
 
       D3D11_TEXTURE2D_DESC desc;
-      m_texture->GetDesc( &desc );
-      
+      m_texture->GetDesc(&desc);
+
       m_width = desc.Width;
       m_height = desc.Height;
 
-      if ( !InitSRV( desc ) )
+      if (!InitSRV(desc))
       {
          return false;
       }
@@ -77,18 +77,18 @@ namespace Mile
       return true;
    }
 
-   bool Texture2dDX11::InitSRV( D3D11_TEXTURE2D_DESC desc )
+   bool Texture2dDX11::InitSRV(D3D11_TEXTURE2D_DESC desc)
    {
-      auto device = m_renderer->GetDevice( );
+      auto device = m_renderer->GetDevice();
       D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-      ZeroMemory( &srvDesc, sizeof( srvDesc ) );
+      ZeroMemory(&srvDesc, sizeof(srvDesc));
       srvDesc.Texture2D.MipLevels = m_mipLevels;
       srvDesc.Texture2D.MostDetailedMip = 0;
       srvDesc.Format = desc.Format;
       srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 
-      auto result = device->CreateShaderResourceView( m_texture, &srvDesc, &m_srv );
-      if ( FAILED( result ) )
+      auto result = device->CreateShaderResourceView(m_texture, &srvDesc, &m_srv);
+      if (FAILED(result))
       {
          return false;
       }
@@ -96,20 +96,20 @@ namespace Mile
       return true;
    }
 
-   bool Texture2dDX11::Bind( ID3D11DeviceContext& deviceContext, unsigned int startSlot, ShaderType shader )
+   bool Texture2dDX11::Bind(ID3D11DeviceContext& deviceContext, unsigned int startSlot, EShaderType shader)
    {
-      if ( !m_bIsInitialized || m_renderer == nullptr || m_bIsBinded )
+      if (!m_bIsInitialized || m_renderer == nullptr || m_bIsBinded)
       {
          return false;
       }
 
-      switch ( shader )
+      switch (shader)
       {
-      case ShaderType::VertexShader:
-         deviceContext.VSSetShaderResources( startSlot, 1, &m_srv );
+      case EShaderType::VertexShader:
+         deviceContext.VSSetShaderResources(startSlot, 1, &m_srv);
          break;
-      case ShaderType::PixelShader:
-         deviceContext.PSSetShaderResources( startSlot, 1, &m_srv );
+      case EShaderType::PixelShader:
+         deviceContext.PSSetShaderResources(startSlot, 1, &m_srv);
          break;
       }
 
@@ -120,21 +120,21 @@ namespace Mile
       return true;
    }
 
-   void Texture2dDX11::Unbind( ID3D11DeviceContext& deviceContext )
+   void Texture2dDX11::Unbind(ID3D11DeviceContext& deviceContext)
    {
-      if ( !m_bIsBinded )
+      if (!m_bIsBinded)
       {
          return;
       }
 
       ID3D11ShaderResourceView* nullSRV = nullptr;
-      switch ( m_bindedShader )
+      switch (m_bindedShader)
       {
-      case ShaderType::VertexShader:
-         deviceContext.VSSetShaderResources( m_bindedSlot, 1, &nullSRV );
+      case EShaderType::VertexShader:
+         deviceContext.VSSetShaderResources(m_bindedSlot, 1, &nullSRV);
          break;
-      case ShaderType::PixelShader:
-         deviceContext.PSSetShaderResources( m_bindedSlot, 1, &nullSRV );
+      case EShaderType::PixelShader:
+         deviceContext.PSSetShaderResources(m_bindedSlot, 1, &nullSRV);
          break;
       }
 

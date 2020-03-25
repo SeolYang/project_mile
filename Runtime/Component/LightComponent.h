@@ -1,7 +1,6 @@
 #pragma once
-
-#include "Component.h"
-#include "Core/ComponentRegister.h"
+#include "Component/Component.h"
+#include "Component/ComponentRegister.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
@@ -12,82 +11,67 @@ namespace Mile
    {
       Directional,
       Point,
-      Spot
    };
 
    class MEAPI LightComponent : public Component
    {
-      ComponentBegin( LightComponent )
+      ComponentBegin(LightComponent)
 
    public:
-      LightComponent( Entity* entity );
+      LightComponent(Entity* entity);
 
-      LightType GetLightType( ) const { return m_type; }
-      void SetLightType( LightType type ) { m_type = type; }
+      LightType GetLightType() const { return m_type; }
+      void SetLightType(LightType type) { m_type = type; }
 
-      Vector3 GetLightColor( ) const { return m_color; }
-      void SetLightColor( const Vector3& color ) { m_color = color; }
+      Vector3 GetRadiance() const { return m_radiance; }
+      void SetRadiance(const Vector3& radiance) { m_radiance = radiance; }
 
-      Vector2 GetSpotlightAngles( ) const { return m_spotlightAngles; }
-      void SetSpotlightAngles( const Vector2& angles ) { m_spotlightAngles = angles; }
-
-      float GetLightRange( ) const { return m_lightRange; }
-      void SetLightRange( float range ) { m_lightRange = range; }
-
-      Vector3 GetLightDirection( ) const;
-      Vector3 GetLightPosition( ) const;
+      Vector3 GetLightDirection() const;
+      Vector3 GetLightPosition() const;
 
       //virtual std::string Serialize( ) const override;
-	  virtual json Serialize() const override;
-      virtual void DeSerialize( const json& jsonData ) override;
+      virtual json Serialize() const override;
+      virtual void DeSerialize(const json& jsonData) override;
 
-      static std::string LightTypeToString( LightType type )
+      static std::string LightTypeToString(LightType type)
       {
-         switch ( type )
+         switch (type)
          {
          case LightType::Directional:
             return "Directional";
          case LightType::Point:
             return "Point";
-         case LightType::Spot:
-            return "Spot";
          }
 
          return "Unknown";
       }
-      static LightType StringToLightType( const std::string& str )
+
+      static LightType StringToLightType(const std::string& str)
       {
-         if ( str == "Spot" )
-         {
-            return LightType::Spot;
-         }
-         else if ( str == "Point" )
+         if (str == "Point")
          {
             return LightType::Point;
          }
 
          return LightType::Directional;
       }
-      static unsigned int LightTypeToIndex( LightType type )
+
+      static unsigned int LightTypeToIndex(LightType type)
       {
-         switch ( type )
+         switch (type)
          {
          case LightType::Directional:
             return 0;
          case LightType::Point:
             return 1;
-         case LightType::Spot:
-            return 2;
          }
 
          return 0;
       }
 
    private:
-      LightType      m_type;
-      Vector3        m_color;
-      Vector2        m_spotlightAngles;
-      float          m_lightRange;
+      LightType	m_type;
+      Vector3	m_radiance;
 
    };
 }

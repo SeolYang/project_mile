@@ -1,5 +1,5 @@
 #pragma once
-#include "Resource.h"
+#include "Resource/Resource.h"
 
 namespace Mile
 {
@@ -7,19 +7,20 @@ namespace Mile
    class MEAPI PlainText : public Resource
    {
    public:
-      PlainText( Context* context, const String& path )
-         : Resource( context,
-                     path, 
-                     ResourceType::RT_PlainText )
+      PlainText(Context* context, const String& path)
+         : Resource(
+            context,
+            path,
+            ResourceType::PlainText)
       {
       }
 
-      virtual bool Init( ) override;
-      virtual bool SaveTo( const String& filePath ) override;
+      virtual bool Init() override;
+      virtual bool SaveTo(const String& filePath) override;
 
-      StrType GetData( ) const { return m_data; }
+      StrType GetData() const { return m_data; }
 
-      void SetData( const StrType& newData )
+      void SetData(const StrType& newData)
       {
          m_data = newData;
       }

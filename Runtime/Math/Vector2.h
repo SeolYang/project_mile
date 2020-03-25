@@ -1,7 +1,6 @@
 #pragma once
-
 #include "Core/Helper.h"
-#include "Math.h"
+#include "Math/MathCore.h"
 
 namespace Mile
 {

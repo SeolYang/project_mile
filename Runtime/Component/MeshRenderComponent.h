@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Component.h"
-#include "Core/ComponentRegister.h"
+#include "Component/Component.h"
+#include "Component/ComponentRegister.h"
 
 namespace Mile
 {
@@ -9,28 +9,29 @@ namespace Mile
    class Mesh;
    class MEAPI MeshRenderComponent : public Component
    {
-      ComponentBegin( MeshRenderComponent )
+      ComponentBegin(MeshRenderComponent)
+
    public:
-      MeshRenderComponent( Entity* entity ) : 
-         m_mesh( nullptr ),
-         m_material( nullptr ),
-         Component( entity )
+      MeshRenderComponent(Entity* entity) :
+         m_mesh(nullptr),
+         m_material(nullptr),
+         Component(entity)
       {
       }
 
       //virtual std::string Serialize( ) const override;
-	  virtual json Serialize() const override;
-      virtual void DeSerialize( const json& jsonData ) override;
+      virtual json Serialize() const override;
+      virtual void DeSerialize(const json& jsonData) override;
 
-      void SetMesh( Mesh* mesh ) { m_mesh = mesh; }
-      Mesh* GetMesh( ) const { return m_mesh; }
+      void SetMesh(Mesh* mesh) { m_mesh = mesh; }
+      Mesh* GetMesh() const { return m_mesh; }
 
-      void SetMaterial( Material* material ) { m_material = material; }
-      Material*  GetMaterial( ) const { return m_material; }
+      void SetMaterial(Material* material) { m_material = material; }
+      Material* GetMaterial() const { return m_material; }
 
    private:
-      Mesh*                   m_mesh;
-      Material*               m_material;
+      Mesh* m_mesh;
+      Material* m_material;
 
    };
 }

@@ -1,31 +1,31 @@
-#include "CheckerBoardInterpolatePass.h"
-#include "ConstantBufferDX11.h"
-#include "RenderTargetDX11.h"
+#include "Rendering/CheckerBoardInterpolatePass.h"
+#include "Rendering/ConstantBufferDX11.h"
+#include "Rendering/RenderTargetDX11.h"
 
 namespace Mile
 {
-   CheckerBoardInterpolatePass::CheckerBoardInterpolatePass( RendererDX11* renderer ) :
-      m_renderTargetInfoBuffer( nullptr ),
-      m_checkerBoard( nullptr ),
-      m_renderTarget( nullptr ),
-      RenderingPass( renderer )
+   CheckerBoardInterpolatePass::CheckerBoardInterpolatePass(RendererDX11* renderer) :
+      m_renderTargetInfoBuffer(nullptr),
+      m_checkerBoard(nullptr),
+      m_renderTarget(nullptr),
+      RenderingPass(renderer)
    {
    }
 
-   CheckerBoardInterpolatePass::~CheckerBoardInterpolatePass( )
+   CheckerBoardInterpolatePass::~CheckerBoardInterpolatePass()
    {
-      SafeDelete( m_renderTargetInfoBuffer );
+      SafeDelete(m_renderTargetInfoBuffer);
    }
 
-   bool CheckerBoardInterpolatePass::Init( const String& filePath )
+   bool CheckerBoardInterpolatePass::Init(const String& filePath)
    {
-      if ( !RenderingPass::Init( filePath ) )
+      if (!RenderingPass::Init(filePath))
       {
          return false;
       }
 
-      m_renderTargetInfoBuffer = new ConstantBufferDX11( m_renderer );
-      if ( !m_renderTargetInfoBuffer->Init( sizeof( RenderTargetInfoBuffer ) ) )
+      m_renderTargetInfoBuffer = new ConstantBufferDX11(m_renderer);
+      if (!m_renderTargetInfoBuffer->Init(sizeof(RenderTargetInfoBuffer)))
       {
          return false;
       }
@@ -33,9 +33,9 @@ namespace Mile
       return true;
    }
 
-   bool CheckerBoardInterpolatePass::Bind( ID3D11DeviceContext& deviceContext )
+   bool CheckerBoardInterpolatePass::Bind(ID3D11DeviceContext& deviceContext)
    {
-      if ( !RenderingPass::Bind( deviceContext ) )
+      if (!RenderingPass::Bind(deviceContext))
       {
          return false;
       }
@@ -45,22 +45,22 @@ namespace Mile
          m_checkerBoard != nullptr &&
          m_renderTarget != nullptr;
 
-      if ( !bReadyToBind )
+      if (!bReadyToBind)
       {
          return false;
       }
 
-      if ( !m_renderTargetInfoBuffer->Bind( deviceContext, 0, ShaderType::PixelShader ) )
+      if (!m_renderTargetInfoBuffer->Bind(deviceContext, 0, EShaderType::PixelShader))
       {
          return false;
       }
 
-      if ( !m_checkerBoard->BindAsShaderResource( deviceContext, 0, ShaderType::PixelShader ) )
+      if (!m_checkerBoard->BindAsShaderResource(deviceContext, 0, EShaderType::PixelShader))
       {
          return false;
       }
 
-      if ( !m_renderTarget->BindAsRenderTarget( deviceContext ) )
+      if (!m_renderTarget->BindAsRenderTarget(deviceContext))
       {
          return false;
       }
@@ -68,34 +68,34 @@ namespace Mile
       return true;
    }
 
-   void CheckerBoardInterpolatePass::Unbind( ID3D11DeviceContext& deviceContext )
+   void CheckerBoardInterpolatePass::Unbind(ID3D11DeviceContext& deviceContext)
    {
-      if ( m_renderer == nullptr )
+      if (m_renderer == nullptr)
       {
          return;
       }
 
-      m_renderTargetInfoBuffer->Unbind( deviceContext );
+      m_renderTargetInfoBuffer->Unbind(deviceContext);
 
-      if ( m_checkerBoard != nullptr )
+      if (m_checkerBoard != nullptr)
       {
-         m_checkerBoard->UnbindShaderResource( deviceContext );
+         m_checkerBoard->UnbindShaderResource(deviceContext);
       }
 
-      if ( m_renderTarget != nullptr )
+      if (m_renderTarget != nullptr)
       {
-         m_renderTarget->UnbindRenderTarget( deviceContext );
+         m_renderTarget->UnbindRenderTarget(deviceContext);
       }
    }
 
-   void CheckerBoardInterpolatePass::UpdateRenderTargetInfoBuffer( ID3D11DeviceContext& deviceContext, int width, int height )
+   void CheckerBoardInterpolatePass::UpdateRenderTargetInfoBuffer(ID3D11DeviceContext& deviceContext, int width, int height)
    {
-      if ( m_renderTargetInfoBuffer != nullptr )
+      if (m_renderTargetInfoBuffer != nullptr)
       {
-         auto buffer = reinterpret_cast< RenderTargetInfoBuffer* >( m_renderTargetInfoBuffer->Map( deviceContext ) );
+         auto buffer = reinterpret_cast<RenderTargetInfoBuffer*>(m_renderTargetInfoBuffer->Map(deviceContext));
          buffer->Width = width;
          buffer->Height = height;
-         m_renderTargetInfoBuffer->UnMap( deviceContext );
+         m_renderTargetInfoBuffer->UnMap(deviceContext);
       }
    }
 }

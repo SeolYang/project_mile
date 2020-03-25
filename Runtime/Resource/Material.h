@@ -1,53 +1,58 @@
 #pragma once
-
-#include "Resource.h"
-#include "Math\Vector3.h"
+#include "Resource/Resource.h"
+#include "Math/Vector2.h"
+#include "Math/Vector4.h"
 
 namespace Mile
 {
-   enum class TextureType
+   enum class MaterialTextureProperty
    {
-      DiffuseMap,
-      NormalMap
+      BaseColor,
+      Emissive,
+      MetallicRoughness,
+      AO,
+      Normal,
+   };
+
+   enum class MaterialFactorProperty
+   {
+      BaseColor,
+      Emissive,
+      Metallic,
+      Roughness,
    };
 
    class Texture2D;
    class MEAPI Material : public Resource
    {
    public:
-      Material( Context* context, const String& filePath ) :
-         m_specExp( 1.0f ),
-         m_specAlbedo( Vector3( ) ),
-         m_diffuseMap( nullptr ),
-         m_normalMap( nullptr ),
-         Resource( context, filePath, ResourceType::RT_Material )
-      {
-      }
+      Material(Context* context, const String& filePath);
 
-      virtual bool Init( ) override;
-      virtual bool SaveTo( const String& filePath ) override;
+      virtual bool Init() override;
+      virtual bool SaveTo(const String& filePath) override;
 
-      // Specular Exponential
-      float GetSpecularExp( ) const { return m_specExp; }
-      void SetSpecularExp( float specExp ) { m_specExp = specExp; }
-      // Specular Albedo
-      Vector3 GetSpecularAlbedo( ) const { return m_specAlbedo; }
-      void SetSpecularAlbedo( const Vector3& specAlbedo ) { m_specAlbedo = specAlbedo; }
-      // Diffuse map/Texture
-      Texture2D* GetDiffuseMap( ) const { return m_diffuseMap; }
-      void SetDiffuseMap( Texture2D* diffuseMap ) { m_diffuseMap = diffuseMap; }
-      // Normal map/Texture
-      Texture2D* GetNormalMap( ) const { return m_normalMap; }
-      void SetNormalMap( Texture2D* normalMap ) { m_normalMap = normalMap; }
+      void SetTexture2D(MaterialTextureProperty prop, Texture2D* texture);
+      Texture2D* GetTexture2D(MaterialTextureProperty propertyType) const;
 
-	  virtual json Serialize() const override;
-	  virtual void DeSerialize(const json& jsonData) override;
+      void SetScalarFactor(MaterialFactorProperty prop, float factor);
+      void SetVector4Factor(MaterialFactorProperty prop, const Vector4& factor);
+      float GetScalarFactor(MaterialFactorProperty prop) const;
+      Vector4 GetVector4Factor(MaterialFactorProperty prop) const;
+
+      virtual json Serialize() const override;
+      virtual void DeSerialize(const json& jsonData) override;
 
    private:
-      float                      m_specExp;
-      Vector3                    m_specAlbedo;
-      Texture2D*                 m_diffuseMap;
-      Texture2D*                 m_normalMap;
+      Texture2D* m_baseColor;
+      Texture2D* m_emissive;
+      Texture2D* m_metallicRoughness;
+      Texture2D* m_ao;
+      Texture2D* m_normal;
+
+      Vector4		m_baseColorFactor;
+      Vector4		m_emissiveFactor;
+      float		m_metallicFactor;
+      float		m_roughnessFactor;
 
    };
 }

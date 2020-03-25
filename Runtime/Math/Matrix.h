@@ -1,6 +1,6 @@
 #pragma once
-#include "Vector4.h"
-#include "Quaternion.h"
+#include "Math/Vector4.h"
+#include "Math/Quaternion.h"
 
 namespace Mile
 {

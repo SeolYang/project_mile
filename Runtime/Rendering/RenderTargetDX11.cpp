@@ -1,31 +1,31 @@
-#include "RenderTargetDX11.h"
-#include "DepthStencilBufferDX11.h"
-#include "Texture2dDX11.h"
+#include "Rendering/RenderTargetDX11.h"
+#include "Rendering/DepthStencilBufferDX11.h"
+#include "Rendering/Texture2dDX11.h"
 
 namespace Mile
 {
-   RenderTargetDX11::RenderTargetDX11( RendererDX11* renderer ) :
-      m_renderer( renderer ),
-      m_depthStencilBuffer( nullptr ),
-      m_texture( nullptr ),
-      m_rtv( nullptr ),
-      m_width( 0 ),
-      m_height( 0 ),
+   RenderTargetDX11::RenderTargetDX11(RendererDX11* renderer) :
+      m_renderer(renderer),
+      m_depthStencilBuffer(nullptr),
+      m_texture(nullptr),
+      m_rtv(nullptr),
+      m_width(0),
+      m_height(0),
       m_clearColor{ 0.0f, 0.0f, 0.0f, 1.0f }
    {
    }
 
-   RenderTargetDX11::~RenderTargetDX11( )
+   RenderTargetDX11::~RenderTargetDX11()
    {
-      SafeRelease( m_rtv );
-      SafeDelete( m_texture );
+      SafeRelease(m_rtv);
+      SafeDelete(m_texture);
    }
 
-   bool RenderTargetDX11::Init( unsigned int width, unsigned int height, DXGI_FORMAT format, DepthStencilBufferDX11* depthStencilBuffer )
+   bool RenderTargetDX11::Init(unsigned int width, unsigned int height, DXGI_FORMAT format, DepthStencilBufferDX11* depthStencilBuffer)
    {
-      if ( m_texture != nullptr 
-           || m_renderer == nullptr
-           || width == 0 || height == 0 )
+      if (m_texture != nullptr
+         || m_renderer == nullptr
+         || width == 0 || height == 0)
       {
          return false;
       }
@@ -34,7 +34,7 @@ namespace Mile
       m_height = height;
 
       D3D11_TEXTURE2D_DESC texDesc;
-      ZeroMemory( &texDesc, sizeof( texDesc ) );
+      ZeroMemory(&texDesc, sizeof(texDesc));
       texDesc.Width = width;
       texDesc.Height = height;
       texDesc.MipLevels = 1;
@@ -48,31 +48,31 @@ namespace Mile
       texDesc.MiscFlags = 0;
 
       ID3D11Texture2D* texture = nullptr;
-      auto device = m_renderer->GetDevice( );
-      auto result = device->CreateTexture2D( &texDesc, 
-                                             nullptr,
-                                             &texture );
-      if ( FAILED( result ) )
+      auto device = m_renderer->GetDevice();
+      auto result = device->CreateTexture2D(&texDesc,
+         nullptr,
+         &texture);
+      if (FAILED(result))
       {
          return false;
       }
 
       D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
-      ZeroMemory( &rtvDesc, sizeof( rtvDesc ) );
+      ZeroMemory(&rtvDesc, sizeof(rtvDesc));
       rtvDesc.Format = format;
       rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
       rtvDesc.Texture2D.MipSlice = 0;
 
-      result = device->CreateRenderTargetView( texture,
-                                               &rtvDesc,
-                                               &m_rtv );
-      if ( FAILED( result ) )
+      result = device->CreateRenderTargetView(texture,
+         &rtvDesc,
+         &m_rtv);
+      if (FAILED(result))
       {
          return false;
       }
 
-      m_texture = new Texture2dDX11( m_renderer );
-      if ( !m_texture->Init( texture ) )
+      m_texture = new Texture2dDX11(m_renderer);
+      if (!m_texture->Init(texture))
       {
          return false;
       }
@@ -81,11 +81,11 @@ namespace Mile
       return true;
    }
 
-   bool RenderTargetDX11::Init( ID3D11RenderTargetView* rtv, DepthStencilBufferDX11* depthStencilBuffer )
+   bool RenderTargetDX11::Init(ID3D11RenderTargetView* rtv, DepthStencilBufferDX11* depthStencilBuffer)
    {
-      if ( m_texture != nullptr ||
-           m_renderer == nullptr ||
-           rtv == nullptr )
+      if (m_texture != nullptr ||
+         m_renderer == nullptr ||
+         rtv == nullptr)
       {
          return false;
       }
@@ -93,73 +93,73 @@ namespace Mile
       m_rtv = rtv;
 
       ID3D11Resource* rtvResource = nullptr;
-      rtv->GetResource( &rtvResource );
+      rtv->GetResource(&rtvResource);
 
-      if ( rtvResource == nullptr )
+      if (rtvResource == nullptr)
       {
          return false;
       }
 
-      ID3D11Texture2D* texture = static_cast< ID3D11Texture2D* >( rtvResource );
+      ID3D11Texture2D* texture = static_cast<ID3D11Texture2D*>(rtvResource);
       D3D11_TEXTURE2D_DESC desc{ };
-      texture->GetDesc( &desc );
+      texture->GetDesc(&desc);
       m_width = desc.Width;
       m_height = desc.Height;
-       
+
       m_depthStencilBuffer = depthStencilBuffer;
 
-      SafeRelease( texture );
+      SafeRelease(texture);
       return true;
    }
 
-   bool RenderTargetDX11::BindAsRenderTarget( ID3D11DeviceContext& deviceContext )
+   bool RenderTargetDX11::BindAsRenderTarget(ID3D11DeviceContext& deviceContext)
    {
-      if ( m_rtv == nullptr || m_renderer == nullptr )
+      if (m_rtv == nullptr || m_renderer == nullptr)
       {
          return false;
       }
 
       ID3D11DepthStencilView* dsv = nullptr;
-      if ( m_depthStencilBuffer != nullptr )
+      if (m_depthStencilBuffer != nullptr)
       {
-         dsv = m_depthStencilBuffer->GetDSV( );
-         deviceContext.ClearDepthStencilView( dsv,
-                                              D3D11_CLEAR_DEPTH,
-                                              1.0f,
-                                              0 );
+         dsv = m_depthStencilBuffer->GetDSV();
+         deviceContext.ClearDepthStencilView(dsv,
+            D3D11_CLEAR_DEPTH,
+            1.0f,
+            0);
       }
 
-      const float clearColor[ 4 ] = { m_clearColor.x, m_clearColor.y, m_clearColor.z, 1.0f };
-      deviceContext.ClearRenderTargetView( m_rtv, clearColor );
-      deviceContext.OMSetRenderTargets( 1, &m_rtv, dsv );
+      const float clearColor[4] = { m_clearColor.x, m_clearColor.y, m_clearColor.z, 1.0f };
+      deviceContext.ClearRenderTargetView(m_rtv, clearColor);
+      deviceContext.OMSetRenderTargets(1, &m_rtv, dsv);
       return true;
    }
 
-   bool RenderTargetDX11::BindAsShaderResource( ID3D11DeviceContext& deviceContext, unsigned int startSlot, ShaderType shader )
+   bool RenderTargetDX11::BindAsShaderResource(ID3D11DeviceContext& deviceContext, unsigned int startSlot, EShaderType shader)
    {
-      if ( m_texture == nullptr )
+      if (m_texture == nullptr)
       {
          return false;
       }
 
-      return m_texture->Bind( deviceContext, startSlot, shader );
+      return m_texture->Bind(deviceContext, startSlot, shader);
    }
 
-   void RenderTargetDX11::UnbindRenderTarget( ID3D11DeviceContext& deviceContext )
+   void RenderTargetDX11::UnbindRenderTarget(ID3D11DeviceContext& deviceContext)
    {
       ID3D11RenderTargetView* nullRTV = nullptr;
-      deviceContext.OMSetRenderTargets( 1, &nullRTV, nullptr );
+      deviceContext.OMSetRenderTargets(1, &nullRTV, nullptr);
    }
 
-   void RenderTargetDX11::UnbindShaderResource( ID3D11DeviceContext& deviceContext )
+   void RenderTargetDX11::UnbindShaderResource(ID3D11DeviceContext& deviceContext)
    {
-      if ( m_texture != nullptr )
+      if (m_texture != nullptr)
       {
-         m_texture->Unbind( deviceContext );
+         m_texture->Unbind(deviceContext);
       }
    }
 
-   void RenderTargetDX11::SetClearColor( const Vector4& color )
+   void RenderTargetDX11::SetClearColor(const Vector4& color)
    {
       m_clearColor = color;
    }

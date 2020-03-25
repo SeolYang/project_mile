@@ -1,6 +1,5 @@
 #pragma once
-
-#include "Core\Helper.h"
+#include "Core/Helper.h"
 
 class aiNode;
 class aiMesh;
@@ -16,15 +15,15 @@ namespace Mile
    class MEAPI ModelLoader
    {
    public:
-      static Entity* LoadModel( Context* context, Model* target, const String& filePath );
+      static Entity* LoadModel(Context* context, Model* target, const String& filePath);
 
    private:
-      static void ReconstructEntityWithAiNode( const aiScene* scene, aiNode* node, Model* target, Entity* entity );
-      static void ReconstructMeshWithAiMesh( const aiScene* scene, aiMesh* mesh, Model* target, Entity* entity );
+      static void ReconstructEntityWithAiNode(const aiScene* scene, aiNode* node, Model* target, Entity* entity);
+      static void ReconstructMeshWithAiMesh(const aiScene* scene, aiMesh* mesh, Model* target, Entity* entity);
 
    private:
-      static Context*       contextInst;
-      static RendererDX11*  rendererInst;
+      static Context* contextInst;
+      static RendererDX11* rendererInst;
 
    };
 }

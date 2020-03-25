@@ -1,6 +1,5 @@
 #pragma once
-
-#include "Resource.h"
+#include "Resource/Resource.h"
 
 namespace Mile
 {
@@ -11,20 +10,19 @@ namespace Mile
    class MEAPI Model : public Resource
    {
    public:
-      Model( Context* context, const String& filePath );
-      virtual ~Model( );
+      Model(Context* context, const String& filePath);
+      virtual ~Model();
 
-      virtual bool Init( ) override;
+      virtual bool Init() override;
 
-      void AddMesh( Mesh* mesh );
-      Mesh* GetMeshByName( const std::wstring& name );
+      void AddMesh(Mesh* mesh);
+      Mesh* GetMeshByName(const std::wstring& name);
 
-      static Entity* Instantiate( Model* target, World* targetWorld );
+      static Entity* Instantiate(Model* target, World* targetWorld);
 
    private:
-      Entity*                 m_instance;
+      Entity* m_instance;
       std::vector<Mesh*>      m_meshes;
-
       std::string             m_serializedInstance;
 
    };

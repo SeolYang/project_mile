@@ -1,6 +1,5 @@
 #pragma once
-
-#include "Rendering.h"
+#include "Rendering/RenderingCore.h"
 
 namespace Mile
 {
@@ -13,8 +12,8 @@ namespace Mile
 
    enum class WindingOrder
    {
-	   CCW,
-	   CW
+      CCW,
+      CW
    };
 
    class RendererDX11;
@@ -24,36 +23,36 @@ namespace Mile
    class MEAPI RasterizerState
    {
    public:
-      RasterizerState( RendererDX11* renderer );
-      ~RasterizerState( );
+      RasterizerState(RendererDX11* renderer);
+      ~RasterizerState();
 
-      bool Init( );
+      bool Init();
 
-      bool Bind( ID3D11DeviceContext& deviceContext );
+      bool Bind(ID3D11DeviceContext& deviceContext);
 
-	  /**
-	   * @brief	Mesh와 같은 물체들을 모두 와이어 프레임 형태로 그리도록 합니다.
-	   * @param	와이어 프레임으로 렌더링 할지 여부
-	   */
-      void SetWireframeRender( bool bIsWireframe ) 
-      { 
-         if ( m_bIsWireframe != bIsWireframe )
+      /**
+       * @brief	Mesh와 같은 물체들을 모두 와이어 프레임 형태로 그리도록 합니다.
+       * @param	와이어 프레임으로 렌더링 할지 여부
+       */
+      void SetWireframeRender(bool bIsWireframe)
+      {
+         if (m_bIsWireframe != bIsWireframe)
          {
             m_bIsDirty = true;
          }
 
-         m_bIsWireframe = bIsWireframe; 
+         m_bIsWireframe = bIsWireframe;
       }
 
-      bool IsWireframeRender( ) const { return m_bIsWireframe; }
+      bool IsWireframeRender() const { return m_bIsWireframe; }
 
-	  /**
-	   * @brief 렌더링시 물체의 어떤면을 제외할지 설정합니다.
-	   * @param	cullMode	제외할 면
-	   */
-      void SetCullMode( CullMode cullMode ) 
-      { 
-         if ( m_cullMode != cullMode )
+      /**
+       * @brief 렌더링시 물체의 어떤면을 제외할지 설정합니다.
+       * @param	cullMode	제외할 면
+       */
+      void SetCullMode(CullMode cullMode)
+      {
+         if (m_cullMode != cullMode)
          {
             m_bIsDirty = true;
          }
@@ -61,27 +60,27 @@ namespace Mile
          m_cullMode = cullMode;
       }
 
-      CullMode GetCullMode( ) const { return m_cullMode; }
+      CullMode GetCullMode() const { return m_cullMode; }
 
-	  /**
-	   * @brief 시계방향 또는 반시계방향중 어느 방향으로 감긴 정점들을 앞면으로 볼지 설정합니다.
-	   * @param windingOrder  앞면으로 설정할 정점들의 감김 방향
-	   */
-      void SetWindingOrder(WindingOrder windingOrder )
-      { 
+      /**
+       * @brief 시계방향 또는 반시계방향중 어느 방향으로 감긴 정점들을 앞면으로 볼지 설정합니다.
+       * @param windingOrder  앞면으로 설정할 정점들의 감김 방향
+       */
+      void SetWindingOrder(WindingOrder windingOrder)
+      {
          if (m_windingOrder != windingOrder)
          {
             m_bIsDirty = true;
          }
 
-		 m_windingOrder = windingOrder;
+         m_windingOrder = windingOrder;
       }
 
-	  WindingOrder GetWindingOrder( ) const { return m_windingOrder; }
+      WindingOrder GetWindingOrder() const { return m_windingOrder; }
 
-      void SetDepthBias( int depthBias )
-      { 
-         if ( depthBias != m_depthBias )
+      void SetDepthBias(int depthBias)
+      {
+         if (depthBias != m_depthBias)
          {
             m_bIsDirty = true;
          }
@@ -89,11 +88,11 @@ namespace Mile
          m_depthBias = depthBias;
       }
 
-      int GetDepthBias( ) const { return m_depthBias; }
+      int GetDepthBias() const { return m_depthBias; }
 
-      void SetSlopeScaledDepthBias( float slopeScaledDepthBias ) 
+      void SetSlopeScaledDepthBias(float slopeScaledDepthBias)
       {
-         if ( m_slopeScaledDepthBias != slopeScaledDepthBias )
+         if (m_slopeScaledDepthBias != slopeScaledDepthBias)
          {
             m_bIsDirty = true;
          }
@@ -101,23 +100,23 @@ namespace Mile
          m_slopeScaledDepthBias = slopeScaledDepthBias;
       }
 
-      float GetSlopeScaledDepthBias( ) const { return m_slopeScaledDepthBias; }
+      float GetSlopeScaledDepthBias() const { return m_slopeScaledDepthBias; }
 
-      void SetDepthBiasClamp( float depthBiasClamp ) 
+      void SetDepthBiasClamp(float depthBiasClamp)
       {
-         if ( m_depthBiasClamp != depthBiasClamp )
+         if (m_depthBiasClamp != depthBiasClamp)
          {
             m_bIsDirty = true;
          }
 
-         m_depthBiasClamp = depthBiasClamp; 
+         m_depthBiasClamp = depthBiasClamp;
       }
 
-      float GetDepthBiasClamp( ) const { return m_depthBiasClamp; }
+      float GetDepthBiasClamp() const { return m_depthBiasClamp; }
 
-      void SetDepthClipEnable( bool bIsDepthClipEnable ) 
-      { 
-         if ( m_bIsDepthClipEnable = bIsDepthClipEnable )
+      void SetDepthClipEnable(bool bIsDepthClipEnable)
+      {
+         if (m_bIsDepthClipEnable = bIsDepthClipEnable)
          {
             m_bIsDirty = true;
          }
@@ -125,21 +124,21 @@ namespace Mile
          m_bIsDepthClipEnable = bIsDepthClipEnable;
       }
 
-      bool IsDepthClipEnabled( ) const { return m_bIsDepthClipEnable; }
+      bool IsDepthClipEnabled() const { return m_bIsDepthClipEnable; }
 
    private:
-      RendererDX11 * m_renderer;
+      RendererDX11*  m_renderer;
       bool           m_bIsDirty;
 
       bool           m_bIsWireframe;
       CullMode       m_cullMode;
-	  WindingOrder   m_windingOrder;
+      WindingOrder   m_windingOrder;
       int            m_depthBias;
       float          m_slopeScaledDepthBias;
       float          m_depthBiasClamp;
       bool           m_bIsDepthClipEnable;
 
-      ID3D11RasterizerState*  m_rasterizerState;
+      ID3D11RasterizerState* m_rasterizerState;
 
    };
 }

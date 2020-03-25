@@ -34,9 +34,6 @@
     <Filter Include="Sources\Rendering\Rendering Passes\LightPrePass">
       <UniqueIdentifier>{7c2fe0e0-1738-4d2a-8131-9079fe36cf50}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Rendering\Rendering Passes\TestRenderPass">
-      <UniqueIdentifier>{5e17b0c5-58eb-4d8e-b641-126170ae553b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Rendering\Renderer">
       <UniqueIdentifier>{76497997-e791-46a5-8772-b2aa7326f759}</UniqueIdentifier>
     </Filter>
@@ -52,14 +49,8 @@
     <Filter Include="Sources\MT">
       <UniqueIdentifier>{9f8b5cb0-39c5-441a-8fa9-ddd62c5ae18b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Components">
-      <UniqueIdentifier>{5a159d47-a33e-434f-b54b-8bd8ca48aa49}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Core">
       <UniqueIdentifier>{5cfaab77-c9fe-42bd-aa80-f722eb33613d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Core\GameFramework">
-      <UniqueIdentifier>{7ab57107-4381-488a-af23-0b9a63b49ca7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\EventSystem">
       <UniqueIdentifier>{41ebf61a-c65f-4cdf-b618-787f880bcbee}</UniqueIdentifier>
@@ -69,6 +60,15 @@
     </Filter>
     <Filter Include="Sources\Rendering\Rendering Passes\CheckerBoardRenderPass">
       <UniqueIdentifier>{d63831ba-e766-4950-b9bf-b66fab76909f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Rendering\Rendering Passes\PBR">
+      <UniqueIdentifier>{1de2ab9b-c235-4d4f-b9c0-673ce03ff201}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\GameFramework">
+      <UniqueIdentifier>{7ab57107-4381-488a-af23-0b9a63b49ca7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Component">
+      <UniqueIdentifier>{5a159d47-a33e-434f-b54b-8bd8ca48aa49}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -85,10 +85,7 @@
       <Filter>Sources\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Component\Component.h">
-      <Filter>Sources\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Core\World.h">
-      <Filter>Sources\Core</Filter>
+      <Filter>Sources\Component</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Math\Vector3.h">
       <Filter>Sources\Math</Filter>
@@ -97,9 +94,6 @@
       <Filter>Sources\Math</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Math\Matrix.h">
-      <Filter>Sources\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Math\Math.h">
       <Filter>Sources\Math</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\BufferDX11.h">
@@ -129,9 +123,6 @@
     <ClInclude Include="..\Runtime\Rendering\DepthStencilBufferDX11.h">
       <Filter>Sources\Rendering\Resources\Buffers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\Rendering.h">
-      <Filter>Sources\Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\ShaderDX11.h">
       <Filter>Sources\Rendering\Shaders</Filter>
     </ClInclude>
@@ -153,26 +144,14 @@
     <ClInclude Include="..\Runtime\Math\Vector2.h">
       <Filter>Sources\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\Runtime\Core\Entity.h">
-      <Filter>Sources\Core\GameFramework</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Core\Transform.h">
-      <Filter>Sources\Core\GameFramework</Filter>
-    </ClInclude>
     <ClInclude Include="..\Runtime\Math\Quaternion.h">
       <Filter>Sources\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Core\ComponentRegister.h">
-      <Filter>Sources\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h">
       <Filter>Sources\Rendering\Resources\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Component\MeshRenderComponent.h">
-      <Filter>Sources\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\GBuffer.h">
-      <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
+      <Filter>Sources\Component</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\GBufferPass.h">
       <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
@@ -184,10 +163,10 @@
       <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Component\LightComponent.h">
-      <Filter>Sources\Components</Filter>
+      <Filter>Sources\Component</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Component\CameraComponent.h">
-      <Filter>Sources\Components</Filter>
+      <Filter>Sources\Component</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Resource\ModelLoader.h">
       <Filter>Sources\Resource</Filter>
@@ -218,9 +197,6 @@
     </ClInclude>
     <ClInclude Include="..\ThirdParty\FreeImage\include\FreeImage.h">
       <Filter>ThirdParty\FreeImage</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\TestRenderPass.h">
-      <Filter>Sources\Rendering\Rendering Passes\TestRenderPass</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\FreeImage\include\Utilities.h">
       <Filter>ThirdParty\FreeImage</Filter>
@@ -254,9 +230,6 @@
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\Timer.h">
       <Filter>Sources\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\CoreMinimal.h">
-      <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\CheckerBoardInterpolatePass.h">
       <Filter>Sources\Rendering\Rendering Passes\CheckerBoardRenderPass</Filter>
@@ -492,6 +465,39 @@
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\ZipArchiveIOSystem.h">
       <Filter>ThirdParty\assimp</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\GBuffer.h">
+      <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\BlendState.h">
+      <Filter>Sources\Rendering\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\GeometryPass.h">
+      <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\LightingPass.h">
+      <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Component\ComponentRegister.h">
+      <Filter>Sources\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\GameFramework\Transform.h">
+      <Filter>Sources\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\GameFramework\World.h">
+      <Filter>Sources\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\GameFramework\Entity.h">
+      <Filter>Sources\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Core\CoreMinimal.h">
+      <Filter>Sources\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\RenderingCore.h">
+      <Filter>Sources\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Math\MathCore.h">
+      <Filter>Sources\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -503,11 +509,8 @@
     <ClCompile Include="..\Runtime\Core\Engine.cpp">
       <Filter>Sources\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Core\World.cpp">
-      <Filter>Sources\Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\Runtime\Component\Component.cpp">
-      <Filter>Sources\Components</Filter>
+      <Filter>Sources\Component</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Math\Vector3.cpp">
       <Filter>Sources\Math</Filter>
@@ -554,23 +557,11 @@
     <ClCompile Include="..\Runtime\Rendering\SamplerDX11.cpp">
       <Filter>Sources\Rendering\Shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Core\Entity.cpp">
-      <Filter>Sources\Core\GameFramework</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Core\Transform.cpp">
-      <Filter>Sources\Core\GameFramework</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Core\ComponentRegister.cpp">
-      <Filter>Sources\Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\VertexBufferDX11.cpp">
       <Filter>Sources\Rendering\Resources\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Component\MeshRenderComponent.cpp">
-      <Filter>Sources\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\GBuffer.cpp">
-      <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
+      <Filter>Sources\Component</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\GBufferPass.cpp">
       <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
@@ -582,10 +573,10 @@
       <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Component\LightComponent.cpp">
-      <Filter>Sources\Components</Filter>
+      <Filter>Sources\Component</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Component\CameraComponent.cpp">
-      <Filter>Sources\Components</Filter>
+      <Filter>Sources\Component</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Resource\PlainText.cpp">
       <Filter>Sources\Resource</Filter>
@@ -614,9 +605,6 @@
     <ClCompile Include="..\Runtime\Resource\ModelLoader.cpp">
       <Filter>Sources\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\TestRenderPass.cpp">
-      <Filter>Sources\Rendering\Rendering Passes\TestRenderPass</Filter>
-    </ClCompile>
     <ClCompile Include="..\Runtime\Core\Logger.cpp">
       <Filter>Sources\Core</Filter>
     </ClCompile>
@@ -644,6 +632,21 @@
     <ClCompile Include="..\Runtime\Rendering\CheckerBoardInterpolatePass.cpp">
       <Filter>Sources\Rendering\Rendering Passes\CheckerBoardRenderPass</Filter>
     </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\GBuffer.cpp">
+      <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Component\ComponentRegister.cpp">
+      <Filter>Sources\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\GameFramework\Transform.cpp">
+      <Filter>Sources\GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\GameFramework\World.cpp">
+      <Filter>Sources\GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\GameFramework\Entity.cpp">
+      <Filter>Sources\GameFramework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Contents\Shaders\GBuffer.hlsl">
@@ -659,6 +662,12 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\CheckerBoardInterpolate.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\GeometryPass.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\LightingPass.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
@@ -686,6 +695,12 @@
     </None>
     <None Include="..\ThirdParty\assimp\include\assimp\vector3.inl">
       <Filter>ThirdParty\assimp</Filter>
+    </None>
+    <None Include="Contents\Shaders\Common.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Contents\Shaders\BRDFs.hlsli">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

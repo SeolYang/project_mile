@@ -1,5 +1,5 @@
-#include "Transform.h"
-#include "Entity.h"
+#include "GameFramework/Transform.h"
+#include "GameFramework/Entity.h"
 
 namespace Mile
 {

@@ -1,6 +1,5 @@
 #pragma once
-
-#include "ShaderDX11.h"
+#include "Rendering/ShaderDX11.h"
 
 namespace Mile
 {
@@ -10,20 +9,20 @@ namespace Mile
       using InputLayoutPtr = std::unique_ptr<InputLayoutDX11>;
 
    public:
-      VertexShaderDX11( RendererDX11* renderer );
-      ~VertexShaderDX11( );
+      VertexShaderDX11(RendererDX11* renderer);
+      ~VertexShaderDX11();
 
-      virtual bool Init( const String& shaderPath ) override;
-      virtual bool Bind( ID3D11DeviceContext& deviceContext ) override;
-      virtual void Unbind( ID3D11DeviceContext& deviceContext ) override;
+      virtual bool Init(const String& shaderPath) override;
+      virtual bool Bind(ID3D11DeviceContext& deviceContext) override;
+      virtual void Unbind(ID3D11DeviceContext& deviceContext) override;
 
-      virtual ShaderType GetShaderType( ) const override { return ShaderType::VertexShader; }
-
-   private:
-      std::vector<D3D11_INPUT_ELEMENT_DESC> Reflect( ) const;
+      virtual EShaderType GetShaderType() const override { return EShaderType::VertexShader; }
 
    private:
-      ID3D11VertexShader*  m_shader;
+      std::vector<D3D11_INPUT_ELEMENT_DESC> Reflect() const;
+
+   private:
+      ID3D11VertexShader* m_shader;
       InputLayoutPtr       m_inputLayout;
 
    };
