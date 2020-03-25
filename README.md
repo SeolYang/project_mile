@@ -5,6 +5,7 @@
 -------------------------------------
 - Deferred Rendering
 - Physically Based Shading
+- Anime Style Shading
 - Multi-Thread Rendering
 - Exclusive Physics Engine
 - Engine Editor(Terrain editing.. etc)
