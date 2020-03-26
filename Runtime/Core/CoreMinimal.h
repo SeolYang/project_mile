@@ -7,4 +7,3 @@
 #include "Core/Logger.h"
 #include "Core/Config.h"
 #include "Core/Window.h"
-#include "Core/World.h"
