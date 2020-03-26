@@ -28,8 +28,8 @@ cbuffer CameraParamsBuffer
 cbuffer LightParamsBuffer
 {
 	float3 LightPos;
-	float3 LightRadiance;
 	float3 LightDirection;
+	float3 LightRadiance;
 	uint LightType;
 };
 
