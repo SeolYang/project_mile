@@ -37,11 +37,14 @@ namespace Mile
 
    void World::DeSerialize(const json& jsonData)
    {
-      std::vector<json> entities = jsonData["Entities"];
-      for (auto entity : entities)
+      if (jsonData.find("Entities") != jsonData.end())
       {
-         Entity* temp = CreateEntity(TEXT(""));
-         temp->DeSerialize(entity);
+         std::vector<json> entities = jsonData["Entities"];
+         for (auto entity : entities)
+         {
+            Entity* temp = CreateEntity(TEXT(""));
+            temp->DeSerialize(entity);
+         }
       }
    }
 
@@ -163,7 +166,11 @@ namespace Mile
       if (res != nullptr)
       {
          res->SetData(this->Serialize().dump());
-         return res->Save();
+         if (res->Save())
+         {
+            MELog(m_context, TEXT("World"), ELogType::MESSAGE, TEXT("World data saved. : ") + res->GetPath(), true);
+            return true;
+         }
       }
 
       return false;
@@ -174,7 +181,11 @@ namespace Mile
       if (m_loadedData != nullptr)
       {
          m_loadedData->SetData(this->Serialize().dump());
-         return m_loadedData->Save();
+         if (m_loadedData->Save())
+         {
+            MELog(m_context, TEXT("World"), ELogType::MESSAGE, TEXT("World data saved. : ") + m_loadedData->GetPath(), true);
+            return true;
+         }
       }
 
       return false;

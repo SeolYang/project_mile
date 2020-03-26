@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Core/Helper.h"
 #include "Core/Context.h"
 #include "Core/SubSystem.h"

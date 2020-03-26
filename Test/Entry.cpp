@@ -124,7 +124,7 @@ int main( )
    //modelEntities[ 0 ]->AddComponent<RotateComponent>( );
 
    int execute = engine->Execute( );
-   world->SaveTo(TEXT("test_world.json"));
+   world->Save();
    SafeDelete( context );
    return execute;
 }
