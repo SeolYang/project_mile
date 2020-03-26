@@ -7,7 +7,7 @@
 
 namespace Mile
 {
-   enum class LightType
+   enum class ELightType : UINT32
    {
       Directional,
       Point,
@@ -20,8 +20,8 @@ namespace Mile
    public:
       LightComponent(Entity* entity);
 
-      LightType GetLightType() const { return m_type; }
-      void SetLightType(LightType type) { m_type = type; }
+      ELightType GetLightType() const { return m_type; }
+      void SetLightType(ELightType type) { m_type = type; }
 
       Vector3 GetRadiance() const { return m_radiance; }
       void SetRadiance(const Vector3& radiance) { m_radiance = radiance; }
@@ -33,36 +33,36 @@ namespace Mile
       virtual json Serialize() const override;
       virtual void DeSerialize(const json& jsonData) override;
 
-      static std::string LightTypeToString(LightType type)
+      static std::string LightTypeToString(ELightType type)
       {
          switch (type)
          {
-         case LightType::Directional:
+         case ELightType::Directional:
             return "Directional";
-         case LightType::Point:
+         case ELightType::Point:
             return "Point";
          }
 
          return "Unknown";
       }
 
-      static LightType StringToLightType(const std::string& str)
+      static ELightType StringToLightType(const std::string& str)
       {
          if (str == "Point")
          {
-            return LightType::Point;
+            return ELightType::Point;
          }
 
-         return LightType::Directional;
+         return ELightType::Directional;
       }
 
-      static unsigned int LightTypeToIndex(LightType type)
+      static unsigned int LightTypeToIndex(ELightType type)
       {
          switch (type)
          {
-         case LightType::Directional:
+         case ELightType::Directional:
             return 0;
-         case LightType::Point:
+         case ELightType::Point:
             return 1;
          }
 
@@ -70,8 +70,8 @@ namespace Mile
       }
 
    private:
-      LightType	m_type;
-      Vector3	m_radiance;
+      ELightType	m_type;
+      Vector3	   m_radiance;
 
    };
 }
