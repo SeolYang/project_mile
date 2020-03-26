@@ -28,12 +28,13 @@ float TrowbridgeReitzNDF(float3 normal, float3 halfway, float roughness)
 {
 	float a = roughness * roughness;
 	float aa = a * a;
-	float y = dot(normal, halfway);
+	float y = max(dot(normal, halfway), 0.0);
 	float yy = y * y;
 	float k = (yy * (aa - 1.0) + 1.0);
 
 	float nom = aa;
-	float denom = (PI * (k * k));
+	float denom = (y * (aa - 1.0) + 1.0);
+	denom = (PI * (k * k));
 	
 	return nom / denom;
 }
@@ -110,9 +111,10 @@ float SchlickBeckmannG1(float3 normal, float3 view, float roughness)
 /* Setup remapping factor as 2.0 for IBL or 8.0 for Direct lighting. */
 float SchlickG1(float3 normal, float3 view, float roughness, float remappingFactor)
 {
-	float a = roughness * roughness;
+	float r = roughness + 1.0;
+	float a = r * r;
 	float k = a / remappingFactor;
-	float nDotv = dot(normal, view);
+	float nDotv = max(dot(normal, view), 0.0);
 	
 	float nom = nDotv;
 	float denom = (nDotv * (1.0 - k)) + k;
