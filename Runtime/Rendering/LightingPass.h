@@ -16,8 +16,8 @@ namespace Mile
       DEFINE_CONSTANT_BUFFER(LightParamsConstantBuffer)
       {
          Vector3 LightPos;
-         Vector3 LightRadiance;
          Vector3 LightDirection;
+         Vector3 LightRadiance;
          UINT32 LightType;
       };
 
