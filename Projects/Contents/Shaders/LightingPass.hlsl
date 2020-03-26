@@ -109,7 +109,7 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float3 nominator = NDF * G * F;
 	float denominator = 4.0 * max(dot(normal, view), 0.0) * max(dot(normal, light), 0.0);
 	
-	float specular = nominator / max(denominator, 0.0001);
+	float3 specular = nominator / max(denominator, 0.0001);
 	
 	float3 kS = F;
 	float3 kD = float3(1.0, 1.0, 1.0) - kS;
@@ -117,9 +117,10 @@ float4 MilePS(in PSInput input) : SV_Target0
 	
 	Lo = ((kD * albedo / PI) + specular) * radiance * dot(normal, light);
 	
+	float gamma = 1.0 / 2.0;
 	float3 color = ambient + emissive + Lo;
-	color = color / (color + float3(1.0f));
-	color = pow(color, float3(1.0 / 2.0));
+	color = color / (color + float3(1.0, 1.0, 1.0));
+	color = pow(color, float3(gamma, gamma, gamma));
 
 	/* Lighting Pass 한번 당 한개의 라이트를 처리하므로, Additive Blend 를 해주어야 최종 결과물에 라이팅 결과가 올바르게 반영됨. */
 	return float4(color, 1.0);
