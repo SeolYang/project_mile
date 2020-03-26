@@ -97,7 +97,7 @@ namespace Mile
       return true;
    }
 
-   bool LightingPass::Unbind(ID3D11DeviceContext& deviceContext)
+   void LightingPass::Unbind(ID3D11DeviceContext& deviceContext)
    {
       if (m_gBuffer != nullptr)
       {
@@ -113,8 +113,6 @@ namespace Mile
       {
          m_lightParamsBuffer->Unbind(deviceContext);
       }
-
-      return true;
    }
 
    void LightingPass::SetGBuffer(GBuffer* gBuffer)
