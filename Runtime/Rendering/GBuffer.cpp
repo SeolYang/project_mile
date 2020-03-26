@@ -49,12 +49,12 @@ namespace Mile
          return false;
       }
 
-      if (!m_albedoBuffer->Init(width, height, DXGI_FORMAT_R32G32B32A32_FLOAT))
+      if (!m_albedoBuffer->Init(width, height, DXGI_FORMAT_R8G8B8A8_UNORM))
       {
          return false;
       }
 
-      if (!m_emissiveAOBuffer->Init(width, height, DXGI_FORMAT_R32G32B32A32_FLOAT))
+      if (!m_emissiveAOBuffer->Init(width, height, DXGI_FORMAT_R8G8B8A8_UNORM))
       {
          return false;
       }
@@ -64,7 +64,7 @@ namespace Mile
          return false;
       }
 
-      if (!m_metallicRoughnessBuffer->Init(width, height, DXGI_FORMAT_R32G32B32A32_FLOAT))
+      if (!m_metallicRoughnessBuffer->Init(width, height, DXGI_FORMAT_R8G8B8A8_UNORM))
       {
          return false;
       }
