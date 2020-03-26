@@ -144,7 +144,7 @@ namespace Mile
       if (res != nullptr)
       {
          this->m_loadedData = res;
-         this->DeSerialize(json::parse(res->GetData()));
+         this->DeSerialize(json::parse(res->GetData().empty() ? "{}" : res->GetData()));
          MELog(m_context, TEXT("World"), ELogType::MESSAGE, TEXT("World loaded. : ") + filePath, true);
          return true;
       }
