@@ -8,7 +8,9 @@ namespace Mile
       m_blendState(nullptr),
       m_bIsDirty(true),
       m_alphaToCoverageEnable(false),
-      m_independentBlendEnable(false)
+      m_independentBlendEnable(false),
+      m_blendFactor(1.0f, 1.0f, 1.0f, 1.0f),
+      m_sampleMask(0xffffffff)
    {
    }
 

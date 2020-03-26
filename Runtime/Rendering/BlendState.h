@@ -41,7 +41,7 @@ namespace Mile
       ColorWriteEnableGreen = 2,
       ColorWriteEnableBlue = 4,
       ColorWriteEnableAlpha = 8,
-      ColorWriteEnalbeAll = (((ColorWriteEnableRed | ColorWriteEnableGreen) | ColorWriteEnableBlue) | ColorWriteEnableAlpha)
+      ColorWriteEnableAll = (((ColorWriteEnableRed | ColorWriteEnableGreen) | ColorWriteEnableBlue) | ColorWriteEnableAlpha)
    };
 
    class MEAPI BlendState
@@ -55,7 +55,7 @@ namespace Mile
          EBlend   SrcBlendAlpha = EBlend::ONE;
          EBlend   DestBlendAlpha = EBlend::ZERO;
          EBlendOP BlendOpAlpha = EBlendOP::ADD;
-         UINT8    RenderTargetWriteMask = (UINT8)EColorWriteEnable::ColorWriteEnalbeAll;
+         UINT8    RenderTargetWriteMask = (UINT8)EColorWriteEnable::ColorWriteEnableAll;
 
          static D3D11_BLEND BlendToD3D11(EBlend blend)
          {
