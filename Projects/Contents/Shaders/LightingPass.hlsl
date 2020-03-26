@@ -25,11 +25,6 @@ cbuffer CameraParamsBuffer
 	float3 CameraPos;
 };
 
-cbuffer CheckerBoardBuffer
-{
-	bool CheckerBoardEnabled;
-};
-
 cbuffer LightParamsBuffer
 {
 	float3 LightPos;
@@ -68,10 +63,6 @@ VSOutput MileVS(in VSInput input)
 
 float4 MilePS(in PSInput input) : SV_Target0
 {
-	/* Checkerboard Rendering (Discard needless pixels) */
-	bool discardPixel = ((input.ScreenPos.x + input.ScreenPos.y) % 2) == 0;
-	clip(CheckerBoardEnabled && discardPixel ? -1 : 1);
-	
 	float3 position = posBuffer.Sample(AnisoSampler, input.TexCoord).xyz;
 	
 	float3 albedo = albedoBuffer.Sample(AnisoSampler, input.TexCoord).rgb;

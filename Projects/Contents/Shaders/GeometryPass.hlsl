@@ -65,11 +65,6 @@ cbuffer TransformBuffer
 	matrix WorldViewProj;
 };
 
-cbuffer CheckerBoardBuffer
-{
-	bool CheckerBoardEnabled;
-};
-
 /* Shader Programs */
 VSOutput MileVS(in VSInput input)
 {
@@ -92,10 +87,6 @@ VSOutput MileVS(in VSInput input)
 
 PSOutput MilePS(in PSInput input)
 {
-   /* Checkerboard Rendering (Discard needless pixels) */
-	bool discardPixel = ((input.PositionSS.x + input.PositionSS.y) % 2) == 0;
-	clip(CheckerBoardEnabled && discardPixel ? -1 : 1);
-	
 	/* Albedo */
 	float3 albedo = pow(baseColorMap.Sample(AnisoSampler, input.TexCoord), 2.2);
 	albedo += pow(baseColorFactor, 2.2);

@@ -80,7 +80,7 @@ namespace Mile
       bool Bind(ID3D11DeviceContext& deviceContext);
 
       void SetRenderTargetBlendState(RenderTargetBlendDesc desc, size_t renderTargetIndex = 0);
-      RenderTargetBlendDesc GetRenderTargetBlendState() const;
+      RenderTargetBlendDesc GetRenderTargetBlendState(size_t renderTargetIndex) const { return m_blendDescs[renderTargetIndex]; }
 
       void SetAlphaToCoverageEnable(bool bIsEnable);
       bool IsAlphaToCoverageEnabled() const { return m_alphaToCoverageEnable; }

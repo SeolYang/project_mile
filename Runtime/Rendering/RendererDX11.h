@@ -5,11 +5,10 @@
 
 namespace Mile
 {
-   enum class ERenderContextType : uint32_t
+   enum class ERenderContextType : UINT32
    {
       GeometryPass,
       LightingPass,
-      CheckerBoardInterpolatePass,
       PostProcessPass,
       Immediate,
       EnumSize
@@ -21,11 +20,8 @@ namespace Mile
    class RenderTargetDX11;
    class Quad;
    class GBuffer;
-   class GBufferPass;
-   class LightBufferPass;
-   class ShadingPass;
-   class TestRenderPass;
-   class CheckerBoardInterpolatePass;
+   class GeometryPass;
+   class LightingPass;
    class Window;
    class World;
    class Entity;
