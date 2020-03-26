@@ -59,10 +59,10 @@ namespace Mile
       if (texture == nullptr)
       {
          assert(m_context != nullptr);
-         ResourceManager * resMng = m_context->GetSubSystem<ResourceManager>();
+         ResourceManager* resMng = m_context->GetSubSystem<ResourceManager>();
          if (resMng != nullptr)
          {
-            texture = resMng->GetByName<Texture2D>(TEXT("default_black"));
+            texture = resMng->Load<Texture2D>(TEXT("Contents/Textures/default_black.png"));
          }
          else
          {
@@ -187,7 +187,7 @@ namespace Mile
       serialized["BaseColorFactor"] = m_baseColorFactor.Serialize();
 
       serialized["Emissive"] = WString2String(m_emissive->GetPath());
-      serialized["EmissiveFactor"] = WString2String(m_emissiveFactor.Serialize());
+      serialized["EmissiveFactor"] = m_emissiveFactor.Serialize();
 
       serialized["MetallicRoughness"] = WString2String(m_metallicRoughness->GetPath());
       serialized["MetallicFactor"] = m_metallicFactor;
