@@ -31,6 +31,7 @@ namespace Mile
    class CameraComponent;
    class Material;
    class RasterizerState;
+   class BlendState;
    class CommandListDX11;
    /**
     * @brief	Mile 엔진의 렌더러 서브 시스템입니다. 렌더링시 World 에 생성되어있는 Entity로 부터 Mesh Renderer 정보, 빛 정보,
@@ -111,6 +112,8 @@ namespace Mile
       /* Render State **/
       bool      m_bDepthStencilEnabled;
       Vector4   m_clearColor;
+      BlendState* m_additiveBlendState;
+      BlendState* m_defaultBlendState;
 
       // @TODO: Multiple Viewports
       Viewport* m_viewport;

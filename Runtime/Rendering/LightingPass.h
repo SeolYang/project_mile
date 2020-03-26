@@ -15,9 +15,9 @@ namespace Mile
 
       DEFINE_CONSTANT_BUFFER(LightParamsConstantBuffer)
       {
-         Vector3 LightPos;
-         Vector3 LightDirection;
-         Vector3 LightRadiance;
+         Vector4 LightPos;
+         Vector4 LightDirection;
+         Vector4 LightRadiance;
          UINT32 LightType;
       };
 
@@ -37,7 +37,6 @@ namespace Mile
       GBuffer* m_gBuffer;
       CBufferPtr m_cameraParamsBuffer;
       CBufferPtr m_lightParamsBuffer;
-      BlendState* m_additiveBlendState;
 
    };
 }

@@ -11,7 +11,6 @@ namespace Mile
       m_gBuffer(nullptr),
       m_cameraParamsBuffer(nullptr),
       m_lightParamsBuffer(nullptr),
-      m_additiveBlendState(nullptr),
       RenderingPass(renderer)
    {
    }
@@ -41,22 +40,9 @@ namespace Mile
          return false;
       }
 
-      m_additiveBlendState = new BlendState(m_renderer);
-      m_additiveBlendState->SetRenderTargetBlendState(
-         {
-            true,
-            EBlend::ONE, EBlend::ONE, EBlendOP::ADD,
-            EBlend::ONE, EBlend::ZERO, EBlendOP::ADD,
-            (UINT8)EColorWriteEnable::ColorWriteEnalbeAll});
-
-      if (!m_additiveBlendState->Init())
-      {
-         return false;
-      }
-
       m_pixelShader->AddSampler(
          D3D11_FILTER_ANISOTROPIC,
-         D3D11_TEXTURE_ADDRESS_BORDER,
+         D3D11_TEXTURE_ADDRESS_WRAP,
          D3D11_COMPARISON_ALWAYS);
 
       return true;
@@ -64,11 +50,11 @@ namespace Mile
 
    bool LightingPass::Bind(ID3D11DeviceContext& deviceContext)
    {
-      bool bIsNotReadyToBind = !RenderingPass::Bind(deviceContext) ||
+      bool bIsNotReadyToBind =
+         !RenderingPass::Bind(deviceContext) ||
          m_cameraParamsBuffer == nullptr ||
          m_lightParamsBuffer == nullptr ||
-         m_gBuffer == nullptr ||
-         m_additiveBlendState == nullptr;
+         m_gBuffer == nullptr;
       if (bIsNotReadyToBind)
       {
          return false;
@@ -84,12 +70,7 @@ namespace Mile
          return false;
       }
 
-      if (!m_cameraParamsBuffer->Bind(deviceContext, 1, EShaderType::PixelShader))
-      {
-         return false;
-      }
-
-      if (!m_additiveBlendState->Bind(deviceContext))
+      if (!m_lightParamsBuffer->Bind(deviceContext, 1, EShaderType::PixelShader))
       {
          return false;
       }

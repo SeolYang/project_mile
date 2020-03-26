@@ -8,6 +8,7 @@
 #include "Rendering/GeometryPass.h"
 #include "Rendering/LightingPass.h"
 #include "Rendering/Texture2dDX11.h"
+#include "Rendering/BlendState.h"
 #include "Core/Context.h"
 #include "Core/Window.h"
 #include "Core/Logger.h"
@@ -31,7 +32,7 @@ namespace Mile
       m_swapChain(nullptr), m_renderTargetView(nullptr), m_depthStencilBuffer(nullptr), m_bDepthStencilEnabled(true),
       m_gBuffer(nullptr), m_geometryPass(nullptr), m_lightingPass(nullptr),
       m_mainCamera(nullptr), m_viewport(nullptr),
-      m_defaultRasterizerState(nullptr)
+      m_defaultRasterizerState(nullptr), m_additiveBlendState(nullptr), m_defaultBlendState(nullptr)
    {
    }
 
@@ -145,6 +146,26 @@ namespace Mile
       }
       m_lightingPass->SetGBuffer(m_gBuffer);
 
+      m_defaultBlendState = new BlendState(this);
+      if (!m_defaultBlendState->Init())
+      {
+         return false;
+      }
+
+      m_additiveBlendState = new BlendState(this);
+      if (!m_additiveBlendState->Init())
+      {
+         return false;
+      }
+
+      m_additiveBlendState->SetRenderTargetBlendState(
+         {
+            true,
+            EBlend::ONE, EBlend::ONE, EBlendOP::ADD,
+            EBlend::ONE, EBlend::ZERO, EBlendOP::ADD,
+            (UINT8)EColorWriteEnable::ColorWriteEnableAll
+         });
+
       MELog(m_context, TEXT("RendererDX11"), ELogType::MESSAGE, TEXT("RendererDX11 Initialized!"), true);
       m_bIsInitialized = true;
       return true;
@@ -155,6 +176,8 @@ namespace Mile
       if (m_bIsInitialized)
       {
          SafeDelete(m_viewport);
+         SafeDelete(m_additiveBlendState);
+         SafeDelete(m_defaultBlendState);
          SafeDelete(m_defaultRasterizerState);
          SafeDelete(m_screenQuad);
          SafeDelete(m_geometryPass);
@@ -246,7 +269,7 @@ namespace Mile
 
       // Create Deferred Contexts
       for (auto idx = 0;
-         idx < static_cast<uint32_t>(ERenderContextType::EnumSize) - 1;
+         idx < REQUIRED_RENDERCONTEXT_NUM;
          ++idx)
       {
          hr = m_device->CreateDeferredContext(0, &m_deferredContexts[idx]);
@@ -484,38 +507,44 @@ namespace Mile
       if (deviceContextPtr != nullptr)
       {
          ID3D11DeviceContext& deviceContext = *deviceContextPtr;
-         deviceContext.ClearState();
+         SetDepthStencilEnable(deviceContext, false);
          deviceContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // @TODO: Input Assembly 세팅을 Rendering Pass 안으로
-         m_defaultRasterizerState->Bind(deviceContext);
-         m_viewport->Bind(deviceContext);
-         m_screenQuad->Bind(deviceContext, 0);
-         m_backBuffer->BindAsRenderTarget(deviceContext);
-
-         m_lightingPass->SetGBuffer(m_gBuffer);
          m_lightingPass->Bind(deviceContext);
-
-         Transform* camTransform = m_mainCamera->GetTransform();
-         m_lightingPass->UpdateCameraParamsBuffer(
-            deviceContext,
-            { camTransform->GetPosition(TransformSpace::World) });
+         m_viewport->Bind(deviceContext);
+         m_defaultRasterizerState->Bind(deviceContext);
+         m_backBuffer->BindAsRenderTarget(deviceContext);
+         m_screenQuad->Bind(deviceContext, 0);
+         m_additiveBlendState->Bind(deviceContext);
 
          for (auto lightComponent : m_lightComponents)
          {
+            Transform* camTransform = m_mainCamera->GetTransform();
+            m_lightingPass->UpdateCameraParamsBuffer(
+               deviceContext,
+               { camTransform->GetPosition(TransformSpace::World) });
+
             Transform* lightTransform = lightComponent->GetTransform();
+            Vector3 lightPosition = lightTransform->GetPosition(TransformSpace::World);
+            Vector3 lightDirection = lightTransform->GetForward(TransformSpace::World);
+            Vector3 lightRadiance = lightComponent->GetRadiance();
             m_lightingPass->UpdateLightParamsBuffer(
                deviceContext,
                {
-                  lightTransform->GetPosition(TransformSpace::World),
-                  lightTransform->GetForward(TransformSpace::World),
-                  lightComponent->GetRadiance(),
+                  Vector4(lightPosition.x, lightPosition.y, lightPosition.z, 1.0f),
+                  Vector4(lightDirection.x, lightDirection.y, lightDirection.z, 0.0f),
+                  Vector4(lightRadiance.x, lightRadiance.y, lightRadiance.z, 1.0f),
                   static_cast<UINT32>(lightComponent->GetLightType())
                });
 
+            m_backBuffer->ClearDepthStencil(deviceContext);
             deviceContext.DrawIndexed(6, 0, 0);
          }
 
+         SetDepthStencilEnable(deviceContext, true);
          m_lightingPass->Unbind(deviceContext);
          m_backBuffer->UnbindRenderTarget(deviceContext);
+
+         // @TODO: Emmisive post processing 단으로 따로 빼내기
 
          ID3D11CommandList* commandList = nullptr;
          auto result = deviceContext.FinishCommandList(false, &commandList);
