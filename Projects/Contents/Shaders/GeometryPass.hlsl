@@ -50,6 +50,13 @@ Texture2D normalMap				: register(t4);
 SamplerState AnisoSampler		: register(s0);
 
 /* Constant Buffers */
+cbuffer TransformBuffer
+{
+	matrix World;
+	matrix WorldView;
+	matrix WorldViewProj;
+};
+
 cbuffer MaterialBuffer
 {
 	float4	baseColorFactor;
@@ -57,13 +64,6 @@ cbuffer MaterialBuffer
 	float	metallicFactor;
 	float	roughnessFactor;
 }
-
-cbuffer TransformBuffer
-{
-	matrix World;
-	matrix WorldView;
-	matrix WorldViewProj;
-};
 
 /* Shader Programs */
 VSOutput MileVS(in VSInput input)
