@@ -10,8 +10,6 @@ namespace Mile
    GeometryPass::GeometryPass(RendererDX11* renderer) :
       m_gBuffer(nullptr),
       m_transformBuffer(nullptr), m_materialBuffer(nullptr),
-      m_baseColorTex(nullptr), m_emissiveTex(nullptr),
-      m_metallicRoughnessTex(nullptr), m_aoTex(nullptr), m_normalTex(nullptr),
       RenderingPass(renderer)
    {
    }
@@ -75,11 +73,6 @@ namespace Mile
          return false;
       }
 
-      SAFE_TEX_BIND(m_baseColorTex, deviceContext, 0, EShaderType::PixelShader);
-      SAFE_TEX_BIND(m_emissiveTex, deviceContext, 1, EShaderType::PixelShader);
-      SAFE_TEX_BIND(m_metallicRoughnessTex, deviceContext, 2, EShaderType::PixelShader);
-      SAFE_TEX_BIND(m_aoTex, deviceContext, 3, EShaderType::PixelShader);
-      SAFE_TEX_BIND(m_normalTex, deviceContext, 4, EShaderType::PixelShader);
       return true;
    }
 
@@ -100,11 +93,6 @@ namespace Mile
          m_materialBuffer->Unbind(deviceContext);
       }
 
-      SAFE_TEX_UNBIND(m_baseColorTex, deviceContext);
-      SAFE_TEX_UNBIND(m_emissiveTex, deviceContext);
-      SAFE_TEX_UNBIND(m_metallicRoughnessTex, deviceContext);
-      SAFE_TEX_UNBIND(m_aoTex, deviceContext);
-      SAFE_TEX_UNBIND(m_normalTex, deviceContext);
       RenderingPass::Unbind(deviceContext);
    }
 
@@ -126,40 +114,5 @@ namespace Mile
          (*mappedBuffer) = buffer;
          m_transformBuffer->UnMap(deviceContext);
       }
-   }
-
-   void GeometryPass::SetBaseColorMap(ID3D11DeviceContext& deviceContext, Texture2dDX11* texture)
-   {
-      SAFE_TEX_UNBIND(texture, deviceContext);
-      SAFE_TEX_UNBIND(m_baseColorTex, deviceContext);
-      m_baseColorTex = texture;
-   }
-
-   void GeometryPass::SetEmissiveMap(ID3D11DeviceContext& deviceContext, Texture2dDX11* texture)
-   {
-      SAFE_TEX_UNBIND(texture, deviceContext);
-      SAFE_TEX_UNBIND(m_emissiveTex, deviceContext);
-      m_emissiveTex = texture;
-   }
-
-   void GeometryPass::SetMetallicRoughnessMap(ID3D11DeviceContext& deviceContext, Texture2dDX11* texture)
-   {
-      SAFE_TEX_UNBIND(texture, deviceContext);
-      SAFE_TEX_UNBIND(m_metallicRoughnessTex, deviceContext);
-      m_metallicRoughnessTex = texture;
-   }
-
-   void GeometryPass::SetAOMap(ID3D11DeviceContext& deviceContext, Texture2dDX11* texture)
-   {
-      SAFE_TEX_UNBIND(texture, deviceContext);
-      SAFE_TEX_UNBIND(m_aoTex, deviceContext);
-      m_aoTex = texture;
-   }
-
-   void GeometryPass::SetNormalMap(ID3D11DeviceContext& deviceContext, Texture2dDX11* texture)
-   {
-      SAFE_TEX_UNBIND(texture, deviceContext);
-      SAFE_TEX_UNBIND(m_normalTex, deviceContext);
-      m_normalTex = texture;
    }
 }

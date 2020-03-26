@@ -2,6 +2,7 @@
 #include "Rendering/BufferDX11.h"
 #include "Rendering/ShaderDX11.h"
 
+#define DEFINE_CONSTANT_BUFFER(BUFFER_NAME) struct alignas(16) #BUFFER_NAME
 namespace Mile
 {
    class MEAPI ConstantBufferDX11 : public BufferDX11

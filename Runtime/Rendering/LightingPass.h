@@ -8,18 +8,18 @@ namespace Mile
    class BlendState;
    class MEAPI LightingPass : public RenderingPass
    {
-      struct alignas(16) CameraParamsConstantBuffer
+      DEFINE_CONSTANT_BUFFER(CameraParamsConstantBuffer)
       {
          Vector3 CameraPos;
       };
 
-      struct alignas(16) LightParamsConstantBuffer
+      DEFINE_CONSTANT_BUFFER(LightParamsConstantBuffer)
       {
          Vector3 LightPos;
          Vector3 LightRadiance;
          Vector3 LightDirection;
          UINT32 LightType;
-      }
+      };
 
    public:
       LightingPass(class RendererDX11* renderer);
