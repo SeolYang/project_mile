@@ -295,8 +295,8 @@ namespace Mile
       Matrix      m_localMatrix;
       Matrix      m_worldMatrix;
 
-      Entity*     m_entity;
-      Transform*  m_parent;
+      Entity* m_entity;
+      Transform* m_parent;
       bool        m_bDirtyFlag;
 
       friend Entity;

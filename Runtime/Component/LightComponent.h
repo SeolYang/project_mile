@@ -1,5 +1,4 @@
 #pragma once
-#include "Component/Component.h"
 #include "Component/ComponentRegister.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"

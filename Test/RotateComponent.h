@@ -1,6 +1,6 @@
 #pragma once
-
-#include "CoreMinimal.h"
+#include "Core/CoreMinimal.h"
+#include "Component/ComponentRegister.h"
 
 using namespace Mile;
 
@@ -14,12 +14,7 @@ public:
    {
    }
 
-   virtual void Update( )
-   {
-      auto timer = GetContext( )->GetSubSystem<Timer>( );
-      auto transform = m_entity->GetTransform( );
-      transform->Rotate( Quaternion( 180.0f * 0.2f * timer->GetDeltaTime( ), Vector3::Up( ) ) );
-   }
+   virtual void Update() override;
 
    virtual json Serialize() const override
    {
