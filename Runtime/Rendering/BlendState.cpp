@@ -63,6 +63,7 @@ namespace Mile
       }
 
       deviceContext.OMSetBlendState(m_blendState, &m_blendFactor.x, m_sampleMask);
+      return true;
    }
 
    void BlendState::SetRenderTargetBlendState(RenderTargetBlendDesc desc, size_t renderTargetIndex /* = 0 */)

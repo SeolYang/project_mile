@@ -57,18 +57,96 @@ namespace Mile
          EBlendOP BlendOpAlpha = EBlendOP::ADD;
          UINT8    RenderTargetWriteMask = (UINT8)EColorWriteEnable::ColorWriteEnalbeAll;
 
+         static D3D11_BLEND BlendToD3D11(EBlend blend)
+         {
+            switch (blend)
+            {
+            default:
+            case EBlend::ZERO:
+               return D3D11_BLEND::D3D11_BLEND_ZERO;
+            case EBlend::ONE:
+               return D3D11_BLEND::D3D11_BLEND_ONE;
+            case EBlend::SRC_COLOR:
+               return D3D11_BLEND::D3D11_BLEND_SRC_COLOR;
+            case EBlend::INV_SRC_COLOR:
+               return D3D11_BLEND::D3D11_BLEND_INV_SRC_COLOR;
+            case EBlend::SRC_ALPHA:
+               return D3D11_BLEND::D3D11_BLEND_SRC_ALPHA;
+            case EBlend::INV_SRC_ALPHA:
+               return D3D11_BLEND::D3D11_BLEND_INV_SRC_ALPHA;
+            case EBlend::DEST_ALPHA:
+               return D3D11_BLEND::D3D11_BLEND_DEST_ALPHA;
+            case EBlend::INV_DEST_ALPHA:
+               return D3D11_BLEND::D3D11_BLEND_INV_DEST_ALPHA;
+            case EBlend::DEST_COLOR:
+               return D3D11_BLEND::D3D11_BLEND_DEST_COLOR;
+            case EBlend::INV_DEST_COLOR:
+               return D3D11_BLEND::D3D11_BLEND_INV_DEST_COLOR;
+            case EBlend::SRC_ALPHA_SAT:
+               return D3D11_BLEND::D3D11_BLEND_SRC_ALPHA_SAT;
+            case EBlend::BLEND_FACTOR:
+               return D3D11_BLEND::D3D11_BLEND_BLEND_FACTOR;
+            case EBlend::INV_BLEND_FACTOR:
+               return D3D11_BLEND::D3D11_BLEND_BLEND_FACTOR;
+            case EBlend::SRC1_COLOR:
+               return D3D11_BLEND::D3D11_BLEND_SRC1_COLOR;
+            case EBlend::INV_SRC1_COLOR:
+               return D3D11_BLEND::D3D11_BLEND_INV_SRC1_COLOR;
+            case EBlend::SRC1_ALPHA:
+               return D3D11_BLEND::D3D11_BLEND_SRC1_ALPHA;
+            case EBlend::INV_SRC1_ALPHA:
+               return D3D11_BLEND::D3D11_BLEND_INV_SRC1_ALPHA;
+            }
+         }
+
+         static D3D11_BLEND_OP BlendOpToD3D11(EBlendOP blend)
+         {
+            switch (blend)
+            {
+            default:
+            case EBlendOP::ADD:
+               return D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
+            case EBlendOP::SUBTRACT:
+               return D3D11_BLEND_OP::D3D11_BLEND_OP_SUBTRACT;
+            case EBlendOP::MIN:
+               return D3D11_BLEND_OP::D3D11_BLEND_OP_MIN;
+            case EBlendOP::MAX:
+               return D3D11_BLEND_OP::D3D11_BLEND_OP_MAX;
+            case EBlendOP::REV_SUBTRACT:
+               return D3D11_BLEND_OP::D3D11_BLEND_OP_REV_SUBTRACT;
+            }
+         }
+
          D3D11_RENDER_TARGET_BLEND_DESC ToD3D11() const
          {
-            return {
+            return D3D11_RENDER_TARGET_BLEND_DESC {
                BlendEnable,
-               static_cast<UINT8>(SrcBlend),
-               static_cast<UINT8>(DestBlend),
-               static_cast<UINT8>(BlendOp),
-               static_cast<UINT8>(SrcBlendAlpha),
-               static_cast<UINT8>(DestBlendAlpha),
-               static_cast<UINT8>(BlendOpAlpha),
+               BlendToD3D11(SrcBlend),
+               BlendToD3D11(DestBlend),
+               BlendOpToD3D11(BlendOp),
+               BlendToD3D11(SrcBlendAlpha),
+               BlendToD3D11(DestBlendAlpha),
+               BlendOpToD3D11(BlendOpAlpha),
                RenderTargetWriteMask
             };
+         }
+
+         bool operator==(const RenderTargetBlendDesc& lhs)
+         {
+            return (
+               BlendEnable == lhs.BlendEnable &&
+               SrcBlend == lhs.SrcBlend &&
+               DestBlend == lhs.DestBlend &&
+               BlendOp == lhs.BlendOp &&
+               SrcBlendAlpha == lhs.SrcBlendAlpha &&
+               DestBlendAlpha == lhs.DestBlendAlpha &&
+               BlendOpAlpha == lhs.BlendOpAlpha &&
+               RenderTargetWriteMask == lhs.RenderTargetWriteMask );
+         }
+
+         bool operator!=(const RenderTargetBlendDesc& lhs)
+         {
+            return !((*this) == lhs);
          }
       };
 
