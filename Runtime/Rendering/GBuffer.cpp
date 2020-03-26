@@ -1,8 +1,9 @@
 #include "Rendering/GBuffer.h"
 #include "Rendering/RenderTargetDX11.h"
 #include "Rendering/DepthStencilBufferDX11.h"
+#include "Rendering/BlendState.h"
 
-constexpr size_t NumOfRenderTargets = 5;
+constexpr size_t GBUFFER_RENDER_TARGET_NUM = 5;
 
 namespace Mile
 {
@@ -13,7 +14,8 @@ namespace Mile
       m_albedoBuffer(nullptr),
       m_emissiveAOBuffer(nullptr),
       m_normalBuffer(nullptr),
-      m_metallicRoughnessBuffer(nullptr)
+      m_metallicRoughnessBuffer(nullptr),
+      m_blendState(nullptr)
    {
    }
 
@@ -93,7 +95,7 @@ namespace Mile
             0);
       }
 
-      std::array<ID3D11RenderTargetView*, NumOfRenderTargets> targets{
+      std::array<ID3D11RenderTargetView*, GBUFFER_RENDER_TARGET_NUM> targets{
          m_positionBuffer->GetRTV(),
          m_albedoBuffer->GetRTV(),
          m_emissiveAOBuffer->GetRTV(),
@@ -107,7 +109,7 @@ namespace Mile
          deviceContext.ClearRenderTargetView(rtv, clearColor);
       }
 
-      deviceContext.OMSetRenderTargets(NumOfRenderTargets, targets.data(), dsv);
+      deviceContext.OMSetRenderTargets(GBUFFER_RENDER_TARGET_NUM, targets.data(), dsv);
 
       if (m_blendState != nullptr)
       {
@@ -128,7 +130,7 @@ namespace Mile
          return false;
       }
 
-      std::array<RenderTargetDX11*, NumOfRenderTargets> targets{
+      std::array<RenderTargetDX11*, GBUFFER_RENDER_TARGET_NUM> targets{
          m_positionBuffer,
          m_albedoBuffer,
          m_emissiveAOBuffer,
@@ -154,7 +156,7 @@ namespace Mile
          m_normalBuffer->UnbindShaderResource(deviceContext);
          m_metallicRoughnessBuffer->UnbindShaderResource(deviceContext);
 
-         std::array<ID3D11RenderTargetView*, NumOfRenderTargets> targets{
+         std::array<ID3D11RenderTargetView*, GBUFFER_RENDER_TARGET_NUM> targets{
             nullptr,
             nullptr,
             nullptr,
@@ -162,7 +164,7 @@ namespace Mile
             nullptr
          };
 
-         deviceContext.OMSetRenderTargets(NumOfRenderTargets, targets.data(), nullptr);
+         deviceContext.OMSetRenderTargets(GBUFFER_RENDER_TARGET_NUM, targets.data(), nullptr);
       }
    }
 
@@ -171,7 +173,7 @@ namespace Mile
       bool bIsInitialized = m_normalBuffer != nullptr && m_positionBuffer != nullptr;
       if (bIsInitialized)
       {
-         std::array<ID3D11RenderTargetView*, NumOfRenderTargets> targets{
+         std::array<ID3D11RenderTargetView*, GBUFFER_RENDER_TARGET_NUM> targets{
             nullptr,
             nullptr,
             nullptr,
@@ -179,7 +181,7 @@ namespace Mile
             nullptr
          };
 
-         deviceContext.OMSetRenderTargets(NumOfRenderTargets, targets.data(), nullptr);
+         deviceContext.OMSetRenderTargets(GBUFFER_RENDER_TARGET_NUM, targets.data(), nullptr);
       }
    }
 }

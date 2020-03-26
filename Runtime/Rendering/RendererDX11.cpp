@@ -5,10 +5,9 @@
 #include "Rendering/Mesh.h"
 #include "Rendering/Quad.h"
 #include "Rendering/GBuffer.h"
-#include "Rendering/GBufferPass.h"
-#include "Rendering/LightBufferPass.h"
-#include "Rendering/ShadingPass.h"
-#include "Rendering/CheckerBoardInterpolatePass.h"
+#include "Rendering/GeometryPass.h"
+#include "Rendering/LightingPass.h"
+#include "Rendering/Texture2dDX11.h"
 #include "Core/Context.h"
 #include "Core/Window.h"
 #include "Core/Logger.h"
@@ -28,11 +27,9 @@ namespace Mile
    RendererDX11::RendererDX11(Context* context) :
       SubSystem(context),
       m_window(nullptr), m_clearColor{ 0.0f, 0.0f, 0.0f, 1.0f },
-      m_device(nullptr), m_immediateContext(nullptr), m_deferredContexts{ nullptr, nullptr, nullptr, nullptr },
+      m_device(nullptr), m_immediateContext(nullptr), m_deferredContexts{ nullptr },
       m_swapChain(nullptr), m_renderTargetView(nullptr), m_depthStencilBuffer(nullptr), m_bDepthStencilEnabled(true),
-      m_gBuffer(nullptr), m_gBufferPass(nullptr), m_lightBuffer(nullptr), m_lightBufferPass(nullptr),
-      m_bCheckerBoardRenderingEnabled(false), m_checkerBoard(nullptr), m_checkerBoardInterpolatePass(nullptr),
-      m_shadingPass(nullptr),
+      m_gBuffer(nullptr), m_geometryPass(nullptr), m_lightingPass(nullptr),
       m_mainCamera(nullptr), m_viewport(nullptr),
       m_defaultRasterizerState(nullptr)
    {
@@ -126,78 +123,27 @@ namespace Mile
       }
       m_gBuffer->SetDepthStencilBuffer(m_depthStencilBuffer);
 
-      m_gBufferPass = new GBufferPass(this);
-      if (!m_gBufferPass->Init(TEXT("Contents/Shaders/GBuffer.hlsl")))
+      m_geometryPass = new GeometryPass(this);
+      if (!m_geometryPass->Init(TEXT("Contents/Shaders/GeometryPass.hlsl")))
       {
          MELog(m_context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
-            TEXT("Failed to create GBuffer Rendering Pass."), true);
+            TEXT("Failed to create Geometry Pass."), true);
          return false;
       }
-      m_gBufferPass->SetGBuffer(m_gBuffer);
+      m_geometryPass->SetGBuffer(m_gBuffer);
 
-      m_lightBuffer = new RenderTargetDX11(this);
-      if (!m_lightBuffer->Init(
-         static_cast<unsigned int>(screenRes.x),
-         static_cast<unsigned int>(screenRes.y)))
+      m_lightingPass = new LightingPass(this);
+      if (!m_lightingPass->Init(TEXT("Contents/Shaders/LightingPass.hlsl")))
       {
          MELog(m_context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
-            TEXT("Failed to create Light Buffer."), true);
+            TEXT("Failed to create Lighting Pass."), true);
          return false;
       }
-
-      m_lightBufferPass = new LightBufferPass(this);
-      if (!m_lightBufferPass->Init(TEXT("Contents/Shaders/LightBuffer.hlsl")))
-      {
-         MELog(m_context,
-            TEXT("RendererDX11"),
-            ELogType::FATAL,
-            TEXT("Failed to create Light Buffer Rendering Pass."), true);
-         return false;
-      }
-      m_lightBufferPass->SetGBuffer(m_gBuffer);
-      m_lightBufferPass->SetCheckerBoardBuffer(m_gBufferPass->GetCheckerBoardConstantBuffer());
-      m_lightBufferPass->SetLightBuffer(m_lightBuffer);
-
-      m_shadingPass = new ShadingPass(this);
-      if (!m_shadingPass->Init(TEXT("Contents/Shaders/Shading.hlsl")))
-      {
-         MELog(m_context,
-            TEXT("RendererDX11"),
-            ELogType::FATAL,
-            TEXT("Failed to create Shading Pass."), true);
-         return false;
-      }
-      m_shadingPass->SetLightBuffer(m_lightBuffer);
-      m_shadingPass->SetCheckerBoardBuffer(m_gBufferPass->GetCheckerBoardConstantBuffer());
-      m_shadingPass->AcquireTransformBuffer(m_gBufferPass);
-      m_shadingPass->SetRenderTarget(m_backBuffer);
-
-
-      /* Initialize Checker Board Rendering **/
-      m_checkerBoard = new RenderTargetDX11(this);
-      if (!m_checkerBoard->Init(
-         static_cast<unsigned int>(screenRes.x),
-         static_cast<unsigned int>(screenRes.y)))
-      {
-         MELog(m_context,
-            TEXT("RendererDX11"),
-            ELogType::FATAL,
-            TEXT("Failed to create checker board."), true);
-         return false;
-      }
-
-      m_checkerBoardInterpolatePass = new CheckerBoardInterpolatePass(this);
-      if (!m_checkerBoardInterpolatePass->Init(TEXT("Contents/Shaders/CheckerBoardInterpolate.hlsl")))
-      {
-         return false;
-      }
-      m_checkerBoardInterpolatePass->SetCheckerBoard(m_checkerBoard);
-      m_checkerBoardInterpolatePass->SetRenderTarget(m_backBuffer);
-      // @TODO: Set Shading Pass Render Target depending on checker board settings
+      m_lightingPass->SetGBuffer(m_gBuffer);
 
       MELog(m_context, TEXT("RendererDX11"), ELogType::MESSAGE, TEXT("RendererDX11 Initialized!"), true);
       m_bIsInitialized = true;
@@ -211,10 +157,8 @@ namespace Mile
          SafeDelete(m_viewport);
          SafeDelete(m_defaultRasterizerState);
          SafeDelete(m_screenQuad);
-         SafeDelete(m_shadingPass);
-         SafeDelete(m_lightBufferPass);
-         SafeDelete(m_lightBuffer);
-         SafeDelete(m_gBufferPass);
+         SafeDelete(m_geometryPass);
+         SafeDelete(m_lightingPass);
          SafeDelete(m_gBuffer);
          SafeRelease(m_renderTargetView);
          SafeDelete(m_depthStencilBuffer);
@@ -426,260 +370,162 @@ namespace Mile
 
             auto threadPool = m_context->GetSubSystem<ThreadPool>();
 
-            /* Light Pre Pass **/
-            auto gBufferPassBinder = std::bind(&RendererDX11::RenderGBuffer,
-               this,
-               GetRenderContextByType(ERenderContextType::GBufferPass));
-            auto gBufferPassTask = threadPool->AddTask(gBufferPassBinder);
-
-            auto lBufferPassBinder = std::bind(&RendererDX11::RenderLightBuffer,
+            /* PBS Workflow **/
+            auto geometryPassBinder = std::bind(
+               &RendererDX11::RunGeometryPass,
                this,
                GetRenderContextByType(ERenderContextType::GeometryPass));
-            auto lBufferPassTask = threadPool->AddTask(lBufferPassBinder);
+            auto geometryPassTask = threadPool->AddTask(geometryPassBinder);
 
-            auto checkerBoardPassBinder = std::bind(&RendererDX11::RenderCheckerBoardInterpolate,
+            auto lightingPassBinder = std::bind(
+               &RendererDX11::RunLightingPass,
                this,
-               GetRenderContextByType(ERenderContextType::CheckerBoardInterpolatePass));
-            auto checkerBoardPassTask = threadPool->AddTask(checkerBoardPassBinder);
+               GetRenderContextByType(ERenderContextType::LightingPass));
+            auto lightingPassTask = threadPool->AddTask(lightingPassBinder);
 
-            ID3D11CommandList* gBufferPassCommandList = gBufferPassTask.get();
-            ID3D11CommandList* lBufferPassCommandList = lBufferPassTask.get();
-            ID3D11CommandList* checkerBoardCommandList = checkerBoardPassTask.get();
+            ID3D11CommandList* geometryPassCommandList = geometryPassTask.get();
+            ID3D11CommandList* lightingPassCommandList = lightingPassTask.get();
 
-            // Has dependency with G-Buffer
-            auto shadingPassBinder = std::bind(&RendererDX11::RenderShading,
-               this,
-               GetDeviceContextByType(ERenderContextType::ShadingPass));
-            auto shadingPassTask = threadPool->AddTask(shadingPassBinder);
+            m_immediateContext->ExecuteCommandList(geometryPassCommandList, false);
+            m_immediateContext->ExecuteCommandList(lightingPassCommandList, false);
 
-            ID3D11CommandList* shadingPassCommandList = shadingPassTask.get();
-
-            m_immediateContext->ExecuteCommandList(gBufferPassCommandList, false);
-            m_immediateContext->ExecuteCommandList(lBufferPassCommandList, false);
-            m_immediateContext->ExecuteCommandList(shadingPassCommandList, false);
-
-            if (checkerBoardCommandList != nullptr)
-            {
-               m_immediateContext->ExecuteCommandList(checkerBoardCommandList, false);
-            }
-
-            SafeRelease(gBufferPassCommandList);
-            SafeRelease(lBufferPassCommandList);
-            SafeRelease(shadingPassCommandList);
-            SafeRelease(checkerBoardCommandList);
+            SafeRelease(geometryPassCommandList);
+            SafeRelease(lightingPassCommandList);
          }
       }
 
       Present();
    }
 
-   ID3D11CommandList* RendererDX11::RenderGBuffer(ID3D11DeviceContext* deviceContext)
+   ID3D11CommandList* RendererDX11::RunGeometryPass(ID3D11DeviceContext* deviceContextPtr)
    {
-      deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-      m_defaultRasterizerState->Bind((*deviceContext));
-      m_viewport->Bind((*deviceContext));
-      m_gBufferPass->UpdateCheckerBoardBuffer(*deviceContext, m_bCheckerBoardRenderingEnabled);
-      m_gBufferPass->Bind(*deviceContext);
-
-      auto camTransform = m_mainCamera->GetTransform();
-
-      for (auto batchedMaterial : m_materialMap)
+      if (deviceContextPtr != nullptr)
       {
-         auto material = batchedMaterial.first;
-         auto normalTexture = material->GetTexture2D(MaterialTextureProperty::Normal);
-         m_gBufferPass->UpdateMaterialBuffer(*deviceContext,
-            material->GetSpecularExp()); // per material
-         m_gBufferPass->UpdateNormalTexture(*deviceContext,
-            normalTexture->GetRawTexture()); // per material
+         ID3D11DeviceContext& deviceContext = *deviceContextPtr;
+         deviceContext.ClearState();
+         deviceContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // @TODO: Input Assembly 세팅을 Rendering Pass 안으로
+         m_defaultRasterizerState->Bind(deviceContext);
+         m_viewport->Bind(deviceContext);
+         m_geometryPass->Bind(deviceContext);
 
-         for (auto meshRenderer : batchedMaterial.second)
+         auto camTransform = m_mainCamera->GetTransform();
+         for (auto batchedMaterial : m_materialMap)
          {
-            auto transform = meshRenderer->GetEntity()->GetTransform();
-            auto mesh = meshRenderer->GetMesh();
+            /* 물리 기반 머테리얼 정보 취득 **/
+            Material* material = batchedMaterial.first;
+            Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
+            Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
+            Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
+            Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
+            Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
 
-            Matrix world = transform->GetWorldMatrix();
-            Matrix view = Matrix::CreateView(
-               camTransform->GetPosition(TransformSpace::World),
-               camTransform->GetForward(),
-               camTransform->GetUp());
-            Matrix proj = Matrix::CreatePerspectiveProj(
-               m_mainCamera->GetFov(),
-               m_window->GetAspectRatio(),
-               m_mainCamera->GetNearPlane(),
-               m_mainCamera->GetFarPlane());
+            Vector4 baseColorFactor = material->GetVector4Factor(MaterialFactorProperty::BaseColor);
+            Vector4 emissiveFactor = material->GetVector4Factor(MaterialFactorProperty::Emissive);
+            float metallicFactor = material->GetScalarFactor(MaterialFactorProperty::Metallic);
+            float roughnessFactor = material->GetScalarFactor(MaterialFactorProperty::Roughness);
 
-            Matrix worldView = world * view;
-            Matrix worldViewProj = worldView * proj;
+            m_geometryPass->UpdateMaterialBuffer(
+               deviceContext,
+               { baseColorFactor, emissiveFactor, metallicFactor, roughnessFactor });
 
-            m_gBufferPass->UpdateTransformBuffer(*deviceContext,
-               world,
-               worldView,
-               worldViewProj);  // per object
+            SAFE_TEX_BIND(baseColorTex, deviceContext, 0, EShaderType::PixelShader);
+            SAFE_TEX_BIND(emissiveTex, deviceContext, 1, EShaderType::PixelShader);
+            SAFE_TEX_BIND(metallicRoughnessTex, deviceContext, 2, EShaderType::PixelShader);
+            SAFE_TEX_BIND(aoTex, deviceContext, 3, EShaderType::PixelShader);
+            SAFE_TEX_BIND(normalTex, deviceContext, 4, EShaderType::PixelShader);
 
-// @TODO: Implement instancing
-            mesh->Bind(*deviceContext, 0);
-            deviceContext->DrawIndexed(mesh->GetIndexCount(), 0, 0);
+            for (auto meshRenderer : batchedMaterial.second)
+            {
+               Transform* transform = meshRenderer->GetTransform();
+               Mesh* mesh = meshRenderer->GetMesh();
+
+               Matrix worldMatrix = transform->GetWorldMatrix();
+               Matrix viewMatrix = Matrix::CreateView(
+                  camTransform->GetPosition(TransformSpace::World),
+                  camTransform->GetForward(TransformSpace::World),
+                  camTransform->GetUp(TransformSpace::World));
+               Matrix projMatrix = Matrix::CreatePerspectiveProj(
+                  m_mainCamera->GetFov(),
+                  m_window->GetAspectRatio(),
+                  m_mainCamera->GetNearPlane(),
+                  m_mainCamera->GetFarPlane());
+
+               Matrix worldViewMatrix = worldMatrix * viewMatrix;
+               m_geometryPass->UpdateTransformBuffer(
+                  deviceContext,
+                  { worldMatrix, worldViewMatrix, worldViewMatrix * projMatrix });
+
+               mesh->Bind(deviceContext, 0);
+               deviceContext.DrawIndexed(mesh->GetIndexCount(), 0, 0);
+            }
+
+            SAFE_TEX_UNBIND(baseColorTex, deviceContext);
+            SAFE_TEX_UNBIND(emissiveTex, deviceContext);
+            SAFE_TEX_UNBIND(metallicRoughnessTex, deviceContext);
+            SAFE_TEX_UNBIND(aoTex, deviceContext);
+            SAFE_TEX_UNBIND(normalTex, deviceContext);
+         }
+
+         m_geometryPass->Unbind(deviceContext);
+
+         ID3D11CommandList* commandList = nullptr;
+         auto result = deviceContext.FinishCommandList(false, &commandList);
+         if (!FAILED(result))
+         {
+            return commandList;
          }
       }
 
-      // End of g-buffer pass
-      m_gBufferPass->Unbind(*deviceContext);
-
-      ID3D11CommandList* commandList = nullptr;
-      auto hr = deviceContext->FinishCommandList(false, &commandList);
-      if (FAILED(hr))
-      {
-         return nullptr;
-      }
-
-      return commandList;
+      return nullptr;
    }
 
-   ID3D11CommandList* RendererDX11::RenderLightBuffer(ID3D11DeviceContext* deviceContext)
+   ID3D11CommandList* RendererDX11::RunLightingPass(ID3D11DeviceContext* deviceContextPtr)
    {
-      deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-      m_defaultRasterizerState->Bind((*deviceContext));
-      m_viewport->Bind((*deviceContext));
-      m_lightBufferPass->Bind(*deviceContext);
-
-      // @TODO: Implement multi - camera rendering
-      auto cameraTransform = m_cameras[0]->GetTransform();
-      m_lightBufferPass->UpdateCameraBuffer(*deviceContext,
-         cameraTransform->GetPosition(TransformSpace::World));
-
-      for (auto light : m_lightComponents)
+      if (deviceContextPtr != nullptr)
       {
-         m_lightBufferPass->UpdateLightParamBuffer(
-            *deviceContext,
-            light->GetLightPosition(),
-            light->GetLightColor(),
-            light->GetLightDirection(),
-            light->GetSpotlightAngles(),
-            Vector3(light->GetLightRange(), 0.0f, 0.0f),
-            LightComponent::LightTypeToIndex(light->GetLightType()));
+         ID3D11DeviceContext& deviceContext = *deviceContextPtr;
+         deviceContext.ClearState();
+         deviceContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // @TODO: Input Assembly 세팅을 Rendering Pass 안으로
+         m_defaultRasterizerState->Bind(deviceContext);
+         m_viewport->Bind(deviceContext);
+         m_screenQuad->Bind(deviceContext, 0);
+         m_backBuffer->BindAsRenderTarget(deviceContext);
 
-         m_screenQuad->Bind(*deviceContext, 0);
-         deviceContext->DrawIndexed(6, 0, 0);
-      }
+         m_lightingPass->SetGBuffer(m_gBuffer);
+         m_lightingPass->Bind(deviceContext);
 
-      m_lightBufferPass->Unbind(*deviceContext);
+         Transform* camTransform = m_mainCamera->GetTransform();
+         m_lightingPass->UpdateCameraParamsBuffer(
+            deviceContext,
+            { camTransform->GetPosition(TransformSpace::World) });
 
-      ID3D11CommandList* commandList = nullptr;
-      auto hr = deviceContext->FinishCommandList(false, &commandList);
-      if (FAILED(hr))
-      {
-         return nullptr;
-      }
-
-      return commandList;
-   }
-
-   ID3D11CommandList* RendererDX11::RenderShading(ID3D11DeviceContext* deviceContext)
-   {
-      deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-      m_defaultRasterizerState->Bind((*deviceContext));
-      m_viewport->Bind((*deviceContext));
-
-      if (m_bCheckerBoardRenderingEnabled)
-      {
-         m_checkerBoard->SetClearColor(m_clearColor);
-         m_shadingPass->SetRenderTarget(m_checkerBoard);
-      }
-      else
-      {
-         m_backBuffer->SetClearColor(m_clearColor);
-         m_shadingPass->SetRenderTarget(m_backBuffer);
-      }
-
-      m_shadingPass->Bind(*deviceContext);
-
-      auto camTransform = m_mainCamera->GetTransform();
-
-      for (auto batchedMaterial : m_materialMap)
-      {
-         auto material = batchedMaterial.first;
-         auto diffuseTexture = material->GetDiffuseMap();
-         m_shadingPass->UpdateMaterialBuffer(*deviceContext,
-            material->GetSpecularAlbedo());
-         m_shadingPass->UpdateDiffuseTexture(*deviceContext,
-            diffuseTexture->GetRawTexture());
-
-         for (auto meshRenderer : batchedMaterial.second)
+         for (auto lightComponent : m_lightComponents)
          {
-            auto transform = meshRenderer->GetTransform();
-            auto mesh = meshRenderer->GetMesh();
+            Transform* lightTransform = lightComponent->GetTransform();
+            m_lightingPass->UpdateLightParamsBuffer(
+               deviceContext,
+               {
+                  lightTransform->GetPosition(TransformSpace::World),
+                  lightTransform->GetForward(TransformSpace::World),
+                  lightComponent->GetRadiance(),
+                  static_cast<UINT32>(lightComponent->GetLightType())
+               });
 
-            Matrix world = transform->GetWorldMatrix();
-            Matrix view = Matrix::CreateView(
-               camTransform->GetPosition(TransformSpace::World),
-               camTransform->GetForward(),
-               camTransform->GetUp());
-            Matrix proj = Matrix::CreatePerspectiveProj(
-               m_mainCamera->GetFov(),
-               m_window->GetAspectRatio(),
-               m_mainCamera->GetNearPlane(),
-               m_mainCamera->GetFarPlane());
-
-            Matrix worldView = world * view;
-            Matrix worldViewProj = worldView * proj;
-
-
-            m_shadingPass->UpdateTransformBuffer(*deviceContext,
-               world,
-               worldView,
-               worldViewProj);  // per object
-
-// @TODO: Implement instancing
-            mesh->Bind(*deviceContext, 0);
-            deviceContext->DrawIndexed(mesh->GetIndexCount(), 0, 0);
+            deviceContext.DrawIndexed(6, 0, 0);
          }
 
-         // Unbind ShaderResource
-         m_shadingPass->UpdateDiffuseTexture(*deviceContext, nullptr);
+         m_lightingPass->Unbind(deviceContext);
+         m_backBuffer->UnbindRenderTarget(deviceContext);
+
+         ID3D11CommandList* commandList = nullptr;
+         auto result = deviceContext.FinishCommandList(false, &commandList);
+         if (!FAILED(result))
+         {
+            return commandList;
+         }
       }
 
-      m_shadingPass->Unbind(*deviceContext);
-
-      ID3D11CommandList* commandList = nullptr;
-      auto hr = deviceContext->FinishCommandList(false, &commandList);
-      if (FAILED(hr))
-      {
-         return nullptr;
-      }
-
-      return commandList;
-   }
-
-   ID3D11CommandList* RendererDX11::RenderCheckerBoardInterpolate(ID3D11DeviceContext* deviceContext)
-   {
-      if (!m_bCheckerBoardRenderingEnabled)
-      {
-         return nullptr;
-      }
-
-      deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-      m_defaultRasterizerState->Bind((*deviceContext));
-      m_viewport->Bind((*deviceContext));
-      m_checkerBoardInterpolatePass->Bind(*deviceContext);
-
-      Vector2 screenRes{ m_window->GetResolution() };
-      m_checkerBoardInterpolatePass->UpdateRenderTargetInfoBuffer(*deviceContext,
-         static_cast<int>(screenRes.x),
-         static_cast<int>(screenRes.y));
-
-      m_screenQuad->Bind(*deviceContext, 0);
-      deviceContext->DrawIndexed(6, 0, 0);
-
-      m_checkerBoardInterpolatePass->Unbind(*deviceContext);
-
-      ID3D11CommandList* commandList = nullptr;
-      auto hr = deviceContext->FinishCommandList(false, &commandList);
-      if (FAILED(hr))
-      {
-         return nullptr;
-      }
-
-      return commandList;
+      return nullptr;
    }
 
    void RendererDX11::Clear(ID3D11DeviceContext& deviceContext)
@@ -744,13 +590,10 @@ namespace Mile
          return m_deferredContexts[0];
       case ERenderContextType::LightingPass:
          return m_deferredContexts[1];
-      case ERenderContextType::CheckerBoardInterpolatePass:
-         return m_deferredContexts[2];
       case ERenderContextType::PostProcessPass:
-         return m_deferredContexts[3];
+         return m_deferredContexts[2];
       }
 
       return m_immediateContext;
    }
-
 }

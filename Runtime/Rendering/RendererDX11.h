@@ -2,6 +2,7 @@
 #include "Rendering/RenderingCore.h"
 #include "Rendering/Viewport.h"
 #include <array>
+#include <vector>
 
 namespace Mile
 {
@@ -14,7 +15,7 @@ namespace Mile
       EnumSize
    };
 
-   constexpr size_t RequireDeferredContextNum = (size_t)ERenderContextType::EnumSize - 1;
+   constexpr size_t REQUIRED_RENDERCONTEXT_NUM = (size_t)ERenderContextType::EnumSize - 1;
 
    class DepthStencilBufferDX11;
    class RenderTargetDX11;
@@ -54,11 +55,10 @@ namespace Mile
       /* Rendering Methods **/
       void Render();
 
-      ID3D11CommandList* RenderGBuffer(ID3D11DeviceContext* deviceContext);
-      ID3D11CommandList* RenderLightBuffer(ID3D11DeviceContext* deviceContext);
-      ID3D11CommandList* RenderShading(ID3D11DeviceContext* deviceContext);
-
-      ID3D11CommandList* RenderCheckerBoardInterpolate(ID3D11DeviceContext* deviceContext);
+      /* Physically Based Shading Workflow **/
+      ID3D11CommandList* RunGeometryPass(ID3D11DeviceContext* deviceContextPtr);
+      ID3D11CommandList* RunLightingPass(ID3D11DeviceContext* deviceContextPtr);
+      //ID3D11CommandList* RunPostProcessPass(ID3D11DeviceContext* deviceContext);
 
       void Clear(ID3D11DeviceContext& deviceContext);
       void ClearDepthStencil(ID3D11DeviceContext& deviceContext);
@@ -77,8 +77,6 @@ namespace Mile
 
       ID3D11DeviceContext* GetRenderContextByType(ERenderContextType type);
 
-      void SetCheckerBoardRenderingEnable(bool bCheckerBoardRenderingEnabled) { m_bCheckerBoardRenderingEnabled = bCheckerBoardRenderingEnabled; }
-
    private:
       bool CreateDeviceAndSwapChain();
       bool CreateDepthStencilBuffer();
@@ -89,7 +87,7 @@ namespace Mile
       ID3D11DeviceContext* m_immediateContext;
 
       /* Deferred Contexts **/
-      std::array<ID3D11DeviceContext*, RequireDeferredContextNum> m_deferredContexts;
+      std::array<ID3D11DeviceContext*, REQUIRED_RENDERCONTEXT_NUM> m_deferredContexts;
 
       /* Back Buffer Variables **/
       IDXGISwapChain*         m_swapChain;
@@ -97,24 +95,17 @@ namespace Mile
       DepthStencilBufferDX11* m_depthStencilBuffer;
       RenderTargetDX11*       m_backBuffer;
 
-      /* Pre light pass Rendering **/
-      GBuffer*          m_gBuffer;
-      GBufferPass*      m_gBufferPass;
-      RenderTargetDX11* m_lightBuffer;
-      LightBufferPass*  m_lightBufferPass;
-      ShadingPass*      m_shadingPass;
-      Quad*             m_screenQuad;
-
-      /* CheckerBoard Rendering **/
-      bool              m_bCheckerBoardRenderingEnabled;
-      RenderTargetDX11* m_checkerBoard;
-      CheckerBoardInterpolatePass* m_checkerBoardInterpolatePass;
+      /* PBS Workflow **/
+      GBuffer*      m_gBuffer;
+      GeometryPass* m_geometryPass;
+      LightingPass* m_lightingPass;
+      Quad*         m_screenQuad;
 
       /* Renderable objects **/
       std::vector<MeshRenderComponent*> m_meshRenderComponents;
       std::vector<LightComponent*>      m_lightComponents;
-      MaterialMap                       m_materialMap;
       std::vector<CameraComponent*>     m_cameras;
+      MaterialMap                       m_materialMap;
       CameraComponent*                  m_mainCamera;
 
       /* Render State **/

@@ -31,9 +31,6 @@
     <Filter Include="Sources\Rendering\Rendering Passes">
       <UniqueIdentifier>{d924a07d-0ef7-4a29-83d8-0ccc9918ff63}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Rendering\Rendering Passes\LightPrePass">
-      <UniqueIdentifier>{7c2fe0e0-1738-4d2a-8131-9079fe36cf50}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Rendering\Renderer">
       <UniqueIdentifier>{76497997-e791-46a5-8772-b2aa7326f759}</UniqueIdentifier>
     </Filter>
@@ -58,9 +55,6 @@
     <Filter Include="Sources\Math">
       <UniqueIdentifier>{de67a36c-e7a7-4d56-84cb-2ec42365dc82}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Rendering\Rendering Passes\CheckerBoardRenderPass">
-      <UniqueIdentifier>{d63831ba-e766-4950-b9bf-b66fab76909f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Rendering\Rendering Passes\PBR">
       <UniqueIdentifier>{1de2ab9b-c235-4d4f-b9c0-673ce03ff201}</UniqueIdentifier>
     </Filter>
@@ -69,6 +63,12 @@
     </Filter>
     <Filter Include="Sources\Component">
       <UniqueIdentifier>{5a159d47-a33e-434f-b54b-8bd8ca48aa49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\PBS">
+      <UniqueIdentifier>{c2821aad-7a87-4d95-b69f-010444de68b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Light-Pre Pass">
+      <UniqueIdentifier>{bdf3b01c-07fd-41cf-bff3-38a304f8d0f9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -153,15 +153,6 @@
     <ClInclude Include="..\Runtime\Component\MeshRenderComponent.h">
       <Filter>Sources\Component</Filter>
     </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\GBufferPass.h">
-      <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\LightBufferPass.h">
-      <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\ShadingPass.h">
-      <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
-    </ClInclude>
     <ClInclude Include="..\Runtime\Component\LightComponent.h">
       <Filter>Sources\Component</Filter>
     </ClInclude>
@@ -230,9 +221,6 @@
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\Timer.h">
       <Filter>Sources\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\CheckerBoardInterpolatePass.h">
-      <Filter>Sources\Rendering\Rendering Passes\CheckerBoardRenderPass</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\aabb.h">
       <Filter>ThirdParty\assimp</Filter>
@@ -563,15 +551,6 @@
     <ClCompile Include="..\Runtime\Component\MeshRenderComponent.cpp">
       <Filter>Sources\Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\GBufferPass.cpp">
-      <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\LightBufferPass.cpp">
-      <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\ShadingPass.cpp">
-      <Filter>Sources\Rendering\Rendering Passes\LightPrePass</Filter>
-    </ClCompile>
     <ClCompile Include="..\Runtime\Component\LightComponent.cpp">
       <Filter>Sources\Component</Filter>
     </ClCompile>
@@ -629,9 +608,6 @@
     <ClCompile Include="..\Runtime\Core\Timer.cpp">
       <Filter>Sources\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\CheckerBoardInterpolatePass.cpp">
-      <Filter>Sources\Rendering\Rendering Passes\CheckerBoardRenderPass</Filter>
-    </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\GBuffer.cpp">
       <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
     </ClCompile>
@@ -647,28 +623,37 @@
     <ClCompile Include="..\Runtime\GameFramework\Entity.cpp">
       <Filter>Sources\GameFramework</Filter>
     </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\BlendState.cpp">
+      <Filter>Sources\Rendering\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\LightingPass.cpp">
+      <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\GeometryPass.cpp">
+      <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Contents\Shaders\GBuffer.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Contents\Shaders\LightBuffer.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Contents\Shaders\Shading.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="Contents\Shaders\TestShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Contents\Shaders\CheckerBoardInterpolate.hlsl">
-      <Filter>Shaders</Filter>
+    <FxCompile Include="Contents\Shaders\LightingPass.hlsl">
+      <Filter>Shaders\PBS</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\GeometryPass.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\PBS</Filter>
     </FxCompile>
-    <FxCompile Include="Contents\Shaders\LightingPass.hlsl">
-      <Filter>Shaders</Filter>
+    <FxCompile Include="Contents\Shaders\LightBuffer.hlsl">
+      <Filter>Shaders\Light-Pre Pass</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\Shading.hlsl">
+      <Filter>Shaders\Light-Pre Pass</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\GBuffer.hlsl">
+      <Filter>Shaders\Light-Pre Pass</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\CheckerBoardInterpolate.hlsl">
+      <Filter>Shaders\Light-Pre Pass</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -700,7 +685,7 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Contents\Shaders\BRDFs.hlsli">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\PBS</Filter>
     </None>
   </ItemGroup>
 </Project>
