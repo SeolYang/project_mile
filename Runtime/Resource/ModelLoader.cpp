@@ -49,9 +49,10 @@ namespace Mile
          aiProcess_ConvertToLeftHanded |
          aiProcess_SortByPType |
          //aiProcess_GenUVCoords |
+         aiProcess_MakeLeftHanded |
          aiProcess_PreTransformVertices);
 
-      Entity * res = new Entity(nullptr, TEXT(""));
+      Entity* res = new Entity(nullptr, TEXT("model"));
       ReconstructEntityWithAiNode(scene, scene->mRootNode, target, res);
 
       importer.FreeScene();
@@ -146,6 +147,7 @@ namespace Mile
       }
 
       auto meshName = String2WString(mesh->mName.C_Str());
+      entity->SetName(meshName);
       Mesh* newMesh = new Mesh(rendererInst,
          meshName,
          target->GetPath());
@@ -171,8 +173,8 @@ namespace Mile
          + meshName
          + TEXT(".material");
 
-      Material* foundedMat = resMng->GetByPath<Material>(matPath);
-      if (foundedMat != nullptr)
+      Material* foundedMat = resMng->Load<Material>(matPath);
+      if (foundedMat == nullptr)
       {
          foundedMat = resMng->Create<Material>(target->GetFolder()
             + target->GetName()
@@ -205,19 +207,19 @@ namespace Mile
 
             foundedMat->SetTexture2D(
                MaterialTextureProperty::BaseColor,
-               resMng->Load<Texture2D>(String2WString(baseColor.C_Str())));
+               resMng->Load<Texture2D>(target->GetFolder() + String2WString(baseColor.C_Str())));
             foundedMat->SetTexture2D(
                MaterialTextureProperty::Emissive,
-               resMng->Load<Texture2D>(String2WString(emissive.C_Str())));
+               resMng->Load<Texture2D>(target->GetFolder() + String2WString(emissive.C_Str())));
             foundedMat->SetTexture2D(
                MaterialTextureProperty::MetallicRoughness,
-               resMng->Load<Texture2D>(String2WString(metallicRoughness.C_Str())));
+               resMng->Load<Texture2D>(target->GetFolder() + String2WString(metallicRoughness.C_Str())));
             foundedMat->SetTexture2D(
                MaterialTextureProperty::Normal,
-               resMng->Load<Texture2D>(String2WString(normal.C_Str())));
+               resMng->Load<Texture2D>(target->GetFolder() + String2WString(normal.C_Str())));
             foundedMat->SetTexture2D(
                MaterialTextureProperty::AO,
-               resMng->Load<Texture2D>(String2WString(ao.C_Str())));
+               resMng->Load<Texture2D>(target->GetFolder() + String2WString(ao.C_Str())));
 
             foundedMat->SetVector4Factor(MaterialFactorProperty::BaseColor,
                Vector4(baseColorFactor.r, baseColorFactor.g, baseColorFactor.b, baseColorFactor.a));

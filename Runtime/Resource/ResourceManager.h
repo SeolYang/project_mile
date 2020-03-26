@@ -16,16 +16,22 @@ namespace Mile
       template < typename Ty >
       Ty* Load(const String& relativePath)
       {
-         if (m_cache->HasByPath(relativePath))
+         if (!relativePath.empty())
          {
-            return GetByPath<Ty>(relativePath);
-         }
+            if (m_cache->HasByPath(relativePath))
+            {
+               return GetByPath<Ty>(relativePath);
+            }
 
-         auto newResource = new Ty(m_context, relativePath);
-         if (newResource->Init())
-         {
-            m_cache->Add(static_cast<ResourcePtr>(newResource));
-            return newResource;
+            auto newResource = new Ty(m_context, relativePath);
+            if (newResource->Init())
+            {
+               m_cache->Add(static_cast<ResourcePtr>(newResource));
+               return newResource;
+            }
+
+            delete newResource;
+            newResource = nullptr;
          }
 
          return nullptr;
@@ -56,29 +62,29 @@ namespace Mile
       template < typename Ty >
       Ty* Create(const String& relativePath)
       {
-         if (m_cache->HasByPath(relativePath))
+         if (!relativePath.empty())
          {
-            return GetByPath<Ty>(relativePath);
-         }
+            auto res = Load<Ty>(relativePath);
+            if (res != nullptr)
+            {
+               return res;
+            }
 
-         auto res = Load<Ty>(relativePath);
-         if (res != nullptr)
-         {
-            return res;
-         }
+            auto newResource = new Ty(m_context, relativePath);
+            if (newResource->Save())
+            {
+               m_cache->Add(static_cast<Resource*>(newResource));
+               return newResource;
+            }
 
-         auto newResource = new Ty(m_context, relativePath);
-         if (newResource->Save())
-         {
-            m_cache->Add(static_cast<Resource*>(newResource));
-            return newResource;
+            delete newResource;
+            newResource = nullptr;
          }
 
          return nullptr;
       }
 
       void ClearCache();
-
 
    private:
       ResourceCachePtr    m_cache;

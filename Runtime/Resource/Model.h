@@ -18,7 +18,7 @@ namespace Mile
       void AddMesh(Mesh* mesh);
       Mesh* GetMeshByName(const std::wstring& name);
 
-      static Entity* Instantiate(Model* target, World* targetWorld);
+      static Entity* Instantiate( Model* target, World* targetWorld, const String& entityName = TEXT("Entity"));
 
    private:
       Entity* m_instance;
