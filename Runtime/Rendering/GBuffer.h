@@ -5,6 +5,7 @@ namespace Mile
 {
    class RenderTargetDX11;
    class DepthStencilBufferDX11;
+   class BlendState;
    class MEAPI GBuffer
    {
    public:
@@ -28,6 +29,7 @@ namespace Mile
       RenderTargetDX11* m_emissiveAOBuffer;
       RenderTargetDX11* m_normalBuffer;
       RenderTargetDX11* m_metallicRoughnessBuffer;
+      BlendState*       m_blendState;
 
    };
 }

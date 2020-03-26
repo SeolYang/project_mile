@@ -24,6 +24,7 @@ namespace Mile
       SafeDelete(m_emissiveAOBuffer);
       SafeDelete(m_normalBuffer);
       SafeDelete(m_metallicRoughnessBuffer);
+      SafeDelete(m_blendState);
    }
 
    bool GBuffer::Init(unsigned int width, unsigned int height)
@@ -39,6 +40,7 @@ namespace Mile
       m_emissiveAOBuffer = new RenderTargetDX11(m_renderer);
       m_normalBuffer = new RenderTargetDX11(m_renderer);
       m_metallicRoughnessBuffer = new RenderTargetDX11(m_renderer);
+      m_blendState = new BlendState(m_renderer);
 
       if (!m_positionBuffer->Init(width, height, DXGI_FORMAT_R32G32B32A32_FLOAT))
       {
@@ -61,6 +63,11 @@ namespace Mile
       }
 
       if (!m_metallicRoughnessBuffer->Init(width, height, DXGI_FORMAT_R32G32B32A32_FLOAT))
+      {
+         return false;
+      }
+
+      if (!m_blendState->Init())
       {
          return false;
       }
@@ -101,6 +108,14 @@ namespace Mile
       }
 
       deviceContext.OMSetRenderTargets(NumOfRenderTargets, targets.data(), dsv);
+
+      if (m_blendState != nullptr)
+      {
+         if (!m_blendState->Bind(deviceContext))
+         {
+            return false;
+         }
+      }
 
       return true;
    }
