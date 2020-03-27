@@ -16,16 +16,16 @@ namespace Mile
 
    struct MEAPI Log
    {
-      Mile::String Category;
-      ELogType Type;
-      Mile::String Message;
-      std::chrono::system_clock::time_point  Time;
+      Mile::String Category = TEXT("None");
+      ELogType Type = ELogType::None;
+      Mile::String Message = TEXT("");
+      std::chrono::system_clock::time_point  Time = std::chrono::system_clock::time_point();
    };
 
    struct MEAPI LogFilter
    {
-      Mile::String Category;
-      ELogType Type;
+      Mile::String Category = TEXT("None");
+      ELogType Type = ELogType::None;
    };
 
    using LogList = std::forward_list<Log>;
