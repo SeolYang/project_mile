@@ -114,7 +114,7 @@ PSOutput MilePS(in PSInput input)
 
 	float3 normalTS = normalMap.Sample(AnisoSampler, input.TexCoord).rgb;
 	normalTS = normalize(normalTS * 2.0f - 1.0f);
-	float3 normal = any(normalTS) ? normalWS : mul(normalTS, tangentFrameWS);
+	float3 normal = all(normalTS) ? normalWS : mul(normalTS, tangentFrameWS);
 
 	PSOutput output;
 	output.Position = float4(input.PositionWS, 1.0f);
