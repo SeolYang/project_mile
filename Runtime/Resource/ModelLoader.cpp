@@ -44,7 +44,7 @@ namespace Mile
       auto scene = importer.ReadFile(WString2String(filePath),
          aiProcess_CalcTangentSpace |
          aiProcess_Triangulate |
-         //aiProcess_GenSmoothNormals |
+         aiProcess_GenSmoothNormals |
          //aiProcess_SplitLargeMeshes |
          aiProcess_ConvertToLeftHanded |
          aiProcess_SortByPType |
@@ -191,19 +191,12 @@ namespace Mile
             aiString normal;
             aiString ao;
 
-            aiColor4D baseColorFactor;
-            ai_real metallicFactor;
-            ai_real roughnessFactor;
-
             aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
             material->GetTexture(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_BASE_COLOR_TEXTURE, &baseColor);
             material->GetTexture(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_METALLICROUGHNESS_TEXTURE, &metallicRoughness);
             material->GetTexture(aiTextureType::aiTextureType_EMISSIVE, 0, &emissive);
             material->GetTexture(aiTextureType::aiTextureType_AMBIENT_OCCLUSION, 0, &ao);
             material->GetTexture(aiTextureType::aiTextureType_NORMALS, 0, &normal);
-            material->Get(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_BASE_COLOR_FACTOR, baseColorFactor);
-            material->Get(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_METALLIC_FACTOR, metallicFactor);
-            material->Get(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_ROUGHNESS_FACTOR, roughnessFactor);
 
             foundedMat->SetTexture2D(
                MaterialTextureProperty::BaseColor,
@@ -220,11 +213,6 @@ namespace Mile
             foundedMat->SetTexture2D(
                MaterialTextureProperty::AO,
                resMng->Load<Texture2D>(target->GetFolder() + String2WString(ao.C_Str())));
-
-            foundedMat->SetVector4Factor(MaterialFactorProperty::BaseColor,
-               Vector4(baseColorFactor.r, baseColorFactor.g, baseColorFactor.b, baseColorFactor.a));
-            foundedMat->SetScalarFactor(MaterialFactorProperty::Metallic, metallicFactor);
-            foundedMat->SetScalarFactor(MaterialFactorProperty::Roughness, roughnessFactor);
          }
 
          foundedMat->Save();
