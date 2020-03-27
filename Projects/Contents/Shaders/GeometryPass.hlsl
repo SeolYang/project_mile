@@ -96,26 +96,25 @@ PSOutput MilePS(in PSInput input)
 	emissive += pow(emissiveFactor, 2.2);
 	
 	/* Metallic-Roughness-UVs */
-	float metallic = metallicRoughnessMap.Sample(AnisoSampler, input.TexCoord).b;
-	metallic = clamp(metallicFactor + metallic, 0.0, 1.0f);
-	
 	float roughness = metallicRoughnessMap.Sample(AnisoSampler, input.TexCoord).g;
 	roughness = clamp(roughnessFactor + roughness, 0.0f, 1.0f);
+	
+	float metallic = metallicRoughnessMap.Sample(AnisoSampler, input.TexCoord).b;
+	metallic = clamp(metallicFactor + metallic, 0.0, 1.0f);
 	
 	/* AO */
 	float ao = aoMap.Sample(AnisoSampler, input.TexCoord).r;
 	
 	/* Normal */
+	float3 normalWS = normalize(input.NormalWS);
 	float3x3 tangentFrameWS = float3x3(normalize(input.TangentWS),
                                        normalize(input.BitangentWS),
-                                       normalize(input.NormalWS));
+                                       normalWS);
 	
 
 	float3 normalTS = normalMap.Sample(AnisoSampler, input.TexCoord).rgb;
 	normalTS = normalize(normalTS * 2.0f - 1.0f);
-
-	float3 normal = mul(normalTS, tangentFrameWS);
-	
+	float3 normal = any(normalTS) ? normalWS : mul(normalTS, tangentFrameWS);
 
 	PSOutput output;
 	output.Position = float4(input.PositionWS, 1.0f);
