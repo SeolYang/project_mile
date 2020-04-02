@@ -1,7 +1,7 @@
 {
     "Title": "Engine",
-    "PosX": 500,
-    "PosY": 500,
+    "PosX": 0,
+    "PosY": 0,
     "ResolutionWidth": 1280,
     "ResolutionHeight": 720,
     "World": "Contents/Worlds/Default.json",

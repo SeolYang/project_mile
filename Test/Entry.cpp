@@ -40,7 +40,7 @@ int main( )
    MeshRenderComponent* cubeRenderComponent = cube->AddComponent<MeshRenderComponent>();
    RotateComponent* cubeRotation = cube->AddComponent<RotateComponent>();
    cubeRenderComponent->SetMesh(cubeMesh);
-   cubeRenderComponent->SetMaterial(resMng->Load<Material>(TEXT("Contents/Materials/Default.material")));
+   cubeRenderComponent->SetMaterial(resMng->Load<Material>(TEXT("Contents/Materials/Sample.material")));
    cubeTransform->SetPosition(Vector3(3.5f, 0.0f, 1.5f));
    cubeTransform->SetScale(Vector3(0.7f, 0.7f, 0.7f));
 
