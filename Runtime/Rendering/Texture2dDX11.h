@@ -1,9 +1,6 @@
 #pragma once
 #include "Rendering/ResourceDX11.h"
 
-#define SAFE_TEX_BIND(TEXTURE, DEVICE_CONTEXT, SLOT, SHADER_TYPE) if (TEXTURE != nullptr) { TEXTURE->Bind(DEVICE_CONTEXT, SLOT, SHADER_TYPE); }
-#define SAFE_TEX_UNBIND(TEXTURE, DEVICE_CONTEXT) if (TEXTURE != nullptr) { TEXTURE->Unbind(DEVICE_CONTEXT); }
-
 namespace Mile
 {
    class Texture2dDX11 : public ResourceDX11
