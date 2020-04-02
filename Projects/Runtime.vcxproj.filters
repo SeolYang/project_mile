@@ -70,6 +70,9 @@
     <Filter Include="Shaders\Light-Pre Pass">
       <UniqueIdentifier>{bdf3b01c-07fd-41cf-bff3-38a304f8d0f9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Rendering\Resources\Meshes">
+      <UniqueIdentifier>{339724f9-79c5-4bd6-a1fe-1e416d9d85f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Core\Context.h">
@@ -211,12 +214,6 @@
       <Filter>Sources\Rendering\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\ResourceDX11.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\Quad.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\Mesh.h">
       <Filter>Sources\Rendering\Resources</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Core\Timer.h">
@@ -486,6 +483,12 @@
     <ClInclude Include="..\Runtime\Math\MathCore.h">
       <Filter>Sources\Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\Quad.h">
+      <Filter>Sources\Rendering\Resources\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\Mesh.h">
+      <Filter>Sources\Rendering\Resources\Meshes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -599,12 +602,6 @@
     <ClCompile Include="..\Runtime\Rendering\Viewport.cpp">
       <Filter>Sources\Rendering\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\Quad.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\Mesh.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="..\Runtime\Core\Timer.cpp">
       <Filter>Sources\Core</Filter>
     </ClCompile>
@@ -631,6 +628,12 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\GeometryPass.cpp">
       <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\Mesh.cpp">
+      <Filter>Sources\Rendering\Resources\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\Quad.cpp">
+      <Filter>Sources\Rendering\Resources\Meshes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
