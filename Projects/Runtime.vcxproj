@@ -136,6 +136,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\Runtime\Rendering\BlendState.h" />
     <ClInclude Include="..\Runtime\Rendering\BufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ConstantBufferDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\Cube.h" />
     <ClInclude Include="..\Runtime\Rendering\DepthStencilBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\GBuffer.h" />
     <ClInclude Include="..\Runtime\Rendering\GeometryPass.h" />
@@ -269,6 +270,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Rendering\BlendState.cpp" />
     <ClCompile Include="..\Runtime\Rendering\BufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\ConstantBufferDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\Cube.cpp" />
     <ClCompile Include="..\Runtime\Rendering\DepthStencilBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\GBuffer.cpp" />
     <ClCompile Include="..\Runtime\Rendering\GeometryPass.cpp" />

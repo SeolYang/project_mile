@@ -11,6 +11,8 @@
 #include "Resource\ModelLoader.h"
 #include "Resource\Material.h"
 #include "Resource\Texture2D.h"
+#include "Rendering\Cube.h"
+#include "Rendering\RendererDX11.h"
 #include "Math\Vector3.h"
 #include "MT\ThreadPool.h"
 #include "RotateComponent.h"
@@ -29,8 +31,21 @@ int main( )
 
    auto world = context->GetSubSystem<World>( );
    auto resMng = context->GetSubSystem<ResourceManager>( );
+   auto renderer = context->GetSubSystem<RendererDX11>();
 
-   Entity* camera = world->CreateEntity( TEXT( "Camera" ) );
+   Cube* cubeMesh = new Cube(renderer);
+   cubeMesh->Init(Vector3(-1.0f, -1.0f, -1.0f), Vector3(1.0f, 1.0f, 1.0f));
+   Entity* cube = world->CreateEntity(TEXT("Cube"));
+   Transform* cubeTransform = cube->GetTransform();
+   MeshRenderComponent* cubeRenderComponent = cube->AddComponent<MeshRenderComponent>();
+   RotateComponent* cubeRotation = cube->AddComponent<RotateComponent>();
+   cubeRenderComponent->SetMesh(cubeMesh);
+   cubeRenderComponent->SetMaterial(resMng->Load<Material>(TEXT("Contents/Materials/Default.material")));
+   cubeTransform->SetPosition(Vector3(3.5f, 0.0f, 1.5f));
+   cubeTransform->SetScale(Vector3(0.7f, 0.7f, 0.7f));
+
+
+   Entity* camera = world->CreateEntity(TEXT("Camera"));
    CameraComponent* camComponent = camera->AddComponent<CameraComponent>( );
    Transform* camTransform = camera->GetTransform( );
    camComponent->SetNearPlane(1.0f);

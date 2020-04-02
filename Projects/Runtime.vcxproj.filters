@@ -489,6 +489,9 @@
     <ClInclude Include="..\Runtime\Rendering\Mesh.h">
       <Filter>Sources\Rendering\Resources\Meshes</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\Cube.h">
+      <Filter>Sources\Rendering\Resources\Meshes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -633,6 +636,9 @@
       <Filter>Sources\Rendering\Resources\Meshes</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\Quad.cpp">
+      <Filter>Sources\Rendering\Resources\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\Cube.cpp">
       <Filter>Sources\Rendering\Resources\Meshes</Filter>
     </ClCompile>
   </ItemGroup>
