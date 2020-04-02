@@ -14,6 +14,8 @@ namespace Mile
       m_height(0),
       m_channels(0),
       m_bitDepth(0),
+      m_bitPerChannel(0),
+      m_bIsHDR(false),
       Resource(context, filePath,
          ResourceType::Texture2D)
    {
@@ -38,6 +40,8 @@ namespace Mile
       m_width = std::get<TextureInfoTag::WIDTH>(info);
       m_height = std::get<TextureInfoTag::HEIGHT>(info);
       m_channels = std::get<TextureInfoTag::CHANNELS>(info);
+      m_bitPerChannel = std::get<TextureInfoTag::BIT_PER_CHANNEL>(info);
+      m_bIsHDR = std::get<TextureInfoTag::IS_HDR_TEXTURE>(info);
 
       if (m_rawData == nullptr)
       {
@@ -69,7 +73,7 @@ namespace Mile
 
       auto renderer = m_context->GetSubSystem<RendererDX11>();
       m_rawTexture = new Texture2dDX11(renderer);
-      if (!m_rawTexture->Init(m_width, m_height, m_channels, m_rawData, DXGI_FORMAT_B8G8R8A8_UNORM))
+      if (!m_rawTexture->Init(m_width, m_height, m_channels, m_rawData, m_bIsHDR ? DXGI_FORMAT_R32G32B32_FLOAT, DXGI_FORMAT_B8G8R8A8_UNORM))
       {
          MELog(m_context, TEXT("Texture2D"), ELogType::WARNING, TEXT("Failed to initialize Raw Texture: ") + m_path, true);
          SafeDelete(m_rawTexture);

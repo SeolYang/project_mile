@@ -27,6 +27,8 @@ namespace Mile
       unsigned int   m_height;
       int            m_channels;
       unsigned int   m_bitDepth;
+      unsigned int   m_bitPerChannel;
+      bool           m_bIsHDR;
 
    };
 }

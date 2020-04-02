@@ -17,17 +17,23 @@ namespace Mile
 
          if (dib != nullptr)
          {
-            FIBITMAP* converted = FreeImage_ConvertTo32Bits(dib);
+            FIBITMAP* converted = dib;
+            bool bIsHDRTexture = fileExtension == TEXT("hdr");
+            unsigned int bitPerChannel = bIsHDRTexture ? 32 : 8;
+            if (!bIsHDRTexture)
+            {
+               converted = FreeImage_ConvertTo32Bits(dib);
+            }
             FreeImage_FlipVertical(converted);
             auto width = FreeImage_GetWidth(converted);
             auto height = FreeImage_GetHeight(converted);
-            auto channels = FreeImage_GetBPP(converted) / 8;
+            auto channels = FreeImage_GetBPP(converted) / bitPerChannel;
             auto data = FreeImage_GetBits(converted);
 
             FreeImage_Unload(dib);
             dib = nullptr;
 
-            return { data, width, height, channels };
+            return { data, width, height, channels, bitPerChannel, bIsHDRTexture };
          }
       }
 
