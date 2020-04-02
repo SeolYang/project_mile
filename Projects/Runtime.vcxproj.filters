@@ -655,6 +655,9 @@
     <FxCompile Include="Contents\Shaders\CheckerBoardInterpolate.hlsl">
       <Filter>Shaders\Light-Pre Pass</Filter>
     </FxCompile>
+    <FxCompile Include="Contents\Shaders\Equirectangular2Cube.hlsl">
+      <Filter>Shaders\PBS</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ThirdParty\assimp\include\assimp\color4.inl">

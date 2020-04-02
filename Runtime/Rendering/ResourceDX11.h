@@ -15,7 +15,8 @@ namespace Mile
       Texture2D,
       Texture3D,
       RenderTarget,
-      DepthStencilBuffer
+      DepthStencilBuffer,
+      Cubemap
    };
 
    class RendererDX11;
@@ -39,7 +40,7 @@ namespace Mile
 
    protected:
       RendererDX11* m_renderer;
-      bool           m_bIsInitialized;
+      bool m_bIsInitialized;
 
    };
 }
