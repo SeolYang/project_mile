@@ -15,8 +15,6 @@ namespace Mile
 
       virtual bool Init() override;
 
-      virtual void Update() override;
-
       void BeginFrame();
       void EndFrame();
 
@@ -26,7 +24,7 @@ namespace Mile
        */
       float GetDeltaTime() const
       {
-         return GetDeltaTimeMS()* 0.001f;
+         return GetDeltaTimeMS() * 0.001f;
       }
 
       /**
@@ -36,16 +34,6 @@ namespace Mile
       long long GetDeltaTimeMS() const
       {
          return (std::chrono::duration_cast<std::chrono::milliseconds>(m_deltaTime).count());
-      }
-
-      /**
-      * @brief	이전 프레임과 현재 프레임사이에 시간 차이를 'ns' 단위로 반환 해줍니다.
-      * @return 프레임간 지난 시간(ns)
-      */
-      long long GetDeltaTimeNS() const
-      {
-         auto deltaTime = m_frameEndTime - m_frameBeginTime;
-         return ((m_deltaTime).count());
       }
 
       /**

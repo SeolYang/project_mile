@@ -1,36 +1,36 @@
-#include "Core\Context.h"
-#include "Core\Engine.h"
-#include "Core\Logger.h"
-#include "GameFramework\World.h"
-#include "GameFramework\Entity.h"
-#include "Component\CameraComponent.h"
-#include "Component\MeshRenderComponent.h"
-#include "Component\LightComponent.h"
-#include "Resource\ResourceManager.h"
-#include "Resource\Model.h"
-#include "Resource\ModelLoader.h"
-#include "Resource\Material.h"
-#include "Resource\Texture2D.h"
-#include "Rendering\Cube.h"
-#include "Rendering\RendererDX11.h"
-#include "Math\Vector3.h"
-#include "MT\ThreadPool.h"
+#include "Core/Context.h"
+#include "Core/Engine.h"
+#include "Core/Logger.h"
+#include "GameFramework/World.h"
+#include "GameFramework/Entity.h"
+#include "Component/CameraComponent.h"
+#include "Component/MeshRenderComponent.h"
+#include "Component/LightComponent.h"
+#include "Resource/ResourceManager.h"
+#include "Resource/Model.h"
+#include "Resource/ModelLoader.h"
+#include "Resource/Material.h"
+#include "Resource/Texture2D.h"
+#include "Rendering/Cube.h"
+#include "Rendering/RendererDX11.h"
+#include "Math/Vector3.h"
+#include "MT/ThreadPool.h"
 #include "RotateComponent.h"
 
 using namespace Mile;
 
 int main( )
 {
-   auto context = new Context( );
-   auto engine = new Engine( context );
+   auto context = new Context();
+   auto engine = new Engine(context);
 
-   if ( !engine->Init( ) )
+   if (!engine->Init())
    {
       return 1;
    }
 
-   auto world = context->GetSubSystem<World>( );
-   auto resMng = context->GetSubSystem<ResourceManager>( );
+   auto world = context->GetSubSystem<World>();
+   auto resMng = context->GetSubSystem<ResourceManager>();
    auto renderer = context->GetSubSystem<RendererDX11>();
 
    Cube* cubeMesh = new Cube(renderer);
@@ -40,7 +40,7 @@ int main( )
    MeshRenderComponent* cubeRenderComponent = cube->AddComponent<MeshRenderComponent>();
    RotateComponent* cubeRotation = cube->AddComponent<RotateComponent>();
    cubeRenderComponent->SetMesh(cubeMesh);
-   cubeRenderComponent->SetMaterial(resMng->Load<Material>(TEXT("Contents/Materials/Sample.material")));
+   cubeRenderComponent->SetMaterial(resMng->Load<Material>(TEXT("Contents/Materials/Default.material")));
    cubeTransform->SetPosition(Vector3(3.5f, 0.0f, 1.5f));
    cubeTransform->SetScale(Vector3(0.7f, 0.7f, 0.7f));
 

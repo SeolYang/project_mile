@@ -9,12 +9,13 @@
 #include "Rendering/RendererDX11.h"
 #include "MT/ThreadPool.h"
 #include <iostream>
+#include <algorithm>
 
 namespace Mile
 {
    Engine::Engine(Context* context) :
       SubSystem(context), m_bIsRunning(false), m_bShutdownFlag(false),
-      m_maxFPS(0), m_frameTime(0)
+      m_maxFPS(0), m_targetTimePerFrame(0)
    {
       m_context->RegisterSubSystem(this);
 
@@ -51,7 +52,6 @@ namespace Mile
       }
 
       // -* Initialize subsystems *-
-
       // Initialize Logger
       if (!m_context->GetSubSystem<Logger>()->Init())
       {
@@ -107,8 +107,8 @@ namespace Mile
       }
 
       auto engineConfig = m_configSys->GetConfig(TEXT("Engine"));
-      m_maxFPS = engineConfig.second["MaxFPS"];
-      m_frameTime = static_cast<long long> ((1.0f / static_cast<float>(m_maxFPS)) * 1000.0f);
+      m_maxFPS = std::clamp(static_cast<unsigned int>(engineConfig.second["MaxFPS"]), LOWER_BOUND_OF_ENGINE_FPS, UPPER_BOUND_OF_ENGINE_FPS);
+      m_targetTimePerFrame = static_cast<long long>((1.0 / static_cast<double>(m_maxFPS)) * 1000.0);
 
       return true;
    }
@@ -125,18 +125,15 @@ namespace Mile
          }
          else
          {
-            auto loopBegin = std::chrono::steady_clock::now();
             m_timer->BeginFrame();
 
             this->Update();
             m_renderer->Render();
-            m_timer->Update();
 
-            auto loopEnd = std::chrono::steady_clock::now();
-            auto deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(loopEnd - loopBegin).count();
-            if (deltaTime < m_frameTime)
+            auto deltaTimeMS = m_timer->GetDeltaTimeMS();
+            if (deltaTimeMS < m_targetTimePerFrame)
             {
-               std::this_thread::sleep_for(std::chrono::milliseconds(m_frameTime - deltaTime));
+               std::this_thread::sleep_for(std::chrono::milliseconds(m_targetTimePerFrame - deltaTimeMS));
             }
 
             m_timer->EndFrame();

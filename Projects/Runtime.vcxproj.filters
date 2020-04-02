@@ -699,5 +699,6 @@
     <None Include="Contents\Shaders\BRDFs.hlsli">
       <Filter>Shaders\PBS</Filter>
     </None>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

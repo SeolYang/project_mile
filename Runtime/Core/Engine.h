@@ -3,6 +3,9 @@
 
 namespace Mile
 {
+   constexpr unsigned int LOWER_BOUND_OF_ENGINE_FPS = 1;
+   constexpr unsigned int UPPER_BOUND_OF_ENGINE_FPS = 960;
+
    class Logger;
    class Timer;
    class ThreadPool;
@@ -44,7 +47,7 @@ namespace Mile
       bool              m_bIsRunning;
       bool              m_bShutdownFlag;
       unsigned int      m_maxFPS;
-      long long         m_frameTime;
+      long long         m_targetTimePerFrame;
       Logger*           m_logger;
       Timer*            m_timer;
       ThreadPool*       m_threadPool;

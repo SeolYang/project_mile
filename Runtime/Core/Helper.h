@@ -1,5 +1,6 @@
 #pragma once
 #pragma warning( disable : 4251 )
+#pragma warning( disable : 4996 )
 
 #include <vector>
 #include <array>
@@ -159,7 +160,7 @@ namespace Mile
    template <typename ... Args>
    static std::string Formatting(const std::string& str, Args ... args)
    {
-      size_t size = snprintf(nullptr, 0, str.c_str(), args ...) + 1;
+      int size = snprintf(nullptr, 0, str.c_str(), args ...) + 1;
       std::unique_ptr< char[] > buf(new char[size]);
       snprintf(buf.get(), size, str.c_str(), args ...);
       return std::string(buf.get(), buf.get() + size - 1);
@@ -168,7 +169,7 @@ namespace Mile
    template < typename ... Args>
    static String Formatting(const String & str, Args ... args)
    {
-      size_t size = _snwprintf(nullptr, 0, str.c_str(), args ...) + 1;
+      int size = _snwprintf(nullptr, 0, str.c_str(), args ...) + 1;
       std::unique_ptr< wchar_t > buf(new wchar_t[size]);
       _snwprintf(buf.get(), size, str.c_str(), args ...);
       return String(buf.get(), buf.get() + size - 1);
