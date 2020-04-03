@@ -23,7 +23,7 @@ namespace Mile
 
    private:
       ID3D11VertexShader* m_shader;
-      InputLayoutPtr       m_inputLayout;
+      InputLayoutPtr m_inputLayout;
 
    };
 }

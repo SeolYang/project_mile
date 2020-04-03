@@ -36,9 +36,15 @@ namespace Mile
       virtual ID3D11Resource* GetResource() const = 0;
       virtual ERenderResourceType GetResourceType() const = 0;
 
-      bool IsInitialized() const { return m_bIsInitialized; }
+      FORCEINLINE bool IsInitialized() const { return m_bIsInitialized; }
+      FORCEINLINE bool HasAvailableRenderer() const { return (m_renderer != nullptr); }
+
+      FORCEINLINE RendererDX11* GetRenderer() const { return m_renderer; }
 
    protected:
+      FORCEINLINE void ConfirmInitialize() { m_bIsInitialized = true; }
+
+   private:
       RendererDX11* m_renderer;
       bool m_bIsInitialized;
 

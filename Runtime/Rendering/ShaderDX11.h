@@ -32,61 +32,63 @@ namespace Mile
    protected:
       virtual bool Compile(const String& shaderPath, EShaderType shaderType) final
       {
-         if (m_bIsCompiled || m_renderer == nullptr)
+         bool bIsReadyToCompile = !m_bIsCompiled && (m_renderer != nullptr);
+         if (bIsReadyToCompile)
          {
-            return false;
-         }
+            std::string entryPoint = "Mile";
+            std::string target = "_5_0";
 
-         std::string entryPoint = "Mile";
-         std::string target = "_5_0";
+            switch (shaderType)
+            {
+            case EShaderType::VertexShader:
+               entryPoint += "VS";
+               target = "vs" + target;
+               break;
+            case EShaderType::HullShader:
+               entryPoint += "HS";
+               target = "hs" + target;
+               break;
+            case EShaderType::DomainShader:
+               entryPoint += "DS";
+               target = "ds" + target;
+               break;
+            case EShaderType::GeometryShader:
+               entryPoint += "GS";
+               target = "gs" + target;
+               break;
+            case EShaderType::PixelShader:
+               entryPoint += "PS";
+               target = "ps" + target;
+               break;
+            }
 
-         switch (shaderType)
-         {
-         case EShaderType::VertexShader:
-            entryPoint += "VS";
-            target = "vs" + target;
-            break;
-         case EShaderType::HullShader:
-            entryPoint += "HS";
-            target = "hs" + target;
-            break;
-         case EShaderType::DomainShader:
-            entryPoint += "DS";
-            target = "ds" + target;
-            break;
-         case EShaderType::GeometryShader:
-            entryPoint += "GS";
-            target = "gs" + target;
-            break;
-         case EShaderType::PixelShader:
-            entryPoint += "PS";
-            target = "ps" + target;
-            break;
-         }
-
-         auto compileFlags = D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_OPTIMIZATION_LEVEL3;
+            auto compileFlags = D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_OPTIMIZATION_LEVEL3;
 
 #if defined(_DEBUG) | defined(DEBUG)
-         compileFlags |= D3D10_SHADER_DEBUG;
+            compileFlags |= D3D10_SHADER_DEBUG;
 #endif
 
-         auto result = D3DCompileFromFile(shaderPath.c_str(),
-            nullptr,
-            D3D_COMPILE_STANDARD_FILE_INCLUDE,
-            entryPoint.c_str(),
-            target.c_str(),
-            compileFlags, 0,
-            &m_blob,
-            &m_errorBlob);
+            auto result = D3DCompileFromFile(shaderPath.c_str(),
+               nullptr,
+               D3D_COMPILE_STANDARD_FILE_INCLUDE,
+               entryPoint.c_str(),
+               target.c_str(),
+               compileFlags, 0,
+               &m_blob,
+               &m_errorBlob);
 
-         if (FAILED(result))
-         {
-            /*@TODO: logging shader compile error **/
-            return false;
+            if (!FAILED(result))
+            {
+               m_bIsCompiled = true;
+            }
+            else
+            {
+               /* Failed to compile shader. **/
+               /* @TODO: Logging error messages. **/
+            }
          }
 
-         m_bIsCompiled = true;
-         return true;
+         return m_bIsCompiled;
       }
 
    protected:

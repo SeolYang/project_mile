@@ -5,6 +5,7 @@ namespace Mile
 {
    /**
     * @brief	Direct3D 11 의 깊이-스텐실 버퍼를 래핑하는 클래스 입니다.
+    * @TODO    DSV도 SRV로 활용 할 수 있도록 만들기
     */
    class MEAPI DepthStencilBufferDX11 : public ResourceDX11
    {
@@ -21,7 +22,7 @@ namespace Mile
        */
       bool Init(unsigned int width, unsigned int height, bool stencilEnable);
 
-      virtual ID3D11Resource* GetResource() override { return m_depthStencilBuffer; }
+      virtual ID3D11Resource* GetResource() const override { return m_depthStencilBuffer; }
       virtual ERenderResourceType GetResourceType() const override { return ERenderResourceType::DepthStencilBuffer; }
       /**
        * @brief	깊이-스텐실 버퍼의 리소스 뷰를 반환 합니다.
@@ -36,9 +37,9 @@ namespace Mile
       bool IsStencilEnabled() const { return m_bStencilEnabled; }
 
    private:
-      ID3D11Texture2D* m_depthStencilBuffer;
+      ID3D11Texture2D*        m_depthStencilBuffer;
       ID3D11DepthStencilView* m_depthStencilView;
-      bool                    m_bStencilEnabled;
+      bool m_bStencilEnabled;
 
    };
 }

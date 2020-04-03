@@ -3,6 +3,18 @@
 
 namespace Mile
 {
+   InputLayoutDX11::InputLayoutDX11(RendererDX11* renderer) :
+      m_renderer(renderer),
+      m_inputLayout(nullptr),
+      m_bIsInitialized(false)
+   {
+   }
+
+   InputLayoutDX11::~InputLayoutDX11()
+   {
+      SafeRelease(m_inputLayout);
+   }
+
    bool InputLayoutDX11::Init(InputLayoutElementList&& inputLayoutDescs, VertexShaderDX11* shader)
    {
       if (m_bIsInitialized || m_renderer == nullptr)

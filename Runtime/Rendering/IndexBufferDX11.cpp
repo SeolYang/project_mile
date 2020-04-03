@@ -3,47 +3,50 @@
 
 namespace Mile
 {
+   IndexBufferDX11::IndexBufferDX11(RendererDX11* renderer) :
+      BufferDX11(renderer)
+   {
+   }
+
    bool IndexBufferDX11::Init(const std::vector<unsigned int>& indicies)
    {
-      if (m_bIsInitialized || (m_renderer == nullptr))
+      bool IsReadyToInit = HasAvailableRenderer() && (!IsInitialized());
+      if (IsReadyToInit)
       {
-         return false;
+         D3D11_BUFFER_DESC desc;
+         ZeroMemory(&desc, sizeof(desc));
+         desc.ByteWidth = static_cast<unsigned int>(sizeof(unsigned int) * indicies.size());
+         desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+         desc.StructureByteStride = 0;
+         desc.MiscFlags = 0;
+         desc.Usage = D3D11_USAGE_IMMUTABLE;
+         desc.CPUAccessFlags = 0;
+
+         D3D11_SUBRESOURCE_DATA subResource;
+         ZeroMemory(&subResource, sizeof(subResource));
+         subResource.pSysMem = indicies.data();
+
+         RendererDX11* renderer = GetRenderer();
+         auto result = renderer->GetDevice()->CreateBuffer(&desc, &subResource, &m_buffer);
+         if (!FAILED(result))
+         {
+            m_desc = desc;
+            ResourceDX11::ConfirmInitialize();
+            return true;
+         }
       }
 
-      D3D11_BUFFER_DESC desc;
-
-      ZeroMemory(&desc, sizeof(desc));
-      desc.ByteWidth = static_cast<unsigned int>(sizeof(unsigned int) * indicies.size());
-      desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-      desc.StructureByteStride = 0;
-      desc.MiscFlags = 0;
-      desc.Usage = D3D11_USAGE_IMMUTABLE;
-      desc.CPUAccessFlags = 0;
-
-      D3D11_SUBRESOURCE_DATA subResource;
-      ZeroMemory(&subResource, sizeof(subResource));
-      subResource.pSysMem = indicies.data();
-
-      auto result = m_renderer->GetDevice()->CreateBuffer(&desc, &subResource, &m_buffer);
-      if (FAILED(result))
-      {
-         return false;
-      }
-
-      m_desc = desc;
-      m_bIsInitialized = true;
-      return true;
+      return false;
    }
 
    bool IndexBufferDX11::Bind(ID3D11DeviceContext& deviceContext)
    {
-      if (!m_bIsInitialized)
+      if (IsInitialized())
       {
-         return false;
+         deviceContext.IASetIndexBuffer(m_buffer, DXGI_FORMAT_R32_UINT, 0);
+         return true;
       }
 
-      deviceContext.IASetIndexBuffer(m_buffer, DXGI_FORMAT_R32_UINT, 0);
-
-      return true;
+      return false;
    }
 }

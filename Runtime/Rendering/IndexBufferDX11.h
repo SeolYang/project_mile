@@ -6,10 +6,7 @@ namespace Mile
    class MEAPI IndexBufferDX11 : public BufferDX11
    {
    public:
-      IndexBufferDX11(RendererDX11* renderer) :
-         BufferDX11(renderer)
-      {
-      }
+      IndexBufferDX11(RendererDX11* renderer);
 
       bool Init(const std::vector<unsigned int>& indicies);
       bool Bind(ID3D11DeviceContext& deviceContext);

@@ -7,18 +7,8 @@ namespace Mile
    class MEAPI ConstantBufferDX11 : public BufferDX11
    {
    public:
-      ConstantBufferDX11(RendererDX11* renderer) :
-         m_bIsBinded(false),
-         m_bindedSlot(0),
-         m_bindedShader(EShaderType::PixelShader),
-         BufferDX11(renderer)
-      {
-      }
-
-      ~ConstantBufferDX11()
-      {
-         this->UnMapImmediately();
-      }
+      ConstantBufferDX11(RendererDX11* renderer);
+      ~ConstantBufferDX11();
 
       bool Init(unsigned int size);
 
@@ -30,10 +20,14 @@ namespace Mile
       bool Bind(ID3D11DeviceContext& deviceContext, unsigned int slot, EShaderType shaderType);
       void Unbind(ID3D11DeviceContext& deviceContext);
 
+      FORCEINLINE bool IsBound() const { return m_bIsBound; }
+      FORCEINLINE unsigned int GetBoundSlot() const { return m_boundSlot; }
+      FORCEINLINE EShaderType GetBoundShaderType() const { return m_boundShader; }
+
    private:
-      bool           m_bIsBinded;
-      unsigned int   m_bindedSlot;
-      EShaderType    m_bindedShader;
+      bool           m_bIsBound;
+      unsigned int   m_boundSlot;
+      EShaderType    m_boundShader;
 
    };
 }

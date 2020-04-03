@@ -22,5 +22,6 @@ namespace Mile
    private:
       ID3D11PixelShader* m_shader;
       std::vector<SamplerDX11*> m_samplers;
+
    };
 }

@@ -73,6 +73,9 @@
     <Filter Include="Sources\Rendering\Resources\Meshes">
       <UniqueIdentifier>{339724f9-79c5-4bd6-a1fe-1e416d9d85f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Rendering\Renderer\States">
+      <UniqueIdentifier>{597976da-7d38-4f5a-b97e-ee3ef903dd6d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Core\Context.h">
@@ -122,9 +125,6 @@
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\RenderTargetDX11.h">
       <Filter>Sources\Rendering\Resources\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\DepthStencilBufferDX11.h">
-      <Filter>Sources\Rendering\Resources\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\ShaderDX11.h">
       <Filter>Sources\Rendering\Shaders</Filter>
@@ -203,9 +203,6 @@
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\RenderingPass.h">
       <Filter>Sources\Rendering\Rendering Passes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\RasterizerState.h">
-      <Filter>Sources\Rendering\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\RendererDX11.h">
       <Filter>Sources\Rendering\Renderer</Filter>
@@ -453,9 +450,6 @@
     <ClInclude Include="..\Runtime\Rendering\GBuffer.h">
       <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
     </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\BlendState.h">
-      <Filter>Sources\Rendering\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\GeometryPass.h">
       <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
     </ClInclude>
@@ -491,6 +485,21 @@
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\Cube.h">
       <Filter>Sources\Rendering\Resources\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\DynamicCubemap.h">
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\Texture2DBaseDX11.h">
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\DepthStencilBufferDX11.h">
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\RasterizerState.h">
+      <Filter>Sources\Rendering\Renderer\States</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\BlendState.h">
+      <Filter>Sources\Rendering\Renderer\States</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -535,9 +544,6 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\RenderTargetDX11.cpp">
       <Filter>Sources\Rendering\Resources\Textures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\DepthStencilBufferDX11.cpp">
-      <Filter>Sources\Rendering\Resources\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\VertexShaderDX11.cpp">
       <Filter>Sources\Rendering\Shaders</Filter>
@@ -596,9 +602,6 @@
     <ClCompile Include="..\Runtime\Rendering\RenderingPass.cpp">
       <Filter>Sources\Rendering\Rendering Passes</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\RasterizerState.cpp">
-      <Filter>Sources\Rendering\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\RendererDX11.cpp">
       <Filter>Sources\Rendering\Renderer</Filter>
     </ClCompile>
@@ -623,9 +626,6 @@
     <ClCompile Include="..\Runtime\GameFramework\Entity.cpp">
       <Filter>Sources\GameFramework</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\BlendState.cpp">
-      <Filter>Sources\Rendering\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\LightingPass.cpp">
       <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
     </ClCompile>
@@ -640,6 +640,18 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\Cube.cpp">
       <Filter>Sources\Rendering\Resources\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\Texture2DBaseDX11.cpp">
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\DepthStencilBufferDX11.cpp">
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\BlendState.cpp">
+      <Filter>Sources\Rendering\Renderer\States</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\RasterizerState.cpp">
+      <Filter>Sources\Rendering\Renderer\States</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

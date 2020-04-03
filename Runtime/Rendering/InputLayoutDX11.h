@@ -8,17 +8,8 @@ namespace Mile
    {
       using InputLayoutElementList = std::vector<D3D11_INPUT_ELEMENT_DESC>;
    public:
-      InputLayoutDX11(RendererDX11* renderer) :
-         m_renderer(renderer),
-         m_inputLayout(nullptr),
-         m_bIsInitialized(false)
-      {
-      }
-
-      ~InputLayoutDX11()
-      {
-         SafeRelease(m_inputLayout);
-      }
+      InputLayoutDX11(RendererDX11* renderer);
+      ~InputLayoutDX11();
 
       bool Init(InputLayoutElementList&& intputLayoutDescs, VertexShaderDX11* shader);
       bool Bind(ID3D11DeviceContext& deviceContext);
@@ -27,11 +18,9 @@ namespace Mile
 
    private:
       RendererDX11* m_renderer;
-
+      bool m_bIsInitialized;
       ID3D11InputLayout* m_inputLayout;
-      bool                    m_bIsInitialized;
-
-      InputLayoutElementList  m_elementDescs;
+      InputLayoutElementList m_elementDescs;
 
    };
 }

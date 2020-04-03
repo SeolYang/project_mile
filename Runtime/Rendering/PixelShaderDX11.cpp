@@ -21,27 +21,24 @@ namespace Mile
 
    bool PixelShaderDX11::Init(const String& shaderPath)
    {
-      if (m_bIsCompiled || m_renderer == nullptr)
+      bool bIsReadyToInit = m_renderer != nullptr && m_shader == nullptr;
+      if (bIsReadyToInit)
       {
-         return false;
+         if (Compile(shaderPath, EShaderType::PixelShader))
+         {
+            auto result = m_renderer->GetDevice()->CreatePixelShader(m_blob->GetBufferPointer(),
+               m_blob->GetBufferSize(),
+               nullptr,
+               &m_shader);
+
+            if (!FAILED(result))
+            {
+               return true;
+            }
+         }
       }
 
-      if (!Compile(shaderPath, EShaderType::PixelShader))
-      {
-         return false;
-      }
-
-      auto result = m_renderer->GetDevice()->CreatePixelShader(m_blob->GetBufferPointer(),
-         m_blob->GetBufferSize(),
-         nullptr,
-         &m_shader);
-
-      if (FAILED(result))
-      {
-         return false;
-      }
-
-      return true;
+      return false;
    }
 
    bool PixelShaderDX11::Bind(ID3D11DeviceContext& deviceContext)

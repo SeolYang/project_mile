@@ -17,51 +17,52 @@ namespace Mile
 
    bool VertexShaderDX11::Init(const String& shaderPath)
    {
-      if (m_bIsCompiled || m_renderer == nullptr)
+      bool bIsReadyToInit = m_renderer != nullptr && m_shader == nullptr;
+      if (bIsReadyToInit)
       {
-         return false;
+         if (Compile(shaderPath, EShaderType::VertexShader))
+         {
+            auto device = m_renderer->GetDevice();
+            auto result = device->CreateVertexShader(m_blob->GetBufferPointer(), m_blob->GetBufferSize(),
+               nullptr,
+               &m_shader);
+
+            if (!FAILED(result))
+            {
+               m_inputLayout = std::make_unique<InputLayoutDX11>(m_renderer);
+               if (m_inputLayout->Init(this->Reflect(), this))
+               {
+                  return true;
+               }
+               else
+               {
+                  m_inputLayout.reset();
+                  SafeRelease(m_shader);
+               }
+            }
+            else
+            {
+               /* Failed to create vertex shader. **/
+            }
+         }
       }
-
-      if (!Compile(shaderPath, EShaderType::VertexShader))
-      {
-         return false;
-      }
-
-      auto device = m_renderer->GetDevice();
-      auto result = device->CreateVertexShader(m_blob->GetBufferPointer(), m_blob->GetBufferSize(),
-         nullptr,
-         &m_shader);
-
-      if (FAILED(result))
-      {
-         // Failed to create vertex shader
-         return false;
-      }
-
-      m_inputLayout = std::make_unique<InputLayoutDX11>(m_renderer);
-      if (!m_inputLayout->Init(this->Reflect(), this))
-      {
-         return false;
-      }
-
-      return true;
+      
+      return false;
    }
 
    bool VertexShaderDX11::Bind(ID3D11DeviceContext& deviceContext)
    {
-      if (!m_bIsCompiled || m_renderer == nullptr)
+      bool bIsReadyToBind = m_bIsCompiled && m_shader != nullptr && m_renderer != nullptr;
+      if (bIsReadyToBind)
       {
-         return false;
+         if (m_inputLayout->Bind(deviceContext))
+         {
+            deviceContext.VSSetShader(m_shader, nullptr, 0);
+            return true;
+         }
       }
 
-      // Set Input Layout
-      if (!m_inputLayout->Bind(deviceContext))
-      {
-         return false;
-      }
-
-      deviceContext.VSSetShader(m_shader, nullptr, 0);
-      return true;
+      return false;
    }
 
    void VertexShaderDX11::Unbind(ID3D11DeviceContext& deviceContext)

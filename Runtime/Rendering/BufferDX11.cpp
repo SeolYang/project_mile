@@ -2,25 +2,32 @@
 
 namespace Mile
 {
-   ID3D11Resource* BufferDX11::GetResource()
+   BufferDX11::BufferDX11(RendererDX11* renderer) :
+      m_bIsMapped(false),
+      m_buffer(nullptr),
+      ResourceDX11(renderer)
    {
-      return m_buffer;
+      ZeroMemory(&m_desc, sizeof(D3D11_BUFFER_DESC));
    }
 
+   BufferDX11::~BufferDX11()
+   {
+      SafeRelease(m_buffer);
+   }
 
    bool BufferDX11::UnMapImmediately()
    {
-      if (!m_bIsInitialized || m_renderer == nullptr || !m_bIsMapped)
+      bool bIsReadyToUnmap = m_bIsMapped && HasAvailableRenderer() && IsInitialized();
+      if (bIsReadyToUnmap)
       {
-         return false;
+         RendererDX11* renderer = GetRenderer();
+         auto immediateContext = renderer->GetImmediateContext();
+         if (immediateContext != nullptr)
+         {
+            return UnMap(*immediateContext);
+         }
       }
 
-      auto immediateContext = m_renderer->GetImmediateContext();
-      if (immediateContext == nullptr)
-      {
-         return false;
-      }
-
-      return UnMap(*immediateContext);
+      return false;
    }
 }
