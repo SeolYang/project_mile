@@ -33,7 +33,7 @@ namespace Mile
       {
       }
 
-      virtual ID3D11Resource* GetResource() = 0;
+      virtual ID3D11Resource* GetResource() const = 0;
       virtual ERenderResourceType GetResourceType() const = 0;
 
       bool IsInitialized() const { return m_bIsInitialized; }

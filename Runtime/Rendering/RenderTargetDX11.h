@@ -12,36 +12,34 @@ namespace Mile
       virtual ~RenderTargetDX11();
 
       bool Init(unsigned int width, unsigned int height, DXGI_FORMAT format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM, DepthStencilBufferDX11* depthStencilBuffer = nullptr);
-      /* If initialize with this method, it is not able to bind as shader resource. Because it suppose always bounded as Render target view */
+
+      /**
+       * @remark  이 함수를 통해 객체를 초기화 할 경우, 셰이더 리소스로는 바운드 시킬 수 없습니다. (항상 렌더 타겟으로만 Output Merge Stage 에 바인드 되어야 합니다.)
+       */
       bool Init(ID3D11RenderTargetView* rtv, DepthStencilBufferDX11* depthStencilBuffer = nullptr);
 
       unsigned int GetWidth() const { return m_width; }
       unsigned int GetHeight() const { return m_height; }
-
       Texture2dDX11* GetTexture() const { return m_texture; }
       ID3D11RenderTargetView* GetRTV() const { return m_rtv; }
-
-      void SetDepthStencilBuffer(DepthStencilBufferDX11* buffer) { this->m_depthStencilBuffer = buffer; }
 
       bool BindAsRenderTarget(ID3D11DeviceContext& deviceContext, bool clearTarget = true);
       bool BindAsShaderResource(ID3D11DeviceContext& deviceContext, unsigned int startSlot, EShaderType shader);
       void UnbindRenderTarget(ID3D11DeviceContext& deviceContext);
       void UnbindShaderResource(ID3D11DeviceContext& deviceContext);
 
+      void SetDepthStencilBuffer(DepthStencilBufferDX11* buffer) { this->m_depthStencilBuffer = buffer; }
       void SetClearColor(const Vector4& color);
-
       void ClearDepthStencil(ID3D11DeviceContext& deviceContext);
 
    private:
       RendererDX11* m_renderer;
-      Texture2dDX11* m_texture;
       ID3D11RenderTargetView* m_rtv;
+      Texture2dDX11* m_texture;
+      DepthStencilBufferDX11* m_depthStencilBuffer;
 
       unsigned int               m_width;
       unsigned int               m_height;
-
-      DepthStencilBufferDX11* m_depthStencilBuffer;
-
       Vector4                    m_clearColor;
 
    };

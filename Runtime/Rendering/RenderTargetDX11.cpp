@@ -23,9 +23,8 @@ namespace Mile
 
    bool RenderTargetDX11::Init(unsigned int width, unsigned int height, DXGI_FORMAT format, DepthStencilBufferDX11* depthStencilBuffer)
    {
-      if (m_texture != nullptr
-         || m_renderer == nullptr
-         || width == 0 || height == 0)
+      bool bIsInitialized = m_texture != nullptr || (width == 0 || height == 0);
+      if (bIsInitialized || m_renderer == nullptr)
       {
          return false;
       }
@@ -49,7 +48,8 @@ namespace Mile
 
       ID3D11Texture2D* texture = nullptr;
       auto device = m_renderer->GetDevice();
-      auto result = device->CreateTexture2D(&texDesc,
+      auto result = device->CreateTexture2D(
+         &texDesc,
          nullptr,
          &texture);
       if (FAILED(result))
@@ -63,7 +63,8 @@ namespace Mile
       rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
       rtvDesc.Texture2D.MipSlice = 0;
 
-      result = device->CreateRenderTargetView(texture,
+      result = device->CreateRenderTargetView(
+         texture,
          &rtvDesc,
          &m_rtv);
       if (FAILED(result))
@@ -83,18 +84,16 @@ namespace Mile
 
    bool RenderTargetDX11::Init(ID3D11RenderTargetView* rtv, DepthStencilBufferDX11* depthStencilBuffer)
    {
-      if (m_texture != nullptr ||
-         m_renderer == nullptr ||
-         rtv == nullptr)
+      bool bIsInitialized = m_texture != nullptr;
+      bool bIsNotReadyToInitialize = m_renderer == nullptr || rtv == nullptr;
+      if (bIsInitialized || bIsNotReadyToInitialize)
       {
          return false;
       }
 
       m_rtv = rtv;
-
       ID3D11Resource* rtvResource = nullptr;
       rtv->GetResource(&rtvResource);
-
       if (rtvResource == nullptr)
       {
          return false;
@@ -114,7 +113,8 @@ namespace Mile
 
    bool RenderTargetDX11::BindAsRenderTarget(ID3D11DeviceContext& deviceContext, bool clearTarget)
    {
-      if (m_rtv == nullptr || m_renderer == nullptr)
+      bool bIsNotReadyToBind = m_rtv == nullptr || m_renderer == nullptr;
+      if (bIsNotReadyToBind)
       {
          return false;
       }
@@ -174,10 +174,10 @@ namespace Mile
       if (m_depthStencilBuffer != nullptr)
       {
          dsv = m_depthStencilBuffer->GetDSV();
-         deviceContext.ClearDepthStencilView(dsv,
+         deviceContext.ClearDepthStencilView(
+            dsv,
             D3D11_CLEAR_DEPTH,
-            1.0f,
-            0);
+            1.0f, 0);
       }
    }
 }

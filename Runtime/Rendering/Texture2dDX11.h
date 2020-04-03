@@ -26,7 +26,7 @@ namespace Mile
       bool Bind(ID3D11DeviceContext& deviceContext, unsigned int startSlot, EShaderType shader);
       void Unbind(ID3D11DeviceContext& deviceContext);
 
-      virtual ID3D11Resource* GetResource() override { return m_texture; }
+      virtual ID3D11Resource* GetResource() const override { return m_texture; }
       virtual ERenderResourceType GetResourceType() const override { return ERenderResourceType::Texture2D; }
       ID3D11ShaderResourceView* GetSRV() { return m_srv; }
       unsigned int GetMipLevels() const { return m_mipLevels; }
