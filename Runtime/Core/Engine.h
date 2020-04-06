@@ -43,7 +43,17 @@ namespace Mile
 
       bool IsRunning() const { return m_bIsRunning; }
 
+      static Logger* GetLogger();
+      static Timer* GetTimer();
+      static ThreadPool* GetThreadPool();
+      static ResourceManager* GetResourceManager();
+      static ConfigSystem* GetConfigSystem();
+      static Window* GetWindow();
+      static RendererDX11* GetRenderer();
+      static World* GetWorld();
+
    private:
+      static Engine*    m_instance;
       bool              m_bIsRunning;
       bool              m_bShutdownFlag;
       unsigned int      m_maxFPS;
@@ -56,6 +66,5 @@ namespace Mile
       Window*           m_window;
       RendererDX11*     m_renderer;
       World*            m_world;
-
    };
 }
