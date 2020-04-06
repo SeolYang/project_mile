@@ -40,7 +40,8 @@ namespace Mile
 
          RendererDX11* renderer = GetRenderer();
          auto device = renderer->GetDevice();
-         auto result = device->CreateTexture2D(&bufferDesc,
+         auto result = device->CreateTexture2D(
+            &bufferDesc,
             nullptr,
             &m_depthStencilBuffer);
          if (!FAILED(result))

@@ -294,6 +294,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Rendering\VertexBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\VertexShaderDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Viewport.cpp" />
+    <ClCompile Include="..\Runtime\Resource\DynamicCubemap.cpp" />
     <ClCompile Include="..\Runtime\Resource\Material.cpp" />
     <ClCompile Include="..\Runtime\Resource\Model.cpp" />
     <ClCompile Include="..\Runtime\Resource\ModelLoader.cpp" />

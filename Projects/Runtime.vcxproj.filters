@@ -653,6 +653,9 @@
     <ClCompile Include="..\Runtime\Rendering\RasterizerState.cpp">
       <Filter>Sources\Rendering\Renderer\States</Filter>
     </ClCompile>
+    <ClCompile Include="..\Runtime\Resource\DynamicCubemap.cpp">
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Contents\Shaders\TestShader.hlsl">
