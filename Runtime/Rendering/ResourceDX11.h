@@ -1,5 +1,6 @@
 #pragma once
 #include "Rendering/RendererDX11.h"
+#include "Core/Engine.h"
 
 namespace Mile
 {
@@ -16,7 +17,7 @@ namespace Mile
       Texture3D,
       RenderTarget,
       DepthStencilBuffer,
-      Cubemap
+      DynamicCubemap
    };
 
    class RendererDX11;
@@ -31,13 +32,17 @@ namespace Mile
 
       virtual ~ResourceDX11()
       {
+         m_renderer = nullptr;
       }
 
       virtual ID3D11Resource* GetResource() const = 0;
       virtual ERenderResourceType GetResourceType() const = 0;
 
       FORCEINLINE bool IsInitialized() const { return m_bIsInitialized; }
-      FORCEINLINE bool HasAvailableRenderer() const { return (m_renderer != nullptr); }
+      FORCEINLINE bool HasAvailableRenderer() const
+      {
+         return (m_renderer != nullptr) && (Engine::GetRenderer() == m_renderer);
+      }
 
       FORCEINLINE RendererDX11* GetRenderer() const { return m_renderer; }
 
