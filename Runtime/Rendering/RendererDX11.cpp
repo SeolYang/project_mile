@@ -225,7 +225,8 @@ namespace Mile
       D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
 
 
-      auto hr = D3D11CreateDeviceAndSwapChain(nullptr,
+      auto hr = D3D11CreateDeviceAndSwapChain(
+         nullptr,
          D3D_DRIVER_TYPE_HARDWARE,
          NULL,
          createDeviceFlags,
@@ -246,7 +247,8 @@ namespace Mile
 
       /* Create Render target view **/
       ID3D11Texture2D* backBuffer = nullptr;
-      hr = m_swapChain->GetBuffer(0,
+      hr = m_swapChain->GetBuffer(
+         0,
          __uuidof(ID3D11Texture2D),
          (LPVOID*)& backBuffer);
 
@@ -256,7 +258,8 @@ namespace Mile
          return false;
       }
 
-      hr = m_device->CreateRenderTargetView(backBuffer,
+      hr = m_device->CreateRenderTargetView(
+         backBuffer,
          nullptr,
          &m_renderTargetView);
       SafeRelease(backBuffer);

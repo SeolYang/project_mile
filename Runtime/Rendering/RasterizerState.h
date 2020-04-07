@@ -1,5 +1,5 @@
 #pragma once
-#include "Rendering/RenderingCore.h"
+#include "Rendering/RenderObject.h"
 
 namespace Mile
 {
@@ -20,7 +20,7 @@ namespace Mile
    /**
     * @brief	렌더러가 Rasterizer 단계에서 어떻게 동작할지에 대해 기술하는 클래스 입니다.
     */
-   class MEAPI RasterizerState
+   class MEAPI RasterizerState : public RenderObject
    {
    public:
       RasterizerState(RendererDX11* renderer);
@@ -126,9 +126,7 @@ namespace Mile
       bool IsDepthClipEnabled() const { return m_bIsDepthClipEnable; }
 
    private:
-      RendererDX11*  m_renderer;
       bool           m_bIsDirty;
-
       bool           m_bIsWireframe;
       CullMode       m_cullMode;
       WindingOrder   m_windingOrder;

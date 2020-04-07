@@ -23,8 +23,7 @@ namespace Mile
 
    bool Texture2DBaseDX11::Bind(ID3D11DeviceContext& deviceContext, unsigned int startSlot, EShaderType shader)
    {
-      bool IsReadyToBind = (IsInitialized() && HasAvailableRenderer()) && (!IsBoundAsShaderResource());
-      if (IsReadyToBind)
+      if (RenderObject::IsBindable() && !IsBoundAsShaderResource())
       {
          switch (shader)
          {
@@ -56,8 +55,7 @@ namespace Mile
 
    void Texture2DBaseDX11::Unbind(ID3D11DeviceContext& deviceContext)
    {
-      bool bIsReadyToUnbind = IsInitialized() && HasAvailableRenderer() && IsBoundAsShaderResource();
-      if (bIsReadyToUnbind)
+      if (RenderObject::IsBindable() && IsBoundAsShaderResource())
       {
          unsigned int boundSlot = GetBoundSlot();
          ID3D11ShaderResourceView* nullSRV = nullptr;

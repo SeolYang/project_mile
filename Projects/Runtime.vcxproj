@@ -139,6 +139,8 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\Runtime\Rendering\BufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ConstantBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\Cube.h" />
+    <ClInclude Include="..\Runtime\Rendering\Equirect2CubemapPass.h" />
+    <ClInclude Include="..\Runtime\Rendering\RenderObject.h" />
     <ClInclude Include="..\Runtime\Rendering\Texture2DBaseDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\DepthStencilBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\DynamicCubemap.h" />
@@ -275,6 +277,9 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Rendering\BufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\ConstantBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Cube.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\Equirect2CubemapPass.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\RenderObject.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\ShaderDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Texture2DBaseDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\DepthStencilBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\GBuffer.cpp" />

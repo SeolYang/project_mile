@@ -21,18 +21,21 @@ namespace Mile
 
    bool PixelShaderDX11::Init(const String& shaderPath)
    {
-      bool bIsReadyToInit = m_renderer != nullptr && m_shader == nullptr;
-      if (bIsReadyToInit)
+      if (RenderObject::IsInitializable())
       {
          if (Compile(shaderPath, EShaderType::PixelShader))
          {
-            auto result = m_renderer->GetDevice()->CreatePixelShader(m_blob->GetBufferPointer(),
+            RendererDX11* renderer = GetRenderer();
+            auto device = renderer->GetDevice();
+            auto result = device->CreatePixelShader(
+               m_blob->GetBufferPointer(),
                m_blob->GetBufferSize(),
                nullptr,
                &m_shader);
 
             if (!FAILED(result))
             {
+               RenderObject::ConfirmInit();
                return true;
             }
          }
@@ -43,29 +46,29 @@ namespace Mile
 
    bool PixelShaderDX11::Bind(ID3D11DeviceContext& deviceContext)
    {
-      if (!m_bIsCompiled || m_renderer == nullptr)
+      if (RenderObject::IsBindable())
       {
-         return false;
-      }
+         deviceContext.PSSetShader(m_shader,
+            nullptr,
+            0);
 
-      deviceContext.PSSetShader(m_shader,
-         nullptr,
-         0);
-
-      for (int idx = 0; idx < m_samplers.size(); ++idx)
-      {
-         if (!m_samplers[idx]->Bind(deviceContext, idx))
+         for (int idx = 0; idx < m_samplers.size(); ++idx)
          {
-            return false;
+            if (!m_samplers[idx]->Bind(deviceContext, idx))
+            {
+               return false;
+            }
          }
+
+         return true;
       }
 
-      return true;
+      return false;
    }
 
    void PixelShaderDX11::Unbind(ID3D11DeviceContext& deviceContext)
    {
-      if (m_renderer != nullptr)
+      if (RenderObject::IsBindable())
       {
          for (auto sampler : m_samplers)
          {
@@ -78,7 +81,8 @@ namespace Mile
 
    bool PixelShaderDX11::AddSampler(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE AddressModeU, D3D11_TEXTURE_ADDRESS_MODE AddressModeV, D3D11_TEXTURE_ADDRESS_MODE AddressModeW, D3D11_COMPARISON_FUNC compFunc)
    {
-      SamplerDX11* sampler = new SamplerDX11(m_renderer);
+      RendererDX11* renderer = GetRenderer();
+      SamplerDX11* sampler = new SamplerDX11(renderer);
       if (!sampler->Init(filter, AddressModeU, AddressModeV, AddressModeW, compFunc))
       {
          SafeDelete(sampler);

@@ -1,17 +1,18 @@
 #include "Rendering/RenderTargetDX11.h"
 #include "Rendering/DepthStencilBufferDX11.h"
 #include "Rendering/Texture2dDX11.h"
+#include "Rendering/RendererDX11.h"
 
 namespace Mile
 {
    RenderTargetDX11::RenderTargetDX11(RendererDX11* renderer) :
-      m_renderer(renderer),
       m_depthStencilBuffer(nullptr),
       m_texture(nullptr),
       m_rtv(nullptr),
       m_width(0),
       m_height(0),
-      m_clearColor{ 0.0f, 0.0f, 0.0f, 1.0f }
+      m_clearColor{ 0.0f, 0.0f, 0.0f, 1.0f },
+      RenderObject(renderer)
    {
    }
 
@@ -24,8 +25,7 @@ namespace Mile
    bool RenderTargetDX11::Init(unsigned int width, unsigned int height, DXGI_FORMAT format, DepthStencilBufferDX11* depthStencilBuffer)
    {
       bool bIsValidParams = (width > 0 && height > 0);
-      bool bIsReadyToInit = m_texture == nullptr && bIsValidParams;
-      if (bIsReadyToInit)
+      if (RenderObject::IsInitializable() && bIsValidParams)
       {
          m_width = width;
          m_height = height;
@@ -44,8 +44,9 @@ namespace Mile
          texDesc.CPUAccessFlags = 0;
          texDesc.MiscFlags = 0;
 
+         RendererDX11* renderer = GetRenderer();
          ID3D11Texture2D* texture = nullptr;
-         auto device = m_renderer->GetDevice();
+         auto device = renderer->GetDevice();
          auto result = device->CreateTexture2D(
             &texDesc,
             nullptr,
@@ -64,10 +65,11 @@ namespace Mile
                &m_rtv);
             if (!FAILED(result))
             {
-               m_texture = new Texture2dDX11(m_renderer);
+               m_texture = new Texture2dDX11(renderer);
                if (m_texture->Init(texture))
                {
                   m_depthStencilBuffer = depthStencilBuffer;
+                  RenderObject::ConfirmInit();
                   return true;
                }
                else
@@ -91,8 +93,7 @@ namespace Mile
 
    bool RenderTargetDX11::Init(ID3D11RenderTargetView* rtv, DepthStencilBufferDX11* depthStencilBuffer)
    {
-      bool bIsReadyToInit = m_renderer != nullptr && rtv != nullptr && m_texture == nullptr;
-      if (bIsReadyToInit)
+      if (RenderObject::IsInitializable())
       {
          m_rtv = rtv;
          ID3D11Resource* rtvResource = nullptr;
@@ -108,6 +109,7 @@ namespace Mile
             m_depthStencilBuffer = depthStencilBuffer;
 
             SafeRelease(texture);
+            RenderObject::ConfirmInit();
             return true;
          }
          else
@@ -121,8 +123,7 @@ namespace Mile
 
    bool RenderTargetDX11::BindAsRenderTarget(ID3D11DeviceContext& deviceContext, bool clearTarget)
    {
-      bool bIsReadyToBind = m_rtv != nullptr && m_renderer != nullptr;
-      if (bIsReadyToBind)
+      if (RenderObject::IsBindable())
       {
          ID3D11DepthStencilView* dsv = nullptr;
          if (m_depthStencilBuffer != nullptr)
@@ -152,7 +153,7 @@ namespace Mile
 
    bool RenderTargetDX11::BindAsShaderResource(ID3D11DeviceContext& deviceContext, unsigned int startSlot, EShaderType shader)
    {
-      if (m_texture != nullptr)
+      if (RenderObject::IsBindable())
       {
          return m_texture->Bind(deviceContext, startSlot, shader);
       }
@@ -162,13 +163,16 @@ namespace Mile
 
    void RenderTargetDX11::UnbindRenderTarget(ID3D11DeviceContext& deviceContext)
    {
-      ID3D11RenderTargetView* nullRTV = nullptr;
-      deviceContext.OMSetRenderTargets(1, &nullRTV, nullptr);
+      if (RenderObject::IsBindable())
+      {
+         ID3D11RenderTargetView* nullRTV = nullptr;
+         deviceContext.OMSetRenderTargets(1, &nullRTV, nullptr);
+      }
    }
 
    void RenderTargetDX11::UnbindShaderResource(ID3D11DeviceContext& deviceContext)
    {
-      if (m_texture != nullptr)
+      if (RenderObject::IsBindable())
       {
          m_texture->Unbind(deviceContext);
       }
@@ -181,14 +185,17 @@ namespace Mile
 
    void RenderTargetDX11::ClearDepthStencil(ID3D11DeviceContext& deviceContext)
    {
-      ID3D11DepthStencilView* dsv = nullptr;
-      if (m_depthStencilBuffer != nullptr)
+      if (RenderObject::IsBindable())
       {
-         dsv = m_depthStencilBuffer->GetDSV();
-         deviceContext.ClearDepthStencilView(
-            dsv,
-            D3D11_CLEAR_DEPTH,
-            1.0f, 0);
+         ID3D11DepthStencilView* dsv = nullptr;
+         if (m_depthStencilBuffer != nullptr)
+         {
+            dsv = m_depthStencilBuffer->GetDSV();
+            deviceContext.ClearDepthStencilView(
+               dsv,
+               D3D11_CLEAR_DEPTH,
+               1.0f, 0);
+         }
       }
    }
 }

@@ -1,13 +1,13 @@
 #include "Rendering/SamplerDX11.h"
+#include "Rendering/RendererDX11.h"
 
 namespace Mile
 {
    SamplerDX11::SamplerDX11(RendererDX11* renderer) :
       m_sampler(nullptr),
-      m_bIsInitialized(false),
       m_boundSlot(0),
       m_bIsBound(false),
-      m_renderer(renderer)
+      RenderObject(renderer)
    {
    }
 
@@ -18,12 +18,7 @@ namespace Mile
 
    bool SamplerDX11::Init(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE AddressModeU, D3D11_TEXTURE_ADDRESS_MODE AddressModeV, D3D11_TEXTURE_ADDRESS_MODE AddressModeW, D3D11_COMPARISON_FUNC compFunc)
    {
-      if (m_bIsInitialized || m_renderer == nullptr)
-      {
-         return false;
-      }
-      bool bIsReadyToInit = (!m_bIsInitialized) && (m_renderer != nullptr);
-      if (bIsReadyToInit)
+      if (RenderObject::IsInitializable())
       {
          D3D11_SAMPLER_DESC desc;
          ZeroMemory(&desc, sizeof(desc));
@@ -40,10 +35,12 @@ namespace Mile
          desc.MinLOD = FLT_MIN;
          desc.MaxLOD = FLT_MAX;
 
-         auto result = m_renderer->GetDevice()->CreateSamplerState(&desc, &m_sampler);
+         RendererDX11* renderer = GetRenderer();
+         auto device = renderer->GetDevice();
+         auto result = device->CreateSamplerState(&desc, &m_sampler);
          if (!FAILED(result))
          {
-            m_bIsInitialized = true;
+            RenderObject::ConfirmInit();
             return true;
          }
       }
@@ -53,8 +50,7 @@ namespace Mile
 
    bool SamplerDX11::Bind(ID3D11DeviceContext& deviceContext, unsigned int startSlot)
    {
-      bool bIsReadyToBind = m_bIsInitialized && (m_renderer != nullptr);
-      if (bIsReadyToBind)
+      if (RenderObject::IsBindable() && !m_bIsBound)
       {
          deviceContext.PSSetSamplers(startSlot, 1, &m_sampler);
          m_boundSlot = startSlot;
@@ -67,8 +63,7 @@ namespace Mile
 
    void SamplerDX11::Unbind(ID3D11DeviceContext& deviceContext)
    {
-      bool bIsReadyToUnbind = m_bIsInitialized && m_bIsBound;
-      if (bIsReadyToUnbind)
+      if (RenderObject::IsBindable() && m_bIsBound)
       {
          ID3D11SamplerState* nullSampler = nullptr;
          deviceContext.PSSetSamplers(m_boundSlot, 1, &nullSampler);

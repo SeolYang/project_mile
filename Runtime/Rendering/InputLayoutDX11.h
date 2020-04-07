@@ -1,10 +1,10 @@
 #pragma once
-#include "Rendering/ResourceDX11.h"
+#include "Rendering/RenderObject.h"
 
 namespace Mile
 {
    class VertexShaderDX11;
-   class MEAPI InputLayoutDX11
+   class MEAPI InputLayoutDX11 : public RenderObject
    {
       using InputLayoutElementList = std::vector<D3D11_INPUT_ELEMENT_DESC>;
    public:
@@ -17,8 +17,6 @@ namespace Mile
       InputLayoutElementList GetElementDescs() const { return m_elementDescs; }
 
    private:
-      RendererDX11* m_renderer;
-      bool m_bIsInitialized;
       ID3D11InputLayout* m_inputLayout;
       InputLayoutElementList m_elementDescs;
 

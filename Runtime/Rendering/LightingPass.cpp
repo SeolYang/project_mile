@@ -28,71 +28,75 @@ namespace Mile
          return false;
       }
 
-      m_cameraParamsBuffer = new ConstantBufferDX11(m_renderer);
+      RendererDX11* renderer = GetRenderer();
+      m_cameraParamsBuffer = new ConstantBufferDX11(renderer);
       if (!m_cameraParamsBuffer->Init(sizeof(CameraParamsConstantBuffer)))
       {
          return false;
       }
 
-      m_lightParamsBuffer = new ConstantBufferDX11(m_renderer);
+      m_lightParamsBuffer = new ConstantBufferDX11(renderer);
       if (!m_lightParamsBuffer->Init(sizeof(LightParamsConstantBuffer)))
       {
          return false;
       }
 
-      m_pixelShader->AddSampler(
+      PixelShaderDX11* pixelShader = GetPixelShader();
+      pixelShader->AddSampler(
          D3D11_FILTER_ANISOTROPIC,
          D3D11_TEXTURE_ADDRESS_WRAP,
          D3D11_COMPARISON_ALWAYS);
 
+      RenderObject::ConfirmInit();
       return true;
    }
 
    bool LightingPass::Bind(ID3D11DeviceContext& deviceContext)
    {
-      bool bIsNotReadyToBind =
-         !RenderingPass::Bind(deviceContext) ||
-         m_cameraParamsBuffer == nullptr ||
-         m_lightParamsBuffer == nullptr ||
-         m_gBuffer == nullptr;
-      if (bIsNotReadyToBind)
+      if (RenderingPass::Bind(deviceContext))
       {
-         return false;
+
+         if (!m_gBuffer->BindAsShaderResource(deviceContext, 0))
+         {
+            return false;
+         }
+
+         if (!m_cameraParamsBuffer->Bind(deviceContext, 0, EShaderType::PixelShader))
+         {
+            return false;
+         }
+
+         if (!m_lightParamsBuffer->Bind(deviceContext, 1, EShaderType::PixelShader))
+         {
+            return false;
+         }
+
+         return true;
       }
 
-      if (!m_gBuffer->BindAsShaderResource(deviceContext, 0))
-      {
-         return false;
-      }
-
-      if (!m_cameraParamsBuffer->Bind(deviceContext, 0, EShaderType::PixelShader))
-      {
-         return false;
-      }
-
-      if (!m_lightParamsBuffer->Bind(deviceContext, 1, EShaderType::PixelShader))
-      {
-         return false;
-      }
-
-      return true;
+      return false;
    }
 
    void LightingPass::Unbind(ID3D11DeviceContext& deviceContext)
    {
-      if (m_gBuffer != nullptr)
+      if (RenderObject::IsBindable())
       {
-         m_gBuffer->UnbindShaderResource(deviceContext);
-      }
+         if (m_gBuffer != nullptr)
+         {
+            m_gBuffer->UnbindShaderResource(deviceContext);
+         }
 
-      if (m_cameraParamsBuffer != nullptr)
-      {
-         m_cameraParamsBuffer->Unbind(deviceContext);
-      }
+         if (m_cameraParamsBuffer != nullptr)
+         {
+            m_cameraParamsBuffer->Unbind(deviceContext);
+         }
 
-      if (m_lightParamsBuffer != nullptr)
-      {
-         m_lightParamsBuffer->Unbind(deviceContext);
+         if (m_lightParamsBuffer != nullptr)
+         {
+            m_lightParamsBuffer->Unbind(deviceContext);
+         }
+
+         RenderingPass::Unbind(deviceContext);
       }
    }
 

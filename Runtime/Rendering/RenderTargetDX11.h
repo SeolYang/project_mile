@@ -1,11 +1,11 @@
 #pragma once
-#include "Rendering/RendererDX11.h"
+#include "Rendering/RenderObject.h"
 
 namespace Mile
 {
    class Texture2dDX11;
    class DepthStencilBufferDX11;
-   class MEAPI RenderTargetDX11
+   class MEAPI RenderTargetDX11 : public RenderObject
    {
    public:
       RenderTargetDX11(RendererDX11* renderer);
@@ -33,7 +33,6 @@ namespace Mile
       void ClearDepthStencil(ID3D11DeviceContext& deviceContext);
 
    private:
-      RendererDX11* m_renderer;
       ID3D11RenderTargetView* m_rtv;
       Texture2dDX11* m_texture;
       DepthStencilBufferDX11* m_depthStencilBuffer;

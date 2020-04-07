@@ -1,10 +1,10 @@
 #pragma once
-#include "Rendering/RenderingCore.h"
+#include "Rendering/RenderObject.h"
 
 namespace Mile
 {
    class RendererDX11;
-   class MEAPI Viewport
+   class MEAPI Viewport : public RenderObject
    {
    public:
       Viewport(RendererDX11* renderer);
@@ -32,8 +32,6 @@ namespace Mile
       bool Bind(ID3D11DeviceContext& deviceContext);
 
    public:
-      RendererDX11* m_renderer;
-
       float m_width;
       float m_height;
       float m_minDepth;

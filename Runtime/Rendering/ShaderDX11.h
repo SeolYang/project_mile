@@ -1,16 +1,17 @@
 #pragma once
-#include "Rendering/ResourceDX11.h"
+#include "Rendering/RenderObject.h"
+#include "Rendering/RendererDX11.h"
 
 namespace Mile
 {
-   class MEAPI ShaderDX11
+   class MEAPI ShaderDX11 : public RenderObject
    {
    public:
       ShaderDX11(RendererDX11* renderer) :
-         m_renderer(renderer),
          m_blob(nullptr),
          m_errorBlob(nullptr),
-         m_bIsCompiled(false)
+         m_bIsCompiled(false),
+         RenderObject(renderer)
       {
       }
 
@@ -30,70 +31,9 @@ namespace Mile
       virtual EShaderType GetShaderType() const = 0;
 
    protected:
-      virtual bool Compile(const String& shaderPath, EShaderType shaderType) final
-      {
-         bool bIsReadyToCompile = !m_bIsCompiled && (m_renderer != nullptr);
-         if (bIsReadyToCompile)
-         {
-            std::string entryPoint = "Mile";
-            std::string target = "_5_0";
-
-            switch (shaderType)
-            {
-            case EShaderType::VertexShader:
-               entryPoint += "VS";
-               target = "vs" + target;
-               break;
-            case EShaderType::HullShader:
-               entryPoint += "HS";
-               target = "hs" + target;
-               break;
-            case EShaderType::DomainShader:
-               entryPoint += "DS";
-               target = "ds" + target;
-               break;
-            case EShaderType::GeometryShader:
-               entryPoint += "GS";
-               target = "gs" + target;
-               break;
-            case EShaderType::PixelShader:
-               entryPoint += "PS";
-               target = "ps" + target;
-               break;
-            }
-
-            auto compileFlags = D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_OPTIMIZATION_LEVEL3;
-
-#if defined(_DEBUG) | defined(DEBUG)
-            compileFlags |= D3D10_SHADER_DEBUG;
-#endif
-
-            auto result = D3DCompileFromFile(shaderPath.c_str(),
-               nullptr,
-               D3D_COMPILE_STANDARD_FILE_INCLUDE,
-               entryPoint.c_str(),
-               target.c_str(),
-               compileFlags, 0,
-               &m_blob,
-               &m_errorBlob);
-
-            if (!FAILED(result))
-            {
-               m_bIsCompiled = true;
-            }
-            else
-            {
-               /* Failed to compile shader. **/
-               /* @TODO: Logging error messages. **/
-            }
-         }
-
-         return m_bIsCompiled;
-      }
+      virtual bool Compile(const String& shaderPath, EShaderType shaderType) final;
 
    protected:
-      RendererDX11* m_renderer;
-
       ID3D10Blob* m_blob;
       ID3D10Blob* m_errorBlob;
       bool        m_bIsCompiled;

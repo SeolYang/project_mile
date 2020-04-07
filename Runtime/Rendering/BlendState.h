@@ -1,5 +1,5 @@
 #pragma once
-#include "Rendering/RenderingCore.h"
+#include "Rendering/RenderObject.h"
 #include "Math/Vector4.h"
 
 namespace Mile
@@ -44,7 +44,7 @@ namespace Mile
       ColorWriteEnableAll = (((ColorWriteEnableRed | ColorWriteEnableGreen) | ColorWriteEnableBlue) | ColorWriteEnableAlpha)
    };
 
-   class MEAPI BlendState
+   class MEAPI BlendState : public RenderObject
    {
       struct RenderTargetBlendDesc
       {
@@ -175,7 +175,6 @@ namespace Mile
       ID3D11BlendState* GetBlendState() const { return m_blendState; }
 
    private:
-      RendererDX11* m_renderer;
       ID3D11BlendState* m_blendState;
       bool m_bIsDirty;
 

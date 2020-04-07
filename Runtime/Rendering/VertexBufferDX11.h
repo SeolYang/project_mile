@@ -11,7 +11,7 @@ namespace Mile
       template < typename VertexTy >
       bool Init(const std::vector<VertexTy>& verticies)
       {
-         if (IsPreparedToInitialize())
+         if (RenderObject::IsInitializable())
          {
             m_stride = sizeof(VertexTy);
 
@@ -32,7 +32,7 @@ namespace Mile
             auto result = renderer->GetDevice()->CreateBuffer(&desc, &subResource, &m_buffer);
             if (!FAILED(result))
             {
-               ResourceDX11::ConfirmInitialize();
+               ResourceDX11::ConfirmInit();
                return true;
             }
          }

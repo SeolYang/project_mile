@@ -8,14 +8,14 @@ constexpr size_t GBUFFER_RENDER_TARGET_NUM = 5;
 namespace Mile
 {
    GBuffer::GBuffer(RendererDX11* renderer) :
-      m_renderer(renderer),
       m_depthStencilBuffer(nullptr),
       m_positionBuffer(nullptr),
       m_albedoBuffer(nullptr),
       m_emissiveAOBuffer(nullptr),
       m_normalBuffer(nullptr),
       m_metallicRoughnessBuffer(nullptr),
-      m_blendState(nullptr)
+      m_blendState(nullptr),
+      RenderObject(renderer)
    {
    }
 
@@ -31,20 +31,15 @@ namespace Mile
 
    bool GBuffer::Init(unsigned int width, unsigned int height)
    {
-      /* GBuffer가 Initialize 되어있지 않을때는 항상 모든 버퍼/상태 포인터가 nullptr을 가지기 때문에, 
-      *  Position Buffer 에 대해서만 nullptr 체크를 한다.
-      **/
-      bool bIsInitialized = m_positionBuffer != nullptr;
-      bool bIsReadyToInit = !bIsInitialized && m_renderer != nullptr;
-      if (bIsReadyToInit)
+      if (RenderObject::IsInitializable())
       {
-
-         m_positionBuffer = new RenderTargetDX11(m_renderer);
-         m_albedoBuffer = new RenderTargetDX11(m_renderer);
-         m_emissiveAOBuffer = new RenderTargetDX11(m_renderer);
-         m_normalBuffer = new RenderTargetDX11(m_renderer);
-         m_metallicRoughnessBuffer = new RenderTargetDX11(m_renderer);
-         m_blendState = new BlendState(m_renderer);
+         RendererDX11* renderer = GetRenderer();
+         m_positionBuffer = new RenderTargetDX11(renderer);
+         m_albedoBuffer = new RenderTargetDX11(renderer);
+         m_emissiveAOBuffer = new RenderTargetDX11(renderer);
+         m_normalBuffer = new RenderTargetDX11(renderer);
+         m_metallicRoughnessBuffer = new RenderTargetDX11(renderer);
+         m_blendState = new BlendState(renderer);
 
          bool bBuffersInitialized =
             m_positionBuffer->Init(width, height, DXGI_FORMAT_R32G32B32A32_FLOAT) &&
@@ -54,17 +49,8 @@ namespace Mile
             m_metallicRoughnessBuffer->Init(width, height, DXGI_FORMAT_R8G8B8A8_UNORM);
          if (bBuffersInitialized && m_blendState->Init())
          {
+            RenderObject::ConfirmInit();
             return true;
-         }
-         else
-         {
-            /* 앞에서 설명한 이유로인해 하나라도 실패하면 모든 객체를 삭제후 포인터 값을 nullptr로 유지한다. **/
-            SafeDelete(m_positionBuffer);
-            SafeDelete(m_albedoBuffer);
-            SafeDelete(m_emissiveAOBuffer);
-            SafeDelete(m_normalBuffer);
-            SafeDelete(m_metallicRoughnessBuffer);
-            SafeDelete(m_blendState);
          }
       }
 
@@ -73,9 +59,7 @@ namespace Mile
 
    bool GBuffer::BindAsRenderTarget(ID3D11DeviceContext& deviceContext)
    {
-      bool bIsInitialized = m_positionBuffer != nullptr;
-      bool bIsReadyToBind = (m_renderer != nullptr) && bIsInitialized;
-      if (bIsReadyToBind)
+      if (RenderObject::IsBindable())
       {
          ID3D11DepthStencilView* dsv = nullptr;
          if (m_depthStencilBuffer != nullptr)
@@ -117,9 +101,7 @@ namespace Mile
 
    bool GBuffer::BindAsShaderResource(ID3D11DeviceContext& deviceContext, unsigned int startSlot)
    {
-      bool bIsInitialized = m_positionBuffer != nullptr;
-      bool bIsReadyToBind = (m_renderer != nullptr) && bIsInitialized;
-      if (bIsReadyToBind)
+      if (RenderObject::IsBindable())
       {
          std::array<RenderTargetDX11*, GBUFFER_RENDER_TARGET_NUM> targets{
          m_positionBuffer,
@@ -141,8 +123,7 @@ namespace Mile
 
    void GBuffer::UnbindShaderResource(ID3D11DeviceContext& deviceContext)
    {
-      bool bIsInitialized = m_positionBuffer != nullptr;
-      if (bIsInitialized)
+      if (RenderObject::IsBindable())
       {
          m_positionBuffer->UnbindShaderResource(deviceContext);
          m_albedoBuffer->UnbindShaderResource(deviceContext);
@@ -164,8 +145,7 @@ namespace Mile
 
    void GBuffer::UnbindRenderTarget(ID3D11DeviceContext& deviceContext)
    {
-      bool bIsInitialized = m_positionBuffer != nullptr;
-      if (bIsInitialized)
+      if (RenderObject::IsBindable())
       {
          std::array<ID3D11RenderTargetView*, GBUFFER_RENDER_TARGET_NUM> targets{
             nullptr,

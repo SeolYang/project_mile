@@ -1,5 +1,6 @@
 #include "Rendering/DynamicCubemap.h"
 #include "Rendering/DepthStencilBufferDX11.h"
+#include "Rendering/RendererDX11.h"
 #include "Core/Helper.h"
 
 namespace Mile
@@ -22,7 +23,7 @@ namespace Mile
    
    bool DynamicCubemap::Init(unsigned int size)
    {
-      if (IsPreparedToInitialize())
+      if (RenderObject::IsInitializable())
       {
          RendererDX11* renderer = GetRenderer();
          auto device = renderer->GetDevice();
@@ -65,6 +66,7 @@ namespace Mile
                   m_depthStencil = new DepthStencilBufferDX11(renderer);
                   if (m_depthStencil->Init(size, size, false))
                   {
+                     RenderObject::ConfirmInit();
                      return true;
                   }
                }
@@ -80,7 +82,7 @@ namespace Mile
       /*
       * @todo  렌더 타겟 클래스 이용/렌더 타겟 클래스 기능 확장(인터페이스 통합) : 아래 구현 내용이 중복됨
       **/
-      if (!IsBoundAsShaderResource())
+      if (RenderObject::IsBindable() && !IsBoundAsShaderResource())
       {
          if (faceIdx < 6)
          {
@@ -108,6 +110,9 @@ namespace Mile
 
    void DynamicCubemap::UnbindAsRenderTarget(ID3D11DeviceContext& deviceContext)
    {
-      deviceContext.OMSetRenderTargets(0, nullptr, nullptr);
+      if (RenderObject::IsBindable())
+      {
+         deviceContext.OMSetRenderTargets(0, nullptr, nullptr);
+      }
    }
 }

@@ -18,7 +18,7 @@ namespace Mile
 
    bool ConstantBufferDX11::Init(unsigned int size)
    {
-      if (size > 0 && IsPreparedToInitialize())
+      if (size > 0 && RenderObject::IsInitializable())
       {
          D3D11_BUFFER_DESC desc;
          ZeroMemory(&desc, sizeof(desc));
@@ -34,7 +34,7 @@ namespace Mile
          if (!FAILED(result))
          {
             m_desc = desc;
-            ResourceDX11::ConfirmInitialize();
+            ResourceDX11::ConfirmInit();
             return true;
          }
       }
@@ -44,7 +44,7 @@ namespace Mile
 
    void* ConstantBufferDX11::Map(ID3D11DeviceContext& deviceContext)
    {
-      bool bIsReadyToMap = IsInitialized() && HasAvailableRenderer() && (!IsMapped());
+      bool bIsReadyToMap = RenderObject::IsBindable() && (!IsMapped());
       if (bIsReadyToMap)
       {
          D3D11_MAPPED_SUBRESOURCE resource;
@@ -65,8 +65,7 @@ namespace Mile
 
    bool ConstantBufferDX11::UnMap(ID3D11DeviceContext& deviceContext)
    {
-      bool bIsReadyToUnmap = IsInitialized() && HasAvailableRenderer() && IsMapped();
-      if (bIsReadyToUnmap)
+      if (IsMapped())
       {
          deviceContext.Unmap(m_buffer, 0);
          m_bIsMapped = false;
@@ -78,7 +77,7 @@ namespace Mile
 
    bool ConstantBufferDX11::Bind(ID3D11DeviceContext& deviceContext, unsigned int startSlot, EShaderType shaderType)
    {
-      bool bIsReadyToBind = IsInitialized() && HasAvailableRenderer() && !IsBound();
+      bool bIsReadyToBind = RenderObject::IsBindable() && !IsBound();
       if (bIsReadyToBind)
       {
          switch (shaderType)
@@ -113,7 +112,7 @@ namespace Mile
 
    void ConstantBufferDX11::Unbind(ID3D11DeviceContext& deviceContext)
    {
-      bool IsReadyToUnbind = IsInitialized() && HasAvailableRenderer() && IsBound();
+      bool IsReadyToUnbind = RenderObject::IsBindable() && IsBound();
       if (IsReadyToUnbind)
       {
          ID3D11Buffer* nullBuffer = nullptr;

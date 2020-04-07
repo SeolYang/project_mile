@@ -1,11 +1,13 @@
 #pragma once
+#include "Rendering/RenderObject.h"
+#include "Rendering/RendererDX11.h"
 #include "Rendering/VertexBufferDX11.h"
 #include "Rendering/IndexBufferDX11.h"
 
 namespace Mile
 {
    class RendererDX11;
-   class MEAPI Mesh
+   class MEAPI Mesh : public RenderObject
    {
    public:
       Mesh(RendererDX11* renderer, const std::wstring& name, const String& modelPath) :
@@ -15,7 +17,7 @@ namespace Mile
          m_vertexNum(0),
          m_indexNum(0),
          m_modelPath(modelPath),
-         m_renderer(renderer)
+         RenderObject(renderer)
       {
       }
 
@@ -28,28 +30,30 @@ namespace Mile
       template <typename Vertex>
       bool Init(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices)
       {
-         if (m_vertexBuffer != nullptr || m_indexBuffer != nullptr)
+         if (RenderObject::IsInitializable())
          {
-            return false;
+            RendererDX11* renderer = GetRenderer();
+            m_indexBuffer = new IndexBufferDX11(renderer);
+            m_indexNum = static_cast<unsigned int>(indices.size());
+            if (!m_indexBuffer->Init(indices))
+            {
+               SafeDelete(m_indexBuffer);
+               return false;
+            }
+
+            m_vertexBuffer = new VertexBufferDX11(renderer);
+            m_vertexNum = static_cast<unsigned int>(vertices.size());
+            if (!m_vertexBuffer->Init<Vertex>(vertices))
+            {
+               SafeDelete(m_vertexBuffer);
+               return false;
+            }
+
+            RenderObject::ConfirmInit();
+            return true;
          }
 
-         m_indexBuffer = new IndexBufferDX11(m_renderer);
-         m_indexNum = static_cast<unsigned int>(indices.size());
-         if (!m_indexBuffer->Init(indices))
-         {
-            SafeDelete(m_indexBuffer);
-            return false;
-         }
-
-         m_vertexBuffer = new VertexBufferDX11(m_renderer);
-         m_vertexNum = static_cast<unsigned int>(vertices.size());
-         if (!m_vertexBuffer->Init<Vertex>(vertices))
-         {
-            SafeDelete(m_vertexBuffer);
-            return false;
-         }
-
-         return true;
+         return false;
       }
 
       bool Bind(ID3D11DeviceContext& deviceContext, unsigned int startSlot);
@@ -64,7 +68,6 @@ namespace Mile
       String GetModelPath() const { return m_modelPath; }
 
    private:
-      RendererDX11* m_renderer;
       IndexBufferDX11* m_indexBuffer;
       VertexBufferDX11* m_vertexBuffer;
 

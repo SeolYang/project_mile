@@ -4,11 +4,12 @@
 namespace Mile
 {
    Viewport::Viewport(RendererDX11* renderer) :
-      m_renderer(renderer),
       m_width(800.0f), m_height(600.0f),
       m_minDepth(0.0f), m_maxDepth(1.0f),
-      m_topLeftX(0.0f), m_topLeftY(0.0f)
+      m_topLeftX(0.0f), m_topLeftY(0.0f),
+      RenderObject(renderer)
    {
+      RenderObject::ConfirmInit();
    }
 
    D3D11_VIEWPORT Viewport::GetD3DViewport() const
@@ -27,14 +28,14 @@ namespace Mile
 
    bool Viewport::Bind(ID3D11DeviceContext& deviceContext)
    {
-      if (m_renderer == nullptr)
+      if (IsBindable())
       {
-         return false;
+         D3D11_VIEWPORT viewport = GetD3DViewport();
+         deviceContext.RSSetViewports(1, &viewport);
+
+         return true;
       }
 
-      D3D11_VIEWPORT viewport = GetD3DViewport();
-      deviceContext.RSSetViewports(1, &viewport);
-
-      return true;
+      return false;
    }
 }

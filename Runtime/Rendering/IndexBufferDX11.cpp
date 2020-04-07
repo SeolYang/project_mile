@@ -10,7 +10,7 @@ namespace Mile
 
    bool IndexBufferDX11::Init(const std::vector<unsigned int>& indicies)
    {
-      if (IsPreparedToInitialize())
+      if (RenderObject::IsInitializable())
       {
          D3D11_BUFFER_DESC desc;
          ZeroMemory(&desc, sizeof(desc));
@@ -30,7 +30,7 @@ namespace Mile
          if (!FAILED(result))
          {
             m_desc = desc;
-            ResourceDX11::ConfirmInitialize();
+            RenderObject::ConfirmInit();
             return true;
          }
       }
@@ -40,7 +40,7 @@ namespace Mile
 
    bool IndexBufferDX11::Bind(ID3D11DeviceContext& deviceContext)
    {
-      if (IsInitialized())
+      if (RenderObject::IsBindable())
       {
          deviceContext.IASetIndexBuffer(m_buffer, DXGI_FORMAT_R32_UINT, 0);
          return true;

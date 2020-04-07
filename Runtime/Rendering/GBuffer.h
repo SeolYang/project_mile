@@ -6,7 +6,7 @@ namespace Mile
    class RenderTargetDX11;
    class DepthStencilBufferDX11;
    class BlendState;
-   class MEAPI GBuffer
+   class MEAPI GBuffer : public RenderObject
    {
    public:
       GBuffer(RendererDX11* renderer);
@@ -22,7 +22,6 @@ namespace Mile
       void UnbindShaderResource(ID3D11DeviceContext& deviceContext);
 
    private:
-      RendererDX11* m_renderer;
       DepthStencilBufferDX11* m_depthStencilBuffer;
       RenderTargetDX11* m_positionBuffer;
       RenderTargetDX11* m_albedoBuffer;

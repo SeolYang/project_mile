@@ -14,7 +14,7 @@ namespace Mile
 
    bool Texture2dDX11::Init(unsigned int width, unsigned int height, int channels, unsigned char* data, DXGI_FORMAT format)
    {
-      if (IsPreparedToInitialize())
+      if (RenderObject::IsInitializable())
       {
          RendererDX11* renderer = GetRenderer();
          auto device = renderer->GetDevice();
@@ -43,7 +43,7 @@ namespace Mile
          {
             if (InitSRV(desc))
             {
-               ResourceDX11::ConfirmInitialize();
+               ResourceDX11::ConfirmInit();
                return true;
             }
             else
@@ -59,7 +59,8 @@ namespace Mile
 
    bool Texture2dDX11::Init(ID3D11Texture2D* texture)
    {
-      if (texture != nullptr && IsPreparedToInitialize())
+      bool bValidParams = texture != nullptr;
+      if (RenderObject::IsInitializable() && bValidParams)
       {
          m_texture = texture;
 
@@ -71,7 +72,7 @@ namespace Mile
 
          if (InitSRV(desc))
          {
-            ResourceDX11::ConfirmInitialize();
+            ResourceDX11::ConfirmInit();
             return true;
          }
          else
@@ -85,8 +86,8 @@ namespace Mile
 
    bool Texture2dDX11::InitSRV(D3D11_TEXTURE2D_DESC desc)
    {
-      bool IsReadyToInitSRV = (m_srv == nullptr) && HasAvailableRenderer();
-      if (IsReadyToInitSRV)
+      /* InitSRV 가 불려진다는것은 아직 Texture2dDX11의 초기화가 완전히 끝나지 않았단 것 이기 때문에. **/
+      if (RenderObject::IsInitializable())
       {
          RendererDX11* renderer = GetRenderer();
          auto device = renderer->GetDevice();

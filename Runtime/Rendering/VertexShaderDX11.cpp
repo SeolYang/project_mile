@@ -1,5 +1,6 @@
 #include "Rendering/VertexShaderDX11.h"
 #include "Rendering/InputLayoutDX11.h"
+#include "Rendering/RendererDX11.h"
 
 namespace Mile
 {
@@ -17,21 +18,22 @@ namespace Mile
 
    bool VertexShaderDX11::Init(const String& shaderPath)
    {
-      bool bIsReadyToInit = m_renderer != nullptr && m_shader == nullptr;
-      if (bIsReadyToInit)
+      if (RenderObject::IsInitializable())
       {
          if (Compile(shaderPath, EShaderType::VertexShader))
          {
-            auto device = m_renderer->GetDevice();
+            RendererDX11* renderer = GetRenderer();
+            auto device = renderer->GetDevice();
             auto result = device->CreateVertexShader(m_blob->GetBufferPointer(), m_blob->GetBufferSize(),
                nullptr,
                &m_shader);
 
             if (!FAILED(result))
             {
-               m_inputLayout = std::make_unique<InputLayoutDX11>(m_renderer);
+               m_inputLayout = std::make_unique<InputLayoutDX11>(renderer);
                if (m_inputLayout->Init(this->Reflect(), this))
                {
+                  RenderObject::ConfirmInit();
                   return true;
                }
                else
@@ -52,8 +54,7 @@ namespace Mile
 
    bool VertexShaderDX11::Bind(ID3D11DeviceContext& deviceContext)
    {
-      bool bIsReadyToBind = m_bIsCompiled && m_shader != nullptr && m_renderer != nullptr;
-      if (bIsReadyToBind)
+      if (RenderObject::IsBindable())
       {
          if (m_inputLayout->Bind(deviceContext))
          {
@@ -67,7 +68,7 @@ namespace Mile
 
    void VertexShaderDX11::Unbind(ID3D11DeviceContext& deviceContext)
    {
-      if (m_renderer != nullptr)
+      if (RenderObject::IsBindable())
       {
          deviceContext.VSSetShader(nullptr, nullptr, 0);
       }

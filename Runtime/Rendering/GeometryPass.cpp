@@ -22,79 +22,80 @@ namespace Mile
 
    bool GeometryPass::Init(const String& shaderPath)
    {
-      if (!RenderingPass::Init(shaderPath))
+      if (RenderingPass::Init(shaderPath))
       {
-         return false;
+         RendererDX11* renderer = GetRenderer();
+         m_transformBuffer = new ConstantBufferDX11(renderer);
+         if (!m_transformBuffer->Init(sizeof(TransformConstantBuffer)))
+         {
+            return false;
+         }
+
+         m_materialBuffer = new ConstantBufferDX11(renderer);
+         if (!m_materialBuffer->Init(sizeof(MaterialConstantBuffer)))
+         {
+            return false;
+         }
+
+         PixelShaderDX11* pixelShader = GetPixelShader();
+         pixelShader->AddSampler(
+            D3D11_FILTER_ANISOTROPIC,
+            D3D11_TEXTURE_ADDRESS_WRAP,
+            D3D11_COMPARISON_ALWAYS);
+
+         RenderObject::ConfirmInit();
+         return true;
       }
 
-      m_transformBuffer = new ConstantBufferDX11(m_renderer);
-      if (!m_transformBuffer->Init(sizeof(TransformConstantBuffer)))
-      {
-         return false;
-      }
-
-      m_materialBuffer = new ConstantBufferDX11(m_renderer);
-      if (!m_materialBuffer->Init(sizeof(MaterialConstantBuffer)))
-      {
-         return false;
-      }
-
-      m_pixelShader->AddSampler(
-         D3D11_FILTER_ANISOTROPIC,
-         D3D11_TEXTURE_ADDRESS_WRAP,
-         D3D11_COMPARISON_ALWAYS);
-
-      return true;
+      return false;
    }
 
    bool GeometryPass::Bind(ID3D11DeviceContext& deviceContext)
    {
-      bool bIsNotReadyToBind =
-         !RenderingPass::Bind(deviceContext) ||
-         m_transformBuffer == nullptr ||
-         m_materialBuffer == nullptr ||
-         m_gBuffer == nullptr;
-      if (bIsNotReadyToBind)
+      if (RenderingPass::Bind(deviceContext))
       {
-         return false;
+         if (!m_gBuffer->BindAsRenderTarget(deviceContext))
+         {
+            return false;
+         }
+
+         if (!m_transformBuffer->Bind(deviceContext, 0, EShaderType::VertexShader))
+         {
+            return false;
+         }
+
+         if (!m_materialBuffer->Bind(deviceContext, 0, EShaderType::PixelShader))
+         {
+            return false;
+         }
+
+         return true;
       }
 
-      if (!m_gBuffer->BindAsRenderTarget(deviceContext))
-      {
-         return false;
-      }
-
-      if (!m_transformBuffer->Bind(deviceContext, 0, EShaderType::VertexShader))
-      {
-         return false;
-      }
-
-      if (!m_materialBuffer->Bind(deviceContext, 0, EShaderType::PixelShader))
-      {
-         return false;
-      }
-
-      return true;
+      return false;
    }
 
    void GeometryPass::Unbind(ID3D11DeviceContext& deviceContext)
    {
-      if (m_gBuffer != nullptr)
+      if (RenderObject::IsBindable())
       {
-         m_gBuffer->UnbindRenderTarget(deviceContext);
-      }
+         if (m_gBuffer != nullptr)
+         {
+            m_gBuffer->UnbindRenderTarget(deviceContext);
+         }
 
-      if (m_transformBuffer != nullptr)
-      {
-         m_transformBuffer->Unbind(deviceContext);
-      }
+         if (m_transformBuffer != nullptr)
+         {
+            m_transformBuffer->Unbind(deviceContext);
+         }
 
-      if (m_materialBuffer != nullptr)
-      {
-         m_materialBuffer->Unbind(deviceContext);
-      }
+         if (m_materialBuffer != nullptr)
+         {
+            m_materialBuffer->Unbind(deviceContext);
+         }
 
-      RenderingPass::Unbind(deviceContext);
+         RenderingPass::Unbind(deviceContext);
+      }
    }
 
    void GeometryPass::UpdateTransformBuffer(ID3D11DeviceContext& deviceContext, TransformConstantBuffer buffer)

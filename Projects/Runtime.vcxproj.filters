@@ -76,6 +76,9 @@
     <Filter Include="Sources\Rendering\Renderer\States">
       <UniqueIdentifier>{597976da-7d38-4f5a-b97e-ee3ef903dd6d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Rendering\Rendering Passes\Preprocessing">
+      <UniqueIdentifier>{22b7bb20-80c2-464b-a270-fdb78f9b02a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Core\Context.h">
@@ -501,6 +504,12 @@
     <ClInclude Include="..\Runtime\Rendering\BlendState.h">
       <Filter>Sources\Rendering\Renderer\States</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\Equirect2CubemapPass.h">
+      <Filter>Sources\Rendering\Rendering Passes\Preprocessing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\RenderObject.h">
+      <Filter>Sources\Rendering\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -655,6 +664,15 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Resource\DynamicCubemap.cpp">
       <Filter>Sources\Rendering\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\Equirect2CubemapPass.cpp">
+      <Filter>Sources\Rendering\Rendering Passes\Preprocessing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\RenderObject.cpp">
+      <Filter>Sources\Rendering\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\ShaderDX11.cpp">
+      <Filter>Sources\Rendering\Shaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

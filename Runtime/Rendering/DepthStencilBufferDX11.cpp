@@ -19,7 +19,7 @@ namespace Mile
 
    bool DepthStencilBufferDX11::Init(unsigned int width, unsigned int height, bool bStencilEnable)
    {
-      if (IsPreparedToInitialize())
+      if (RenderObject::IsInitializable())
       {
          m_bStencilEnabled = bStencilEnable;
 
@@ -54,7 +54,7 @@ namespace Mile
             result = device->CreateDepthStencilView(m_depthStencilBuffer, &dsvDesc, &m_depthStencilView);
             if (!FAILED(result))
             {
-               ResourceDX11::ConfirmInitialize();
+               RenderObject::ConfirmInit();
                return true;
             }
             else
