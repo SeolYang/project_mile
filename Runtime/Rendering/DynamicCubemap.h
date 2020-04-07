@@ -4,6 +4,12 @@
 
 namespace Mile
 {
+   /**
+    * @brief   Dynamic Cubemap은 렌더타겟(GPU Readable/Writable)으로 쓰일수있는 큐브맵이다.
+    *          Face Index: (0, +X), (1, -X), (2, +Y), (3, -Y), (4, +Z), (5, -Z)
+    * @format  (R16, G16, B16, A16)_UNORM
+    *          
+    */
    class DepthStencilBufferDX11;
    class MEAPI DynamicCubemap : public Texture2DBaseDX11
    {

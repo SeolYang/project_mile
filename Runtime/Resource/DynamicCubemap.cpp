@@ -80,24 +80,27 @@ namespace Mile
       /*
       * @todo  렌더 타겟 클래스 이용/렌더 타겟 클래스 기능 확장(인터페이스 통합) : 아래 구현 내용이 중복됨
       **/
-      if (faceIdx < 6)
+      if (!IsBoundAsShaderResource())
       {
-         ID3D11DepthStencilView* dsv = m_depthStencil->GetDSV();
-         if (clearRenderTarget)
+         if (faceIdx < 6)
          {
-            float clearColor[] = {0.0f, 0.0f, 0.0f, 1.0f};
-            deviceContext.ClearRenderTargetView(m_rtvs[faceIdx], clearColor);
-         }
-         if (clearDepth)
-         {
-            if (dsv != nullptr)
+            ID3D11DepthStencilView* dsv = m_depthStencil->GetDSV();
+            if (clearRenderTarget)
             {
-               deviceContext.ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
+               float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+               deviceContext.ClearRenderTargetView(m_rtvs[faceIdx], clearColor);
             }
-         }
+            if (clearDepth)
+            {
+               if (dsv != nullptr)
+               {
+                  deviceContext.ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
+               }
+            }
 
-         deviceContext.OMSetRenderTargets(1, &m_rtvs[faceIdx], dsv);
-         return true;
+            deviceContext.OMSetRenderTargets(1, &m_rtvs[faceIdx], dsv);
+            return true;
+         }
       }
 
       return false;
