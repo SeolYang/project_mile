@@ -7,7 +7,7 @@ namespace Mile
    RenderingPass::RenderingPass(RendererDX11* renderer) :
       m_vertexShader(nullptr),
       m_pixelShader(nullptr),
-      m_renderer(renderer)
+      RenderObject(renderer)
    {
    }
 
@@ -19,48 +19,46 @@ namespace Mile
 
    bool RenderingPass::Init(const String& filePath)
    {
-      bool bIsInitialized = m_vertexShader != nullptr || m_pixelShader != nullptr;
-      if (m_renderer == nullptr || bIsInitialized)
+      if (IsInitializable())
       {
-         return false;
+         if (!InitVS(filePath))
+         {
+            return false;
+         }
+
+         if (!InitPS(filePath))
+         {
+            return false;
+         }
+
+         return true;
       }
 
-      if (!InitVS(filePath))
-      {
-         return false;
-      }
-
-      if (!InitPS(filePath))
-      {
-         return false;
-      }
-
-      return true;
+      return false;
    }
 
    bool RenderingPass::Bind(ID3D11DeviceContext& deviceContext)
    {
-      if (m_renderer == nullptr)
+      bool bound = false;
+      if (RenderObject::IsBindable())
       {
-         return false;
+         if (m_vertexShader != nullptr)
+         {
+            bound = m_vertexShader->Bind(deviceContext);
+         }
+
+         if (m_pixelShader != nullptr)
+         {
+            bound = bound && m_pixelShader->Bind(deviceContext);
+         }
       }
 
-      if (m_vertexShader != nullptr)
-      {
-         m_vertexShader->Bind(deviceContext);
-      }
-
-      if (m_pixelShader != nullptr)
-      {
-         m_pixelShader->Bind(deviceContext);
-      }
-
-      return true;
+      return bound;
    }
 
    void RenderingPass::Unbind(ID3D11DeviceContext& deviceContext)
    {
-      if (m_renderer != nullptr)
+      if (RenderObject::IsBindable())
       {
          if (m_vertexShader != nullptr)
          {
@@ -81,7 +79,8 @@ namespace Mile
          return false;
       }
 
-      m_vertexShader = new VertexShaderDX11(m_renderer);
+      RendererDX11* renderer = GetRenderer();
+      m_vertexShader = new VertexShaderDX11(renderer);
       if (!m_vertexShader->Init(filePath))
       {
          SafeDelete(m_vertexShader);
@@ -98,7 +97,8 @@ namespace Mile
          return false;
       }
 
-      m_pixelShader = new PixelShaderDX11(m_renderer);
+      RendererDX11* renderer = GetRenderer();
+      m_pixelShader = new PixelShaderDX11(renderer);
       if (!m_pixelShader->Init(filePath))
       {
          SafeDelete(m_pixelShader);
