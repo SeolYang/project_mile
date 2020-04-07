@@ -11,8 +11,7 @@ namespace Mile
       template < typename VertexTy >
       bool Init(const std::vector<VertexTy>& verticies)
       {
-         bool IsReadyToInit = (!IsInitialized()) && HasAvailableRenderer();
-         if (IsReadyToInit)
+         if (IsPreparedToInitialize())
          {
             m_stride = sizeof(VertexTy);
 

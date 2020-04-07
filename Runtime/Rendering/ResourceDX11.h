@@ -43,7 +43,7 @@ namespace Mile
       {
          return (m_renderer != nullptr) && (Engine::GetRenderer() == m_renderer);
       }
-
+      FORCEINLINE bool IsPreparedToInitialize() const { return (!IsInitialized() && HasAvailableRenderer()); }
       FORCEINLINE RendererDX11* GetRenderer() const { return m_renderer; }
 
    protected:

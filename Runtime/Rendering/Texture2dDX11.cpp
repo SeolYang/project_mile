@@ -14,7 +14,7 @@ namespace Mile
 
    bool Texture2dDX11::Init(unsigned int width, unsigned int height, int channels, unsigned char* data, DXGI_FORMAT format)
    {
-      if (!IsInitialized() && HasAvailableRenderer())
+      if (IsPreparedToInitialize())
       {
          RendererDX11* renderer = GetRenderer();
          auto device = renderer->GetDevice();
@@ -59,7 +59,7 @@ namespace Mile
 
    bool Texture2dDX11::Init(ID3D11Texture2D* texture)
    {
-      if (texture != nullptr && HasAvailableRenderer())
+      if (texture != nullptr && IsPreparedToInitialize())
       {
          m_texture = texture;
 

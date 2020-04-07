@@ -23,8 +23,8 @@ namespace Mile
 
    bool RenderTargetDX11::Init(unsigned int width, unsigned int height, DXGI_FORMAT format, DepthStencilBufferDX11* depthStencilBuffer)
    {
-      bool bIsValidRes = (width > 0 && height > 0);
-      bool bIsReadyToInit = m_texture == nullptr && (bIsValidRes);
+      bool bIsValidParams = (width > 0 && height > 0);
+      bool bIsReadyToInit = m_texture == nullptr && bIsValidParams;
       if (bIsReadyToInit)
       {
          m_width = width;

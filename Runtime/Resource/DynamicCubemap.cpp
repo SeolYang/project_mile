@@ -22,7 +22,7 @@ namespace Mile
    
    bool DynamicCubemap::Init(unsigned int size)
    {
-      if (!ResourceDX11::IsInitialized() && HasAvailableRenderer())
+      if (IsPreparedToInitialize())
       {
          RendererDX11* renderer = GetRenderer();
          auto device = renderer->GetDevice();

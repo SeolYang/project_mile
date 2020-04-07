@@ -19,8 +19,7 @@ namespace Mile
 
    bool DepthStencilBufferDX11::Init(unsigned int width, unsigned int height, bool bStencilEnable)
    {
-      bool bIsReadyToInit = (!IsInitialized()) && HasAvailableRenderer();
-      if (bIsReadyToInit)
+      if (IsPreparedToInitialize())
       {
          m_bStencilEnabled = bStencilEnable;
 

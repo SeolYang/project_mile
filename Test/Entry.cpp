@@ -29,9 +29,9 @@ int main( )
       return 1;
    }
 
-   auto world = context->GetSubSystem<World>();
-   auto resMng = context->GetSubSystem<ResourceManager>();
-   auto renderer = context->GetSubSystem<RendererDX11>();
+   auto world = Engine::GetWorld();
+   auto resMng = Engine::GetResourceManager();
+   auto renderer = Engine::GetRenderer();
 
    Cube* cubeMesh = new Cube(renderer);
    cubeMesh->Init(Vector3(-1.0f, -1.0f, -1.0f), Vector3(1.0f, 1.0f, 1.0f));
@@ -43,7 +43,6 @@ int main( )
    cubeRenderComponent->SetMaterial(resMng->Load<Material>(TEXT("Contents/Materials/Default.material")));
    cubeTransform->SetPosition(Vector3(3.5f, 0.0f, 1.5f));
    cubeTransform->SetScale(Vector3(0.7f, 0.7f, 0.7f));
-
 
    Entity* camera = world->CreateEntity(TEXT("Camera"));
    CameraComponent* camComponent = camera->AddComponent<CameraComponent>( );

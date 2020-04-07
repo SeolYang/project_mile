@@ -18,8 +18,7 @@ namespace Mile
 
    bool ConstantBufferDX11::Init(unsigned int size)
    {
-      bool bIsReadyToInit = (size != 0) && HasAvailableRenderer() && (!IsInitialized());
-      if (bIsReadyToInit)
+      if (size > 0 && IsPreparedToInitialize())
       {
          D3D11_BUFFER_DESC desc;
          ZeroMemory(&desc, sizeof(desc));

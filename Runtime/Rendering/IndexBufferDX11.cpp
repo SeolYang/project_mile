@@ -10,8 +10,7 @@ namespace Mile
 
    bool IndexBufferDX11::Init(const std::vector<unsigned int>& indicies)
    {
-      bool IsReadyToInit = HasAvailableRenderer() && (!IsInitialized());
-      if (IsReadyToInit)
+      if (IsPreparedToInitialize())
       {
          D3D11_BUFFER_DESC desc;
          ZeroMemory(&desc, sizeof(desc));
