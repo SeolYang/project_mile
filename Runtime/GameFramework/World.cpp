@@ -10,6 +10,7 @@
 namespace Mile
 {
    World::World(Context* context) :
+      m_loadedData(nullptr),
       SubSystem(context)
    {
    }
