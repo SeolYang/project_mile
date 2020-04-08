@@ -68,7 +68,7 @@ namespace Mile
       * @brief    Entity가 활성화 되어있는지 확인합니다.
       * @return   Entity의 활성화 여부
       */
-      bool IsActive() const { return m_bIsActive; }
+      bool IsActivated() const { return m_bIsActive; }
 
       /**
       * @brief    Entity를 활성화 시키거나 비 활성화 시킵니다.
@@ -114,7 +114,7 @@ namespace Mile
       Context* GetContext() const { return m_context; }
 
    private:
-      bool     m_bIsActive;
+      bool     m_bIsActivated;
       Context* m_context;
       World*   m_world;
       Entity*  m_parent;

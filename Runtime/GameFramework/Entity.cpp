@@ -11,7 +11,7 @@ namespace Mile
       m_world(world),
       m_context(nullptr),
       m_name(name),
-      m_bIsActive(true),
+      m_bIsActivated(true),
       m_transform(new Transform(this)),
       m_parent(nullptr)
    {
@@ -38,7 +38,7 @@ namespace Mile
    {
       json serialized;
       serialized["Name"] = Mile::WString2String(m_name);
-      serialized["IsActivated"] = m_bIsActive;
+      serialized["IsActivated"] = m_bIsActivated;
       serialized["Transform"] = m_transform->Serialize();
 
       std::vector<json> components;
@@ -61,7 +61,7 @@ namespace Mile
    void Entity::DeSerialize(const json& jsonData)
    {
       m_name = Mile::String2WString(jsonData["Name"]);
-      m_bIsActive = jsonData["IsActivated"];
+      m_bIsActivated = jsonData["IsActivated"];
 
       std::vector<json> components = jsonData["Components"];
       for (auto component : components)
@@ -99,10 +99,10 @@ namespace Mile
 
    void Entity::SetActive(bool bIsActive)
    {
-      if (m_bIsActive != bIsActive)
+      if (m_bIsActivated != bIsActive)
       {
-         m_bIsActive = bIsActive;
-         if (m_bIsActive)
+         m_bIsActivated = bIsActive;
+         if (m_bIsActivated)
          {
             OnEnable();
          }
@@ -182,7 +182,7 @@ namespace Mile
 
    void Entity::Update()
    {
-      if (m_bIsActive)
+      if (m_bIsActivated)
       {
          for (auto component : m_components)
          {
