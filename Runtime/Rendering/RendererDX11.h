@@ -12,6 +12,7 @@ namespace Mile
       LightingPass,
       PostProcessPass,
       Immediate,
+      Reserved,
       EnumSize
    };
 
@@ -21,6 +22,7 @@ namespace Mile
    class RenderTargetDX11;
    class Quad;
    class GBuffer;
+   class Equirect2CubemapPass;
    class GeometryPass;
    class LightingPass;
    class Window;
@@ -49,12 +51,30 @@ namespace Mile
       virtual void DeInit() override;
 
       /* Acquire renderable resources **/
-      void AcquireMeshRenderersAndMaterial(const std::vector<Entity*>& entities);
-      void AcquireLights(const std::vector<Entity*>& entities);
-      void AcquireCameras(const std::vector<Entity*>& entities);
+      /* @TODO Entity 배열을 받는게 아닌 World Subsystem만 가져와서 특정 컴포넌트만 찾을 수 있도록 하기. **/
+      /*
+       * @brief   주어진 Entity의 배열에서 Mesh Renderer 컴포넌트와 Material들을 취득하여 내부적으로 저장합니다.
+       * @warn    이번 프레임에서만 사용되어야하며 다음 프레임에서는 새로 취득해야할수도 있습니다.
+       **/
+      void AcquireMeshRenderersAndMaterial(World* world);
+
+      /*
+       * @brief   주어진 Entity의 배열에서 Light 컴포넌트를 취득하여 내부적으로 저장합니다.
+       * @warn    이번 프레임에서만 사용되어야하며 다음 프레임에서는 새로 취득해야할수도 있습니다.
+       **/
+      void AcquireLights(World* world);
+
+      /*
+      * @brief    주어진 Entity의 배열에서 Camera 컴포넌트를 취득하여 내부적으로 저장합니다.
+      * @warn    이번 프레임에서만 사용되어야하며 다음 프레임에서는 새로 취득해야할수도 있습니다.
+      **/
+      void AcquireCameras(World* world);
 
       /* Rendering Methods **/
       void Render();
+
+      /* Pre processing **/
+      //ID3D11CommandList* RunEquirectToCubemap(ID3D11DeviceContext* deviceContextPtr);
 
       /* Physically Based Shading Workflow **/
       ID3D11CommandList* RunGeometryPass(ID3D11DeviceContext* deviceContextPtr);
@@ -77,6 +97,8 @@ namespace Mile
       void SetBackbufferAsRenderTarget(ID3D11DeviceContext& deviceContext);
 
       ID3D11DeviceContext* GetRenderContextByType(ERenderContextType type);
+
+      //void Set
 
    private:
       bool CreateDeviceAndSwapChain();

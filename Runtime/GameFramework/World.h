@@ -72,19 +72,19 @@ namespace Mile
                ComponentType* foundComponent = nullptr;
                if ((onlyActivatedOwner && entity->IsActivated()) || (!onlyActivatedOwner))
                {
+                  /**
+                  *  월드에서는 자식 entity/부모 entity 상관없이 월드상에 존재할 수 있는 모든 entity들을 가지고 있기때문에.
+                  *  각각의 entity에 대해서 개별적으로 GetComponent를 이용해서 컴포넌트를 가져온다.
+                  */
                   foundComponent = entity->GetComponent<ComponentType>();
-                  if (onlyActivated && !foundComponent->IsActivated())
-                  {
-                     foundComponent = nullptr;
-                  }
                }
-               /**
-               *  월드에서는 자식 entity/부모 entity 상관없이 월드상에 존재할 수 있는 모든 entity들을 가지고 있기때문에.
-               *  각각의 entity에 대해서 개별적으로 GetComponent를 이용해서 컴포넌트를 가져온다.
-               */
+
                if (foundComponent != nullptr)
                {
-                  foundComponents.push_back(foundComponent);
+                  if ((onlyActivated && foundComponent->IsActivated()) || (!onlyActivated))
+                  {
+                     foundComponents.push_back(foundComponent);
+                  }
                }
             }
          }

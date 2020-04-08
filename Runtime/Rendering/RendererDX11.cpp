@@ -271,9 +271,7 @@ namespace Mile
       }
 
       // Create Deferred Contexts
-      for (auto idx = 0;
-         idx < REQUIRED_RENDERCONTEXT_NUM;
-         ++idx)
+      for (auto idx = 0; idx < REQUIRED_RENDERCONTEXT_NUM; ++idx)
       {
          hr = m_device->CreateDeferredContext(0, &m_deferredContexts[idx]);
          if (FAILED(hr))
@@ -306,58 +304,40 @@ namespace Mile
       return true;
    }
 
-   void RendererDX11::AcquireMeshRenderersAndMaterial(const std::vector<Entity*>& entities)
+   void RendererDX11::AcquireMeshRenderersAndMaterial(World* world)
    {
-      m_meshRenderComponents.clear();
-      m_materialMap.clear();
-      for (auto entity : entities)
+      if (world != nullptr)
       {
-         auto meshRenderComponent = entity->GetComponent<MeshRenderComponent>();
-         if (meshRenderComponent != nullptr)
+         m_meshRenderComponents.clear();
+         m_materialMap.clear();
+
+         m_meshRenderComponents = std::move(world->GetComponentsFromEntities<MeshRenderComponent>(true, true));
+         for (auto renderComponent : m_meshRenderComponents)
          {
-            if (entity->IsActive() && meshRenderComponent->IsActive())
+            Material* material = renderComponent->GetMaterial();
+            if (material != nullptr) /** nullptr 일때 기본 material 필요할까? */
             {
-               auto material = meshRenderComponent->GetMaterial();
-               if (material != nullptr)
-               {
-                  // Material Batching
-                  m_meshRenderComponents.push_back(meshRenderComponent);
-                  m_materialMap[material].push_back(meshRenderComponent);
-               }
+               m_materialMap[material].push_back(renderComponent);
             }
          }
       }
    }
 
-   void RendererDX11::AcquireLights(const std::vector<Entity*>& entities)
+   void RendererDX11::AcquireLights(World* world)
    {
-      m_lightComponents.clear();
-      for (auto entity : entities)
+      if (world != nullptr)
       {
-         auto lightComponent = entity->GetComponent<LightComponent>();
-         if (lightComponent != nullptr)
-         {
-            if (entity->IsActive() && lightComponent->IsActive())
-            {
-               m_lightComponents.push_back(lightComponent);
-            }
-         }
+         m_lightComponents.clear();
+         m_lightComponents = std::move(world->GetComponentsFromEntities<LightComponent>(true, true));
       }
    }
 
-   void RendererDX11::AcquireCameras(const std::vector<Entity*>& entities)
+   void RendererDX11::AcquireCameras(World* world)
    {
       m_cameras.clear();
-      for (auto entity : entities)
+      if (world != nullptr)
       {
-         auto cameraComponent = entity->GetComponent<CameraComponent>();
-         if (cameraComponent != nullptr)
-         {
-            if (entity->IsActive() && cameraComponent->IsActive())
-            {
-               m_cameras.push_back(cameraComponent);
-            }
-         }
+         m_cameras = std::move(world->GetComponentsFromEntities<CameraComponent>(true, true));
       }
    }
 
@@ -369,18 +349,16 @@ namespace Mile
       World* world = m_context->GetSubSystem<World>();
       if (world != nullptr)
       {
-         std::vector<Entity*> entities = world->GetEntities();
-
          // Acquire necessarry informations
          auto acquireMeshRenderersAndMatBinder = std::bind(&RendererDX11::AcquireMeshRenderersAndMaterial,
             this,
-            entities);
+            world);
          auto acquireMeshRenderersAndMatTask = threadPool->AddTask(acquireMeshRenderersAndMatBinder);
 
-         auto acquireLightBinder = std::bind(&RendererDX11::AcquireLights, this, entities);
+         auto acquireLightBinder = std::bind(&RendererDX11::AcquireLights, this, world);
          auto acquireLightTask = threadPool->AddTask(acquireLightBinder);
 
-         auto acquireCamerasBinder = std::bind(&RendererDX11::AcquireCameras, this, entities);
+         auto acquireCamerasBinder = std::bind(&RendererDX11::AcquireCameras, this, world);
          auto acquireCamerasTask = threadPool->AddTask(acquireCamerasBinder);
 
          acquireMeshRenderersAndMatTask.get();
