@@ -25,7 +25,16 @@ namespace Mile
 
       virtual bool Init(const String& shaderPath);
 
+      /**
+       * @brief   로드된 셰이더들만 바인드 합니다. 
+       *          (모든 서브 클래스들은 Bind 시 RenderingPass::Bind 를 호출하여야 합니다.)
+       */
       virtual bool Bind(ID3D11DeviceContext& deviceContext);
+
+      /**
+       * @brief   로드된 셰이더들을 언바인드 합니다.
+       *          (모든 서브 클래스들은 Unbind 시 RenderingPass::Unbind 를 호출하여야 합니다.)
+       */
       virtual void Unbind(ID3D11DeviceContext& deviceContext);
 
       FORCEINLINE VertexShaderDX11* GetVertexShader() const { return m_vertexShader; }

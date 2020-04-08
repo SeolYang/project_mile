@@ -67,6 +67,8 @@ namespace Mile
          m_bIsDirty = false;
          return true;
       }
+
+      return false;
    }
 
    bool RasterizerState::Bind(ID3D11DeviceContext& deviceContext)
@@ -85,5 +87,7 @@ namespace Mile
          deviceContext.RSSetState(m_rasterizerState);
          return true;
       }
+
+      return false;
    }
 }
