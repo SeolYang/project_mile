@@ -62,7 +62,7 @@ namespace Mile
        */
       template <typename ComponentType, 
          std::enable_if_t<std::is_base_of_v<Component, ComponentType>, bool> = true>
-      std::vector<ComponentType*> GetComponents(bool onlyActivatedOwner = false, bool onlyActivated = false) const
+      std::vector<ComponentType*> GetComponentsFromEntities(bool onlyActivatedOwner = false, bool onlyActivated = false) const
       {
          std::vector<ComponentType*> foundComponents;
          for (Entity* entity : m_entities)

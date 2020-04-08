@@ -89,7 +89,7 @@ int main( )
    Transform* spheresTransform = spheresEntity->GetTransform();
    spheresTransform->SetPosition(Vector3(0.0f, 0.0f, 4.0f));
 
-   //world->GetComponents<Transform>(); // Transform은 Component를 상속하지 않기 때문에 컴파일되지 않는다.
+   //world->GetComponentsFromEntities<Transform>(); // Transform은 Component를 상속하지 않기 때문에 컴파일되지 않는다.
 
    int execute = engine->Execute( );
    //world->Save();
