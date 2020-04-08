@@ -12,7 +12,8 @@ namespace Mile
       Component(Entity* entity);
       virtual ~Component() { }
 
-      template <typename Ty>
+      template <typename Ty,
+         std::enable_if_t<std::is_base_of_v<Component, Ty>, bool> = true>
       static Ty* Create(Entity* entity)
       {
          return new Ty(entity);
@@ -46,7 +47,7 @@ namespace Mile
 
    protected:
       Entity* m_entity;
-      bool            m_bIsActive;
+      bool    m_bIsActive;
 
    };
 }

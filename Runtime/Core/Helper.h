@@ -14,6 +14,7 @@
 #include <codecvt>
 #include <string>
 #include <algorithm>
+#include <type_traits>
 
 #include <chrono>
 

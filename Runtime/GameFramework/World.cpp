@@ -105,7 +105,7 @@ namespace Mile
       return newEntity;
    }
 
-   Entity* World::GetEntityByName(const String& name)
+   Entity* World::GetEntityByName(const String& name) const
    {
       for (const auto& entity : m_entities)
       {
@@ -118,12 +118,12 @@ namespace Mile
       return nullptr;
    }
 
-   std::vector<Entity*> World::GetEntities()
+   std::vector<Entity*> World::GetEntities() const
    {
       return m_entities;
    }
 
-   std::vector<Entity*> World::GetRootEntities()
+   std::vector<Entity*> World::GetRootEntities() const
    {
       std::vector<Entity*> rootEntities{ };
       for (auto entity : m_entities)
