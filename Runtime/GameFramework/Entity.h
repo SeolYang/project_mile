@@ -113,16 +113,14 @@ namespace Mile
       World* GetWorld() const { return m_world; }
       Context* GetContext() const { return m_context; }
 
-   protected:
-      Context* m_context;
-      World* m_world;
-      bool                      m_bIsActive;
-      Transform* m_transform;
-
    private:
+      bool     m_bIsActive;
+      Context* m_context;
+      World*   m_world;
+      Entity*  m_parent;
+      Transform* m_transform;
       std::vector<Component*>   m_components;
       std::vector<Entity*>      m_children;
-      Entity* m_parent;
       String                    m_name;
 
    };

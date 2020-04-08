@@ -186,7 +186,7 @@ namespace Mile
       {
          for (auto component : m_components)
          {
-            if (component->IsActive())
+            if (component->IsActivated())
             {
                component->Update();
             }
@@ -203,7 +203,7 @@ namespace Mile
    {
       for (auto component : m_components)
       {
-         if (component->IsActive())
+         if (component->IsActivated())
          {
             component->OnEnable();
          }
@@ -214,7 +214,7 @@ namespace Mile
    {
       for (auto component : m_components)
       {
-         if (component->IsActive())
+         if (component->IsActivated())
          {
             component->OnDisable();
          }
