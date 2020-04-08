@@ -12,6 +12,7 @@
 
 #include <locale>
 #include <codecvt>
+#include <iostream>
 #include <string>
 #include <algorithm>
 #include <type_traits>

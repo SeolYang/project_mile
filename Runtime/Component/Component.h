@@ -40,8 +40,7 @@ namespace Mile
       Transform* GetTransform() const;
 
    protected:
-      Component() :
-         Component(nullptr)
+      Component() : Component(nullptr)
       {
       }
 

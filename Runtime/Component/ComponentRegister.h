@@ -1,7 +1,6 @@
 #pragma once
 #include "Core/Helper.h"
 #include "Component/Component.h"
-#include <iostream>
 
 namespace Mile
 {
