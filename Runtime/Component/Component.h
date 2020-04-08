@@ -20,13 +20,20 @@ namespace Mile
       }
 
       //virtual std::string Serialize( ) const { return ( "\"IsActivated\": " + Mile::BoolSerialize( m_bIsActive )); }
-      virtual json Serialize() const { json obj; obj["IsActivated"] = m_bIsActive; return obj; }
+      virtual json Serialize() const { json obj; obj["IsActivated"] = m_bIsActivated; return obj; }
       virtual void DeSerialize(const json& jsonData)
       {
-         m_bIsActive = jsonData["IsActivated"];
+         m_bIsActivated = jsonData["IsActivated"];
       }
 
-      bool IsActive() const { return m_bIsActive; }
+      /**
+       * @brief   컴포넌트가 활성화 되어있는지 체크합니다. 
+       */
+      bool IsActivated() const;
+
+      /**
+       * @brief   컴포넌트의 활성화 여부를 설정합니다. 
+       */
       void SetActive(bool bIsActive);
 
       virtual void Reset() { }
@@ -46,7 +53,7 @@ namespace Mile
 
    protected:
       Entity* m_entity;
-      bool    m_bIsActive;
+      bool    m_bIsActivated;
 
    };
 }

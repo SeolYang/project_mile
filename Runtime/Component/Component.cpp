@@ -5,16 +5,21 @@ namespace Mile
 {
    Component::Component(Entity* entity) :
       m_entity(entity),
-      m_bIsActive(true)
+      m_bIsActivated(true)
    {
+   }
+
+   bool Component::IsActivated() const
+   {
+      return m_bIsActivated;
    }
 
    void Component::SetActive(bool bIsActive)
    {
-      if (m_bIsActive != bIsActive)
+      if (m_bIsActivated != bIsActive)
       {
-         m_bIsActive = bIsActive;
-         if (m_bIsActive)
+         m_bIsActivated = bIsActive;
+         if (m_bIsActivated)
          {
             OnEnable();
          }
