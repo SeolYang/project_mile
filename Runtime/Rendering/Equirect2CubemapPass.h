@@ -12,11 +12,14 @@ namespace Mile
       ~Equirect2CubemapPass();
 
       bool Init(const String& shaderPath, unsigned int cubemapSize);
-      bool Bind(ID3D11DeviceContext& deviceContext, Texture2dDX11* equirectangularMap);
+      bool Bind(ID3D11DeviceContext& deviceContext, Texture2dDX11* equirectangularMap, unsigned int faceIndex);
       virtual void Unbind(ID3D11DeviceContext& deviceContext) override;
+
+      DynamicCubemap* GetCubemap() const { return m_cubemap; }
 
    private:
       DynamicCubemap* m_cubemap;
+      Texture2dDX11* m_boundEquirectMap;
 
    };
 }
