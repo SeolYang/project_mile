@@ -25,7 +25,7 @@ namespace Mile
       FORCEINLINE unsigned int GetBoundSlot() const { return m_boundSlot; }
 
    protected:
-      virtual bool InitSRV(D3D11_TEXTURE2D_DESC desc) { return false; }
+      bool InitSRV(D3D11_TEXTURE2D_DESC desc);
 
    protected:
       ID3D11Texture2D* m_texture;

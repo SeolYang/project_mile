@@ -12,8 +12,5 @@ namespace Mile
       bool Init(unsigned int width, unsigned int height, int channels, unsigned char* data, DXGI_FORMAT format);
       bool Init(ID3D11Texture2D* texture);
 
-   private:
-      virtual bool InitSRV(D3D11_TEXTURE2D_DESC desc) override;
-
    };
 }

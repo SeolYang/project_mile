@@ -1,4 +1,5 @@
 #include "Rendering/Texture2DBaseDX11.h"
+#include "Rendering/RendererDX11.h"
 
 namespace Mile
 {
@@ -82,4 +83,27 @@ namespace Mile
       }
    }
 
+   bool Texture2DBaseDX11::InitSRV(D3D11_TEXTURE2D_DESC desc)
+   {
+      /* InitSRV 가 불려진다는것은 아직 Texture2dDX11의 초기화가 완전히 끝나지 않았단 것 이기 때문에. **/
+      if (RenderObject::IsInitializable())
+      {
+         RendererDX11* renderer = GetRenderer();
+         auto device = renderer->GetDevice();
+         D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+         ZeroMemory(&srvDesc, sizeof(srvDesc));
+         srvDesc.Texture2D.MipLevels = m_mipLevels;
+         srvDesc.Texture2D.MostDetailedMip = 0;
+         srvDesc.Format = desc.Format;
+         srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+
+         auto result = device->CreateShaderResourceView(m_texture, &srvDesc, &m_srv);
+         if (!FAILED(result))
+         {
+            return true;
+         }
+      }
+
+      return false;
+   }
 }
