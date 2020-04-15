@@ -16,7 +16,15 @@ namespace Mile
       virtual bool Init() override;
 
       void BeginFrame();
-      void EndFrame();
+      /**
+       * @brief   남는 시간만큼 CPU 가 sleep 하기 이전에 호출
+       */
+      void PreEndFrame();
+
+      /**
+       * @brief   CPU가 sleep에서 깨어났을때 호출(설정한 프레임당 시간보다 프레임 처리가 더 빨리 끝났을때 delta time 등을 다시 계산)
+       */
+      void PostEndFrame();
 
       /**
        * @brief	이전 프레임과 현재 프레임사이에 시간 차이를 '초' 단위로 반환 해줍니다.

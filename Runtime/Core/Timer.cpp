@@ -32,9 +32,23 @@ namespace Mile
       }
    }
 
-   void Timer::EndFrame()
+   void Timer::PreEndFrame()
    {
       ++m_frameCount;
+      m_frameEndTime = std::chrono::steady_clock::now();
+      m_deltaTime = std::chrono::duration_cast<std::chrono::nanoseconds>(m_frameEndTime - m_frameBeginTime);
+
+      auto dt = m_frameEndTime - m_frameMeasureBeginTime;
+      auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(dt);
+      if (duration.count() >= 1000)
+      {
+         m_framePerSec = m_frameCount;
+         m_frameCount = 0;
+      }
+   }
+
+   void Timer::PostEndFrame()
+   {
       m_frameEndTime = std::chrono::steady_clock::now();
       m_deltaTime = std::chrono::duration_cast<std::chrono::nanoseconds>(m_frameEndTime - m_frameBeginTime);
 

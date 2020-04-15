@@ -53,74 +53,74 @@ namespace Mile
       }
 
       m_instance = this;
-      bool succeed = true;
       // -* Initialize subsystems *-
       // Initialize Logger
       if (!m_context->GetSubSystem<Logger>()->Init())
       {
-         succeed = false;
+         m_instance = nullptr;
+         return false;
       }
 
       // Initialize Timer
-      if (!succeed || !m_context->GetSubSystem<Timer>()->Init())
+      if (!m_context->GetSubSystem<Timer>()->Init())
       {
          m_logger->Logging(TEXT("Engine"), ELogType::FATAL, TEXT("Timer failed to intiialize!"), true);
-         succeed = false;
+         m_instance = nullptr;
+         return false;
       }
 
       // Initialize Thread Pool
-      if (!succeed || !m_context->GetSubSystem<ThreadPool>()->Init())
+      if (!m_context->GetSubSystem<ThreadPool>()->Init())
       {
          m_logger->Logging(TEXT("Engine"), ELogType::FATAL, TEXT("Thread Pool failed to intiialize!"), true);
-         succeed = false;
+         m_instance = nullptr;
+         return false;
       }
 
       // Initialize Resource manager
-      if (!succeed || !m_context->GetSubSystem<ResourceManager>()->Init())
+      if (!m_context->GetSubSystem<ResourceManager>()->Init())
       {
          m_logger->Logging(TEXT("Engine"), ELogType::FATAL, TEXT("Resource Manager failed to intiialize!"), true);
-         succeed = false;
+         m_instance = nullptr;
+         return false;
       }
 
       // Initialize ConfigSystem
-      if (!succeed || !m_context->GetSubSystem<ConfigSystem>()->Init())
+      if (!m_context->GetSubSystem<ConfigSystem>()->Init())
       {
          m_logger->Logging(TEXT("Engine"), ELogType::FATAL, TEXT("Config System failed to intiialize!"), true);
-         succeed = false;
+         m_instance = nullptr;
+         return false;
       }
 
       // Initialize Window Subsystem
-      if (!succeed || !m_context->GetSubSystem<Window>()->Init())
+      if (!m_context->GetSubSystem<Window>()->Init())
       {
          m_logger->Logging(TEXT("Engine"), ELogType::FATAL, TEXT("Resource Manager failed to intiialize!"), true);
-         succeed = false;
+         m_instance = nullptr;
+         return false;
       }
 
-      if (!succeed || !m_context->GetSubSystem<RendererDX11>()->Init())
+      if (!m_context->GetSubSystem<RendererDX11>()->Init())
       {
          m_logger->Logging(TEXT("Engine"), ELogType::FATAL, TEXT("RendererDX11 failed to intiialize!"), true);
-         succeed = false;
+         m_instance = nullptr;
+         return false;
       }
 
       // Initialize World
-      if (!succeed || !m_context->GetSubSystem<World>()->Init())
+      if (!m_context->GetSubSystem<World>()->Init())
       {
          m_logger->Logging(TEXT("Engine"), ELogType::FATAL, TEXT("World failed to intiialize!"), true);
-         succeed = false;
-      }
-
-      if (succeed)
-      {
-         auto engineConfig = m_configSys->GetConfig(TEXT("Engine"));
-         m_maxFPS = std::clamp(static_cast<unsigned int>(engineConfig.second["MaxFPS"]), LOWER_BOUND_OF_ENGINE_FPS, UPPER_BOUND_OF_ENGINE_FPS);
-         m_targetTimePerFrame = static_cast<long long>((1.0 / static_cast<double>(m_maxFPS)) * 1000.0);
-      }
-      else
-      {
          m_instance = nullptr;
+         return false;
       }
 
-      return succeed;
+
+      auto engineConfig = m_configSys->GetConfig(TEXT("Engine"));
+      m_maxFPS = std::clamp(static_cast<unsigned int>(engineConfig.second["MaxFPS"]), LOWER_BOUND_OF_ENGINE_FPS, UPPER_BOUND_OF_ENGINE_FPS);
+      m_targetTimePerFrame = static_cast<long long>((1.0 / static_cast<double>(m_maxFPS)) * 1000.0);
+      return true;
    }
 
    int Engine::Execute()
@@ -140,13 +140,14 @@ namespace Mile
             this->Update();
             m_renderer->Render();
 
+            m_timer->PreEndFrame();
+
             auto deltaTimeMS = m_timer->GetDeltaTimeMS();
             if (deltaTimeMS < m_targetTimePerFrame)
             {
                std::this_thread::sleep_for(std::chrono::milliseconds(m_targetTimePerFrame - deltaTimeMS));
+               m_timer->PostEndFrame();
             }
-
-            m_timer->EndFrame();
          }
       }
 
