@@ -1,5 +1,5 @@
 #pragma once
-#include "Rendering/RendererDX11.h"
+#include "Rendering/RenderObject.h"
 
 namespace Mile
 {
