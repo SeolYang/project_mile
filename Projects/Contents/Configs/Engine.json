@@ -5,5 +5,5 @@
     "ResolutionWidth": 1280,
     "ResolutionHeight": 720,
     "World": "Contents/Worlds/Default.json",
-    "MaxFPS": 120
+    "MaxFPS": 144
 }

@@ -92,8 +92,7 @@ namespace Mile
 
    bool Logger::Flush(const String& category, ELogType type)
    {
-      using namespace std::experimental;
-      if (std::experimental::filesystem::create_directory(m_folderPath))
+      if (std::filesystem::create_directory(m_folderPath))
       {
          Logging(TEXT("Logger"), ELogType::MESSAGE, TEXT("Log directory created."));
       }
