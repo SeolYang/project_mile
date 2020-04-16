@@ -7,13 +7,18 @@ struct VSInput
 struct VSOutput
 {
 	float4 PositionCS : SV_Position; // Clip Space
-	float4 PositionLS : POSITIONSL; // Local Space
+	float4 PositionLS : POSITIONLS; // Local Space
 };
 
 struct PSInput
 {
 	float4 PositionSS : SV_Position; // Screen Space
 	float3 PositionLS : POSITIONLS;
+};
+
+struct PSOutput
+{
+	float4 Color : SV_Target0;
 };
 
 /* Constant Buffers **/
@@ -47,10 +52,10 @@ VSOutput MileVS(in VSInput input)
 	return output;
 }
 
-float4 MilePS(in PSInput input) : SV_Target0
+PSOutput MilePS(in PSInput input)
 {
+	PSOutput output;
 	float2 uv = SampleSphericalMap(normalize(input.PositionLS));
-	float3 color = EquirectangularMap.Sample(LinearClampSampler, uv).rgb;
-	
-	return float4(color, 1.0);
+	output.Color = float4(EquirectangularMap.Sample(LinearClampSampler, uv).rgb, 1.0);
+	return output;
 }
