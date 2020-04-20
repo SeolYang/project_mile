@@ -27,7 +27,7 @@ namespace Mile
          ZeroMemory(&bufferDesc, sizeof(bufferDesc));
          bufferDesc.Width = width;
          bufferDesc.Height = height;
-         bufferDesc.MipLevels = 1;
+         bufferDesc.MipLevels = 0;
          bufferDesc.ArraySize = 1;
          bufferDesc.Format = bStencilEnable ? DXGI_FORMAT_D24_UNORM_S8_UINT : DXGI_FORMAT_D32_FLOAT;
          bufferDesc.SampleDesc.Count = 1;
