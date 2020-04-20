@@ -12,7 +12,7 @@ namespace Mile
       m_depthBias(0),
       m_slopeScaledDepthBias(0.0f),
       m_depthBiasClamp(0.0f),
-      m_bIsDepthClipEnable(false),
+      m_bIsDepthClipEnable(true),
       RenderObject(renderer)
    {
    }
@@ -63,8 +63,8 @@ namespace Mile
             return false;
          }
 
-         RenderObject::ConfirmInit();
          m_bIsDirty = false;
+         RenderObject::ConfirmInit();
          return true;
       }
 
