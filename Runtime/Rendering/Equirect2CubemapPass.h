@@ -1,12 +1,20 @@
 #pragma once
 #include "Rendering/RenderingPass.h"
+#include "Math/Matrix.h"
 
 namespace Mile
 {
    class Texture2dDX11;
    class DynamicCubemap;
+   class RasterizerState;
+   class Viewport;
    class MEAPI Equirect2CubemapPass : public RenderingPass
    {
+      DEFINE_CONSTANT_BUFFER(TransformConstantBuffer)
+      {
+         Matrix ViewProj;
+      };
+
    public:
       Equirect2CubemapPass(RendererDX11* renderer);
       ~Equirect2CubemapPass();
@@ -17,9 +25,14 @@ namespace Mile
 
       DynamicCubemap* GetCubemap() const { return m_cubemap; }
 
+      void UpdateTransformBuffer(ID3D11DeviceContext& deviceContext, TransformConstantBuffer buffer);
+
    private:
+      Viewport* m_viewport;
+      RasterizerState* m_rasterizerState;
       DynamicCubemap* m_cubemap;
       Texture2dDX11* m_boundEquirectMap;
+      CBufferPtr m_transformBuffer;
 
    };
 }

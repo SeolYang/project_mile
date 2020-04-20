@@ -37,17 +37,18 @@ int main( )
       Transform* cubeTransform = cube->GetTransform();
       MeshRenderComponent* cubeRenderComponent = cube->AddComponent<MeshRenderComponent>();
       RotateComponent* cubeRotation = cube->AddComponent<RotateComponent>();
+      Material* cubeMaterial = resMng->Load<Material>(TEXT("Contents/Materials/Default.material"));
       cubeRenderComponent->SetMesh(cubeMesh);
-      cubeRenderComponent->SetMaterial(resMng->Load<Material>(TEXT("Contents/Materials/Default.material")));
+      cubeRenderComponent->SetMaterial(cubeMaterial);
       cubeTransform->SetPosition(Vector3(3.5f, 0.0f, 1.5f));
-      cubeTransform->SetScale(Vector3(0.7f, 0.7f, 0.7f));
+      cubeTransform->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
       Entity* camera = world->CreateEntity(TEXT("Camera"));
       CameraComponent* camComponent = camera->AddComponent<CameraComponent>();
       Transform* camTransform = camera->GetTransform();
-      camComponent->SetNearPlane(1.0f);
+      camComponent->SetNearPlane(0.1f);
       camComponent->SetFarPlane(1000.0f);
-      camComponent->SetFov(60.0f);
+      camComponent->SetFov(90.0f);
       camTransform->SetPosition(Vector3(0.0f, 0.0f, -5.0f));
 
       Entity* mainLight = world->CreateEntity(TEXT("Upper Light"));
@@ -63,6 +64,8 @@ int main( )
       RotateComponent* damagedHelmetRotation = damagedHelmet->AddComponent<RotateComponent>();
       MeshRenderComponent* helmetRenderComponent = damagedHelmetMesh->GetComponent<MeshRenderComponent>();
       Material* damagedHelmetMaterial = helmetRenderComponent->GetMaterial();
+      Transform* helmetTransform = damagedHelmet->GetTransform();
+      helmetTransform->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
       damagedHelmetMaterial->Save();
 
       Model* lanternModel = resMng->Load<Model>(TEXT("Contents/Models/Lantern/Lantern.gltf"));
@@ -89,6 +92,9 @@ int main( )
 
       //world->GetComponentsFromEntities<Transform>(); // Transform은 Component를 상속하지 않기 때문에 컴파일되지 않는다.
 
+      Texture2D* equirectangularMap = resMng->Load<Texture2D>(TEXT("Contents/Textures/Newport_Loft/Newport_Loft_8k.jpg"));
+      renderer->SetEquirectangularMap(equirectangularMap);
+      renderer->SetAlwaysCalculateDiffuseIrradiacne(true);
       execute = engine->Execute();
    }
 

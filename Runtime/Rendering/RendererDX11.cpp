@@ -1,14 +1,19 @@
 #include "Rendering/RendererDX11.h"
 #include "Rendering/RasterizerState.h"
+#include "Rendering/Viewport.h"
 #include "Rendering/DepthStencilBufferDX11.h"
 #include "Rendering/RenderTargetDX11.h"
 #include "Rendering/Mesh.h"
 #include "Rendering/Quad.h"
+#include "Rendering/Cube.h"
 #include "Rendering/GBuffer.h"
 #include "Rendering/GeometryPass.h"
 #include "Rendering/LightingPass.h"
 #include "Rendering/Texture2dDX11.h"
 #include "Rendering/BlendState.h"
+#include "Rendering/DepthStencilState.h"
+#include "Rendering/DynamicCubemap.h"
+#include "Rendering/Equirect2CubemapPass.h"
 #include "Core/Context.h"
 #include "Core/Window.h"
 #include "Core/Logger.h"
@@ -31,8 +36,11 @@ namespace Mile
       m_device(nullptr), m_immediateContext(nullptr), m_deferredContexts{ nullptr },
       m_swapChain(nullptr), m_renderTargetView(nullptr), m_depthStencilBuffer(nullptr), m_bDepthStencilEnabled(true),
       m_gBuffer(nullptr), m_geometryPass(nullptr), m_lightingPass(nullptr),
+      m_equirectToCubemapPass(nullptr), m_equirectangularMap(nullptr), m_cubeMesh(nullptr),
+      m_bCubemapDirtyFlag(false), m_bAlwaysCalculateDiffuseIrradiance(false),
       m_mainCamera(nullptr), m_viewport(nullptr),
-      m_defaultRasterizerState(nullptr), m_additiveBlendState(nullptr), m_defaultBlendState(nullptr)
+      m_defaultRasterizerState(nullptr), m_additiveBlendState(nullptr), m_defaultBlendState(nullptr),
+      m_depthLessEqual(nullptr)
    {
    }
 
@@ -166,6 +174,40 @@ namespace Mile
             (UINT8)EColorWriteEnable::ColorWriteEnableAll
          });
 
+      m_equirectToCubemapPass = new Equirect2CubemapPass(this);
+      if (!m_equirectToCubemapPass->Init(TEXT("Contents/Shaders/Equirectangular2Cube.hlsl"), DYNAMIC_CUBEMAP_SIZE))
+      {
+         MELog(m_context,
+            TEXT("RendererDX11"),
+            ELogType::FATAL,
+            TEXT("Failed to create Equirectangular to cubemap convert pass."), true);
+         return false;
+      }
+
+      m_cubeMesh = new Cube(this);
+      if (!m_cubeMesh->Init(Vector3(-1.0f, -1.0f, -1.0f), Vector3(1.0f, 1.0f, 1.0f)))
+      {
+         MELog(m_context,
+            TEXT("RendererDX11"),
+            ELogType::FATAL,
+            TEXT("Failed to create Cube mesh."), true);
+         return false;
+      }
+
+      m_depthLessEqual = new DepthStencilState(this);
+      D3D11_DEPTH_STENCIL_DESC depthLessEqualDesc = DepthStencilState::GetDefaultDesc();
+      depthLessEqualDesc.DepthEnable = true;
+      depthLessEqualDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+      m_depthLessEqual->SetDesc(depthLessEqualDesc);
+      if (!m_depthLessEqual->Init())
+      {
+         MELog(m_context,
+            TEXT("RendererDX11"),
+            ELogType::FATAL,
+            TEXT("Failed to create DEPTH LESS EQUAL state."), true);
+         return false;
+      }
+
       MELog(m_context, TEXT("RendererDX11"), ELogType::MESSAGE, TEXT("RendererDX11 Initialized!"), true);
       m_bIsInitialized = true;
       return true;
@@ -175,16 +217,19 @@ namespace Mile
    {
       if (m_bIsInitialized)
       {
+         SafeDelete(m_depthLessEqual);
          SafeDelete(m_viewport);
          SafeDelete(m_additiveBlendState);
          SafeDelete(m_defaultBlendState);
          SafeDelete(m_defaultRasterizerState);
          SafeDelete(m_screenQuad);
+         SafeDelete(m_cubeMesh);
          SafeDelete(m_geometryPass);
          SafeDelete(m_lightingPass);
          SafeDelete(m_gBuffer);
          SafeRelease(m_renderTargetView);
          SafeDelete(m_depthStencilBuffer);
+         SafeDelete(m_equirectToCubemapPass);
          SafeRelease(m_swapChain);
 
          for (auto deferredContext : m_deferredContexts)
@@ -220,10 +265,9 @@ namespace Mile
       createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-      D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
+      D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_0 };
       unsigned int numOfFeatureLevels = ARRAYSIZE(featureLevels);
-      D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
-
+      D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_0;
 
       auto hr = D3D11CreateDeviceAndSwapChain(
          nullptr,
@@ -250,7 +294,7 @@ namespace Mile
       hr = m_swapChain->GetBuffer(
          0,
          __uuidof(ID3D11Texture2D),
-         (LPVOID*)& backBuffer);
+         (LPVOID*)&backBuffer);
 
       if (FAILED(hr))
       {
@@ -349,7 +393,7 @@ namespace Mile
       World* world = m_context->GetSubSystem<World>();
       if (world != nullptr)
       {
-         // Acquire necessarry informations
+         /* Pre-process part**/
          auto acquireMeshRenderersAndMatBinder = std::bind(&RendererDX11::AcquireMeshRenderersAndMaterial,
             this,
             world);
@@ -361,19 +405,23 @@ namespace Mile
          auto acquireCamerasBinder = std::bind(&RendererDX11::AcquireCameras, this, world);
          auto acquireCamerasTask = threadPool->AddTask(acquireCamerasBinder);
 
+         auto calcDiffuseIrradiancePassBind = std::bind(
+            &RendererDX11::CalculateDiffuseIrradiance,
+            this,
+            GetRenderContextByType(ERenderContextType::PreProcess));
+         auto calcDiffuseIrradiancePassTask = threadPool->AddTask(calcDiffuseIrradiancePassBind);
+
          acquireMeshRenderersAndMatTask.get();
          acquireLightTask.get();
          acquireCamerasTask.get();
 
+         // @TODO: Implement Multiple camera rendering
          if (!m_cameras.empty())
          {
-            // @TODO: Implement Multiple camera rendering
             m_mainCamera = m_cameras[0];
-
             SetClearColor(m_mainCamera->GetClearColor());
 
-            auto threadPool = m_context->GetSubSystem<ThreadPool>();
-
+            /* Main Rendering part **/
             /* PBS Workflow **/
             auto geometryPassBinder = std::bind(
                &RendererDX11::RunGeometryPass,
@@ -387,18 +435,87 @@ namespace Mile
                GetRenderContextByType(ERenderContextType::LightingPass));
             auto lightingPassTask = threadPool->AddTask(lightingPassBinder);
 
-            ID3D11CommandList* geometryPassCommandList = geometryPassTask.get();
-            ID3D11CommandList* lightingPassCommandList = lightingPassTask.get();
+            ID3D11CommandList* calcDiffuseIrraidnaceCmdList = calcDiffuseIrradiancePassTask.get();
+            ID3D11CommandList* geometryPassCmdList = geometryPassTask.get();
+            ID3D11CommandList* lightingPassCmdList = lightingPassTask.get();
 
-            m_immediateContext->ExecuteCommandList(geometryPassCommandList, false);
-            m_immediateContext->ExecuteCommandList(lightingPassCommandList, false);
+            SAFE_EXECUTE_CMDLIST(m_immediateContext, calcDiffuseIrraidnaceCmdList, false);
+            SAFE_EXECUTE_CMDLIST(m_immediateContext, geometryPassCmdList, false);
+            SAFE_EXECUTE_CMDLIST(m_immediateContext, lightingPassCmdList, false);
 
-            SafeRelease(geometryPassCommandList);
-            SafeRelease(lightingPassCommandList);
+            SafeRelease(calcDiffuseIrraidnaceCmdList);
+            SafeRelease(geometryPassCmdList);
+            SafeRelease(lightingPassCmdList);
          }
       }
 
       Present();
+   }
+
+   ID3D11CommandList* RendererDX11::CalculateDiffuseIrradiance(ID3D11DeviceContext* deviceContextPtr)
+   {
+      if (m_bCubemapDirtyFlag || m_bAlwaysCalculateDiffuseIrradiance)
+      {
+         if (deviceContextPtr != nullptr)
+         {
+            ID3D11DeviceContext& deviceContext = (*deviceContextPtr);
+            deviceContext.ClearState();
+            deviceContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            ConvertEquirectToCubemap(deviceContext);
+            SolveDiffuseIntegral(deviceContext);
+
+            ID3D11CommandList* commandList = nullptr;
+            auto result = deviceContext.FinishCommandList(false, &commandList);
+            if (!FAILED(result))
+            {
+               m_bCubemapDirtyFlag = false;
+               return commandList;
+            }
+         }
+      }
+
+      return nullptr;
+   }
+
+   void RendererDX11::ConvertEquirectToCubemap(ID3D11DeviceContext& deviceContext)
+   {
+      Matrix captureProj = Matrix::CreatePerspectiveProj(90.0f, 1.0f, 0.1f, 1000.0f);
+      Matrix captureMatrix[] =
+      {
+         // +x
+         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f)) * captureProj,
+         // -x
+         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f)) * captureProj,
+         // +y
+         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f)) * captureProj,
+         // -y
+         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f)) * captureProj,
+         // +z
+         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, -1.0f, 0.0f)) * captureProj,
+         // -z
+         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, -1.0f, 0.0f)) * captureProj
+      };
+
+      DynamicCubemap* cubemap = m_equirectToCubemapPass->GetCubemap();
+      m_equirectToCubemapPass->Bind(deviceContext, m_equirectangularMap->GetRawTexture(), 0);
+      m_depthLessEqual->Bind(deviceContext);
+      for (unsigned int faceIndex = 0; faceIndex < CUBE_FACES; ++faceIndex)
+      {
+         cubemap->BindAsRenderTarget(deviceContext, faceIndex);
+         m_equirectToCubemapPass->UpdateTransformBuffer(
+            deviceContext,
+            { captureMatrix[faceIndex] });
+         m_cubeMesh->Bind(deviceContext, 0);
+         deviceContext.DrawIndexed(m_cubeMesh->GetIndexCount(), 0, 0);
+      }
+
+      m_equirectToCubemapPass->Unbind(deviceContext);
+      cubemap->GenerateMips(deviceContext);
+   }
+
+   void RendererDX11::SolveDiffuseIntegral(ID3D11DeviceContext& deviceContext)
+   {
    }
 
    ID3D11CommandList* RendererDX11::RunGeometryPass(ID3D11DeviceContext* deviceContextPtr)
@@ -518,7 +635,7 @@ namespace Mile
                });
 
             m_backBuffer->ClearDepthStencil(deviceContext);
-            deviceContext.DrawIndexed(6, 0, 0);
+            deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
          }
 
          SetDepthStencilEnable(deviceContext, true);
@@ -577,6 +694,22 @@ namespace Mile
       SetBackbufferAsRenderTarget(deviceContext);
    }
 
+   void RendererDX11::SetEquirectangularMap(Texture2D* texture)
+   {
+      if (m_equirectangularMap != texture)
+      {
+         m_equirectangularMap = texture;
+         m_bCubemapDirtyFlag = true;
+      }
+   }
+
+   void RendererDX11::SetAlwaysCalculateDiffuseIrradiacne(bool bAlwaysCalculateDiffuseIrraidiance)
+   {
+      m_bAlwaysCalculateDiffuseIrradiance = 
+         (m_equirectangularMap != nullptr) ? 
+         bAlwaysCalculateDiffuseIrraidiance : false;
+   }
+
    void RendererDX11::SetBackbufferAsRenderTarget(ID3D11DeviceContext& deviceContext)
    {
       if (m_bDepthStencilEnabled)
@@ -591,17 +724,9 @@ namespace Mile
 
    ID3D11DeviceContext* RendererDX11::GetRenderContextByType(ERenderContextType type)
    {
-      switch (type)
+      if (type != ERenderContextType::Immediate)
       {
-      case ERenderContextType::Immediate:
-      default:
-         return m_immediateContext;
-      case ERenderContextType::GeometryPass:
-         return m_deferredContexts[0];
-      case ERenderContextType::LightingPass:
-         return m_deferredContexts[1];
-      case ERenderContextType::PostProcessPass:
-         return m_deferredContexts[2];
+         return m_deferredContexts[static_cast<unsigned int>(type)];
       }
 
       return m_immediateContext;

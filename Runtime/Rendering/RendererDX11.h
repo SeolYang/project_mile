@@ -1,6 +1,5 @@
 #pragma once
 #include "Rendering/RenderingCore.h"
-#include "Rendering/Viewport.h"
 #include <array>
 #include <vector>
 
@@ -8,20 +7,25 @@ namespace Mile
 {
    enum class ERenderContextType : UINT32
    {
+      PreProcess,
       GeometryPass,
       LightingPass,
       PostProcessPass,
       Immediate,
-      Reserved,
       EnumSize
    };
 
    constexpr size_t REQUIRED_RENDERCONTEXT_NUM = (size_t)ERenderContextType::EnumSize - 1;
+   constexpr unsigned int DYNAMIC_CUBEMAP_SIZE = 512;
 
    class DepthStencilBufferDX11;
    class RenderTargetDX11;
+   class Mesh;
    class Quad;
+   class Cube;
    class GBuffer;
+   class Viewport;
+   class Texture2D;
    class Equirect2CubemapPass;
    class GeometryPass;
    class LightingPass;
@@ -34,7 +38,9 @@ namespace Mile
    class Material;
    class RasterizerState;
    class BlendState;
+   class DepthStencilState;
    class CommandListDX11;
+   class DynamicCubemap;
    /**
     * @brief	Mile 엔진의 렌더러 서브 시스템입니다. 렌더링시 World 에 생성되어있는 Entity로 부터 Mesh Renderer 정보, 빛 정보,
    *			그리고 카메라 정보와 같은 렌더링에 필요한 정보를 매 프레임마다 취득하여 화면을 렌더링 하는 역할을 가지고 있습니다.
@@ -74,7 +80,9 @@ namespace Mile
       void Render();
 
       /* Pre processing **/
-      //ID3D11CommandList* RunEquirectToCubemap(ID3D11DeviceContext* deviceContextPtr);
+      ID3D11CommandList* CalculateDiffuseIrradiance(ID3D11DeviceContext* deviceContextPtr);
+      void ConvertEquirectToCubemap(ID3D11DeviceContext& deviceContext);
+      void SolveDiffuseIntegral(ID3D11DeviceContext& deviceContext);
 
       /* Physically Based Shading Workflow **/
       ID3D11CommandList* RunGeometryPass(ID3D11DeviceContext* deviceContextPtr);
@@ -87,18 +95,16 @@ namespace Mile
 
       ID3D11Device* GetDevice() { return m_device; }
       ID3D11DeviceContext* GetImmediateContext() { return m_immediateContext; }
+      ID3D11DeviceContext* GetRenderContextByType(ERenderContextType type);
 
+      void SetBackbufferAsRenderTarget(ID3D11DeviceContext& deviceContext);
       void SetClearColor(Vector4 clearColor);
       Vector4 GetClearColor() const { return m_clearColor; }
-
       void SetDepthStencilEnable(ID3D11DeviceContext& deviceContext, bool bDepthEnabled);
       bool IsDepthStencilEnabled() const { return m_bDepthStencilEnabled; }
 
-      void SetBackbufferAsRenderTarget(ID3D11DeviceContext& deviceContext);
-
-      ID3D11DeviceContext* GetRenderContextByType(ERenderContextType type);
-
-      //void Set
+      void SetEquirectangularMap(Texture2D* texture);
+      void SetAlwaysCalculateDiffuseIrradiacne(bool bAlwaysCalculateDiffuseIrraidiance = false);
 
    private:
       bool CreateDeviceAndSwapChain();
@@ -124,6 +130,13 @@ namespace Mile
       LightingPass* m_lightingPass;
       Quad*         m_screenQuad;
 
+      /** Diffuse Irradiance  */
+      Equirect2CubemapPass* m_equirectToCubemapPass;
+      Texture2D* m_equirectangularMap;
+      Cube* m_cubeMesh;
+      bool  m_bCubemapDirtyFlag;
+      bool  m_bAlwaysCalculateDiffuseIrradiance;
+      
       /* Renderable objects **/
       std::vector<MeshRenderComponent*> m_meshRenderComponents;
       std::vector<LightComponent*>      m_lightComponents;
@@ -136,6 +149,7 @@ namespace Mile
       Vector4   m_clearColor;
       BlendState* m_additiveBlendState;
       BlendState* m_defaultBlendState;
+      DepthStencilState* m_depthLessEqual;
 
       // @TODO: Multiple Viewports
       Viewport* m_viewport;

@@ -2,30 +2,26 @@
 struct VSInput
 {
 	float4 Position : POSITION;
+	float2 TexCoord : TEXCOORD0;
+	float3 Normal : NORMAL;
 };
 
 struct VSOutput
 {
-	float4 PositionCS : SV_Position; // Clip Space
-	float4 PositionLS : POSITIONLS; // Local Space
+	float4 Position : SV_Position; // Clip Space
+	float3 PositionWS : POSITIONWS; // Local Space
 };
 
 struct PSInput
 {
-	float4 PositionSS : SV_Position; // Screen Space
-	float3 PositionLS : POSITIONLS;
-};
-
-struct PSOutput
-{
-	float4 Color : SV_Target0;
+	float4 Position : SV_Position; // Screen Space
+	float3 PositionWS : POSITIONWS;
 };
 
 /* Constant Buffers **/
 cbuffer TransfromBuffer
 {
-	float4x4 View;
-	float4x4 Proj;
+	float4x4 ViewProj;
 };
 
 /* Textures & Samplers */
@@ -37,7 +33,7 @@ float2 SampleSphericalMap(float3 V)
 	const float2 InvAtan = float2(0.1591, 0.3183);
 	float2 UV = float2(atan2(V.z, V.x), asin(V.y));
 	UV *= InvAtan;
-	UV += 0.5;
+	UV += float2(0.5, 0.5);
 	return UV;
 }
 
@@ -46,16 +42,15 @@ VSOutput MileVS(in VSInput input)
 {
 	VSOutput output;
 	
-	output.PositionCS = mul(Proj, mul(View, input.Position));
-	output.PositionLS = input.Position;
+	output.Position = mul(ViewProj, input.Position);
+	output.PositionWS = input.Position.xyz;
 	
 	return output;
 }
 
-PSOutput MilePS(in PSInput input)
+float4 MilePS(in PSInput input) : SV_Target0
 {
-	PSOutput output;
-	float2 uv = SampleSphericalMap(normalize(input.PositionLS));
-	output.Color = float4(EquirectangularMap.Sample(LinearClampSampler, uv).rgb, 1.0);
-	return output;
+	float2 uv = SampleSphericalMap(normalize(input.PositionWS).xyz);
+	float3 color = EquirectangularMap.Sample(LinearClampSampler, uv).rgb;
+	return float4(color, 1.0);
 }

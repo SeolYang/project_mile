@@ -510,6 +510,9 @@
     <ClInclude Include="..\Runtime\Rendering\RenderObject.h">
       <Filter>Sources\Rendering\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\DepthStencilState.h">
+      <Filter>Sources\Rendering\Renderer\States</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -674,6 +677,9 @@
     <ClCompile Include="..\Runtime\Rendering\ShaderDX11.cpp">
       <Filter>Sources\Rendering\Shaders</Filter>
     </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\DepthStencilState.cpp">
+      <Filter>Sources\Rendering\Renderer\States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Contents\Shaders\TestShader.hlsl">
@@ -698,6 +704,9 @@
       <Filter>Shaders\Light-Pre Pass</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\Equirectangular2Cube.hlsl">
+      <Filter>Shaders\PBS</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\Test.hlsl">
       <Filter>Shaders\PBS</Filter>
     </FxCompile>
   </ItemGroup>

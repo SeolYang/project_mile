@@ -33,9 +33,9 @@ namespace Mile
          desc.Height = size;
          desc.MipLevels = 0;
          desc.ArraySize = 6;
-         desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+         desc.Format = DXGI_FORMAT_R16G16B16A16_UNORM;
          desc.Usage = D3D11_USAGE_DEFAULT;
-         desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+         desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
          desc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS | D3D11_RESOURCE_MISC_TEXTURECUBE;
          desc.CPUAccessFlags = 0;
          desc.SampleDesc.Count = 1;
