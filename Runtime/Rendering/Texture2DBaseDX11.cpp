@@ -83,7 +83,18 @@ namespace Mile
       }
    }
 
-   bool Texture2DBaseDX11::InitSRV(D3D11_TEXTURE2D_DESC desc)
+   void Texture2DBaseDX11::GenerateMips(ID3D11DeviceContext& deviceContext)
+   {
+      if (RenderObject::IsBindable())
+      {
+         if (m_srv != nullptr)
+         {
+            deviceContext.GenerateMips(m_srv);
+         }
+      }
+   }
+
+   bool Texture2DBaseDX11::InitSRV(D3D11_TEXTURE2D_DESC desc, bool bIsCubemap)
    {
       /* InitSRV 가 불려진다는것은 아직 Texture2dDX11의 초기화가 완전히 끝나지 않았단 것 이기 때문에. **/
       if (RenderObject::IsInitializable())
@@ -96,6 +107,12 @@ namespace Mile
          srvDesc.Texture2D.MostDetailedMip = 0;
          srvDesc.Format = desc.Format;
          srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+         if (bIsCubemap)
+         {
+            srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+            srvDesc.TextureCube.MipLevels = -1;
+            srvDesc.TextureCube.MostDetailedMip = 0;
+         }
 
          auto result = device->CreateShaderResourceView(m_texture, &srvDesc, &m_srv);
          if (!FAILED(result))

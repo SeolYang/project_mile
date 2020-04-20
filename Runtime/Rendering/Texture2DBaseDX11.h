@@ -24,8 +24,10 @@ namespace Mile
       FORCEINLINE EShaderType GetBoundShaderType() const { return m_boundShader; }
       FORCEINLINE unsigned int GetBoundSlot() const { return m_boundSlot; }
 
+      void GenerateMips(ID3D11DeviceContext& deviceContext);
+
    protected:
-      bool InitSRV(D3D11_TEXTURE2D_DESC desc);
+      bool InitSRV(D3D11_TEXTURE2D_DESC desc, bool bIsCubemap = false);
 
    protected:
       ID3D11Texture2D* m_texture;
