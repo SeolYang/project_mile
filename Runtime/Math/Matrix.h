@@ -312,6 +312,7 @@ namespace Mile
          return  CreateRotation( rot ) * CreateScale( scale ) * CreateTranslation( position );
       }
 
+      /* Left-Handed View Matrix **/
       static Matrix CreateView( const Vector3& camPosition, const Vector3& camDirection, const Vector3& up = Vector3::Up( ) )
       {
          Vector3 upNor = up.GetNormalized( );
@@ -326,6 +327,7 @@ namespace Mile
             -( xAxis | camPosition ), -( yAxis | camPosition ), -( zAxis | camPosition ), 1.0f };
       }
 
+      /* Left-Handed Perspective Fov Proj **/
       static Matrix CreatePerspectiveProj( float degreeFov, float aspectRatio, float nearPlane, float farPlane )
       {
          float height = ( 1.0f / std::tan( Math::DegreeToRadian( degreeFov / 2.0f ) ) );
