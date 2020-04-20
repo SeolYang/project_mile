@@ -3,6 +3,7 @@
 
 namespace Mile
 {
+   constexpr unsigned int CUBE_FACES = 6;
    class MEAPI Cube : public Mesh
    {
    public:
