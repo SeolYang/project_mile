@@ -11,6 +11,11 @@ namespace Mile
       ~ConstantBufferDX11();
 
       bool Init(unsigned int size);
+      template <typename Buffer>
+      bool Init()
+      {
+         return Init(sizeof(Buffer));
+      }
 
       virtual ERenderResourceType GetResourceType() const override { return ERenderResourceType::ConstantBuffer; }
 
