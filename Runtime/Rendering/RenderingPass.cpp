@@ -7,6 +7,8 @@ namespace Mile
    RenderingPass::RenderingPass(RendererDX11* renderer) :
       m_vertexShader(nullptr),
       m_pixelShader(nullptr),
+      m_bClearStateWhenBind(true),
+      m_primitiveTopology(EPrimitiveTopology::PRIMITIVE_TOPOLOGY_TRIANGLELIST),
       RenderObject(renderer)
    {
    }
@@ -42,6 +44,12 @@ namespace Mile
       bool bound = false;
       if (RenderObject::IsBindable())
       {
+         if (m_bClearStateWhenBind)
+         {
+            deviceContext.ClearState();
+         }
+         deviceContext.IASetPrimitiveTopology(PrimitiveTopologyToD3D11(m_primitiveTopology));
+
          if (m_vertexShader != nullptr)
          {
             bound = m_vertexShader->Bind(deviceContext);

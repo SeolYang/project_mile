@@ -40,6 +40,9 @@ namespace Mile
       FORCEINLINE VertexShaderDX11* GetVertexShader() const { return m_vertexShader; }
       FORCEINLINE PixelShaderDX11* GetPixelShader() const { return m_pixelShader; }
 
+      void SetClearStateWhenBind(bool bClearStateWhenBind);
+      void SetPrimitiveTopology(EPrimitiveTopology primitiveTopology);
+
    private:
       bool InitVS(const String& filePath);
       bool InitPS(const String& filePath);
@@ -47,6 +50,9 @@ namespace Mile
    private:
       VertexShaderDX11* m_vertexShader;
       PixelShaderDX11* m_pixelShader;
+
+      bool m_bClearStateWhenBind;
+      EPrimitiveTopology m_primitiveTopology;
 
    };
 }
