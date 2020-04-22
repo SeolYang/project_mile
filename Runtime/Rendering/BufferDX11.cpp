@@ -15,20 +15,4 @@ namespace Mile
    {
       SafeRelease(m_buffer);
    }
-
-   bool BufferDX11::UnMapImmediately()
-   {
-      bool bIsReadyToUnmap = m_bIsMapped && HasAvailableRenderer() && IsInitialized();
-      if (bIsReadyToUnmap)
-      {
-         RendererDX11* renderer = GetRenderer();
-         auto immediateContext = renderer->GetImmediateContext();
-         if (immediateContext != nullptr)
-         {
-            return UnMap(*immediateContext);
-         }
-      }
-
-      return false;
-   }
 }

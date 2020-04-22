@@ -13,7 +13,6 @@ namespace Mile
 
    ConstantBufferDX11::~ConstantBufferDX11()
    {
-      this->UnMapImmediately();
    }
 
    bool ConstantBufferDX11::Init(unsigned int size)

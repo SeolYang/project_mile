@@ -14,7 +14,6 @@ namespace Mile
 
       virtual void* Map(ID3D11DeviceContext& deviceContext) { return nullptr; }
       virtual bool UnMap(ID3D11DeviceContext& deviceContext) { return false; }
-      virtual bool UnMapImmediately() final;
 
       FORCEINLINE bool IsMapped() const { return m_bIsMapped; }
 
