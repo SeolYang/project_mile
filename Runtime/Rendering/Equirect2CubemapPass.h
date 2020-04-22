@@ -29,7 +29,6 @@ namespace Mile
 
    private:
       Viewport* m_viewport;
-      RasterizerState* m_rasterizerState;
       DynamicCubemap* m_cubemap;
       Texture2dDX11* m_boundEquirectMap;
       CBufferPtr m_transformBuffer;

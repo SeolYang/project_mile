@@ -13,14 +13,12 @@ namespace Mile
       m_cubemap(nullptr),
       m_transformBuffer(nullptr),
       m_boundEquirectMap(nullptr),
-      m_rasterizerState(nullptr),
       RenderingPass(renderer)
    {
    }
 
    Equirect2CubemapPass::~Equirect2CubemapPass()
    {
-      SafeDelete(m_rasterizerState);
       SafeDelete(m_viewport);
       SafeDelete(m_transformBuffer);
       SafeDelete(m_cubemap);
@@ -48,17 +46,10 @@ namespace Mile
          m_viewport->SetWidth(static_cast<float>(cubemapSize));
          m_viewport->SetHeight(static_cast<float>(cubemapSize));
 
-         m_rasterizerState = new RasterizerState(renderer);
-         m_rasterizerState->SetCullMode(CullMode::NONE);
-         if (!m_rasterizerState->Init())
-         {
-            return false;
-         }
-
          PixelShaderDX11* pixelShader = GetPixelShader();
          pixelShader->AddSampler(
             D3D11_FILTER_MIN_MAG_MIP_LINEAR,
-            D3D11_TEXTURE_ADDRESS_CLAMP,
+            D3D11_TEXTURE_ADDRESS_WRAP,
             D3D11_COMPARISON_ALWAYS);
 
          RenderObject::ConfirmInit();
@@ -79,11 +70,6 @@ namespace Mile
             {
                return false;
             }
-         }
-
-         if (!m_rasterizerState->Bind(deviceContext))
-         {
-            return false;
          }
 
          m_boundEquirectMap = equirectangularMap;

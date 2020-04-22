@@ -538,6 +538,7 @@ namespace Mile
       m_cubemap = m_equirectToCubemapPass->GetCubemap();
       m_equirectToCubemapPass->Bind(deviceContext, m_equirectangularMap->GetRawTexture(), 0);
       m_depthLessEqual->Bind(deviceContext);
+      m_noCulling->Bind(deviceContext);
       for (unsigned int faceIndex = 0; faceIndex < CUBE_FACES; ++faceIndex)
       {
          m_cubemap->BindAsRenderTarget(deviceContext, faceIndex);
@@ -692,8 +693,8 @@ namespace Mile
             Matrix projMatrix = Matrix::CreatePerspectiveProj(
                m_mainCamera->GetFov(),
                m_window->GetAspectRatio(),
-               m_mainCamera->GetNearPlane(),
-               m_mainCamera->GetFarPlane());
+               0.1f,
+               10.0f);
 
             m_skyboxPass->UpdateTransformBuffer(
                deviceContext,
