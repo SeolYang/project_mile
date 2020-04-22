@@ -57,7 +57,35 @@ namespace Mile
       virtual bool Init() override;
       virtual void DeInit() override;
 
-      /* Acquire renderable resources **/
+      /* Rendering Methods **/
+      void Render();
+
+      ID3D11Device* GetDevice() { return m_device; }
+
+      void SetBackbufferAsRenderTarget(ID3D11DeviceContext& deviceContext);
+      void SetClearColor(Vector4 clearColor);
+      Vector4 GetClearColor() const { return m_clearColor; }
+
+      void SetEquirectangularMap(Texture2D* texture);
+      void SetAlwaysCalculateDiffuseIrradiacne(bool bAlwaysCalculateDiffuseIrraidiance = false);
+
+   private:
+      /* Initialization methods **/
+      bool CreateDeviceAndSwapChain();
+      bool CreateDepthStencilBuffer();
+
+      /* Rendering Workflow **/
+      /* Pre compute **/
+      ID3D11CommandList* CalculateDiffuseIrradiance(ID3D11DeviceContext* deviceContextPtr);
+      void ConvertEquirectToCubemap(ID3D11DeviceContext& deviceContext);
+      void SolveDiffuseIntegral(ID3D11DeviceContext& deviceContext);
+
+      /* Physically Based Shading Workflow **/
+      ID3D11CommandList* RunGeometryPass(ID3D11DeviceContext* deviceContextPtr);
+      ID3D11CommandList* RunLightingPass(ID3D11DeviceContext* deviceContextPtr);
+      //ID3D11CommandList* RunPostProcessPass(ID3D11DeviceContext* deviceContext);
+   
+      /* Helper Methods **/
       /* @TODO Entity 배열을 받는게 아닌 World Subsystem만 가져와서 특정 컴포넌트만 찾을 수 있도록 하기. **/
       /*
        * @brief   주어진 Entity의 배열에서 Mesh Renderer 컴포넌트와 Material들을 취득하여 내부적으로 저장합니다.
@@ -77,39 +105,15 @@ namespace Mile
       **/
       void AcquireCameras(World* world);
 
-      /* Rendering Methods **/
-      void Render();
+      ID3D11DeviceContext* GetImmediateContext() { return m_immediateContext; }
+      ID3D11DeviceContext* GetRenderContextByType(ERenderContextType type);
 
-      /* Pre processing **/
-      ID3D11CommandList* CalculateDiffuseIrradiance(ID3D11DeviceContext* deviceContextPtr);
-      void ConvertEquirectToCubemap(ID3D11DeviceContext& deviceContext);
-      void SolveDiffuseIntegral(ID3D11DeviceContext& deviceContext);
-
-      /* Physically Based Shading Workflow **/
-      ID3D11CommandList* RunGeometryPass(ID3D11DeviceContext* deviceContextPtr);
-      ID3D11CommandList* RunLightingPass(ID3D11DeviceContext* deviceContextPtr);
-      //ID3D11CommandList* RunPostProcessPass(ID3D11DeviceContext* deviceContext);
+      void SetDepthStencilEnable(ID3D11DeviceContext& deviceContext, bool bDepthEnabled);
+      bool IsDepthStencilEnabled() const { return m_bDepthStencilEnabled; }
 
       void Clear(ID3D11DeviceContext& deviceContext);
       void ClearDepthStencil(ID3D11DeviceContext& deviceContext);
       void Present();
-
-      ID3D11Device* GetDevice() { return m_device; }
-      ID3D11DeviceContext* GetImmediateContext() { return m_immediateContext; }
-      ID3D11DeviceContext* GetRenderContextByType(ERenderContextType type);
-
-      void SetBackbufferAsRenderTarget(ID3D11DeviceContext& deviceContext);
-      void SetClearColor(Vector4 clearColor);
-      Vector4 GetClearColor() const { return m_clearColor; }
-      void SetDepthStencilEnable(ID3D11DeviceContext& deviceContext, bool bDepthEnabled);
-      bool IsDepthStencilEnabled() const { return m_bDepthStencilEnabled; }
-
-      void SetEquirectangularMap(Texture2D* texture);
-      void SetAlwaysCalculateDiffuseIrradiacne(bool bAlwaysCalculateDiffuseIrraidiance = false);
-
-   private:
-      bool CreateDeviceAndSwapChain();
-      bool CreateDepthStencilBuffer();
 
    private:
       Window* m_window;
