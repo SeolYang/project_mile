@@ -94,7 +94,7 @@ int main( )
 
       Texture2D* equirectangularMap = resMng->Load<Texture2D>(TEXT("Contents/Textures/Winter_Forest/WinterForest_8k.jpg"));
       renderer->SetEquirectangularMap(equirectangularMap);
-      //renderer->SetAlwaysCalculateDiffuseIrradiacne(true);
+      renderer->SetAlwaysCalculateDiffuseIrradiacne(true);
       execute = engine->Execute();
    }
 

@@ -539,14 +539,15 @@ namespace Mile
       m_equirectToCubemapPass->Bind(deviceContext, m_equirectangularMap->GetRawTexture(), 0);
       m_depthLessEqual->Bind(deviceContext);
       m_noCulling->Bind(deviceContext);
+      m_cubeMesh->Bind(deviceContext, 0);
       for (unsigned int faceIndex = 0; faceIndex < CUBE_FACES; ++faceIndex)
       {
          m_cubemap->BindAsRenderTarget(deviceContext, faceIndex);
          m_equirectToCubemapPass->UpdateTransformBuffer(
             deviceContext,
             { captureMatrix[faceIndex] });
-         m_cubeMesh->Bind(deviceContext, 0);
          deviceContext.DrawIndexed(m_cubeMesh->GetIndexCount(), 0, 0);
+         m_cubemap->UnbindAsRenderTarget(deviceContext);
       }
 
       m_cubemap->GenerateMips(deviceContext);
