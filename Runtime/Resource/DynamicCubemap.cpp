@@ -63,7 +63,7 @@ namespace Mile
 
             if (!FAILED(result))
             {
-               if (InitSRV(desc))
+               if (InitSRV(desc, true))
                {
                   m_depthStencil = new DepthStencilBufferDX11(renderer);
                   if (m_depthStencil->Init(size, size, false))

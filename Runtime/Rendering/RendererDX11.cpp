@@ -14,6 +14,7 @@
 #include "Rendering/DepthStencilState.h"
 #include "Rendering/DynamicCubemap.h"
 #include "Rendering/Equirect2CubemapPass.h"
+#include "Rendering/SkyboxPass.h"
 #include "Core/Context.h"
 #include "Core/Window.h"
 #include "Core/Logger.h"
@@ -36,10 +37,12 @@ namespace Mile
       m_device(nullptr), m_immediateContext(nullptr), m_deferredContexts{ nullptr },
       m_swapChain(nullptr), m_renderTargetView(nullptr), m_depthStencilBuffer(nullptr), m_bDepthStencilEnabled(true),
       m_gBuffer(nullptr), m_geometryPass(nullptr), m_lightingPass(nullptr),
+      m_skyboxPass(nullptr), m_cubemap(nullptr),
       m_equirectToCubemapPass(nullptr), m_equirectangularMap(nullptr), m_cubeMesh(nullptr),
       m_bCubemapDirtyFlag(false), m_bAlwaysCalculateDiffuseIrradiance(false),
-      m_mainCamera(nullptr), m_viewport(nullptr),
-      m_defaultRasterizerState(nullptr), m_additiveBlendState(nullptr), m_defaultBlendState(nullptr),
+      m_mainCamera(nullptr), m_viewport(nullptr), m_depthDisable(nullptr),
+      m_defaultRasterizerState(nullptr), m_noCulling(nullptr),
+      m_additiveBlendState(nullptr), m_defaultBlendState(nullptr),
       m_depthLessEqual(nullptr)
    {
    }
@@ -119,6 +122,17 @@ namespace Mile
          return false;
       }
 
+      m_noCulling = new RasterizerState(this);
+      m_noCulling->SetCullMode(CullMode::NONE);
+      if (!m_noCulling->Init())
+      {
+         MELog(m_context,
+            TEXT("RendererDX11"),
+            ELogType::FATAL,
+            TEXT("Failed to create no culling rasterizer state."), true);
+         return false;
+      }
+
       m_gBuffer = new GBuffer(this);
       if (!m_gBuffer->Init(
          static_cast<unsigned int>(screenRes.x),
@@ -153,6 +167,16 @@ namespace Mile
          return false;
       }
       m_lightingPass->SetGBuffer(m_gBuffer);
+
+      m_skyboxPass = new SkyboxPass(this);
+      if (!m_skyboxPass->Init(TEXT("Contents/Shaders/SkyboxPass.hlsl")))
+      {
+         MELog(m_context,
+            TEXT("RendererDX11"),
+            ELogType::FATAL,
+            TEXT("Failed to create Skybox Pass."), true);
+         return false;
+      }
 
       m_defaultBlendState = new BlendState(this);
       if (!m_defaultBlendState->Init())
@@ -208,6 +232,19 @@ namespace Mile
          return false;
       }
 
+      m_depthDisable = new DepthStencilState(this);
+      D3D11_DEPTH_STENCIL_DESC depthDisableDesc = DepthStencilState::GetDefaultDesc();
+      depthDisableDesc.DepthEnable = false;
+      m_depthDisable->SetDesc(depthDisableDesc);
+      if (!m_depthDisable->Init())
+      {
+         MELog(m_context,
+            TEXT("RendererDX11"),
+            ELogType::FATAL,
+            TEXT("Failed to create DEPTH DISALBE state."), true);
+         return false;
+      }
+
       MELog(m_context, TEXT("RendererDX11"), ELogType::MESSAGE, TEXT("RendererDX11 Initialized!"), true);
       m_bIsInitialized = true;
       return true;
@@ -217,15 +254,18 @@ namespace Mile
    {
       if (m_bIsInitialized)
       {
+         SafeDelete(m_depthDisable);
          SafeDelete(m_depthLessEqual);
          SafeDelete(m_viewport);
          SafeDelete(m_additiveBlendState);
          SafeDelete(m_defaultBlendState);
+         SafeDelete(m_noCulling);
          SafeDelete(m_defaultRasterizerState);
          SafeDelete(m_screenQuad);
          SafeDelete(m_cubeMesh);
          SafeDelete(m_geometryPass);
          SafeDelete(m_lightingPass);
+         SafeDelete(m_skyboxPass);
          SafeDelete(m_gBuffer);
          SafeRelease(m_renderTargetView);
          SafeDelete(m_depthStencilBuffer);
@@ -490,17 +530,17 @@ namespace Mile
          // -y
          Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f)) * captureProj,
          // +z
-         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, -1.0f, 0.0f)) * captureProj,
+         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, -1.0f, 0.0f)) * captureProj,
          // -z
-         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, -1.0f, 0.0f)) * captureProj
+         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, -1.0f, 0.0f)) * captureProj
       };
 
-      DynamicCubemap* cubemap = m_equirectToCubemapPass->GetCubemap();
+      m_cubemap = m_equirectToCubemapPass->GetCubemap();
       m_equirectToCubemapPass->Bind(deviceContext, m_equirectangularMap->GetRawTexture(), 0);
       m_depthLessEqual->Bind(deviceContext);
       for (unsigned int faceIndex = 0; faceIndex < CUBE_FACES; ++faceIndex)
       {
-         cubemap->BindAsRenderTarget(deviceContext, faceIndex);
+         m_cubemap->BindAsRenderTarget(deviceContext, faceIndex);
          m_equirectToCubemapPass->UpdateTransformBuffer(
             deviceContext,
             { captureMatrix[faceIndex] });
@@ -508,7 +548,7 @@ namespace Mile
          deviceContext.DrawIndexed(m_cubeMesh->GetIndexCount(), 0, 0);
       }
 
-      cubemap->GenerateMips(deviceContext);
+      m_cubemap->GenerateMips(deviceContext);
       m_equirectToCubemapPass->Unbind(deviceContext);
    }
 
@@ -598,46 +638,74 @@ namespace Mile
 
    ID3D11CommandList* RendererDX11::RunLightingPass(ID3D11DeviceContext* deviceContextPtr)
    {
+      // @TODO: Emmisive post processing 단으로 따로 빼내기
       if (deviceContextPtr != nullptr)
       {
          ID3D11DeviceContext& deviceContext = *deviceContextPtr;
-         m_lightingPass->Bind(deviceContext);
-         SetDepthStencilEnable(deviceContext, false);
-         m_viewport->Bind(deviceContext);
-         m_defaultRasterizerState->Bind(deviceContext);
-         m_backBuffer->BindAsRenderTarget(deviceContext);
-         m_screenQuad->Bind(deviceContext, 0);
-         m_additiveBlendState->Bind(deviceContext);
-
-         for (auto lightComponent : m_lightComponents)
+         Transform* camTransform = m_mainCamera->GetTransform();
+         if (m_lightingPass->Bind(deviceContext))
          {
-            Transform* camTransform = m_mainCamera->GetTransform();
-            m_lightingPass->UpdateCameraParamsBuffer(
-               deviceContext,
-               { camTransform->GetPosition(TransformSpace::World) });
+            m_depthDisable->Bind(deviceContext);
+            m_viewport->Bind(deviceContext);
+            m_defaultRasterizerState->Bind(deviceContext);
+            m_backBuffer->BindAsRenderTarget(deviceContext, true, false);
+            m_screenQuad->Bind(deviceContext, 0);
+            m_additiveBlendState->Bind(deviceContext);
 
-            Transform* lightTransform = lightComponent->GetTransform();
-            Vector3 lightPosition = lightTransform->GetPosition(TransformSpace::World);
-            Vector3 lightDirection = lightTransform->GetForward(TransformSpace::World);
-            Vector3 lightRadiance = lightComponent->GetRadiance();
-            m_lightingPass->UpdateLightParamsBuffer(
-               deviceContext,
-               {
-                  Vector4(lightPosition.x, lightPosition.y, lightPosition.z, 1.0f),
-                  Vector4(lightDirection.x, lightDirection.y, lightDirection.z, 0.0f),
-                  Vector4(lightRadiance.x, lightRadiance.y, lightRadiance.z, 1.0f),
-                  static_cast<UINT32>(lightComponent->GetLightType())
-               });
+            for (auto lightComponent : m_lightComponents)
+            {
+               m_lightingPass->UpdateCameraParamsBuffer(
+                  deviceContext,
+                  { camTransform->GetPosition(TransformSpace::World) });
 
-            m_backBuffer->ClearDepthStencil(deviceContext);
-            deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
+               Transform* lightTransform = lightComponent->GetTransform();
+               Vector3 lightPosition = lightTransform->GetPosition(TransformSpace::World);
+               Vector3 lightDirection = lightTransform->GetForward(TransformSpace::World);
+               Vector3 lightRadiance = lightComponent->GetRadiance();
+               m_lightingPass->UpdateLightParamsBuffer(
+                  deviceContext,
+                  {
+                     Vector4(lightPosition.x, lightPosition.y, lightPosition.z, 1.0f),
+                     Vector4(lightDirection.x, lightDirection.y, lightDirection.z, 0.0f),
+                     Vector4(lightRadiance.x, lightRadiance.y, lightRadiance.z, 1.0f),
+                     static_cast<UINT32>(lightComponent->GetLightType())
+                  });
+
+               deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
+            }
+            m_lightingPass->Unbind(deviceContext);
+            m_backBuffer->UnbindRenderTarget(deviceContext);
          }
 
-         SetDepthStencilEnable(deviceContext, true);
-         m_lightingPass->Unbind(deviceContext);
-         m_backBuffer->UnbindRenderTarget(deviceContext);
+         /** Draw Skybox */
+         if (m_skyboxPass->Bind(deviceContext, m_cubemap))
+         {
+            m_backBuffer->BindAsRenderTarget(deviceContext, false, false);
+            m_depthLessEqual->Bind(deviceContext);
+            m_viewport->Bind(deviceContext);
+            m_noCulling->Bind(deviceContext);
 
-         // @TODO: Emmisive post processing 단으로 따로 빼내기
+            Matrix viewMatrix = Matrix::CreateView(
+               Vector3(0.0f, 0.0f, 0.0f),
+               camTransform->GetForward(TransformSpace::World),
+               camTransform->GetUp(TransformSpace::World));
+            Matrix projMatrix = Matrix::CreatePerspectiveProj(
+               m_mainCamera->GetFov(),
+               m_window->GetAspectRatio(),
+               m_mainCamera->GetNearPlane(),
+               m_mainCamera->GetFarPlane());
+
+            m_skyboxPass->UpdateTransformBuffer(
+               deviceContext,
+               {
+                  viewMatrix * projMatrix
+               });
+
+            m_cubeMesh->Bind(deviceContext, 0);
+            deviceContext.DrawIndexed(m_cubeMesh->GetIndexCount(), 0, 0);
+            m_skyboxPass->Unbind(deviceContext);
+            m_backBuffer->UnbindRenderTarget(deviceContext);
+         }
 
          ID3D11CommandList* commandList = nullptr;
          auto result = deviceContext.FinishCommandList(false, &commandList);

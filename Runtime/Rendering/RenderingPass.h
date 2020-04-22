@@ -40,8 +40,8 @@ namespace Mile
       FORCEINLINE VertexShaderDX11* GetVertexShader() const { return m_vertexShader; }
       FORCEINLINE PixelShaderDX11* GetPixelShader() const { return m_pixelShader; }
 
-      void SetClearStateWhenBind(bool bClearStateWhenBind);
-      void SetPrimitiveTopology(EPrimitiveTopology primitiveTopology);
+      void SetClearStateWhenBind(bool bClearStateWhenBind) { m_bClearStateWhenBind = bClearStateWhenBind; }
+      void SetPrimitiveTopology(EPrimitiveTopology primitiveTopology) { m_primitiveTopology = primitiveTopology; }
 
    private:
       bool InitVS(const String& filePath);

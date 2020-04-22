@@ -513,6 +513,9 @@
     <ClInclude Include="..\Runtime\Rendering\DepthStencilState.h">
       <Filter>Sources\Rendering\Renderer\States</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\SkyboxPass.h">
+      <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -680,6 +683,9 @@
     <ClCompile Include="..\Runtime\Rendering\DepthStencilState.cpp">
       <Filter>Sources\Rendering\Renderer\States</Filter>
     </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\SkyboxPass.cpp">
+      <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Contents\Shaders\TestShader.hlsl">
@@ -708,6 +714,9 @@
     </FxCompile>
     <FxCompile Include="Contents\Shaders\Test.hlsl">
       <Filter>Shaders\PBS</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\SkyboxPass.hlsl">
+      <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

@@ -29,6 +29,7 @@ namespace Mile
    class Equirect2CubemapPass;
    class GeometryPass;
    class LightingPass;
+   class SkyboxPass;
    class Window;
    class World;
    class Entity;
@@ -119,16 +120,16 @@ namespace Mile
       std::array<ID3D11DeviceContext*, REQUIRED_RENDERCONTEXT_NUM> m_deferredContexts;
 
       /* Back Buffer Variables **/
-      IDXGISwapChain*         m_swapChain;
+      IDXGISwapChain* m_swapChain;
       ID3D11RenderTargetView* m_renderTargetView;
       DepthStencilBufferDX11* m_depthStencilBuffer;
-      RenderTargetDX11*       m_backBuffer;
+      RenderTargetDX11* m_backBuffer;
 
       /* PBS Workflow **/
-      GBuffer*      m_gBuffer;
+      GBuffer* m_gBuffer;
       GeometryPass* m_geometryPass;
       LightingPass* m_lightingPass;
-      Quad*         m_screenQuad;
+      Quad* m_screenQuad;
 
       /** Diffuse Irradiance  */
       Equirect2CubemapPass* m_equirectToCubemapPass;
@@ -136,13 +137,16 @@ namespace Mile
       Cube* m_cubeMesh;
       bool  m_bCubemapDirtyFlag;
       bool  m_bAlwaysCalculateDiffuseIrradiance;
-      
+      DynamicCubemap* m_cubemap;
+
+      SkyboxPass* m_skyboxPass;
+
       /* Renderable objects **/
       std::vector<MeshRenderComponent*> m_meshRenderComponents;
       std::vector<LightComponent*>      m_lightComponents;
       std::vector<CameraComponent*>     m_cameras;
       MaterialMap                       m_materialMap;
-      CameraComponent*                  m_mainCamera;
+      CameraComponent* m_mainCamera;
 
       /* Render State **/
       bool      m_bDepthStencilEnabled;
@@ -150,12 +154,14 @@ namespace Mile
       BlendState* m_additiveBlendState;
       BlendState* m_defaultBlendState;
       DepthStencilState* m_depthLessEqual;
+      DepthStencilState* m_depthDisable;
 
       // @TODO: Multiple Viewports
       Viewport* m_viewport;
 
       /* Rasterizer State **/
       RasterizerState* m_defaultRasterizerState;
+      RasterizerState* m_noCulling;
 
    };
 }

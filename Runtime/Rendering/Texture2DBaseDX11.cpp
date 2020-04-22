@@ -103,15 +103,18 @@ namespace Mile
          auto device = renderer->GetDevice();
          D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
          ZeroMemory(&srvDesc, sizeof(srvDesc));
-         srvDesc.Texture2D.MipLevels = m_mipLevels;
-         srvDesc.Texture2D.MostDetailedMip = 0;
          srvDesc.Format = desc.Format;
-         srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
          if (bIsCubemap)
          {
             srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
             srvDesc.TextureCube.MipLevels = -1;
             srvDesc.TextureCube.MostDetailedMip = 0;
+         }
+         else
+         {
+            srvDesc.Texture2D.MipLevels = m_mipLevels;
+            srvDesc.Texture2D.MostDetailedMip = 0;
+            srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
          }
 
          auto result = device->CreateShaderResourceView(m_texture, &srvDesc, &m_srv);
