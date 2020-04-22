@@ -30,6 +30,7 @@ SamplerState LinearClampSampler : register(s0);
 
 float2 SampleSphericalMap(float3 V)
 {
+	/** https://en.wikipedia.org/wiki/UV_mapping */
 	const float2 InvAtan = float2(0.1591, 0.3183);
 	float2 UV = float2(atan2(V.z, V.x), asin(V.y));
 	UV *= InvAtan;
