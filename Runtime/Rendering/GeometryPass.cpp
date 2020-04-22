@@ -20,9 +20,9 @@ namespace Mile
       SafeDelete(m_materialBuffer);
    }
 
-   bool GeometryPass::Init(const String& shaderPath)
+   bool GeometryPass::Init()
    {
-      if (RenderingPass::Init(shaderPath))
+      if (RenderingPass::Init(TEXT("Contents/Shaders/GeometryPass.hlsl")))
       {
          RendererDX11* renderer = GetRenderer();
          m_transformBuffer = new ConstantBufferDX11(renderer);

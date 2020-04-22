@@ -17,7 +17,7 @@ namespace Mile
       SkyboxPass(RendererDX11* renderer);
       ~SkyboxPass();
 
-      bool Init(const String& shaderPath);
+      bool Init();
       bool Bind(ID3D11DeviceContext& deviceContext, Texture2DBaseDX11* environmentMap);
       virtual void Unbind(ID3D11DeviceContext& deviceContext) override;
 

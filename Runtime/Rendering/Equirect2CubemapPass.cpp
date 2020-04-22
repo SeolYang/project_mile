@@ -24,10 +24,11 @@ namespace Mile
       SafeDelete(m_cubemap);
    }
 
-   bool Equirect2CubemapPass::Init(const String& shaderPath, unsigned int cubemapSize)
+   bool Equirect2CubemapPass::Init(unsigned int cubemapSize)
    {
-      bool availableParams = shaderPath.length() > 0 && cubemapSize > 0;
-      if (availableParams && RenderingPass::Init(shaderPath))
+      bool availableParams = cubemapSize > 0;
+      if (availableParams &&
+         RenderingPass::Init(TEXT("Contents/Shaders/Equirectangular2Cube.hlsl")))
       {
          RendererDX11* renderer = GetRenderer();
          m_cubemap = new DynamicCubemap(renderer);

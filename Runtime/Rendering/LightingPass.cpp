@@ -21,9 +21,9 @@ namespace Mile
       SafeDelete(m_lightParamsBuffer);
    }
 
-   bool LightingPass::Init(const String& shaderPath)
+   bool LightingPass::Init()
    {
-      if (!RenderingPass::Init(shaderPath))
+      if (!RenderingPass::Init(TEXT("Contents/Shaders/LightingPass.hlsl")))
       {
          return false;
       }

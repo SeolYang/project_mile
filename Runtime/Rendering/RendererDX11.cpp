@@ -147,7 +147,7 @@ namespace Mile
       m_gBuffer->SetDepthStencilBuffer(m_depthStencilBuffer);
 
       m_geometryPass = new GeometryPass(this);
-      if (!m_geometryPass->Init(TEXT("Contents/Shaders/GeometryPass.hlsl")))
+      if (!m_geometryPass->Init())
       {
          MELog(m_context,
             TEXT("RendererDX11"),
@@ -158,7 +158,7 @@ namespace Mile
       m_geometryPass->SetGBuffer(m_gBuffer);
 
       m_lightingPass = new LightingPass(this);
-      if (!m_lightingPass->Init(TEXT("Contents/Shaders/LightingPass.hlsl")))
+      if (!m_lightingPass->Init())
       {
          MELog(m_context,
             TEXT("RendererDX11"),
@@ -169,7 +169,7 @@ namespace Mile
       m_lightingPass->SetGBuffer(m_gBuffer);
 
       m_skyboxPass = new SkyboxPass(this);
-      if (!m_skyboxPass->Init(TEXT("Contents/Shaders/SkyboxPass.hlsl")))
+      if (!m_skyboxPass->Init())
       {
          MELog(m_context,
             TEXT("RendererDX11"),
@@ -199,7 +199,7 @@ namespace Mile
          });
 
       m_equirectToCubemapPass = new Equirect2CubemapPass(this);
-      if (!m_equirectToCubemapPass->Init(TEXT("Contents/Shaders/Equirectangular2Cube.hlsl"), DYNAMIC_CUBEMAP_SIZE))
+      if (!m_equirectToCubemapPass->Init(DYNAMIC_CUBEMAP_SIZE))
       {
          MELog(m_context,
             TEXT("RendererDX11"),

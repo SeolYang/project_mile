@@ -25,7 +25,7 @@ namespace Mile
       LightingPass(class RendererDX11* renderer);
       ~LightingPass();
 
-      virtual bool Init(const String& shaderPath) override;
+      bool Init();
       virtual bool Bind(ID3D11DeviceContext& deviceContext) override;
       virtual void Unbind(ID3D11DeviceContext& deviceContext) override;
 

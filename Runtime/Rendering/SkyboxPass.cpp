@@ -20,10 +20,9 @@ namespace Mile
       SafeDelete(m_depthStencilState);
    }
 
-   bool SkyboxPass::Init(const String& shaderPath)
+   bool SkyboxPass::Init()
    {
-      bool availableParams = shaderPath.length() > 0;
-      if (availableParams && RenderingPass::Init(shaderPath))
+      if (RenderingPass::Init(TEXT("Contents/Shaders/SkyboxPass.hlsl")))
       {
          RendererDX11* renderer = GetRenderer();
          m_depthStencilState = new DepthStencilState(renderer);
