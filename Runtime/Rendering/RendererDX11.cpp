@@ -459,8 +459,6 @@ namespace Mile
          if (deviceContextPtr != nullptr)
          {
             ID3D11DeviceContext& deviceContext = (*deviceContextPtr);
-            deviceContext.ClearState();
-            deviceContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
             ConvertEquirectToCubemap(deviceContext);
             SolveDiffuseIntegral(deviceContext);
@@ -480,8 +478,8 @@ namespace Mile
 
    void RendererDX11::ConvertEquirectToCubemap(ID3D11DeviceContext& deviceContext)
    {
-      Matrix captureProj = Matrix::CreatePerspectiveProj(90.0f, 1.0f, 0.1f, 1000.0f);
-      Matrix captureMatrix[] =
+      static const Matrix captureProj = Matrix::CreatePerspectiveProj(90.0f, 1.0f, 0.1f, 1000.0f);
+      static const Matrix captureMatrix[] =
       {
          // +x
          Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f)) * captureProj,
@@ -510,8 +508,8 @@ namespace Mile
          deviceContext.DrawIndexed(m_cubeMesh->GetIndexCount(), 0, 0);
       }
 
-      m_equirectToCubemapPass->Unbind(deviceContext);
       cubemap->GenerateMips(deviceContext);
+      m_equirectToCubemapPass->Unbind(deviceContext);
    }
 
    void RendererDX11::SolveDiffuseIntegral(ID3D11DeviceContext& deviceContext)
@@ -523,11 +521,9 @@ namespace Mile
       if (deviceContextPtr != nullptr)
       {
          ID3D11DeviceContext& deviceContext = *deviceContextPtr;
-         deviceContext.ClearState();
-         deviceContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // @TODO: Input Assembly 세팅을 Rendering Pass 안으로
+         m_geometryPass->Bind(deviceContext);
          m_defaultRasterizerState->Bind(deviceContext);
          m_viewport->Bind(deviceContext);
-         m_geometryPass->Bind(deviceContext);
 
          auto camTransform = m_mainCamera->GetTransform();
          for (auto batchedMaterial : m_materialMap)
@@ -605,9 +601,8 @@ namespace Mile
       if (deviceContextPtr != nullptr)
       {
          ID3D11DeviceContext& deviceContext = *deviceContextPtr;
-         SetDepthStencilEnable(deviceContext, false);
-         deviceContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // @TODO: Input Assembly 세팅을 Rendering Pass 안으로
          m_lightingPass->Bind(deviceContext);
+         SetDepthStencilEnable(deviceContext, false);
          m_viewport->Bind(deviceContext);
          m_defaultRasterizerState->Bind(deviceContext);
          m_backBuffer->BindAsRenderTarget(deviceContext);
