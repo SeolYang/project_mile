@@ -39,7 +39,5 @@ VSOutput MileVS(in VSInput input)
 float4 MilePS(in PSInput input) : SV_Target0
 {
 	float3 color = EnvironmentMap.Sample(EnvironmentSampler, input.PositionLS).rgb;
-	//color = color / (color + float3(1.0f, 1.0f, 1.0f));
-	//color = pow(color, (1.0f / 2.2f));
 	return float4(color, 1.0f);
 }
