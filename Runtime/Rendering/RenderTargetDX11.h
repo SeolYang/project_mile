@@ -23,7 +23,7 @@ namespace Mile
       Texture2dDX11* GetTexture() const { return m_texture; }
       ID3D11RenderTargetView* GetRTV() const { return m_rtv; }
 
-      bool BindAsRenderTarget(ID3D11DeviceContext& deviceContext, bool clearTarget = true);
+      bool BindAsRenderTarget(ID3D11DeviceContext& deviceContext, bool clearTarget = true, bool clearDepthStencil = true);
       bool BindAsShaderResource(ID3D11DeviceContext& deviceContext, unsigned int startSlot, EShaderType shader);
       void UnbindRenderTarget(ID3D11DeviceContext& deviceContext);
       void UnbindShaderResource(ID3D11DeviceContext& deviceContext);

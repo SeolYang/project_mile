@@ -121,7 +121,7 @@ namespace Mile
       return false;
    }
 
-   bool RenderTargetDX11::BindAsRenderTarget(ID3D11DeviceContext& deviceContext, bool clearTarget)
+   bool RenderTargetDX11::BindAsRenderTarget(ID3D11DeviceContext& deviceContext, bool clearTarget, bool clearDepthStencil)
    {
       if (RenderObject::IsBindable())
       {
@@ -129,23 +129,27 @@ namespace Mile
          if (m_depthStencilBuffer != nullptr)
          {
             dsv = m_depthStencilBuffer->GetDSV();
-         }
 
-         if (clearTarget)
-         {
-            const float clearColor[4] = { m_clearColor.x, m_clearColor.y, m_clearColor.z, 1.0f };
-            deviceContext.ClearRenderTargetView(m_rtv, clearColor);
-            if (dsv != nullptr)
+            if (clearTarget)
             {
-               deviceContext.ClearDepthStencilView(dsv,
-                  D3D11_CLEAR_DEPTH,
-                  1.0f,
-                  0);
+               const float clearColor[4] = { m_clearColor.x, m_clearColor.y, m_clearColor.z, 1.0f };
+               deviceContext.ClearRenderTargetView(m_rtv, clearColor);
             }
-         }
 
-         deviceContext.OMSetRenderTargets(1, &m_rtv, dsv);
-         return true;
+            if (clearDepthStencil)
+            {
+               if (dsv != nullptr)
+               {
+                  deviceContext.ClearDepthStencilView(dsv,
+                     D3D11_CLEAR_DEPTH,
+                     1.0f,
+                     0);
+               }
+            }
+
+            deviceContext.OMSetRenderTargets(1, &m_rtv, dsv);
+            return true;
+         }
       }
 
       return false;
