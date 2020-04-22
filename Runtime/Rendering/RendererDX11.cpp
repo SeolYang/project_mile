@@ -14,6 +14,7 @@
 #include "Rendering/DepthStencilState.h"
 #include "Rendering/DynamicCubemap.h"
 #include "Rendering/Equirect2CubemapPass.h"
+#include "Rendering/IrradianceConvPass.h"
 #include "Rendering/SkyboxPass.h"
 #include "Core/Context.h"
 #include "Core/Window.h"
@@ -37,8 +38,9 @@ namespace Mile
       m_device(nullptr), m_immediateContext(nullptr), m_deferredContexts{ nullptr },
       m_swapChain(nullptr), m_renderTargetView(nullptr), m_depthStencilBuffer(nullptr), m_bDepthStencilEnabled(true),
       m_gBuffer(nullptr), m_geometryPass(nullptr), m_lightingPass(nullptr),
-      m_skyboxPass(nullptr), m_cubemap(nullptr),
+      m_skyboxPass(nullptr), m_envMap(nullptr), 
       m_equirectToCubemapPass(nullptr), m_equirectangularMap(nullptr), m_cubeMesh(nullptr),
+      m_irradianceConvPass(nullptr), m_irradianceMap(nullptr),
       m_bCubemapDirtyFlag(false), m_bAlwaysCalculateDiffuseIrradiance(false),
       m_mainCamera(nullptr), m_viewport(nullptr), m_depthDisable(nullptr),
       m_defaultRasterizerState(nullptr), m_noCulling(nullptr),
@@ -205,6 +207,16 @@ namespace Mile
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Equirectangular to cubemap convert pass."), true);
+         return false;
+      }
+
+      m_irradianceConvPass = new IrradianceConvPass(this);
+      if (!m_irradianceConvPass->Init(IRRADIANCEMAP_SIZE))
+      {
+         MELog(m_context,
+            TEXT("RendererDX11"),
+            ELogType::FATAL,
+            TEXT("Failed to create Irradiance Convolution pass."), true);
          return false;
       }
 
@@ -500,8 +512,25 @@ namespace Mile
          {
             ID3D11DeviceContext& deviceContext = (*deviceContextPtr);
 
-            ConvertEquirectToCubemap(deviceContext);
-            SolveDiffuseIntegral(deviceContext);
+            static const Matrix captureProj = Matrix::CreatePerspectiveProj(90.0f, 1.0f, 0.1f, 10.0f);
+            static const std::array<Matrix, CUBE_FACES> captureMatrix =
+            {
+               // +x
+               Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f)) * captureProj,
+               // -x
+               Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f)) * captureProj,
+               // +y
+               Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f)) * captureProj,
+               // -y
+               Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f)) * captureProj,
+               // +z
+               Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f)) * captureProj,
+               // -z
+               Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f)) * captureProj
+            };
+
+            ConvertEquirectToCubemap(deviceContext, captureMatrix);
+            SolveDiffuseIntegral(deviceContext, captureMatrix);
 
             ID3D11CommandList* commandList = nullptr;
             auto result = deviceContext.FinishCommandList(false, &commandList);
@@ -516,46 +545,50 @@ namespace Mile
       return nullptr;
    }
 
-   void RendererDX11::ConvertEquirectToCubemap(ID3D11DeviceContext& deviceContext)
+   void RendererDX11::ConvertEquirectToCubemap(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix)
    {
-      static const Matrix captureProj = Matrix::CreatePerspectiveProj(90.0f, 1.0f, 0.1f, 10.0f);
-      static const Matrix captureMatrix[] =
+      m_envMap = m_equirectToCubemapPass->GetCubemap();
+      if (m_equirectToCubemapPass->Bind(deviceContext, m_equirectangularMap->GetRawTexture()))
       {
-         // +x
-         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f)) * captureProj,
-         // -x
-         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f)) * captureProj,
-         // +y
-         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f)) * captureProj,
-         // -y
-         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f)) * captureProj,
-         // +z
-         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f)) * captureProj,
-         // -z
-         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f)) * captureProj
-      };
+         m_depthLessEqual->Bind(deviceContext);
+         m_noCulling->Bind(deviceContext);
+         m_cubeMesh->Bind(deviceContext, 0);
+         for (unsigned int faceIndex = 0; faceIndex < CUBE_FACES; ++faceIndex)
+         {
+            m_envMap->BindAsRenderTarget(deviceContext, faceIndex);
+            m_equirectToCubemapPass->UpdateTransformBuffer(
+               deviceContext,
+               { captureMatrix[faceIndex] });
+            deviceContext.DrawIndexed(m_cubeMesh->GetIndexCount(), 0, 0);
+            m_envMap->UnbindAsRenderTarget(deviceContext);
+         }
 
-      m_cubemap = m_equirectToCubemapPass->GetCubemap();
-      m_equirectToCubemapPass->Bind(deviceContext, m_equirectangularMap->GetRawTexture(), 0);
-      m_depthLessEqual->Bind(deviceContext);
-      m_noCulling->Bind(deviceContext);
-      m_cubeMesh->Bind(deviceContext, 0);
-      for (unsigned int faceIndex = 0; faceIndex < CUBE_FACES; ++faceIndex)
-      {
-         m_cubemap->BindAsRenderTarget(deviceContext, faceIndex);
-         m_equirectToCubemapPass->UpdateTransformBuffer(
-            deviceContext,
-            { captureMatrix[faceIndex] });
-         deviceContext.DrawIndexed(m_cubeMesh->GetIndexCount(), 0, 0);
-         m_cubemap->UnbindAsRenderTarget(deviceContext);
+         m_equirectToCubemapPass->Unbind(deviceContext);
+         m_envMap->GenerateMips(deviceContext);
       }
-
-      m_cubemap->GenerateMips(deviceContext);
-      m_equirectToCubemapPass->Unbind(deviceContext);
    }
 
-   void RendererDX11::SolveDiffuseIntegral(ID3D11DeviceContext& deviceContext)
+   void RendererDX11::SolveDiffuseIntegral(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix)
    {
+      m_irradianceMap = m_irradianceConvPass->GetIrradianceMap();
+      if (m_irradianceConvPass->Bind(deviceContext, m_envMap))
+      {
+         m_depthLessEqual->Bind(deviceContext);
+         m_noCulling->Bind(deviceContext);
+         m_cubeMesh->Bind(deviceContext, 0);
+         for (unsigned int faceIndex = 0; faceIndex < CUBE_FACES; ++faceIndex)
+         {
+            m_irradianceMap->BindAsRenderTarget(deviceContext, faceIndex);
+            m_irradianceConvPass->UpdateTransformBuffer(
+               deviceContext,
+               { captureMatrix[faceIndex] });
+            deviceContext.DrawIndexed(m_cubeMesh->GetIndexCount(), 0, 0);
+            m_irradianceMap->UnbindAsRenderTarget(deviceContext);
+         }
+
+         m_irradianceConvPass->Unbind(deviceContext);
+         m_irradianceMap->GenerateMips(deviceContext);
+      }
    }
 
    ID3D11CommandList* RendererDX11::RunGeometryPass(ID3D11DeviceContext* deviceContextPtr)
@@ -680,7 +713,7 @@ namespace Mile
          }
 
          /** Draw Skybox */
-         if (m_skyboxPass->Bind(deviceContext, m_cubemap))
+         if (m_skyboxPass->Bind(deviceContext, m_irradianceMap))
          {
             m_backBuffer->BindAsRenderTarget(deviceContext, false, false);
             m_depthLessEqual->Bind(deviceContext);

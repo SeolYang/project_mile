@@ -17,6 +17,7 @@ namespace Mile
 
    constexpr size_t REQUIRED_RENDERCONTEXT_NUM = (size_t)ERenderContextType::EnumSize - 1;
    constexpr unsigned int DYNAMIC_CUBEMAP_SIZE = 512;
+   constexpr unsigned int IRRADIANCEMAP_SIZE = 32;
 
    class DepthStencilBufferDX11;
    class RenderTargetDX11;
@@ -30,6 +31,7 @@ namespace Mile
    class GeometryPass;
    class LightingPass;
    class SkyboxPass;
+   class IrradianceConvPass;
    class Window;
    class World;
    class Entity;
@@ -77,8 +79,8 @@ namespace Mile
       /* Rendering Workflow **/
       /* Pre compute **/
       ID3D11CommandList* CalculateDiffuseIrradiance(ID3D11DeviceContext* deviceContextPtr);
-      void ConvertEquirectToCubemap(ID3D11DeviceContext& deviceContext);
-      void SolveDiffuseIntegral(ID3D11DeviceContext& deviceContext);
+      void ConvertEquirectToCubemap(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix);
+      void SolveDiffuseIntegral(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix);
 
       /* Physically Based Shading Workflow **/
       ID3D11CommandList* RunGeometryPass(ID3D11DeviceContext* deviceContextPtr);
@@ -141,7 +143,9 @@ namespace Mile
       Cube* m_cubeMesh;
       bool  m_bCubemapDirtyFlag;
       bool  m_bAlwaysCalculateDiffuseIrradiance;
-      DynamicCubemap* m_cubemap;
+      DynamicCubemap* m_envMap;
+      IrradianceConvPass* m_irradianceConvPass;
+      DynamicCubemap* m_irradianceMap;
 
       SkyboxPass* m_skyboxPass;
 

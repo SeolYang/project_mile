@@ -76,7 +76,7 @@
     <Filter Include="Sources\Rendering\Renderer\States">
       <UniqueIdentifier>{597976da-7d38-4f5a-b97e-ee3ef903dd6d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Rendering\Rendering Passes\Preprocessing">
+    <Filter Include="Sources\Rendering\Rendering Passes\PreComputation">
       <UniqueIdentifier>{22b7bb20-80c2-464b-a270-fdb78f9b02a9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -505,7 +505,7 @@
       <Filter>Sources\Rendering\Renderer\States</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\Equirect2CubemapPass.h">
-      <Filter>Sources\Rendering\Rendering Passes\Preprocessing</Filter>
+      <Filter>Sources\Rendering\Rendering Passes\PreComputation</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\RenderObject.h">
       <Filter>Sources\Rendering\Renderer</Filter>
@@ -515,6 +515,9 @@
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\SkyboxPass.h">
       <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\IrradianceConvPass.h">
+      <Filter>Sources\Rendering\Rendering Passes\PreComputation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -672,7 +675,7 @@
       <Filter>Sources\Rendering\Resources\Textures</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\Equirect2CubemapPass.cpp">
-      <Filter>Sources\Rendering\Rendering Passes\Preprocessing</Filter>
+      <Filter>Sources\Rendering\Rendering Passes\PreComputation</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\RenderObject.cpp">
       <Filter>Sources\Rendering\Renderer</Filter>
@@ -685,6 +688,9 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\SkyboxPass.cpp">
       <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\IrradianceConvPass.cpp">
+      <Filter>Sources\Rendering\Rendering Passes\PreComputation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -717,6 +723,9 @@
     </FxCompile>
     <FxCompile Include="Contents\Shaders\SkyboxPass.hlsl">
       <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\IrradianceConvolution.hlsl">
+      <Filter>Shaders\PBS</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
