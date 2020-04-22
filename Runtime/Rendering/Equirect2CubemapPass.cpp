@@ -60,10 +60,9 @@ namespace Mile
       return false;
    }
 
-   bool Equirect2CubemapPass::Bind(ID3D11DeviceContext& deviceContext, Texture2dDX11* equirectangularMap, unsigned int faceIndex)
+   bool Equirect2CubemapPass::Bind(ID3D11DeviceContext& deviceContext, Texture2dDX11* equirectangularMap)
    {
-      bool bIsValidParams = (faceIndex >= 0) && (faceIndex < 6);
-      if (bIsValidParams && RenderingPass::Bind(deviceContext))
+      if (RenderingPass::Bind(deviceContext))
       {
          if (equirectangularMap != nullptr)
          {

@@ -20,7 +20,7 @@ namespace Mile
       ~Equirect2CubemapPass();
 
       bool Init(unsigned int cubemapSize);
-      bool Bind(ID3D11DeviceContext& deviceContext, Texture2dDX11* equirectangularMap, unsigned int faceIndex);
+      bool Bind(ID3D11DeviceContext& deviceContext, Texture2dDX11* equirectangularMap);
       virtual void Unbind(ID3D11DeviceContext& deviceContext) override;
 
       DynamicCubemap* GetCubemap() const { return m_cubemap; }
