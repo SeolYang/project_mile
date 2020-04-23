@@ -17,6 +17,7 @@
 #include "Rendering/IrradianceConvPass.h"
 #include "Rendering/AmbientEmissivePass.h"
 #include "Rendering/SkyboxPass.h"
+#include "Rendering/ToneMappingPass.h"
 #include "Core/Context.h"
 #include "Core/Window.h"
 #include "Core/Logger.h"
@@ -211,6 +212,16 @@ namespace Mile
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create HDR Buffer."), true);
+         return false;
+      }
+
+      m_toneMappingPass = new ToneMappingPass(this);
+      if (!m_toneMappingPass->Init())
+      {
+         MELog(m_context,
+            TEXT("RendererDX11"),
+            ELogType::FATAL,
+            TEXT("Failed to create Tone mapping pass."), true);
          return false;
       }
 
@@ -620,7 +631,7 @@ namespace Mile
       m_lightingPass->SetGBuffer(m_gBuffer);
       if (m_lightingPass->Bind(deviceContext))
       {
-         m_backBuffer->BindAsRenderTarget(deviceContext, true, false);
+         m_hdrBuffer->BindAsRenderTarget(deviceContext, true, false);
          m_depthDisable->Bind(deviceContext);
          m_viewport->Bind(deviceContext);
          m_defaultRasterizerState->Bind(deviceContext);
@@ -649,7 +660,7 @@ namespace Mile
             deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
          }
 
-         m_backBuffer->UnbindRenderTarget(deviceContext);
+         m_hdrBuffer->UnbindRenderTarget(deviceContext);
          m_lightingPass->Unbind(deviceContext);
       }
    }
@@ -661,7 +672,7 @@ namespace Mile
       m_ambientEmissivePass->SetIrradianceMap(m_irradianceConvPass->GetIrradianceMap());
       if (m_ambientEmissivePass->Bind(deviceContext))
       {
-         m_backBuffer->BindAsRenderTarget(deviceContext, false, false);
+         m_hdrBuffer->BindAsRenderTarget(deviceContext, false, false);
          m_depthDisable->Bind(deviceContext);
          m_viewport->Bind(deviceContext);
          m_defaultRasterizerState->Bind(deviceContext);
@@ -678,7 +689,7 @@ namespace Mile
 
          deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
 
-         m_backBuffer->UnbindRenderTarget(deviceContext);
+         m_hdrBuffer->UnbindRenderTarget(deviceContext);
          m_ambientEmissivePass->Unbind(deviceContext);
       }
    }
@@ -688,7 +699,7 @@ namespace Mile
       Transform* camTransform = m_mainCamera->GetTransform();
       if (m_skyboxPass->Bind(deviceContext, m_equirectToCubemapPass->GetCubemap()))
       {
-         m_backBuffer->BindAsRenderTarget(deviceContext, false, false);
+         m_hdrBuffer->BindAsRenderTarget(deviceContext, false, false);
          m_depthLessEqual->Bind(deviceContext);
          m_viewport->Bind(deviceContext);
          m_noCulling->Bind(deviceContext);
@@ -711,7 +722,7 @@ namespace Mile
 
          m_cubeMesh->Bind(deviceContext, 0);
          deviceContext.DrawIndexed(m_cubeMesh->GetIndexCount(), 0, 0);
-         m_backBuffer->UnbindRenderTarget(deviceContext);
+         m_hdrBuffer->UnbindRenderTarget(deviceContext);
          m_skyboxPass->Unbind(deviceContext);
       }
 
@@ -802,7 +813,6 @@ namespace Mile
    {
       if (deviceContextPtr != nullptr)
       {
-
          ID3D11DeviceContext& deviceContext = *deviceContextPtr;
 
          CalculateDiffuseIrradiance(deviceContext);
@@ -823,6 +833,18 @@ namespace Mile
 
    void RendererDX11::ToneMappingWithGammaCorrection(ID3D11DeviceContext& deviceContext)
    {
+      if (m_toneMappingPass->Bind(deviceContext, m_hdrBuffer))
+      {
+         m_backBuffer->BindAsRenderTarget(deviceContext, true, false);
+         m_depthDisable->Bind(deviceContext);
+         m_viewport->Bind(deviceContext);
+         m_defaultRasterizerState->Bind(deviceContext);
+         m_screenQuad->Bind(deviceContext, 0);
+
+         deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
+         m_backBuffer->UnbindRenderTarget(deviceContext);
+         m_toneMappingPass->Unbind(deviceContext);
+      }
    }
 
    ID3D11CommandList* RendererDX11::RunPostProcessPass(ID3D11DeviceContext* deviceContextPtr)

@@ -51,12 +51,19 @@ int main( )
       camComponent->SetFov(90.0f);
       camTransform->SetPosition(Vector3(0.0f, 0.0f, -5.0f));
 
-      Entity* mainLight = world->CreateEntity(TEXT("Upper Light"));
+      Entity* mainLight = world->CreateEntity(TEXT("Main Light"));
       LightComponent* mainLightComponent = mainLight->AddComponent<LightComponent>();
       Transform* mainLightTransform = mainLight->GetTransform();
       mainLightComponent->SetLightType(ELightType::Point);
       mainLightComponent->SetRadiance(Vector3(200.0f, 200.0f, 200.0f));
-      mainLightTransform->SetPosition(Vector3(0.0f, 0.0f, -5.0f));
+      mainLightTransform->SetPosition(Vector3(-9.0f, 0.0f, -3.0f));
+
+      Entity* secondLight = world->CreateEntity(TEXT("Second Light"));
+      LightComponent* secondLightComponent = secondLight->AddComponent<LightComponent>();
+      Transform* secondLightTransform = secondLight->GetTransform();
+      secondLightComponent->SetLightType(ELightType::Point);
+      secondLightComponent->SetRadiance(Vector3(400.0f, 400.0f, 400.0f));
+      secondLightTransform->SetPosition(Vector3(0.0f, 7.0f, -3.0f));
 
       Model* damagedHelmetModel = resMng->Load<Model>(TEXT("Contents/Models/DamagedHelmet/DamagedHelmet.gltf"));
       Entity* damagedHelmet = Model::Instantiate(damagedHelmetModel, world, TEXT("DamagedHelmet"));
@@ -92,13 +99,14 @@ int main( )
 
       //world->GetComponentsFromEntities<Transform>(); // Transform은 Component를 상속하지 않기 때문에 컴파일되지 않는다.
 
+      Texture2D* equirectangularMap = resMng->Load<Texture2D>(TEXT("Contents/Textures/Ice_Lake/Ice_Lake_Ref.hdr"));
       //Texture2D* equirectangularMap = resMng->Load<Texture2D>(TEXT("Contents/Textures/Newport_Loft/Newport_Loft_8k.jpg"));
-      Texture2D* equirectangularMap = resMng->Load<Texture2D>(TEXT("Contents/Textures/Ice_Lake/Ice_Lake_HiRes_TMap.jpg"));
+      //Texture2D* equirectangularMap = resMng->Load<Texture2D>(TEXT("Contents/Textures/Ice_Lake/Ice_Lake_HiRes_TMap.jpg"));
       //Texture2D* equirectangularMap = resMng->Load<Texture2D>(TEXT("Contents/Textures/Milkyway/Milkyway_BG.jpg"));
       //Texture2D* equirectangularMap = resMng->Load<Texture2D>(TEXT("Contents/Textures/Winter_Forest/WinterForest_8k.jpg"));
       //Texture2D* equirectangularMap = resMng->Load<Texture2D>(TEXT("Contents/Textures/Theatre_Center/Theatre-Center_8k_TMap.jpg"));
       renderer->SetEquirectangularMap(equirectangularMap);
-      renderer->SetConvDiffsuseIrradianceAsRealtime(false);
+      renderer->SetConvDiffsuseIrradianceAsRealtime(true);
       renderer->SetAmbientOcclusionFactor(0.7f);
       execute = engine->Execute();
    }

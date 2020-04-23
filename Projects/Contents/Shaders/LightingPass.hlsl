@@ -84,7 +84,5 @@ float4 MilePS(in PSInput input) : SV_Target0
 
 	float NdotL = max(dot(N, L), 0.0f);
 	Lo = (kD * albedo / PI + specular) * radiance * NdotL;
-	Lo = Lo / (Lo + 1.0f);
-	Lo = pow(Lo, (1.0f / 2.2f));
 	return float4(Lo, 1.0f);
 }

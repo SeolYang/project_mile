@@ -82,6 +82,9 @@
     <Filter Include="Shaders\Post-Process">
       <UniqueIdentifier>{e6280367-3731-4e5d-955c-6958b66856f0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Rendering\Rendering Passes\Post-Process">
+      <UniqueIdentifier>{ea8beca7-58fe-489a-8f8e-24cf0ca38c7b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Core\Context.h">
@@ -525,6 +528,9 @@
     <ClInclude Include="..\Runtime\Rendering\AmbientEmissivePass.h">
       <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\ToneMappingPass.h">
+      <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -700,6 +706,9 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\AmbientEmissivePass.cpp">
       <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\ToneMappingPass.cpp">
+      <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

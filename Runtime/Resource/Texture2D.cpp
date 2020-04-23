@@ -73,7 +73,7 @@ namespace Mile
 
       auto renderer = m_context->GetSubSystem<RendererDX11>();
       m_rawTexture = new Texture2dDX11(renderer);
-      if (!m_rawTexture->Init(m_width, m_height, m_channels, m_rawData, m_bIsHDR ? DXGI_FORMAT_R32G32B32_FLOAT : DXGI_FORMAT_B8G8R8A8_UNORM))
+      if (!m_rawTexture->Init(m_width, m_height, m_channels, m_rawData, m_bIsHDR ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_B8G8R8A8_UNORM))
       {
          MELog(m_context, TEXT("Texture2D"), ELogType::WARNING, TEXT("Failed to initialize Raw Texture: ") + m_path, true);
          SafeDelete(m_rawTexture);

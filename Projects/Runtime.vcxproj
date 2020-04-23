@@ -164,6 +164,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\Runtime\Rendering\ResourceDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ShaderDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\Texture2dDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\ToneMappingPass.h" />
     <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\VertexShaderDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\SamplerDX11.h" />
@@ -304,6 +305,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Rendering\RenderTargetDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\SamplerDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Texture2dDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\ToneMappingPass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\VertexBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\VertexShaderDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Viewport.cpp" />

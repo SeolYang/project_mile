@@ -24,6 +24,10 @@ namespace Mile
             {
                converted = FreeImage_ConvertTo32Bits(dib);
             }
+            else
+            {
+               converted = FreeImage_ConvertToRGBAF(dib);
+            }
             FreeImage_FlipVertical(converted);
             auto width = FreeImage_GetWidth(converted);
             auto height = FreeImage_GetHeight(converted);

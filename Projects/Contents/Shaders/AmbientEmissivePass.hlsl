@@ -71,7 +71,5 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float3 ambient = (kD * diffuse) * ao;
 
 	float3 color = ambient + emissive;
-	color = color / (color + 1.0f);
-	color = pow(color, (1.0f / 2.2f));
 	return float4(color, 1.0);
 }

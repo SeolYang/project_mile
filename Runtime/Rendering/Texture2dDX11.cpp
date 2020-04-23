@@ -33,10 +33,18 @@ namespace Mile
          desc.MiscFlags = 0;
          desc.CPUAccessFlags = 0;
 
+         size_t bytePerChannel = sizeof(unsigned char);
+         switch (format)
+         {
+         case DXGI_FORMAT_R32G32B32A32_FLOAT:
+            bytePerChannel = sizeof(float);
+            break;
+         }
+
          D3D11_SUBRESOURCE_DATA resource;
          resource.pSysMem = data;
-         resource.SysMemPitch = (width * channels) * sizeof(unsigned char);
-         resource.SysMemSlicePitch = (width * height * channels) * sizeof(unsigned char);
+         resource.SysMemPitch = (width * channels) * bytePerChannel;
+         resource.SysMemSlicePitch = (width * height * channels) * bytePerChannel;
 
          auto result = device->CreateTexture2D(&desc, &resource, &m_texture);
          if (!FAILED(result))
