@@ -7,7 +7,6 @@ namespace Mile
 {
    enum class ERenderContextType : UINT32
    {
-      PreProcess,
       GeometryPass,
       LightingPass,
       PostProcessPass,
@@ -33,6 +32,7 @@ namespace Mile
    class IrradianceConvPass;
    class AmbientEmissivePass;
    class SkyboxPass;
+   class ToneMappingPass;
    class Window;
    class World;
    class Entity;
@@ -81,15 +81,22 @@ namespace Mile
       bool CreateDepthStencilBuffer();
 
       /* Rendering Workflow **/
+      ID3D11CommandList* RunGeometryPass(ID3D11DeviceContext* deviceContextPtr);
+
       /* Pre compute **/
-      void CalculateDiffuseIrradiance(ID3D11DeviceContext* deviceContextPtr);
+      void CalculateDiffuseIrradiance(ID3D11DeviceContext& deviceContext);
       void ConvertEquirectToCubemap(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix);
       void SolveDiffuseIntegral(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix);
 
-      /* Physically Based Shading Workflow **/
-      ID3D11CommandList* RunGeometryPass(ID3D11DeviceContext* deviceContextPtr);
+      /* Lighting **/
+      void RenderLight(ID3D11DeviceContext& deviceContext);
+      void RenderAmbientEmissive(ID3D11DeviceContext& deviceContext);
+      void RenderSkybox(ID3D11DeviceContext& deviceContext);
       ID3D11CommandList* RunLightingPass(ID3D11DeviceContext* deviceContextPtr);
-      //ID3D11CommandList* RunPostProcessPass(ID3D11DeviceContext* deviceContext);
+
+      /* Post-Process **/
+      void ToneMappingWithGammaCorrection(ID3D11DeviceContext& deviceContext);
+      ID3D11CommandList* RunPostProcessPass(ID3D11DeviceContext* deviceContextPtr);
    
       /* Helper Methods **/
       /* @TODO Entity 배열을 받는게 아닌 World Subsystem만 가져와서 특정 컴포넌트만 찾을 수 있도록 하기. **/
@@ -159,6 +166,10 @@ namespace Mile
       RenderTargetDX11* m_ambientEmissivePassRenderBuffer;
 
       SkyboxPass* m_skyboxPass;
+
+      /** Post-Process */
+      RenderTargetDX11* m_hdrBuffer;
+      ToneMappingPass* m_toneMappingPass;
 
       /* Renderable objects **/
       std::vector<MeshRenderComponent*> m_meshRenderComponents;

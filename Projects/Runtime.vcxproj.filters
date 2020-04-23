@@ -79,6 +79,9 @@
     <Filter Include="Sources\Rendering\Rendering Passes\PreComputation">
       <UniqueIdentifier>{22b7bb20-80c2-464b-a270-fdb78f9b02a9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Post-Process">
+      <UniqueIdentifier>{e6280367-3731-4e5d-955c-6958b66856f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Core\Context.h">
@@ -735,6 +738,9 @@
     </FxCompile>
     <FxCompile Include="Contents\Shaders\AmbientEmissivePass.hlsl">
       <Filter>Shaders\PBS</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\ToneMapping.hlsl">
+      <Filter>Shaders\Post-Process</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
