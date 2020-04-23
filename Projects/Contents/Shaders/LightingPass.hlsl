@@ -61,29 +61,30 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float3 L = normalize(LightPos.rgb - worldPos);
 	float3 H = normalize(V + L);
 	
-	float3 F0 = 0.04;
+	float3 F0 = 0.04f;
 	F0 = lerp(F0, albedo, metallic);
 	
-	float3 Lo = 0.0;
+	float3 Lo = 0.0f;
 	float distance = length(LightPos.xyz - worldPos);
-	float attenuation = 1.0 / (distance * distance);
+	float attenuation = 1.0f / (distance * distance);
 	float3 radiance = LightRadiance * attenuation;
 	
+	// Cook-Torrance BRDF
 	float NDF = DistributionGGX(N, H, roughness);
 	float G = GeometrySmith(N, V, L, roughness);
 	float3 F = FresnelSchlick(max(dot(H, V), 0.0f), F0);
 	
 	float3 nominator = NDF * G * F;
-	float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001;
-	float3 specular = nominator / denominator;
+	float denominator = 4.0f * max(dot(N, V), 0.0f) * max(dot(N, L), 0.0f);
+	float3 specular = nominator / max(denominator, 0.001f);
 	
 	float3 kS = F;
-	float3 kD = 1.0- kS;
-	kD *= 1.0 - metallic;
+	float3 kD = 1.0f - kS;
+	kD *= 1.0f - metallic;
 
-	float NdotL = max(dot(N, L), 0.0);
+	float NdotL = max(dot(N, L), 0.0f);
 	Lo = (kD * albedo / PI + specular) * radiance * NdotL;
 	Lo = Lo / (Lo + 1.0f);
 	Lo = pow(Lo, (1.0f / 2.2f));
-	return float4(Lo, 1.0);
+	return float4(Lo, 1.0f);
 }

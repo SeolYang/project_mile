@@ -68,7 +68,7 @@ float4 MilePS(in PSInput input) : SV_Target0
 	kD *= 1.0f - metallic;
 	float3 irradiance = irradianceMap.Sample(AnisoSampler, N).rgb;
 	float3 diffuse = irradiance * albedo;
-	float3 ambient = (kD * diffuse) * Ao;
+	float3 ambient = (kD * diffuse) * ao;
 
 	float3 color = ambient + emissive;
 	color = color / (color + 1.0f);
