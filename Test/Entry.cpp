@@ -92,9 +92,14 @@ int main( )
 
       //world->GetComponentsFromEntities<Transform>(); // Transform은 Component를 상속하지 않기 때문에 컴파일되지 않는다.
 
-      Texture2D* equirectangularMap = resMng->Load<Texture2D>(TEXT("Contents/Textures/Winter_Forest/WinterForest_8k.jpg"));
+      //Texture2D* equirectangularMap = resMng->Load<Texture2D>(TEXT("Contents/Textures/Newport_Loft/Newport_Loft_8k.jpg"));
+      Texture2D* equirectangularMap = resMng->Load<Texture2D>(TEXT("Contents/Textures/Ice_Lake/Ice_Lake_HiRes_TMap.jpg"));
+      //Texture2D* equirectangularMap = resMng->Load<Texture2D>(TEXT("Contents/Textures/Milkyway/Milkyway_BG.jpg"));
+      //Texture2D* equirectangularMap = resMng->Load<Texture2D>(TEXT("Contents/Textures/Winter_Forest/WinterForest_8k.jpg"));
+      //Texture2D* equirectangularMap = resMng->Load<Texture2D>(TEXT("Contents/Textures/Theatre_Center/Theatre-Center_8k_TMap.jpg"));
       renderer->SetEquirectangularMap(equirectangularMap);
-      renderer->SetAlwaysCalculateDiffuseIrradiacne(true);
+      renderer->SetConvDiffsuseIrradianceAsRealtime(false);
+      renderer->SetAmbientOcclusionFactor(0.7f);
       execute = engine->Execute();
    }
 
