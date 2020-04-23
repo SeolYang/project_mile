@@ -4,6 +4,7 @@
 #include "Rendering/PixelShaderDX11.h"
 #include "Rendering/Texture2dDX11.h"
 #include "Rendering/BlendState.h"
+#include "Rendering/RenderTargetDX11.h"
 
 namespace Mile
 {

@@ -6,6 +6,7 @@ namespace Mile
 {
    class GBuffer;
    class BlendState;
+   class RenderTargetDX11;
    class MEAPI LightingPass : public RenderingPass
    {
       DEFINE_CONSTANT_BUFFER(CameraParamsConstantBuffer)

@@ -100,7 +100,6 @@ namespace Mile
          }
 
          m_transformBuffer->Unbind(deviceContext);
-         m_irradianceMap->UnbindAsRenderTarget(deviceContext);
          RenderingPass::Unbind(deviceContext);
       }
    }
