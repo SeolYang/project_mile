@@ -135,6 +135,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\Runtime\Math\Vector4.h" />
     <ClInclude Include="..\Runtime\Math\Vertex.h" />
     <ClInclude Include="..\Runtime\MT\ThreadPool.h" />
+    <ClInclude Include="..\Runtime\Rendering\AmbientEmissivePass.h" />
     <ClInclude Include="..\Runtime\Rendering\BlendState.h" />
     <ClInclude Include="..\Runtime\Rendering\BufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ConstantBufferDX11.h" />
@@ -276,6 +277,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Math\Matrix.cpp" />
     <ClCompile Include="..\Runtime\Math\Vector3.cpp" />
     <ClCompile Include="..\Runtime\Math\Vector4.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\AmbientEmissivePass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\BlendState.cpp" />
     <ClCompile Include="..\Runtime\Rendering\BufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\ConstantBufferDX11.cpp" />
@@ -317,6 +319,12 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Resource\TextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Contents\Shaders\AmbientEmissivePass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="Contents\Shaders\CheckerBoardInterpolate.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>

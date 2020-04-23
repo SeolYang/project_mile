@@ -30,8 +30,9 @@ namespace Mile
    class Equirect2CubemapPass;
    class GeometryPass;
    class LightingPass;
-   class SkyboxPass;
    class IrradianceConvPass;
+   class AmbientEmissivePass;
+   class SkyboxPass;
    class Window;
    class World;
    class Entity;
@@ -69,7 +70,10 @@ namespace Mile
       Vector4 GetClearColor() const { return m_clearColor; }
 
       void SetEquirectangularMap(Texture2D* texture);
-      void SetAlwaysCalculateDiffuseIrradiacne(bool bAlwaysCalculateDiffuseIrraidiance = false);
+      void SetConvDiffsuseIrradianceAsRealtime(bool bAlwaysCalculateDiffuseIrraidiance = false);
+
+      void SetAmbientOcclusionFactor(float factor) { m_aoFactor = factor; }
+      float GetAmbientOcclusionFactor() const { return m_aoFactor; }
 
    private:
       /* Initialization methods **/
@@ -78,7 +82,7 @@ namespace Mile
 
       /* Rendering Workflow **/
       /* Pre compute **/
-      ID3D11CommandList* CalculateDiffuseIrradiance(ID3D11DeviceContext* deviceContextPtr);
+      void CalculateDiffuseIrradiance(ID3D11DeviceContext* deviceContextPtr);
       void ConvertEquirectToCubemap(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix);
       void SolveDiffuseIntegral(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix);
 
@@ -131,21 +135,28 @@ namespace Mile
       DepthStencilBufferDX11* m_depthStencilBuffer;
       RenderTargetDX11* m_backBuffer;
 
+      Quad* m_screenQuad;
+      Cube* m_cubeMesh;
+
       /* PBS Workflow **/
       GBuffer* m_gBuffer;
       GeometryPass* m_geometryPass;
       LightingPass* m_lightingPass;
-      Quad* m_screenQuad;
+      RenderTargetDX11* m_lightingPassRenderBuffer;
 
       /** Diffuse Irradiance  */
       Equirect2CubemapPass* m_equirectToCubemapPass;
       Texture2D* m_equirectangularMap;
-      Cube* m_cubeMesh;
       bool  m_bCubemapDirtyFlag;
       bool  m_bAlwaysCalculateDiffuseIrradiance;
       DynamicCubemap* m_envMap;
       IrradianceConvPass* m_irradianceConvPass;
       DynamicCubemap* m_irradianceMap;
+
+      /** Ambient Emissive Pass */
+      float m_aoFactor;
+      AmbientEmissivePass* m_ambientEmissivePass;
+      RenderTargetDX11* m_ambientEmissivePassRenderBuffer;
 
       SkyboxPass* m_skyboxPass;
 

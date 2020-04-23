@@ -513,11 +513,14 @@
     <ClInclude Include="..\Runtime\Rendering\DepthStencilState.h">
       <Filter>Sources\Rendering\Renderer\States</Filter>
     </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\SkyboxPass.h">
-      <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
-    </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\IrradianceConvPass.h">
       <Filter>Sources\Rendering\Rendering Passes\PreComputation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\SkyboxPass.h">
+      <Filter>Sources\Rendering\Rendering Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\AmbientEmissivePass.h">
+      <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -686,11 +689,14 @@
     <ClCompile Include="..\Runtime\Rendering\DepthStencilState.cpp">
       <Filter>Sources\Rendering\Renderer\States</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\SkyboxPass.cpp">
-      <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
-    </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\IrradianceConvPass.cpp">
       <Filter>Sources\Rendering\Rendering Passes\PreComputation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\SkyboxPass.cpp">
+      <Filter>Sources\Rendering\Rendering Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\AmbientEmissivePass.cpp">
+      <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -725,6 +731,9 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\IrradianceConvolution.hlsl">
+      <Filter>Shaders\PBS</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\AmbientEmissivePass.hlsl">
       <Filter>Shaders\PBS</Filter>
     </FxCompile>
   </ItemGroup>
