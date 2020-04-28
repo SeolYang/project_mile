@@ -110,9 +110,7 @@ namespace Mile
    {
       if (m_cameraParamsBuffer != nullptr)
       {
-         auto mappedBuffer = reinterpret_cast<CameraParamsConstantBuffer*>(m_cameraParamsBuffer->Map(deviceContext));
-         (*mappedBuffer) = buffer;
-         m_cameraParamsBuffer->UnMap(deviceContext);
+         m_cameraParamsBuffer->Update(deviceContext, buffer);
       }
    }
 
@@ -120,9 +118,7 @@ namespace Mile
    {
       if (m_lightParamsBuffer != nullptr)
       {
-         auto mappedBuffer = reinterpret_cast<LightParamsConstantBuffer*>(m_lightParamsBuffer->Map(deviceContext));
-         (*mappedBuffer) = buffer;
-         m_lightParamsBuffer->UnMap(deviceContext);
+         m_lightParamsBuffer->Update(deviceContext, buffer);
       }
    }
 }

@@ -127,18 +127,15 @@ namespace Mile
    {
       if (m_cameraParamsBuffer != nullptr)
       {
-         auto mappedBuffer = reinterpret_cast<CameraParamsConstantBuffer*>(m_cameraParamsBuffer->Map(deviceContext));
-         (*mappedBuffer) = buffer;
-         m_cameraParamsBuffer->UnMap(deviceContext);
+         m_cameraParamsBuffer->Update(deviceContext, buffer);
       }
    }
+
    void AmbientEmissivePass::UpdateAmbientParamsBuffer(ID3D11DeviceContext& deviceContext, AmbientParamsConstantBuffer buffer)
    {
       if (m_ambientParamsBuffer != nullptr)
       {
-         auto mappedBuffer = reinterpret_cast<AmbientParamsConstantBuffer*>(m_ambientParamsBuffer->Map(deviceContext));
-         (*mappedBuffer) = buffer;
-         m_ambientParamsBuffer->UnMap(deviceContext);
+         m_ambientParamsBuffer->Update(deviceContext, buffer);
       }
    }
 }

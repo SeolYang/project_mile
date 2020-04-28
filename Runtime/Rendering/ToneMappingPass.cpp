@@ -78,12 +78,7 @@ namespace Mile
    {
       if (m_params != nullptr)
       {
-         auto mappedBuffer = reinterpret_cast<ToneMappingParams*>(m_params->Map(deviceContext));
-         if (mappedBuffer != nullptr)
-         {
-            (*mappedBuffer) = buffer;
-         }
-         m_params->UnMap(deviceContext);
+         m_params->Update(deviceContext, buffer);
       }
    }
 }

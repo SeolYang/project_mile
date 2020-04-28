@@ -28,6 +28,19 @@ namespace Mile
 
       virtual bool UnMap(ID3D11DeviceContext& deviceContext) override;
 
+      template <typename BufferType>
+      bool Update(ID3D11DeviceContext& deviceContext, BufferType buffer)
+      {
+         auto mappedBuffer = Map<BufferType>(deviceContext);
+         if (mappedBuffer != nullptr)
+         {
+            (*mappedBuffer) = buffer;
+         }
+
+         UnMap(deviceContext);
+         return false;
+      }
+
       bool Bind(ID3D11DeviceContext& deviceContext, unsigned int slot, EShaderType shaderType);
       void Unbind(ID3D11DeviceContext& deviceContext);
 

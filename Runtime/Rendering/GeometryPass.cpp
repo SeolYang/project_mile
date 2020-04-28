@@ -102,9 +102,7 @@ namespace Mile
    {
       if (m_transformBuffer != nullptr)
       {
-         auto mappedBuffer = reinterpret_cast<TransformConstantBuffer*>(m_transformBuffer->Map(deviceContext));
-         (*mappedBuffer) = buffer;
-         m_transformBuffer->UnMap(deviceContext);
+         m_transformBuffer->Update(deviceContext, buffer);
       }
    }
 
@@ -112,9 +110,7 @@ namespace Mile
    {
       if (m_materialBuffer != nullptr)
       {
-         auto mappedBuffer = reinterpret_cast<MaterialConstantBuffer*>(m_materialBuffer->Map(deviceContext));
-         (*mappedBuffer) = buffer;
-         m_materialBuffer->UnMap(deviceContext);
+         m_materialBuffer->Update(deviceContext, buffer);
       }
    }
 }

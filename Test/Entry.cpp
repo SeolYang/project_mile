@@ -106,10 +106,10 @@ int main( )
       //Texture2D* equirectangularMap = resMng->Load<Texture2D>(TEXT("Contents/Textures/Winter_Forest/WinterForest_8k.jpg"));
       //Texture2D* equirectangularMap = resMng->Load<Texture2D>(TEXT("Contents/Textures/Theatre_Center/Theatre-Center_8k_TMap.jpg"));
       renderer->SetEquirectangularMap(equirectangularMap);
-      renderer->SetConvDiffsuseIrradianceAsRealtime(true);
+      renderer->SetConvDiffsuseIrradianceAsRealtime(false);
       renderer->SetAmbientOcclusionFactor(0.7f);
       renderer->SetGammaFactor(2.2f);
-      renderer->SetToneMappingFactor(0.3f);
+      renderer->SetToneMappingFactor(0.25f);
       execute = engine->Execute();
    }
 
