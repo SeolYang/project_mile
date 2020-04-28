@@ -46,4 +46,25 @@ float2 Hammersley(uint idx, uint N)
       RadicalInverse_VanDerCorpus(idx));
 }
 
+float3 ImportanceSampleGGX(float2 Xi, float3 N, float roughness)
+{
+   float a = roughness * roughness;
+
+   float phi = 2.0f * PI * Xi.x;
+   float cosTheta = sqrt((1.0f - Xi.y) / (1.0f + (a * a - 1.0f) * Xi.y));
+   float sinTheta = sqrt(1.0f - (cosTheta * cosTheta));
+
+   float3 H;
+   H.x = cos(phi) * sinTheta;
+   H.y = sin(phi) * sinTheta;
+   H.z = cosTheta;
+
+   float3 up = abs(N.z) < 0.999f ? float3(0.0f, 0.0f, 1.0f) : float3(1.0f, 0.0f, 0.0f);
+   float3 tangent = normalize(cross(up, N));
+   float3 bitangent = cross(N, tangent);
+
+   float3 sampleVec = tangent * H.x + bitangent * H.y + N * H.z;
+   return normalize(sampleVec);
+}
+
 #endif
