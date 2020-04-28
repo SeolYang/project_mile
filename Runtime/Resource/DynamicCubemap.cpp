@@ -2,12 +2,14 @@
 #include "Rendering/DepthStencilBufferDX11.h"
 #include "Rendering/RendererDX11.h"
 #include "Core/Helper.h"
+#include <cmath>
 
 namespace Mile
 {
    DynamicCubemap::DynamicCubemap(RendererDX11* renderer) :
-      m_rtvs({ nullptr, }),
+      m_rtvs(),
       m_depthStencil(nullptr),
+      m_maxMipLevels(0),
       Texture2DBaseDX11(renderer)
    {
    }
@@ -16,8 +18,12 @@ namespace Mile
    {
       for (unsigned int idx = 0; idx < 6; ++idx)
       {
-         SafeRelease(m_rtvs[idx]);
+         for (unsigned int mipLevel = 0; mipLevel <= m_maxMipLevels; ++mipLevel)
+         {
+            SafeRelease(m_rtvs[idx][mipLevel]);
+         }
       }
+
       SafeDelete(m_depthStencil);
    }
    
@@ -25,6 +31,7 @@ namespace Mile
    {
       if (RenderObject::IsInitializable())
       {
+         m_maxMipLevels = static_cast<unsigned int>(std::log2f(static_cast<float>(size)));
          RendererDX11* renderer = GetRenderer();
          auto device = renderer->GetDevice();
          D3D11_TEXTURE2D_DESC desc;
@@ -32,7 +39,7 @@ namespace Mile
          desc.Width = size;
          desc.Height = size;
          desc.MipLevels = 0;
-         desc.ArraySize = 6;
+         desc.ArraySize = CUBE_FACES;
          desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
          desc.Usage = D3D11_USAGE_DEFAULT;
          desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
@@ -49,15 +56,20 @@ namespace Mile
             rtvDesc.Format = desc.Format;
             rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
             rtvDesc.Texture2DArray.ArraySize = 1;
-            rtvDesc.Texture2DArray.MipSlice = 0;
+            /* 0 단계 (원본) ~ log_2(size) 단계 (1 x 1) 까지 rtv 생성하기 **/
 
-            for (unsigned int idx = 0; idx < 6; ++idx)
+            for (unsigned int idx = 0; idx < CUBE_FACES; ++idx)
             {
+               m_rtvs[idx].resize(static_cast<size_t>(m_maxMipLevels) + 1);
                rtvDesc.Texture2DArray.FirstArraySlice = idx;
-               result = device->CreateRenderTargetView(m_texture, &rtvDesc, &m_rtvs[idx]);
-               if (FAILED(result))
+               for (unsigned int mipLevel = 0; mipLevel <= m_maxMipLevels; ++mipLevel)
                {
-                  return false;
+                  rtvDesc.Texture2DArray.MipSlice = mipLevel;
+                  result = device->CreateRenderTargetView(m_texture, &rtvDesc, &m_rtvs[idx][mipLevel]);
+                  if (FAILED(result))
+                  {
+                     return false;
+                  }
                }
             }
 
@@ -79,7 +91,7 @@ namespace Mile
       return false;
    }
 
-   bool DynamicCubemap::BindAsRenderTarget(ID3D11DeviceContext& deviceContext, unsigned int faceIdx, bool clearRenderTarget, bool clearDepth)
+   bool DynamicCubemap::BindAsRenderTarget(ID3D11DeviceContext& deviceContext, unsigned int faceIdx, unsigned int mipLevel, bool clearRenderTarget, bool clearDepth)
    {
       /*
       * @todo  렌더 타겟 클래스 이용/렌더 타겟 클래스 기능 확장(인터페이스 통합) : 아래 구현 내용이 중복됨
@@ -92,7 +104,7 @@ namespace Mile
             if (clearRenderTarget)
             {
                float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-               deviceContext.ClearRenderTargetView(m_rtvs[faceIdx], clearColor);
+               deviceContext.ClearRenderTargetView(m_rtvs[faceIdx][mipLevel], clearColor);
             }
             if (clearDepth)
             {
@@ -102,7 +114,7 @@ namespace Mile
                }
             }
 
-            deviceContext.OMSetRenderTargets(1, &m_rtvs[faceIdx], dsv);
+            deviceContext.OMSetRenderTargets(1, &m_rtvs[faceIdx][mipLevel], dsv);
             return true;
          }
       }

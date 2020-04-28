@@ -20,15 +20,18 @@ namespace Mile
       bool Init(unsigned int size);
       virtual ERenderResourceType GetResourceType() const override { return ERenderResourceType::DynamicCubemap; }
 
-      bool BindAsRenderTarget(ID3D11DeviceContext& deviceContext, unsigned int faceIdx, bool clearRenderTarget = true, bool clearDepth = true);
+      bool BindAsRenderTarget(ID3D11DeviceContext& deviceContext, unsigned int faceIdx, unsigned int mipLevel = 0, bool clearRenderTarget = true, bool clearDepth = true);
       /* 
       * @warn  실제로 Cubemap이 렌더 타겟으로 바인드 되어있는지 여부를 따지지 않고 무조건 unbind 합니다.
       **/
       void UnbindAsRenderTarget(ID3D11DeviceContext& deviceContext);
 
+      unsigned int GetMaxMipLevels() const { return m_maxMipLevels; }
+
    private:
-      std::array<ID3D11RenderTargetView*, 6> m_rtvs;
+      std::array<std::vector<ID3D11RenderTargetView*>, CUBE_FACES> m_rtvs;
       DepthStencilBufferDX11* m_depthStencil;
+      unsigned int m_maxMipLevels;
 
    };
 }
