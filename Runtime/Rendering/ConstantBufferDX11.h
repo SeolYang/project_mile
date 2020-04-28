@@ -20,6 +20,12 @@ namespace Mile
       virtual ERenderResourceType GetResourceType() const override { return ERenderResourceType::ConstantBuffer; }
 
       virtual void* Map(ID3D11DeviceContext& deviceContext) override;
+      template <typename BufferType>
+      BufferType* Map(ID3D11DeviceContext& deviceContext)
+      {
+         return reinterpret_cast<BufferType*>(Map(deviceContext));
+      }
+
       virtual bool UnMap(ID3D11DeviceContext& deviceContext) override;
 
       bool Bind(ID3D11DeviceContext& deviceContext, unsigned int slot, EShaderType shaderType);
