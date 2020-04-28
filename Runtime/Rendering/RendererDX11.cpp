@@ -36,20 +36,41 @@ namespace Mile
 {
    RendererDX11::RendererDX11(Context* context) :
       SubSystem(context),
-      m_window(nullptr), m_clearColor{ 0.0f, 0.0f, 0.0f, 1.0f },
-      m_device(nullptr), m_immediateContext(nullptr), m_deferredContexts{ nullptr },
-      m_swapChain(nullptr), m_renderTargetView(nullptr), m_depthStencilBuffer(nullptr), m_bDepthStencilEnabled(true),
-      m_gBuffer(nullptr), m_geometryPass(nullptr), m_lightingPass(nullptr), m_lightingPassRenderBuffer(nullptr),
-      m_skyboxPass(nullptr), m_envMap(nullptr), 
-      m_equirectToCubemapPass(nullptr), m_equirectangularMap(nullptr), m_cubeMesh(nullptr),
-      m_irradianceConvPass(nullptr), m_irradianceMap(nullptr),
-      m_bCubemapDirtyFlag(false), m_bAlwaysCalculateDiffuseIrradiance(false),
-      m_ambientEmissivePass(nullptr), m_ambientEmissivePassRenderBuffer(nullptr),
+      m_window(nullptr), 
+      m_device(nullptr),
+      m_immediateContext(nullptr),
+      m_deferredContexts{ nullptr },
+      m_swapChain(nullptr),
+      m_renderTargetView(nullptr),
+      m_depthStencilBuffer(nullptr),
+      m_bDepthStencilEnabled(true),
+      m_clearColor{ 0.0f, 0.0f, 0.0f, 1.0f },
+      m_gBuffer(nullptr), 
+      m_geometryPass(nullptr),
+      m_lightingPass(nullptr),
+      m_lightingPassRenderBuffer(nullptr),
+      m_skyboxPass(nullptr),
+      m_envMap(nullptr), 
+      m_equirectToCubemapPass(nullptr),
+      m_equirectangularMap(nullptr),
+      m_cubeMesh(nullptr),
+      m_irradianceConvPass(nullptr),
+      m_irradianceMap(nullptr),
+      m_bCubemapDirtyFlag(false),
+      m_bAlwaysCalculateDiffuseIrradiance(false),
+      m_ambientEmissivePass(nullptr),
+      m_ambientEmissivePassRenderBuffer(nullptr),
       m_aoFactor(0.6f),
-      m_hdrBuffer(nullptr), m_toneMappingPass(nullptr),
-      m_mainCamera(nullptr), m_viewport(nullptr), m_depthDisable(nullptr),
-      m_defaultRasterizerState(nullptr), m_noCulling(nullptr),
-      m_additiveBlendState(nullptr), m_defaultBlendState(nullptr),
+      m_hdrBuffer(nullptr), 
+      m_toneMappingPass(nullptr),
+      m_toneMappingFactor(TONE_MAPPING_FACTOR), 
+      m_gammaFactor(TONE_MAPPING_GAMMA_FACTOR),
+      m_mainCamera(nullptr), m_viewport(nullptr), 
+      m_depthDisable(nullptr),
+      m_defaultRasterizerState(nullptr), 
+      m_noCulling(nullptr),
+      m_additiveBlendState(nullptr),
+      m_defaultBlendState(nullptr),
       m_depthLessEqual(nullptr)
    {
    }
@@ -835,6 +856,10 @@ namespace Mile
    {
       if (m_toneMappingPass->Bind(deviceContext, m_hdrBuffer))
       {
+         m_toneMappingPass->UpdateParameters(
+            deviceContext,
+            {m_toneMappingFactor, m_gammaFactor});
+
          m_backBuffer->BindAsRenderTarget(deviceContext, true, false);
          m_depthDisable->Bind(deviceContext);
          m_viewport->Bind(deviceContext);

@@ -108,6 +108,8 @@ int main( )
       renderer->SetEquirectangularMap(equirectangularMap);
       renderer->SetConvDiffsuseIrradianceAsRealtime(true);
       renderer->SetAmbientOcclusionFactor(0.7f);
+      renderer->SetGammaFactor(2.2f);
+      renderer->SetToneMappingFactor(0.3f);
       execute = engine->Execute();
    }
 

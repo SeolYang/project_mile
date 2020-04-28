@@ -75,6 +75,12 @@ namespace Mile
       void SetAmbientOcclusionFactor(float factor) { m_aoFactor = factor; }
       float GetAmbientOcclusionFactor() const { return m_aoFactor; }
 
+      void SetGammaFactor(float gammaFactor) { m_gammaFactor = gammaFactor; }
+      float GetGammaFactor() const { return m_gammaFactor; }
+
+      void SetToneMappingFactor(float toneMappingFactor) { m_toneMappingFactor = toneMappingFactor; }
+      float GetToneMappingFactor() const { return m_toneMappingFactor; }
+
    private:
       /* Initialization methods **/
       bool CreateDeviceAndSwapChain();
@@ -170,6 +176,8 @@ namespace Mile
       /** Post-Process */
       RenderTargetDX11* m_hdrBuffer;
       ToneMappingPass* m_toneMappingPass;
+      float m_toneMappingFactor;
+      float m_gammaFactor;
 
       /* Renderable objects **/
       std::vector<MeshRenderComponent*> m_meshRenderComponents;
