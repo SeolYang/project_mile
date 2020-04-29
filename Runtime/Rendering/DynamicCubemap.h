@@ -30,7 +30,7 @@ namespace Mile
 
    private:
       std::array<std::vector<ID3D11RenderTargetView*>, CUBE_FACES> m_rtvs;
-      DepthStencilBufferDX11* m_depthStencil;
+      std::vector<DepthStencilBufferDX11*> m_depthStencils;
       unsigned int m_maxMipLevels;
 
    };

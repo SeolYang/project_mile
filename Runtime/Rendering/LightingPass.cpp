@@ -45,7 +45,7 @@ namespace Mile
       PixelShaderDX11* pixelShader = GetPixelShader();
       pixelShader->AddSampler(
          D3D11_FILTER_ANISOTROPIC,
-         D3D11_TEXTURE_ADDRESS_WRAP,
+         D3D11_TEXTURE_ADDRESS_BORDER,
          D3D11_COMPARISON_ALWAYS);
 
       RenderObject::ConfirmInit();
