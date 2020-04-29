@@ -30,12 +30,16 @@ namespace Mile
 
       void SetGBuffer(GBuffer* gBuffer);
       void SetIrradianceMap(DynamicCubemap* irradianceMap);
+      void SetPrefilteredMap(DynamicCubemap* prefilteredEnvMap);
+      void SetBRDFLUT(RenderTargetDX11* brdfLUT);
       void UpdateCameraParamsBuffer(ID3D11DeviceContext& deviceContext, CameraParamsConstantBuffer buffer);
       void UpdateAmbientParamsBuffer(ID3D11DeviceContext& deviceContext, AmbientParamsConstantBuffer buffer);
 
    private:
       GBuffer* m_gBuffer;
       DynamicCubemap* m_irradianceMap;
+      DynamicCubemap* m_prefilteredMap;
+      RenderTargetDX11* m_brdfLUT;
       CBufferPtr m_cameraParamsBuffer;
       CBufferPtr m_ambientParamsBuffer;
 

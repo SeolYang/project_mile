@@ -716,6 +716,7 @@ namespace Mile
 
    void RendererDX11::IntegrateBRDF(ID3D11DeviceContext& deviceContext)
    {
+      m_brdfLUT = m_integrateBRDFPass->GetBrdfLUT();
       if (m_integrateBRDFPass->Bind(deviceContext))
       {
          m_screenQuad->Bind(deviceContext, 0);
@@ -772,6 +773,8 @@ namespace Mile
       Transform* camTransform = m_mainCamera->GetTransform();
       m_ambientEmissivePass->SetGBuffer(m_gBuffer);
       m_ambientEmissivePass->SetIrradianceMap(m_irradianceConvPass->GetIrradianceMap());
+      m_ambientEmissivePass->SetPrefilteredMap(m_prefilterdEnvMap);
+      m_ambientEmissivePass->SetBRDFLUT(m_brdfLUT);
       if (m_ambientEmissivePass->Bind(deviceContext))
       {
          m_hdrBuffer->BindAsRenderTarget(deviceContext, false, false);

@@ -12,6 +12,8 @@ namespace Mile
    AmbientEmissivePass::AmbientEmissivePass(class RendererDX11* renderer) :
       m_gBuffer(nullptr),
       m_irradianceMap(nullptr),
+      m_prefilteredMap(nullptr),
+      m_brdfLUT(nullptr),
       m_cameraParamsBuffer(nullptr),
       m_ambientParamsBuffer(nullptr),
       RenderingPass(renderer)
@@ -49,6 +51,10 @@ namespace Mile
          D3D11_FILTER_ANISOTROPIC,
          D3D11_TEXTURE_ADDRESS_WRAP,
          D3D11_COMPARISON_ALWAYS);
+      pixelShader->AddSampler(
+         D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+         D3D11_TEXTURE_ADDRESS_WRAP,
+         D3D11_COMPARISON_ALWAYS);
 
       RenderObject::ConfirmInit();
       return true;
@@ -65,6 +71,16 @@ namespace Mile
          }
 
          if (!m_irradianceMap->Bind(deviceContext, 5, EShaderType::PixelShader))
+         {
+            return false;
+         }
+
+         if (!m_prefilteredMap->Bind(deviceContext, 6, EShaderType::PixelShader))
+         {
+            return false;
+         }
+
+         if (!m_brdfLUT->BindAsShaderResource(deviceContext, 7, EShaderType::PixelShader))
          {
             return false;
          }
@@ -109,6 +125,16 @@ namespace Mile
             m_irradianceMap->Unbind(deviceContext);
          }
 
+         if (m_prefilteredMap != nullptr)
+         {
+            m_prefilteredMap->Unbind(deviceContext);
+         }
+
+         if (m_brdfLUT != nullptr)
+         {
+            m_brdfLUT->UnbindShaderResource(deviceContext);
+         }
+
          RenderingPass::Unbind(deviceContext);
       }
    }
@@ -121,6 +147,16 @@ namespace Mile
    void AmbientEmissivePass::SetIrradianceMap(DynamicCubemap* irradianceMap)
    {
       m_irradianceMap = irradianceMap;
+   }
+
+   void AmbientEmissivePass::SetPrefilteredMap(DynamicCubemap* prefilteredEnvMap)
+   {
+      m_prefilteredMap = prefilteredEnvMap;
+   }
+
+   void AmbientEmissivePass::SetBRDFLUT(RenderTargetDX11* brdfLUT)
+   {
+      m_brdfLUT = brdfLUT;
    }
 
    void AmbientEmissivePass::UpdateCameraParamsBuffer(ID3D11DeviceContext& deviceContext, CameraParamsConstantBuffer buffer)
