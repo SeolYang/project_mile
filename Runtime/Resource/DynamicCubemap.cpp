@@ -8,7 +8,6 @@ namespace Mile
 {
    DynamicCubemap::DynamicCubemap(RendererDX11* renderer) :
       m_rtvs(),
-      m_depthStencil(nullptr),
       m_maxMipLevels(0),
       Texture2DBaseDX11(renderer)
    {
@@ -24,7 +23,11 @@ namespace Mile
          }
       }
 
-      SafeDelete(m_depthStencil);
+      for (unsigned int mipLevel = 0; mipLevel <= m_maxMipLevels; ++mipLevel)
+      {
+         SafeDelete(m_depthStencils[mipLevel]);
+      }
+
    }
    
    bool DynamicCubemap::Init(unsigned int size)
@@ -73,16 +76,23 @@ namespace Mile
                }
             }
 
+            m_depthStencils.resize(static_cast<size_t>(m_maxMipLevels) + 1);
+            for (unsigned int mipLevel = 0; mipLevel <= m_maxMipLevels; ++mipLevel)
+            {
+               float depthStencilSize = std::exp2(static_cast<float>(m_maxMipLevels - mipLevel));
+               m_depthStencils[mipLevel] = new DepthStencilBufferDX11(renderer);
+               if (!m_depthStencils[mipLevel]->Init(depthStencilSize, depthStencilSize, false))
+               {
+                  return false;
+               }
+            }
+
             if (!FAILED(result))
             {
                if (InitSRV(desc, true))
                {
-                  m_depthStencil = new DepthStencilBufferDX11(renderer);
-                  if (m_depthStencil->Init(size, size, false))
-                  {
-                     RenderObject::ConfirmInit();
-                     return true;
-                  }
+                  RenderObject::ConfirmInit();
+                  return true;
                }
             }
          }
@@ -100,7 +110,7 @@ namespace Mile
       {
          if (faceIdx < 6)
          {
-            ID3D11DepthStencilView* dsv = m_depthStencil->GetDSV();
+            ID3D11DepthStencilView* dsv = m_depthStencils[mipLevel]->GetDSV();
             if (clearRenderTarget)
             {
                float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
