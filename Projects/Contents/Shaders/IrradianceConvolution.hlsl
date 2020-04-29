@@ -21,7 +21,7 @@ struct PSInput
 };
 
 /* Constant Buffers **/
-cbuffer TransfromBuffer
+cbuffer TransfromBuffer : register(b0)
 {
 	float4x4 ViewProj;
 };

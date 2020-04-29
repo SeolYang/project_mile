@@ -17,6 +17,8 @@ namespace Mile
    constexpr size_t REQUIRED_RENDERCONTEXT_NUM = (size_t)ERenderContextType::EnumSize - 1;
    constexpr unsigned int DYNAMIC_CUBEMAP_SIZE = 512;
    constexpr unsigned int IRRADIANCEMAP_SIZE = 32;
+   constexpr unsigned int PREFILTERED_CUBEMAP_SIZE = 128;
+   constexpr unsigned int PREFILTERED_CUBEMAP_MAX_MIPLEVELS = 4 + 1;
 
    class DepthStencilBufferDX11;
    class RenderTargetDX11;
@@ -27,9 +29,10 @@ namespace Mile
    class Viewport;
    class Texture2D;
    class Equirect2CubemapPass;
+   class IrradianceConvPass;
+   class PrefilteringPass;
    class GeometryPass;
    class LightingPass;
-   class IrradianceConvPass;
    class AmbientEmissivePass;
    class SkyboxPass;
    class ToneMappingPass;
@@ -70,7 +73,7 @@ namespace Mile
       Vector4 GetClearColor() const { return m_clearColor; }
 
       void SetEquirectangularMap(Texture2D* texture);
-      void SetConvDiffsuseIrradianceAsRealtime(bool bAlwaysCalculateDiffuseIrraidiance = false);
+      void SetComputeIBLAsRealtime(bool bComputeIBLAsRealtime = false);
 
       void SetAmbientOcclusionFactor(float factor) { m_aoFactor = factor; }
       float GetAmbientOcclusionFactor() const { return m_aoFactor; }
@@ -89,10 +92,11 @@ namespace Mile
       /* Rendering Workflow **/
       ID3D11CommandList* RunGeometryPass(ID3D11DeviceContext* deviceContextPtr);
 
-      /* Pre compute **/
+      /* Pre Computation **/
       void CalculateDiffuseIrradiance(ID3D11DeviceContext& deviceContext);
       void ConvertEquirectToCubemap(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix);
       void SolveDiffuseIntegral(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix);
+      void ComputePrefilteredEnvMap(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix);
 
       /* Lighting **/
       void RenderLight(ID3D11DeviceContext& deviceContext);
@@ -157,14 +161,20 @@ namespace Mile
       LightingPass* m_lightingPass;
       RenderTargetDX11* m_lightingPassRenderBuffer;
 
-      /** Diffuse Irradiance  */
+      /** Cubemap / Environment Map */
+      bool  m_bCubemapDirtyFlag; // Diffuse Irradiance 와 Specular IBL 의 계산이 끝난 후에 false로 설정하여야 한다.
       Equirect2CubemapPass* m_equirectToCubemapPass;
       Texture2D* m_equirectangularMap;
-      bool  m_bCubemapDirtyFlag;
-      bool  m_bAlwaysCalculateDiffuseIrradiance;
       DynamicCubemap* m_envMap;
+
+      /** Diffuse Irradiance  */
+      bool  m_bAlwaysComputeIBL;
       IrradianceConvPass* m_irradianceConvPass;
       DynamicCubemap* m_irradianceMap;
+
+      /** Specular IBL */
+      PrefilteringPass* m_prefilteringPass;
+      DynamicCubemap* m_prefilterdEnvMap;
 
       /** Ambient Emissive Pass */
       float m_aoFactor;

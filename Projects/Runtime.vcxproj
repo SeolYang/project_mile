@@ -143,6 +143,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\Runtime\Rendering\DepthStencilState.h" />
     <ClInclude Include="..\Runtime\Rendering\Equirect2CubemapPass.h" />
     <ClInclude Include="..\Runtime\Rendering\IrradianceConvPass.h" />
+    <ClInclude Include="..\Runtime\Rendering\PrefilteringPass.h" />
     <ClInclude Include="..\Runtime\Rendering\RenderObject.h" />
     <ClInclude Include="..\Runtime\Rendering\SkyboxPass.h" />
     <ClInclude Include="..\Runtime\Rendering\Texture2DBaseDX11.h" />
@@ -286,6 +287,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Rendering\DepthStencilState.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Equirect2CubemapPass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\IrradianceConvPass.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\PrefilteringPass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\RenderObject.cpp" />
     <ClCompile Include="..\Runtime\Rendering\ShaderDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\SkyboxPass.cpp" />
@@ -333,9 +335,19 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="Contents\Shaders\InterageBRDF.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="Contents\Shaders\IrradianceConvolution.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\Prefiltering.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>

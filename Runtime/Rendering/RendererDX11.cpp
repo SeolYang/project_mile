@@ -15,6 +15,7 @@
 #include "Rendering/DynamicCubemap.h"
 #include "Rendering/Equirect2CubemapPass.h"
 #include "Rendering/IrradianceConvPass.h"
+#include "Rendering/PrefilteringPass.h"
 #include "Rendering/AmbientEmissivePass.h"
 #include "Rendering/SkyboxPass.h"
 #include "Rendering/ToneMappingPass.h"
@@ -56,8 +57,10 @@ namespace Mile
       m_cubeMesh(nullptr),
       m_irradianceConvPass(nullptr),
       m_irradianceMap(nullptr),
+      m_prefilteringPass(nullptr),
+      m_prefilterdEnvMap(nullptr),
       m_bCubemapDirtyFlag(false),
-      m_bAlwaysCalculateDiffuseIrradiance(false),
+      m_bAlwaysComputeIBL(false),
       m_ambientEmissivePass(nullptr),
       m_ambientEmissivePassRenderBuffer(nullptr),
       m_aoFactor(0.6f),
@@ -65,7 +68,8 @@ namespace Mile
       m_toneMappingPass(nullptr),
       m_toneMappingFactor(TONE_MAPPING_FACTOR), 
       m_gammaFactor(TONE_MAPPING_GAMMA_FACTOR),
-      m_mainCamera(nullptr), m_viewport(nullptr), 
+      m_mainCamera(nullptr), 
+      m_viewport(nullptr), 
       m_depthDisable(nullptr),
       m_defaultRasterizerState(nullptr), 
       m_noCulling(nullptr),
@@ -179,6 +183,16 @@ namespace Mile
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Irradiance Convolution pass."), true);
+         return false;
+      }
+
+      m_prefilteringPass = new PrefilteringPass(this);
+      if (!m_prefilteringPass->Init(PREFILTERED_CUBEMAP_SIZE))
+      {
+         MELog(m_context,
+            TEXT("RendererDX11"),
+            ELogType::FATAL,
+            TEXT("Failed to create Prefiltering pass."), true);
          return false;
       }
 
@@ -340,6 +354,9 @@ namespace Mile
          SafeDelete(m_defaultRasterizerState);
          SafeDelete(m_screenQuad);
          SafeDelete(m_cubeMesh);
+         SafeDelete(m_equirectToCubemapPass);
+         SafeDelete(m_irradianceConvPass);
+         SafeDelete(m_prefilteringPass);
          SafeDelete(m_geometryPass);
          SafeDelete(m_lightingPass);
          SafeDelete(m_lightingPassRenderBuffer);
@@ -349,7 +366,6 @@ namespace Mile
          SafeDelete(m_gBuffer);
          SafeDelete(m_backBuffer);
          SafeDelete(m_depthStencilBuffer);
-         SafeDelete(m_equirectToCubemapPass);
          SafeRelease(m_swapChain);
 
          for (auto deferredContext : m_deferredContexts)
@@ -574,7 +590,7 @@ namespace Mile
 
    void RendererDX11::CalculateDiffuseIrradiance(ID3D11DeviceContext& deviceContext)
    {
-      if (m_bCubemapDirtyFlag || m_bAlwaysCalculateDiffuseIrradiance)
+      if (m_bCubemapDirtyFlag || m_bAlwaysComputeIBL)
       {
 
          static const Matrix captureProj = Matrix::CreatePerspectiveProj(90.0f, 1.0f, 0.1f, 10.0f);
@@ -596,6 +612,7 @@ namespace Mile
 
          ConvertEquirectToCubemap(deviceContext, captureMatrix);
          SolveDiffuseIntegral(deviceContext, captureMatrix);
+         ComputePrefilteredEnvMap(deviceContext, captureMatrix);
          m_bCubemapDirtyFlag = false;
       }
    }
@@ -643,6 +660,42 @@ namespace Mile
 
          m_irradianceMap->GenerateMips(deviceContext);
          m_irradianceConvPass->Unbind(deviceContext);
+      }
+   }
+
+   void RendererDX11::ComputePrefilteredEnvMap(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix)
+   {
+      m_prefilterdEnvMap = m_prefilteringPass->GetPrefilteredEnvironmentMap();
+      m_prefilterdEnvMap->GenerateMips(deviceContext);
+      if (m_prefilteringPass->Bind(deviceContext, m_envMap))
+      {
+         /** Generate Empty mips */
+         for (unsigned int mipLevel = 0; mipLevel < PREFILTERED_CUBEMAP_MAX_MIPLEVELS; ++mipLevel)
+         {
+            Viewport* viewport = m_prefilteringPass->GetViewport(mipLevel);
+            viewport->Bind(deviceContext);
+            m_depthLessEqual->Bind(deviceContext);
+            m_noCulling->Bind(deviceContext);
+            m_cubeMesh->Bind(deviceContext, 0);
+
+            float roughness = static_cast<float>(mipLevel) / static_cast<float>(PREFILTERED_CUBEMAP_MAX_MIPLEVELS - 1);
+            for (unsigned int faceIdx = 0; faceIdx < CUBE_FACES; ++faceIdx)
+            {
+               m_prefilteringPass->UpdateTransformBuffer(
+                  deviceContext, 
+                  { captureMatrix[faceIdx] });
+               m_prefilteringPass->UpdatePrefilteringParams(
+                  deviceContext, 
+                  { roughness });
+               m_prefilterdEnvMap->BindAsRenderTarget(deviceContext, faceIdx, mipLevel);
+
+               deviceContext.DrawIndexed(m_cubeMesh->GetIndexCount(), 0, 0);
+
+               m_prefilterdEnvMap->UnbindAsRenderTarget(deviceContext);
+            }
+         }
+
+         m_prefilteringPass->Unbind(deviceContext);
       }
    }
 
@@ -719,6 +772,7 @@ namespace Mile
    {
       Transform* camTransform = m_mainCamera->GetTransform();
       if (m_skyboxPass->Bind(deviceContext, m_equirectToCubemapPass->GetCubemap()))
+      //if (m_skyboxPass->Bind(deviceContext, m_prefilterdEnvMap))
       {
          m_hdrBuffer->BindAsRenderTarget(deviceContext, false, false);
          m_depthLessEqual->Bind(deviceContext);
@@ -939,11 +993,11 @@ namespace Mile
       }
    }
 
-   void RendererDX11::SetConvDiffsuseIrradianceAsRealtime(bool bAlwaysCalculateDiffuseIrraidiance)
+   void RendererDX11::SetComputeIBLAsRealtime(bool bComputeIBLAsRealtime)
    {
-      m_bAlwaysCalculateDiffuseIrradiance = 
+      m_bAlwaysComputeIBL = 
          (m_equirectangularMap != nullptr) ? 
-         bAlwaysCalculateDiffuseIrraidiance : false;
+         bComputeIBLAsRealtime : false;
    }
 
    void RendererDX11::SetBackbufferAsRenderTarget(ID3D11DeviceContext& deviceContext)

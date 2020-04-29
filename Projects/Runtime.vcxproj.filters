@@ -525,11 +525,14 @@
     <ClInclude Include="..\Runtime\Rendering\SkyboxPass.h">
       <Filter>Sources\Rendering\Rendering Passes</Filter>
     </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\AmbientEmissivePass.h">
-      <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
-    </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\ToneMappingPass.h">
       <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\PrefilteringPass.h">
+      <Filter>Sources\Rendering\Rendering Passes\PreComputation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\AmbientEmissivePass.h">
+      <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -704,11 +707,14 @@
     <ClCompile Include="..\Runtime\Rendering\SkyboxPass.cpp">
       <Filter>Sources\Rendering\Rendering Passes</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\AmbientEmissivePass.cpp">
-      <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
-    </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\ToneMappingPass.cpp">
       <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\PrefilteringPass.cpp">
+      <Filter>Sources\Rendering\Rendering Passes\PreComputation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\AmbientEmissivePass.cpp">
+      <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -750,6 +756,12 @@
     </FxCompile>
     <FxCompile Include="Contents\Shaders\ToneMapping.hlsl">
       <Filter>Shaders\Post-Process</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\Prefiltering.hlsl">
+      <Filter>Shaders\PBS</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\InterageBRDF.hlsl">
+      <Filter>Shaders\PBS</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
