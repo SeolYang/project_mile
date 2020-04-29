@@ -31,6 +31,7 @@ namespace Mile
    class Equirect2CubemapPass;
    class IrradianceConvPass;
    class PrefilteringPass;
+   class IntegrateBRDFPass;
    class GeometryPass;
    class LightingPass;
    class AmbientEmissivePass;
@@ -97,6 +98,7 @@ namespace Mile
       void ConvertEquirectToCubemap(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix);
       void SolveDiffuseIntegral(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix);
       void ComputePrefilteredEnvMap(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix);
+      void IntegrateBRDF(ID3D11DeviceContext& deviceContext);
 
       /* Lighting **/
       void RenderLight(ID3D11DeviceContext& deviceContext);
@@ -175,6 +177,9 @@ namespace Mile
       /** Specular IBL */
       PrefilteringPass* m_prefilteringPass;
       DynamicCubemap* m_prefilterdEnvMap;
+
+      IntegrateBRDFPass* m_integrateBRDFPass;
+      RenderTargetDX11* m_brdfLUT;
 
       /** Ambient Emissive Pass */
       float m_aoFactor;

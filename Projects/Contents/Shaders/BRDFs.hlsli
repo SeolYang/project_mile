@@ -1,3 +1,5 @@
+#ifndef __BRDF_INCLUDED__
+#define __BRDF_INCLUDED__
 /* Source: http://graphicrants.blogspot.com/2013/08/specular-brdf-reference.html */
 #include "Common.hlsli"
 
@@ -39,3 +41,5 @@ float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
 
 	return ggx1 * ggx2;
 }
+
+#endif

@@ -16,6 +16,7 @@
 #include "Rendering/Equirect2CubemapPass.h"
 #include "Rendering/IrradianceConvPass.h"
 #include "Rendering/PrefilteringPass.h"
+#include "Rendering/IntegrateBRDFPass.h"
 #include "Rendering/AmbientEmissivePass.h"
 #include "Rendering/SkyboxPass.h"
 #include "Rendering/ToneMappingPass.h"
@@ -59,6 +60,8 @@ namespace Mile
       m_irradianceMap(nullptr),
       m_prefilteringPass(nullptr),
       m_prefilterdEnvMap(nullptr),
+      m_integrateBRDFPass(nullptr),
+      m_brdfLUT(nullptr),
       m_bCubemapDirtyFlag(false),
       m_bAlwaysComputeIBL(false),
       m_ambientEmissivePass(nullptr),
@@ -193,6 +196,16 @@ namespace Mile
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Prefiltering pass."), true);
+         return false;
+      }
+
+      m_integrateBRDFPass = new IntegrateBRDFPass(this);
+      if (!m_integrateBRDFPass->Init())
+      {
+         MELog(m_context,
+            TEXT("RendererDX11"),
+            ELogType::FATAL,
+            TEXT("Failed to create Integrate brdf pass."), true);
          return false;
       }
 
@@ -357,6 +370,7 @@ namespace Mile
          SafeDelete(m_equirectToCubemapPass);
          SafeDelete(m_irradianceConvPass);
          SafeDelete(m_prefilteringPass);
+         SafeDelete(m_integrateBRDFPass);
          SafeDelete(m_geometryPass);
          SafeDelete(m_lightingPass);
          SafeDelete(m_lightingPassRenderBuffer);
@@ -613,6 +627,7 @@ namespace Mile
          ConvertEquirectToCubemap(deviceContext, captureMatrix);
          SolveDiffuseIntegral(deviceContext, captureMatrix);
          ComputePrefilteredEnvMap(deviceContext, captureMatrix);
+         IntegrateBRDF(deviceContext);
          m_bCubemapDirtyFlag = false;
       }
    }
@@ -696,6 +711,19 @@ namespace Mile
          }
 
          m_prefilteringPass->Unbind(deviceContext);
+      }
+   }
+
+   void RendererDX11::IntegrateBRDF(ID3D11DeviceContext& deviceContext)
+   {
+      if (m_integrateBRDFPass->Bind(deviceContext))
+      {
+         m_screenQuad->Bind(deviceContext, 0);
+         m_depthDisable->Bind(deviceContext);
+
+         deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
+
+         m_integrateBRDFPass->Unbind(deviceContext);
       }
    }
 
@@ -800,7 +828,6 @@ namespace Mile
          m_hdrBuffer->UnbindRenderTarget(deviceContext);
          m_skyboxPass->Unbind(deviceContext);
       }
-
    }
 
    ID3D11CommandList* RendererDX11::RunGeometryPass(ID3D11DeviceContext* deviceContextPtr)
