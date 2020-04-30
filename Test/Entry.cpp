@@ -31,27 +31,16 @@ int main( )
       auto resMng = Engine::GetResourceManager();
       auto renderer = Engine::GetRenderer();
 
-      Cube* cubeMesh = new Cube(renderer);
-      cubeMesh->Init(Vector3(-1.0f, -1.0f, -1.0f), Vector3(1.0f, 1.0f, 1.0f));
-      Entity* cube = world->CreateEntity(TEXT("Cube"));
-      Transform* cubeTransform = cube->GetTransform();
-      MeshRenderComponent* cubeRenderComponent = cube->AddComponent<MeshRenderComponent>();
-      RotateComponent* cubeRotation = cube->AddComponent<RotateComponent>();
-      Material* cubeMaterial = resMng->Load<Material>(TEXT("Contents/Materials/Default.material"));
-      cubeMaterial->SetScalarFactor(MaterialFactorProperty::Metallic, 1.0f);
-      cubeMaterial->SetScalarFactor(MaterialFactorProperty::Roughness, 0.5f);
-      cubeRenderComponent->SetMesh(cubeMesh);
-      cubeRenderComponent->SetMaterial(cubeMaterial);
-      cubeTransform->SetPosition(Vector3(3.5f, 0.0f, 1.5f));
-      cubeTransform->SetScale(Vector3(1.0f, 1.0f, 1.0f));
-
+      Entity* cameraParent = world->CreateEntity(TEXT("CameraParent"));
+      RotateComponent* cameraRotation = cameraParent->AddComponent<RotateComponent>();
       Entity* camera = world->CreateEntity(TEXT("Camera"));
       CameraComponent* camComponent = camera->AddComponent<CameraComponent>();
       Transform* camTransform = camera->GetTransform();
       camComponent->SetNearPlane(0.1f);
       camComponent->SetFarPlane(100.0f);
-      camComponent->SetFov(100.0f);
-      camTransform->SetPosition(Vector3(0.0f, 0.0f, -3.0f));
+      camComponent->SetFov(45.0f);
+      camTransform->SetPosition(Vector3(0.0f, 0.0f, -5.0f));
+      cameraParent->AttachChild(camera);
 
       Entity* mainLight = world->CreateEntity(TEXT("Main Light"));
       LightComponent* mainLightComponent = mainLight->AddComponent<LightComponent>();
@@ -67,20 +56,10 @@ int main( )
       secondLightComponent->SetRadiance(Vector3(250.0f, 250.0f, 250.0f));
       secondLightTransform->SetPosition(Vector3(0.0f, 7.0f, -3.0f));
 
-      Model* damagedHelmetModel = resMng->Load<Model>(TEXT("Contents/Models/DamagedHelmet/DamagedHelmet.gltf"));
-      Entity* damagedHelmet = Model::Instantiate(damagedHelmetModel, world, TEXT("DamagedHelmet"));
-      Entity* damagedHelmetMesh = damagedHelmet->GetChildren()[0];
-      RotateComponent* damagedHelmetRotation = damagedHelmet->AddComponent<RotateComponent>();
-      MeshRenderComponent* helmetRenderComponent = damagedHelmetMesh->GetComponent<MeshRenderComponent>();
-      Material* damagedHelmetMaterial = helmetRenderComponent->GetMaterial();
-      Transform* helmetTransform = damagedHelmet->GetTransform();
-      helmetTransform->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
-      damagedHelmetMaterial->Save();
-
       Model* lanternModel = resMng->Load<Model>(TEXT("Contents/Models/Lantern/Lantern.gltf"));
       Entity* lantern = Model::Instantiate(lanternModel, world, TEXT("Lantern"));
       Entity* lanternMesh = lantern->GetChildren()[0];
-      RotateComponent* lanternRotateComponent = lantern->AddComponent<RotateComponent>();
+      //RotateComponent* lanternRotateComponent = lantern->AddComponent<RotateComponent>();
       MeshRenderComponent* lanternRenderComponent = lanternMesh->GetComponent<MeshRenderComponent>();
       Material* lanternMaterial = lanternRenderComponent->GetMaterial();
       lanternMaterial->Save();
@@ -88,6 +67,30 @@ int main( )
       Transform* lanternTransform = lantern->GetTransform();
       lanternTransform->SetScale(Vector3(0.1f, 0.1f, 0.1f));
       lanternTransform->SetPosition(Vector3(-2.5f, -0.9f, 0.0f));
+
+      Model* damagedHelmetModel = resMng->Load<Model>(TEXT("Contents/Models/DamagedHelmet/DamagedHelmet.gltf"));
+      Entity* damagedHelmet = Model::Instantiate(damagedHelmetModel, world, TEXT("DamagedHelmet"));
+      Entity* damagedHelmetMesh = damagedHelmet->GetChildren()[0];
+      //RotateComponent* damagedHelmetRotation = damagedHelmet->AddComponent<RotateComponent>();
+      MeshRenderComponent* helmetRenderComponent = damagedHelmetMesh->GetComponent<MeshRenderComponent>();
+      Material* damagedHelmetMaterial = helmetRenderComponent->GetMaterial();
+      Transform* helmetTransform = damagedHelmet->GetTransform();
+      helmetTransform->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+      damagedHelmetMaterial->Save();
+
+      Cube* cubeMesh = new Cube(renderer);
+      cubeMesh->Init(Vector3(-1.0f, -1.0f, -1.0f), Vector3(1.0f, 1.0f, 1.0f));
+      Entity* cube = world->CreateEntity(TEXT("Cube"));
+      Transform* cubeTransform = cube->GetTransform();
+      MeshRenderComponent* cubeRenderComponent = cube->AddComponent<MeshRenderComponent>();
+      //RotateComponent* cubeRotation = cube->AddComponent<RotateComponent>();
+      Material* cubeMaterial = resMng->Load<Material>(TEXT("Contents/Materials/Default.material"));
+      cubeMaterial->SetScalarFactor(MaterialFactorProperty::Metallic, 1.0f);
+      cubeMaterial->SetScalarFactor(MaterialFactorProperty::Roughness, 0.5f);
+      cubeRenderComponent->SetMesh(cubeMesh);
+      cubeRenderComponent->SetMaterial(cubeMaterial);
+      cubeTransform->SetPosition(Vector3(3.5f, 0.0f, 0.0f));
+      cubeTransform->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
       Model* metalRoughSpheresModel = resMng->Load<Model>(TEXT("Contents/Models/MetalRoughSpheres/MetalRoughSpheres.gltf"));
       Entity* spheresEntity = Model::Instantiate(metalRoughSpheresModel, world, TEXT("Spheres"));
