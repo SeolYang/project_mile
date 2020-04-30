@@ -8,7 +8,7 @@ namespace Mile
    class Context;
    class World;
    class Component;
-   class Entity
+   class MEAPI Entity
    {
       friend World;
       friend class ModelLoader;
