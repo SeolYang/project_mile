@@ -19,6 +19,10 @@ namespace Mile
    constexpr unsigned int IRRADIANCEMAP_SIZE = 32;
    constexpr unsigned int PREFILTERED_CUBEMAP_SIZE = 128;
    constexpr unsigned int PREFILTERED_CUBEMAP_MAX_MIPLEVELS = 4 + 1;
+   constexpr float DEFAULT_EXPOSURE_FACTOR = 1.0f;
+   constexpr float DISABLE_TONE_MAPPING = -1.0f;
+   constexpr float DEFAULT_GAMMA_FACTOR = 2.2f;
+   constexpr float DISABLE_GAMMA_CORRECTION = -1.0f;
 
    class DepthStencilBufferDX11;
    class RenderTargetDX11;
@@ -82,8 +86,8 @@ namespace Mile
       void SetGammaFactor(float gammaFactor) { m_gammaFactor = gammaFactor; }
       float GetGammaFactor() const { return m_gammaFactor; }
 
-      void SetToneMappingFactor(float toneMappingFactor) { m_toneMappingFactor = toneMappingFactor; }
-      float GetToneMappingFactor() const { return m_toneMappingFactor; }
+      void SetExposure(float exposureFactor) { m_exposureFactor = exposureFactor; }
+      float GetExposureFactor() const { return m_exposureFactor; }
 
    private:
       /* Initialization methods **/
@@ -191,7 +195,7 @@ namespace Mile
       /** Post-Process */
       RenderTargetDX11* m_hdrBuffer;
       ToneMappingPass* m_toneMappingPass;
-      float m_toneMappingFactor;
+      float m_exposureFactor;
       float m_gammaFactor;
 
       /* Renderable objects **/

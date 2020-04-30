@@ -69,8 +69,8 @@ namespace Mile
       m_aoFactor(0.6f),
       m_hdrBuffer(nullptr), 
       m_toneMappingPass(nullptr),
-      m_toneMappingFactor(TONE_MAPPING_FACTOR), 
-      m_gammaFactor(TONE_MAPPING_GAMMA_FACTOR),
+      m_exposureFactor(DEFAULT_EXPOSURE_FACTOR), 
+      m_gammaFactor(DEFAULT_GAMMA_FACTOR),
       m_mainCamera(nullptr), 
       m_viewport(nullptr), 
       m_depthDisable(nullptr),
@@ -941,7 +941,10 @@ namespace Mile
       {
          m_toneMappingPass->UpdateParameters(
             deviceContext,
-            {m_toneMappingFactor, m_gammaFactor});
+            {
+               m_exposureFactor,
+               m_gammaFactor
+            });
 
          m_backBuffer->BindAsRenderTarget(deviceContext, true, false);
          m_depthDisable->Bind(deviceContext);

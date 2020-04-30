@@ -4,16 +4,13 @@
 
 namespace Mile
 {
-   constexpr float TONE_MAPPING_FACTOR = 0.3f;
-   constexpr float TONE_MAPPING_GAMMA_FACTOR = 2.2f;
-
    class BlendState;
    class RenderTargetDX11;
    class MEAPI ToneMappingPass : public RenderingPass
    {
       DEFINE_CONSTANT_BUFFER(ToneMappingParams)
       {
-         float ToneMappingFactor = 0.4f;
+         float ExposureFactor = 0.4f;
          float GammaFactor = 2.2f;
       };
 

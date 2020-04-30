@@ -23,7 +23,7 @@ struct PSInput
 /* Constant Buffers (Pixel Shader) */
 cbuffer ToneMappingParams : register(b0)
 {
-	float ToneMappingFactor;
+	float ExposureFactor;
 	float GammaFactor;
 };
 
@@ -41,8 +41,19 @@ VSOutput MileVS(in VSInput input)
 
 float4 MilePS(in PSInput input) : SV_Target0
 {
-	float3 color = renderBuffer.Sample(AnisoSampler, input.TexCoord);
-	color = color / (color + ToneMappingFactor); /* Tone mapping **/
-	color = pow(color, (1.0f / GammaFactor)); /* Gamma-Correction **/
-	return float4(color, 1.0f);
+	float3 color = renderBuffer.Sample(AnisoSampler, input.TexCoord).rgb;
+	float3 mappedColor;
+	/** Exposure Tone Mapping */
+	if (ExposureFactor >= 0.0f)
+	{
+		mappedColor = float3(1.0f, 1.0f, 1.0f) - exp(-color * ExposureFactor);
+	}
+
+	/** Gamma Correction */
+	if (GammaFactor >= 0.0f)
+	{
+		mappedColor = pow(mappedColor, (1.0f / GammaFactor));
+	}
+
+	return float4(mappedColor, 1.0f);
 }
