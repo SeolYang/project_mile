@@ -30,6 +30,8 @@ namespace Mile
    constexpr float DISABLE_TONE_MAPPING = -1.0f;
    constexpr float DEFAULT_GAMMA_FACTOR = 2.2f;
    constexpr float DISABLE_GAMMA_CORRECTION = -1.0f;
+   constexpr float DEFAULT_AO_FACTOR = 0.6f;
+   constexpr unsigned int DEFAULT_GAUSSIAN_BLOOM_AMOUNT = 4;
 
    class DepthStencilBufferDX11;
    class RenderTargetDX11;
@@ -48,6 +50,7 @@ namespace Mile
    class AmbientEmissivePass;
    class SkyboxPass;
    class BoxBloomPass;
+   class GaussianBloomPass;
    class BlendingPass;
    class ToneMappingPass;
    class Window;
@@ -101,6 +104,9 @@ namespace Mile
       void SetBloomType(EBloomType type) { m_bloomType = type; }
       EBloomType GetBloomType() const { return m_bloomType; }
 
+      void SetGaussianBloomAmount(unsigned int amount) { m_gaussianBloomAmount = amount; }
+      unsigned int GetGaussianBloomAmount() const { return m_gaussianBloomAmount; }
+
    private:
       /* Initialization methods **/
       bool CreateDeviceAndSwapChain();
@@ -125,6 +131,7 @@ namespace Mile
       /* Post-Process **/
       RenderTargetDX11* Bloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer);
       RenderTargetDX11* BoxBloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer);
+      RenderTargetDX11* GaussianBloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer);
       RenderTargetDX11* Blending(ID3D11DeviceContext& deviceContext, RenderTargetDX11* srcBuffer, RenderTargetDX11* destBuffer, float srcRatio = 1.0f, float destRatio = 1.0f);
       void ToneMappingWithGammaCorrection(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer);
       ID3D11CommandList* RunPostProcessPass(ID3D11DeviceContext* deviceContextPtr);
@@ -213,6 +220,9 @@ namespace Mile
       /** Bloom */
       EBloomType    m_bloomType;
       BoxBloomPass* m_boxBloomPass;
+
+      unsigned int       m_gaussianBloomAmount;
+      GaussianBloomPass* m_gaussianBloomPass;
 
       /** Blending */
       BlendingPass* m_blendingPass;

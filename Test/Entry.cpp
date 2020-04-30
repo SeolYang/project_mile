@@ -104,8 +104,8 @@ int main( )
 
       //world->GetComponentsFromEntities<Transform>(); // Transform은 Component를 상속하지 않기 때문에 컴파일되지 않는다.
 
-      //Texture2D* iceLakeHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Ice_Lake/Ice_Lake_Ref.hdr"));
-      //renderer->SetEquirectangularMap(iceLakeHDR);
+      Texture2D* iceLakeHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Ice_Lake/Ice_Lake_Ref.hdr"));
+      renderer->SetEquirectangularMap(iceLakeHDR);
 
       //Texture2D* helipadGoldenHourHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Helipad_GoldenHour/LA_Downtown_Helipad_GoldenHour_3k.hdr"));
       //renderer->SetEquirectangularMap(helipadGoldenHourHDR);
@@ -122,13 +122,15 @@ int main( )
       //Texture2D* barcelonaRooftopsHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Barcelona_Rooftops/Barce_Rooftop_C_3k.hdr"));
       //renderer->SetEquirectangularMap(barcelonaRooftopsHDR);
 
-      Texture2D* snowMachineHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/snow_machine/test8_Ref.hdr"));
-      renderer->SetEquirectangularMap(snowMachineHDR);
+      //Texture2D* snowMachineHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/snow_machine/test8_Ref.hdr"));
+      //renderer->SetEquirectangularMap(snowMachineHDR);
       
       renderer->SetComputeIBLAsRealtime(false);
       renderer->SetAmbientOcclusionFactor(0.7f);
       renderer->SetGammaFactor(DEFAULT_GAMMA_FACTOR);
-      renderer->SetExposure(1.0f);
+      renderer->SetExposure(DEFAULT_EXPOSURE_FACTOR);
+      renderer->SetBloomType(EBloomType::Gaussian);
+      renderer->SetGaussianBloomAmount(4);
       execute = engine->Execute();
    }
 

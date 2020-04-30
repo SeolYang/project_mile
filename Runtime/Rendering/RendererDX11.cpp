@@ -20,6 +20,7 @@
 #include "Rendering/AmbientEmissivePass.h"
 #include "Rendering/SkyboxPass.h"
 #include "Rendering/BoxBloomPass.h"
+#include "Rendering/GaussianBloomPass.h"
 #include "Rendering/BlendingPass.h"
 #include "Rendering/ToneMappingPass.h"
 #include "Core/Context.h"
@@ -68,10 +69,12 @@ namespace Mile
       m_bAlwaysComputeIBL(false),
       m_ambientEmissivePass(nullptr),
       m_ambientEmissivePassRenderBuffer(nullptr),
-      m_aoFactor(0.6f),
+      m_aoFactor(DEFAULT_AO_FACTOR),
       m_hdrBuffer(nullptr), 
       m_bloomType(EBloomType::Box),
       m_boxBloomPass(nullptr),
+      m_gaussianBloomAmount(DEFAULT_GAUSSIAN_BLOOM_AMOUNT),
+      m_gaussianBloomPass(nullptr),
       m_blendingPass(nullptr),
       m_toneMappingPass(nullptr),
       m_exposureFactor(DEFAULT_EXPOSURE_FACTOR), 
@@ -276,7 +279,19 @@ namespace Mile
          MELog(m_context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
-            TEXT("Failed to create Bloom pass."), true);
+            TEXT("Failed to create Box Bloom pass."), true);
+         return false;
+      }
+
+      m_gaussianBloomPass = new GaussianBloomPass(this);
+      if (!m_gaussianBloomPass->Init(
+         static_cast<unsigned int>(screenRes.x),
+         static_cast<unsigned int>(screenRes.y)))
+      {
+         MELog(m_context,
+            TEXT("RendererDX11"),
+            ELogType::FATAL,
+            TEXT("Failed to create Gaussian Bloom pass."), true);
          return false;
       }
 
@@ -976,6 +991,7 @@ namespace Mile
          break;
 
       case EBloomType::Gaussian:
+         output = GaussianBloom(deviceContext, renderBuffer);
       case EBloomType::None:
          break;
       }
@@ -994,10 +1010,42 @@ namespace Mile
          m_screenQuad->Bind(deviceContext, 0);
 
          deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
-         m_boxBloomPass->Unbind(deviceContext);
 
+         m_boxBloomPass->Unbind(deviceContext);
          return Blending(deviceContext, m_boxBloomPass->GetOutputBuffer(), renderBuffer);
       }
+
+      return renderBuffer;
+   }
+
+   RenderTargetDX11* RendererDX11::GaussianBloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer)
+   {
+      if (m_gaussianBloomPass->Bind(deviceContext, renderBuffer))
+      {
+         m_depthDisable->Bind(deviceContext);
+         m_viewport->Bind(deviceContext);
+         m_defaultRasterizerState->Bind(deviceContext);
+         m_screenQuad->Bind(deviceContext, 0);
+
+         bool bHorizontal = true;
+         for (unsigned int epoch = 0; epoch < m_gaussianBloomAmount; ++epoch)
+         {
+            if (epoch > 0)
+            {
+               m_gaussianBloomPass->SwapBuffers(deviceContext, bHorizontal);
+            }
+
+            deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
+
+            m_gaussianBloomPass->UpdateParameters(deviceContext, { bHorizontal });
+            bHorizontal = !bHorizontal;
+         }
+
+         m_gaussianBloomPass->Unbind(deviceContext);
+         return Blending(deviceContext, m_gaussianBloomPass->GetOutputBuffer(), renderBuffer);
+      }
+
+      return renderBuffer;
    }
 
    RenderTargetDX11* RendererDX11::Blending(ID3D11DeviceContext& deviceContext, RenderTargetDX11* srcBuffer, RenderTargetDX11* destBuffer, float srcRatio, float destRatio)

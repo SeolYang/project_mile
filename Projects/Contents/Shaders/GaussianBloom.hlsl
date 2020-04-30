@@ -22,10 +22,7 @@ struct PSInput
 /* Constant Buffers (Pixel Shader) */
 cbuffer BloomParams : register(b0)
 {
-	int Size;
-	float Separation;
-	float Threshold;
-	float Amount;
+	bool Horizontal;
 };
 
 /* Textures & Samplers */
@@ -42,40 +39,32 @@ VSOutput MileVS(in VSInput input)
 
 float4 MilePS(in PSInput input) : SV_Target0
 {
-	if (Size <= 0)
-	{
-		return float4(0.0f, 0.0f, 0.0f, 0.0f);
-	}
-
+	const float weights[5] = { 0.227027f, 0.1945946f, 0.1216216f, 0.054054f, 0.016216f };
 	uint width = 1;
 	uint height = 1;
 	uint mipLevels = 0;
 	renderBuffer.GetDimensions(0, width, height, mipLevels);
 
 	float2 texSize = float2(float(width), float(height));
-	float value = 0.0f;
-	float4 result = 0.0f;
-	float4 color = 0.0f;
+	float2 texOffset = 1.0f / texSize;
+	float3 result = renderBuffer.Sample(Sampler, input.TexCoord).rgb * weights[0];
 
-	for (int x = -Size; x <= Size; ++x)
+	if (Horizontal)
 	{
-		for (int y = -Size; y <= Size; ++y)
+		for (int x = 1; x < 5; ++x)
 		{
-			float2 uv = input.TexCoord + (float2(x, y) * Separation) / texSize;
-			color = renderBuffer.Sample(Sampler, uv);
-
-			value = max(color.r, max(color.g, color.b));
-			if (value < Threshold)
-			{
-				color = 0.0f;
-			}
-
-			result.rgb += color.rgb;
+			result += renderBuffer.Sample(Sampler, input.TexCoord + float2(texOffset.x * x, 0.0f)).rgb * weights[x];
+			result += renderBuffer.Sample(Sampler, input.TexCoord - float2(texOffset.x * x, 0.0f)).rgb * weights[x];
+		}
+	}
+	else
+	{
+		for (int y = 1; y < 5; ++y)
+		{
+			result += renderBuffer.Sample(Sampler, input.TexCoord + float2(0.0f, texOffset.y * y)).rgb * weights[y];
+			result += renderBuffer.Sample(Sampler, input.TexCoord - float2(0.0f, texOffset.y * y)).rgb * weights[y];
 		}
 	}
 
-	result.rgb /= pow(Size * 2.0f + 1.0f, 2.0f);
-	result.a = 1.0f;
-
-	return float4(lerp(float3(0.0f ,0.0f, 0.0f), result.rgb, Amount), 1.0f);
+	return float4(result, 1.0f);
 }
