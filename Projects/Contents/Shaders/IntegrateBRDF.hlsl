@@ -9,13 +9,13 @@ struct VSInput
 
 struct VSOutput
 {
-	float4 PositionSS	: SV_Position;
+	float4 PositionSS	   : SV_Position;
 	float2 TexCoord		: TEXCOORD;
 };
 
 struct PSInput
 {
-	float4 ScreenPos	: SV_Position;
+	float4 ScreenPos	   : SV_Position;
 	float2 TexCoord		: TEXCOORD;
 };
 
@@ -30,7 +30,6 @@ float2 IntegrateBRDF(float NdotV, float roughness)
    float B = 0.0f;
 
    float3 N = float3(0.0f, 0.0f, 1.0f);
-   const uint SAMPLE_COUNT = 1024u;
    for (uint idx = 0; idx < SAMPLE_COUNT; ++idx)
    {
       float2 Xi = Hammersley(idx, SAMPLE_COUNT);

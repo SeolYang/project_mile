@@ -5,51 +5,50 @@ struct VSInput
 {
 	float4 Position		: POSITION;
 	float2 TexCoord		: TEXCOORDS0;
-	float3 Normal		: NORMAL;
-	float4 Tangent		: TANGENT;
-	float4 BiTangent	: BITANGENT;
+	float3 Normal			: NORMAL;
+	float4 Tangent			: TANGENT;
+	float4 BiTangent		: BITANGENT;
 };
 
 // postfix WS meaning world space
 struct VSOutput
 {
-	float4 PositionCS	: SV_Position; // Clip Space
+	float4 PositionCS		: SV_Position; // Clip Space
 	float2 TexCoord		: TEXCOORD;
 	float3 NormalWS		: NORMALWS;
-	float3 TangentWS	: TANGENTWS;
+	float3 TangentWS		: TANGENTWS;
 	float3 BitangentWS	: BITANGENTWS;
-	float3 PositionWS	: POSITIONWS;
+	float3 PositionWS		: POSITIONWS;
 };
 
 struct PSInput
 {
-	float4 PositionSS	: SV_Position; // Screen Space
+	float4 PositionSS		: SV_Position; // Screen Space
 	float2 TexCoord		: TEXCOORD;
 	float3 NormalWS		: NORMALWS;
-	float3 TangentWS	: TANGENTWS;
+	float3 TangentWS		: TANGENTWS;
 	float3 BitangentWS	: BITANGENTWS;
-	float3 PositionWS	: POSITIONWS;
+	float3 PositionWS		: POSITIONWS;
 };
 
 struct PSOutput
 {
 	float4 Position				: SV_Target0;
-	float4 Albedo				: SV_Target1;
-	float4 EmissiveAO			: SV_Target2;
-	float4 Normal				: SV_Target3;
+	float4 Albedo					: SV_Target1;
+	float4 EmissiveAO				: SV_Target2;
+	float4 Normal					: SV_Target3;
 	float4 MetallicRoughness	: SV_Target4;
 };
 
 /* Textures & Samplers */
-Texture2D baseColorMap			: register(t0);
-Texture2D emissiveMap			: register(t1);
+Texture2D baseColorMap				: register(t0);
+Texture2D emissiveMap				: register(t1);
 Texture2D metallicRoughnessMap	: register(t2);
-Texture2D aoMap					: register(t3);
-Texture2D normalMap				: register(t4);
+Texture2D aoMap						: register(t3);
+Texture2D normalMap					: register(t4);
+SamplerState AnisoSampler			: register(s0);
 
-SamplerState AnisoSampler		: register(s0);
-
-/* Constant Buffers */
+/* Constant Buffers (Vertex Shader) */
 cbuffer TransformBuffer
 {
 	matrix World;
@@ -57,12 +56,13 @@ cbuffer TransformBuffer
 	matrix WorldViewProj;
 };
 
+/* Constant Buffers (Pixel Shader) */
 cbuffer MaterialBuffer
 {
 	float4	baseColorFactor;
 	float4	emissiveFactor;
-	float	metallicFactor;
-	float	roughnessFactor;
+	float		metallicFactor;
+	float		roughnessFactor;
 }
 
 /* Shader Programs */
@@ -95,7 +95,7 @@ PSOutput MilePS(in PSInput input)
 	float3 emissive = pow(emissiveMap.Sample(AnisoSampler, input.TexCoord), 2.2);
 	emissive += pow(emissiveFactor, 2.2);
 	
-	/* Metallic-Roughness-UVs */
+	/* Metallic-Roughness */
 	float roughness = metallicRoughnessMap.Sample(AnisoSampler, input.TexCoord).g;
 	roughness = clamp(roughnessFactor + roughness, 0.0f, 1.0f);
 	

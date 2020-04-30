@@ -3,30 +3,30 @@ struct VSInput
 {
 	float4 Position : POSITION;
 	float2 TexCoord : TEXCOORD0;
-	float3 Normal : NORMAL;
+	float3 Normal	 : NORMAL;
 };
 
 struct VSOutput
 {
-	float4 Position : SV_Position; // Clip Space
+	float4 Position	: SV_Position; // Clip Space
 	float3 PositionWS : POSITIONWS; // Local Space
 };
 
 struct PSInput
 {
-	float4 Position : SV_Position; // Screen Space
+	float4 Position	: SV_Position; // Screen Space
 	float3 PositionWS : POSITIONWS;
 };
 
-/* Constant Buffers **/
+/* Constant Buffers (Vertex Shader) **/
 cbuffer TransfromBuffer
 {
 	float4x4 ViewProj;
 };
 
 /* Textures & Samplers */
-Texture2D EquirectangularMap : register(t0);
-SamplerState LinearWrapSampler : register(s0);
+Texture2D	 EquirectangularMap	: register(t0);
+SamplerState LinearWrapSampler	: register(s0);
 
 float2 SampleSphericalMap(float3 V)
 {

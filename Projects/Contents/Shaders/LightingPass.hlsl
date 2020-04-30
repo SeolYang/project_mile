@@ -9,13 +9,13 @@ struct VSInput
 
 struct VSOutput
 {
-	float4 PositionSS	: SV_Position;
+	float4 PositionSS		: SV_Position;
 	float2 TexCoord		: TEXCOORD;
 };
 
 struct PSInput
 {
-	float4 ScreenPos	: SV_Position;
+	float4 ScreenPos		: SV_Position;
 	float2 TexCoord		: TEXCOORD;
 };
 
@@ -30,7 +30,7 @@ cbuffer LightParamsBuffer : register(b1)
 	float4 LightPos;
 	float4 LightDirection;
 	float4 LightRadiance;
-	uint LightType;
+	uint	 LightType;
 };
 
 /* Textures & Samplers */

@@ -20,7 +20,7 @@ struct PSInput
 	float3 PositionWS : POSITIONWS;
 };
 
-/* Constant Buffers **/
+/* Constant Buffers (Vertex Shader) **/
 cbuffer TransfromBuffer : register(b0)
 {
 	float4x4 ViewProj;

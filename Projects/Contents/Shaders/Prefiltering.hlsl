@@ -8,13 +8,13 @@ struct VSInput
 
 struct VSOutput
 {
-	float4 Position : SV_Position; // Clip Space
+	float4 Position	: SV_Position; // Clip Space
 	float3 PositionWS : POSITIONWS; // Local Space
 };
 
 struct PSInput
 {
-	float4 Position : SV_Position; // Screen Space
+	float4 Position	: SV_Position; // Screen Space
 	float3 PositionWS : POSITIONWS;
 };
 
@@ -31,7 +31,7 @@ cbuffer PrefilteringParams
 }
 
 /* Textures & Samplers */
-TextureCube EnvironmentMap : register(t0);
+TextureCube EnvironmentMap			: register(t0);
 SamplerState LinearBorderSampler : register(s0);
 
 /* Shader Programs */
@@ -51,7 +51,6 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float3 R = N;
 	float3 V = R;
 
-	const unsigned int SAMPLE_COUNT = 1024u;
 	float totalWeight = 0.0f;
 	float3 prefilteredColor = float3(0.0f, 0.0f, 0.0f);
 	for (unsigned int idx = 0u; idx < SAMPLE_COUNT; ++idx)
