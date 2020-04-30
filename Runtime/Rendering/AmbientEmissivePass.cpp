@@ -56,35 +56,19 @@ namespace Mile
    {
       if (RenderingPass::Bind(deviceContext))
       {
-
-         if (!m_gBuffer->BindAsShaderResource(deviceContext, 0))
+         bool bSuccess =
+            m_gBuffer->BindAsShaderResource(deviceContext, 0) &&
+            m_irradianceMap->Bind(deviceContext, 5, EShaderType::PixelShader) &&
+            m_prefilteredMap->Bind(deviceContext, 6, EShaderType::PixelShader) &&
+            m_brdfLUT->BindAsShaderResource(deviceContext, 7, EShaderType::PixelShader) &&
+            m_ambientParamsBuffer->Bind(deviceContext, 0, EShaderType::PixelShader);
+         if (bSuccess)
          {
-            return false;
+            return true;
          }
-
-         if (!m_irradianceMap->Bind(deviceContext, 5, EShaderType::PixelShader))
-         {
-            return false;
-         }
-
-         if (!m_prefilteredMap->Bind(deviceContext, 6, EShaderType::PixelShader))
-         {
-            return false;
-         }
-
-         if (!m_brdfLUT->BindAsShaderResource(deviceContext, 7, EShaderType::PixelShader))
-         {
-            return false;
-         }
-
-         if (!m_ambientParamsBuffer->Bind(deviceContext, 0, EShaderType::PixelShader))
-         {
-            return false;
-         }
-
-         return true;
       }
 
+      Unbind(deviceContext);
       return false;
    }
 

@@ -28,8 +28,8 @@ namespace Mile
          RendererDX11* renderer = GetRenderer();
 
          m_viewport = new Viewport(renderer);
-         m_viewport->SetWidth(lutSize);
-         m_viewport->SetHeight(lutSize);
+         m_viewport->SetWidth(static_cast<float>(lutSize));
+         m_viewport->SetHeight(static_cast<float>(lutSize));
 
          m_depthStencil = new DepthStencilBufferDX11(renderer);
          if (!m_depthStencil->Init(lutSize, lutSize, false))
@@ -60,19 +60,16 @@ namespace Mile
    {
       if (RenderingPass::Bind(deviceContext))
       {
-         if (!m_viewport->Bind(deviceContext))
+         bool bSuccess =
+            m_viewport->Bind(deviceContext) &&
+            m_brdfLUT->BindAsRenderTarget(deviceContext);
+         if (bSuccess)
          {
-            return false;
+            return true;
          }
-
-         if (!m_brdfLUT->BindAsRenderTarget(deviceContext))
-         {
-            return false;
-         }
-
-         return true;
       }
 
+      Unbind(deviceContext);
       return false;
    }
 

@@ -62,30 +62,21 @@ namespace Mile
 
    bool IrradianceConvPass::Bind(ID3D11DeviceContext& deviceContext, Texture2DBaseDX11* environmentMap)
    {
-      if (RenderingPass::Bind(deviceContext))
+      bool bValidParams = environmentMap != nullptr;
+      if (bValidParams && RenderingPass::Bind(deviceContext))
       {
-         if (environmentMap != nullptr)
+         bool bSuccess =
+            environmentMap->Bind(deviceContext, 0, EShaderType::PixelShader) &&
+            m_viewport->Bind(deviceContext) &&
+            m_transformBuffer->Bind(deviceContext, 0, EShaderType::VertexShader);
+         if (bSuccess)
          {
-            if (!environmentMap->Bind(deviceContext, 0, EShaderType::PixelShader))
-            {
-               return false;
-            }
+            m_boundEnvironmentMap = environmentMap;
+            return true;
          }
-
-         m_boundEnvironmentMap = environmentMap;
-         if (!m_viewport->Bind(deviceContext))
-         {
-            return false;
-         }
-
-         if (!m_transformBuffer->Bind(deviceContext, 0, EShaderType::VertexShader))
-         {
-            return false;
-         }
-
-         return true;
       }
 
+      Unbind(deviceContext);
       return false;
    }
 

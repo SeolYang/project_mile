@@ -54,24 +54,17 @@ namespace Mile
    {
       if (RenderingPass::Bind(deviceContext))
       {
-         if (!m_gBuffer->BindAsRenderTarget(deviceContext))
+         bool bSuccess =
+            m_gBuffer->BindAsRenderTarget(deviceContext) &&
+            m_transformBuffer->Bind(deviceContext, 0, EShaderType::VertexShader) &&
+            m_materialBuffer->Bind(deviceContext, 0, EShaderType::PixelShader);
+         if (bSuccess)
          {
-            return false;
+            return true;
          }
-
-         if (!m_transformBuffer->Bind(deviceContext, 0, EShaderType::VertexShader))
-         {
-            return false;
-         }
-
-         if (!m_materialBuffer->Bind(deviceContext, 0, EShaderType::PixelShader))
-         {
-            return false;
-         }
-
-         return true;
       }
 
+      Unbind(deviceContext);
       return false;
    }
 

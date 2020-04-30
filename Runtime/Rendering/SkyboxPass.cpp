@@ -58,25 +58,18 @@ namespace Mile
       bool bIsValidParams = environmentMap != nullptr;
       if (bIsValidParams && RenderingPass::Bind(deviceContext))
       {
-         if (!m_depthStencilState->Bind(deviceContext))
+         bool bSuccess =
+            m_depthStencilState->Bind(deviceContext) &&
+            m_transformBuffer->Bind(deviceContext, 0, EShaderType::VertexShader) &&
+            environmentMap->Bind(deviceContext, 0, EShaderType::PixelShader);
+         if (bSuccess)
          {
-            return false;
+            m_boundEnvironmentMap = environmentMap;
+            return true;
          }
-
-         if (!m_transformBuffer->Bind(deviceContext, 0, EShaderType::VertexShader))
-         {
-            return false;
-         }
-
-         if (!environmentMap->Bind(deviceContext, 0, EShaderType::PixelShader))
-         {
-            return false;
-         }
-         m_boundEnvironmentMap = environmentMap;
-
-         return true;
       }
 
+      Unbind(deviceContext);
       return false;
    }
 

@@ -54,27 +54,20 @@ namespace Mile
 
    bool LightingPass::Bind(ID3D11DeviceContext& deviceContext)
    {
-      if (RenderingPass::Bind(deviceContext))
+      bool bValidParams = m_gBuffer != nullptr;
+      if (bValidParams && RenderingPass::Bind(deviceContext))
       {
-
-         if (!m_gBuffer->BindAsShaderResource(deviceContext, 0))
+         bool bSuccess =
+            m_gBuffer->BindAsShaderResource(deviceContext, 0) &&
+            m_cameraParamsBuffer->Bind(deviceContext, 0, EShaderType::PixelShader) &&
+            m_lightParamsBuffer->Bind(deviceContext, 1, EShaderType::PixelShader);
+         if (bSuccess)
          {
-            return false;
+            return true;
          }
-
-         if (!m_cameraParamsBuffer->Bind(deviceContext, 0, EShaderType::PixelShader))
-         {
-            return false;
-         }
-
-         if (!m_lightParamsBuffer->Bind(deviceContext, 1, EShaderType::PixelShader))
-         {
-            return false;
-         }
-
-         return true;
       }
 
+      Unbind(deviceContext);
       return false;
    }
 

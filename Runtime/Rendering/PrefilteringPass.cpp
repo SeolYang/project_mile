@@ -80,30 +80,21 @@ namespace Mile
 
    bool PrefilteringPass::Bind(ID3D11DeviceContext& deviceContext, Texture2DBaseDX11* environmentMap)
    {
+      bool bValidParams = environmentMap != nullptr;
       if (RenderingPass::Bind(deviceContext))
       {
-         if (environmentMap != nullptr)
+         bool bSuccess =
+            environmentMap->Bind(deviceContext, 0, EShaderType::PixelShader) &&
+            m_transformBuffer->Bind(deviceContext, 0, EShaderType::VertexShader) &&
+            m_prefilteringParams->Bind(deviceContext, 0, EShaderType::PixelShader);
+         if (bSuccess)
          {
-            if (!environmentMap->Bind(deviceContext, 0, EShaderType::PixelShader))
-            {
-               return false;
-            }
+            m_boundEnvironmentMap = environmentMap;
+            return true;
          }
-
-         m_boundEnvironmentMap = environmentMap;
-         if (!m_transformBuffer->Bind(deviceContext, 0, EShaderType::VertexShader))
-         {
-            return false;
-         }
-
-         if (!m_prefilteringParams->Bind(deviceContext, 0, EShaderType::PixelShader))
-         {
-            return false;
-         }
-
-         return true;
       }
 
+      Unbind(deviceContext);
       return false;
    }
 

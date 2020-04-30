@@ -47,20 +47,17 @@ namespace Mile
       bool bIsValidParams = hdrBuffer != nullptr;
       if (bIsValidParams && RenderingPass::Bind(deviceContext))
       {
-         if (!hdrBuffer->BindAsShaderResource(deviceContext, 0, EShaderType::PixelShader))
+         bool bSuccess =
+            hdrBuffer->BindAsShaderResource(deviceContext, 0, EShaderType::PixelShader) &&
+            m_params->Bind(deviceContext, 0, EShaderType::PixelShader);
+         if (bSuccess)
          {
-            return false;
+            m_boundHdrBuffer = hdrBuffer;
+            return true;
          }
-         m_boundHdrBuffer = hdrBuffer;
-
-         if (!m_params->Bind(deviceContext, 0, EShaderType::PixelShader))
-         {
-            return false;
-         }
-
-         return true;
       }
 
+      Unbind(deviceContext);
       return false;
    }
 

@@ -66,20 +66,16 @@ namespace Mile
       bool bIsValidParams = srcBuffer != nullptr && destBuffer != nullptr;
       if (bIsValidParams && RenderingPass::Bind(deviceContext))
       {
-         if (srcBuffer->BindAsShaderResource(deviceContext, 0, EShaderType::PixelShader))
+         bool bSuccess =
+            srcBuffer->BindAsShaderResource(deviceContext, 0, EShaderType::PixelShader) &&
+            destBuffer->BindAsShaderResource(deviceContext, 1, EShaderType::PixelShader) &&
+            m_outputHDRBuffer->BindAsRenderTarget(deviceContext) &&
+            m_params->Bind(deviceContext, 0, EShaderType::PixelShader);
+         if (bSuccess)
          {
             m_boundSrcBuffer = srcBuffer;
-            if (destBuffer->BindAsShaderResource(deviceContext, 1, EShaderType::PixelShader))
-            {
-               m_boundDestBuffer = destBuffer;
-               if (m_outputHDRBuffer->BindAsRenderTarget(deviceContext))
-               {
-                  if (m_params->Bind(deviceContext, 0, EShaderType::PixelShader))
-                  {
-                     return true;
-                  }
-               }
-            }
+            m_boundDestBuffer = destBuffer;
+            return true;
          }
       }
 

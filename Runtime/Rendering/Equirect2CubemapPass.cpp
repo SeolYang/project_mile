@@ -62,30 +62,21 @@ namespace Mile
 
    bool Equirect2CubemapPass::Bind(ID3D11DeviceContext& deviceContext, Texture2dDX11* equirectangularMap)
    {
-      if (RenderingPass::Bind(deviceContext))
+      bool bValidParams = equirectangularMap != nullptr;
+      if (bValidParams && RenderingPass::Bind(deviceContext))
       {
-         if (equirectangularMap != nullptr)
+         bool bSuccess =
+            equirectangularMap->Bind(deviceContext, 0, EShaderType::PixelShader) &&
+            m_viewport->Bind(deviceContext) &&
+            m_transformBuffer->Bind(deviceContext, 0, EShaderType::VertexShader);
+         if (bSuccess)
          {
-            if (!equirectangularMap->Bind(deviceContext, 0, EShaderType::PixelShader))
-            {
-               return false;
-            }
+            m_boundEquirectMap = equirectangularMap;
+            return true;
          }
-
-         m_boundEquirectMap = equirectangularMap;
-         if (!m_viewport->Bind(deviceContext))
-         {
-            return false;
-         }
-
-         if (!m_transformBuffer->Bind(deviceContext, 0, EShaderType::VertexShader))
-         {
-            return false;
-         }
-
-         return true;
       }
 
+      Unbind(deviceContext);
       return false;
    }
 
