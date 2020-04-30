@@ -1,4 +1,4 @@
-#include "Rendering/GaussianBloomPass.h"
+#include "Rendering/GaussianBlurPass.h"
 #include "Rendering/RenderTargetDX11.h"
 #include "Rendering/DepthStencilBufferDX11.h"
 #include "Rendering/PixelShaderDX11.h"
@@ -6,7 +6,7 @@
 
 namespace Mile
 {
-   GaussianBloomPass::GaussianBloomPass(RendererDX11* renderer) :
+   GaussianBlurPass::GaussianBlurPass(RendererDX11* renderer) :
       m_depthStencilBuffer(nullptr),
       m_boundHdrBuffer(nullptr),
       m_outputHDRBuffer(nullptr),
@@ -16,7 +16,7 @@ namespace Mile
    {
    }
 
-   GaussianBloomPass::~GaussianBloomPass()
+   GaussianBlurPass::~GaussianBlurPass()
    {
       SafeDelete(m_depthStencilBuffer);
       for (size_t idx = 0; idx < m_pingPongBuffer.size(); ++idx)
@@ -26,15 +26,15 @@ namespace Mile
       SafeDelete(m_params);
    }
 
-   bool GaussianBloomPass::Init(unsigned int width, unsigned int height)
+   bool GaussianBlurPass::Init(unsigned int width, unsigned int height)
    {
       bool bValidParams = (width > 0) && (height > 0);
-      if (bValidParams && RenderingPass::Init(TEXT("Contents/Shaders/GaussianBloom.hlsl")))
+      if (bValidParams && RenderingPass::Init(TEXT("Contents/Shaders/GaussianBlur.hlsl")))
       {
          RendererDX11* renderer = GetRenderer();
 
          m_params = new ConstantBufferDX11(renderer);
-         if (!m_params->Init<BloomParameters>())
+         if (!m_params->Init<BlurParameters>())
          {
             return false;
          }
@@ -67,7 +67,7 @@ namespace Mile
       return false;
    }
 
-   bool GaussianBloomPass::Bind(ID3D11DeviceContext& deviceContext, RenderTargetDX11* hdrBuffer)
+   bool GaussianBlurPass::Bind(ID3D11DeviceContext& deviceContext, RenderTargetDX11* hdrBuffer)
    {
       bool bIsValidParams = hdrBuffer != nullptr;
       if (bIsValidParams && RenderingPass::Bind(deviceContext))
@@ -88,7 +88,7 @@ namespace Mile
       return false;
    }
 
-   void GaussianBloomPass::Unbind(ID3D11DeviceContext& deviceContext)
+   void GaussianBlurPass::Unbind(ID3D11DeviceContext& deviceContext)
    {
       if (RenderingPass::IsBindable())
       {
@@ -99,7 +99,7 @@ namespace Mile
       }
    }
 
-   bool GaussianBloomPass::SwapBuffers(ID3D11DeviceContext& deviceContext, bool horizontal)
+   bool GaussianBlurPass::SwapBuffers(ID3D11DeviceContext& deviceContext, bool horizontal)
    {
       if (m_boundHdrBuffer != nullptr && m_outputHDRBuffer != nullptr)
       {
@@ -121,7 +121,7 @@ namespace Mile
       return false;
    }
 
-   void GaussianBloomPass::UpdateParameters(ID3D11DeviceContext& deviceContext, BloomParameters buffer)
+   void GaussianBlurPass::UpdateParameters(ID3D11DeviceContext& deviceContext, BlurParameters buffer)
    {
       if (m_params != nullptr)
       {

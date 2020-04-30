@@ -6,16 +6,16 @@ namespace Mile
    class BlendState;
    class RenderTargetDX11;
    class DepthStencilBufferDX11;
-   class MEAPI GaussianBloomPass : public RenderingPass
+   class MEAPI GaussianBlurPass : public RenderingPass
    {
-      DEFINE_CONSTANT_BUFFER(BloomParameters)
+      DEFINE_CONSTANT_BUFFER(BlurParameters)
       {
          bool Horizontal;
       };
 
    public:
-      GaussianBloomPass(class RendererDX11* renderer);
-      ~GaussianBloomPass();
+      GaussianBlurPass(class RendererDX11* renderer);
+      ~GaussianBlurPass();
 
       bool Init(unsigned int width, unsigned int height);
       bool Bind(ID3D11DeviceContext& deviceContext, RenderTargetDX11* hdrBuffer);
@@ -23,7 +23,7 @@ namespace Mile
 
       bool SwapBuffers(ID3D11DeviceContext& deviceContext, bool horizontal);
 
-      void UpdateParameters(ID3D11DeviceContext& deviceContext, BloomParameters buffer);
+      void UpdateParameters(ID3D11DeviceContext& deviceContext, BlurParameters buffer);
 
       RenderTargetDX11* GetOutputBuffer() const { return m_outputHDRBuffer; }
 

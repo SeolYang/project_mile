@@ -543,7 +543,7 @@
     <ClInclude Include="..\Runtime\Rendering\BoxBloomPass.h">
       <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
     </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\GaussianBloomPass.h">
+    <ClInclude Include="..\Runtime\Rendering\GaussianBlurPass.h">
       <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
     </ClInclude>
   </ItemGroup>
@@ -737,7 +737,7 @@
     <ClCompile Include="..\Runtime\Rendering\BoxBloomPass.cpp">
       <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\GaussianBloomPass.cpp">
+    <ClCompile Include="..\Runtime\Rendering\GaussianBlurPass.cpp">
       <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
     </ClCompile>
   </ItemGroup>
@@ -787,7 +787,7 @@
     <FxCompile Include="Contents\Shaders\BoxBloom.hlsl">
       <Filter>Shaders\Post-Process</Filter>
     </FxCompile>
-    <FxCompile Include="Contents\Shaders\GaussianBloom.hlsl">
+    <FxCompile Include="Contents\Shaders\GaussianBlur.hlsl">
       <Filter>Shaders\Post-Process</Filter>
     </FxCompile>
   </ItemGroup>

@@ -20,7 +20,7 @@
 #include "Rendering/AmbientEmissivePass.h"
 #include "Rendering/SkyboxPass.h"
 #include "Rendering/BoxBloomPass.h"
-#include "Rendering/GaussianBloomPass.h"
+#include "Rendering/GaussianBlurPass.h"
 #include "Rendering/BlendingPass.h"
 #include "Rendering/ToneMappingPass.h"
 #include "Core/Context.h"
@@ -75,7 +75,7 @@ namespace Mile
       m_boxBloomPass(nullptr),
       m_gaussianBloomIntensity(DEFAULT_GAUSSIAN_BLOOM_INTENSITY),
       m_gaussianBloomAmount(DEFAULT_GAUSSIAN_BLOOM_AMOUNT),
-      m_gaussianBloomPass(nullptr),
+      m_gaussianBlurPass(nullptr),
       m_blendingPass(nullptr),
       m_toneMappingPass(nullptr),
       m_exposureFactor(DEFAULT_EXPOSURE_FACTOR), 
@@ -284,15 +284,15 @@ namespace Mile
          return false;
       }
 
-      m_gaussianBloomPass = new GaussianBloomPass(this);
-      if (!m_gaussianBloomPass->Init(
+      m_gaussianBlurPass = new GaussianBlurPass(this);
+      if (!m_gaussianBlurPass->Init(
          static_cast<unsigned int>(screenRes.x),
          static_cast<unsigned int>(screenRes.y)))
       {
          MELog(m_context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
-            TEXT("Failed to create Gaussian Bloom pass."), true);
+            TEXT("Failed to create Gaussian blur pass."), true);
          return false;
       }
 
@@ -424,6 +424,7 @@ namespace Mile
          SafeDelete(m_skyboxPass);
          SafeDelete(m_toneMappingPass);
          SafeDelete(m_boxBloomPass);
+         SafeDelete(m_gaussianBlurPass);
          SafeDelete(m_blendingPass);
          SafeDelete(m_gBuffer);
          SafeDelete(m_backBuffer);
@@ -982,6 +983,36 @@ namespace Mile
       return nullptr;
    }
 
+   RenderTargetDX11* RendererDX11::GaussianBlur(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer, unsigned int gaussianAmount)
+   {
+      if (m_gaussianBlurPass->Bind(deviceContext, renderBuffer))
+      {
+         m_depthDisable->Bind(deviceContext);
+         m_viewport->Bind(deviceContext);
+         m_defaultRasterizerState->Bind(deviceContext);
+         m_screenQuad->Bind(deviceContext, 0);
+
+         bool bHorizontal = true;
+         for (unsigned int epoch = 0; epoch < gaussianAmount; ++epoch)
+         {
+            if (epoch > 0)
+            {
+               m_gaussianBlurPass->SwapBuffers(deviceContext, bHorizontal);
+            }
+
+            m_gaussianBlurPass->UpdateParameters(deviceContext, { bHorizontal });
+            deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
+
+            bHorizontal = !bHorizontal;
+         }
+
+         m_gaussianBlurPass->Unbind(deviceContext);
+         return m_gaussianBlurPass->GetOutputBuffer();
+      }
+
+      return renderBuffer;
+   }
+
    RenderTargetDX11* RendererDX11::Bloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer)
    {
       RenderTargetDX11* output = renderBuffer;
@@ -1016,37 +1047,13 @@ namespace Mile
          return Blending(deviceContext, m_boxBloomPass->GetOutputBuffer(), renderBuffer);
       }
 
-      return renderBuffer;
+      return nullptr;
    }
 
    RenderTargetDX11* RendererDX11::GaussianBloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer)
    {
-      if (m_gaussianBloomPass->Bind(deviceContext, renderBuffer))
-      {
-         m_depthDisable->Bind(deviceContext);
-         m_viewport->Bind(deviceContext);
-         m_defaultRasterizerState->Bind(deviceContext);
-         m_screenQuad->Bind(deviceContext, 0);
-
-         bool bHorizontal = true;
-         for (unsigned int epoch = 0; epoch < m_gaussianBloomAmount; ++epoch)
-         {
-            if (epoch > 0)
-            {
-               m_gaussianBloomPass->SwapBuffers(deviceContext, bHorizontal);
-            }
-
-            m_gaussianBloomPass->UpdateParameters(deviceContext, { bHorizontal });
-            deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
-
-            bHorizontal = !bHorizontal;
-         }
-
-         m_gaussianBloomPass->Unbind(deviceContext);
-         return Blending(deviceContext, m_gaussianBloomPass->GetOutputBuffer(), renderBuffer, m_gaussianBloomIntensity, 1.0f);
-      }
-
-      return renderBuffer;
+      RenderTargetDX11* blurredRenderBuffer = GaussianBlur(deviceContext, renderBuffer, m_gaussianBloomAmount);
+      return Blending(deviceContext, blurredRenderBuffer, renderBuffer, m_gaussianBloomIntensity, 1.0f);
    }
 
    RenderTargetDX11* RendererDX11::Blending(ID3D11DeviceContext& deviceContext, RenderTargetDX11* srcBuffer, RenderTargetDX11* destBuffer, float srcRatio, float destRatio)

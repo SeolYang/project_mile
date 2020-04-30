@@ -51,7 +51,7 @@ namespace Mile
    class AmbientEmissivePass;
    class SkyboxPass;
    class BoxBloomPass;
-   class GaussianBloomPass;
+   class GaussianBlurPass;
    class BlendingPass;
    class ToneMappingPass;
    class Window;
@@ -133,6 +133,7 @@ namespace Mile
       ID3D11CommandList* RunLightingPass(ID3D11DeviceContext* deviceContextPtr);
 
       /* Post-Process **/
+      RenderTargetDX11* GaussianBlur(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer, unsigned int gaussianAmount);
       RenderTargetDX11* Bloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer);
       RenderTargetDX11* BoxBloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer);
       RenderTargetDX11* GaussianBloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer);
@@ -227,7 +228,7 @@ namespace Mile
 
       float m_gaussianBloomIntensity;
       unsigned int       m_gaussianBloomAmount;
-      GaussianBloomPass* m_gaussianBloomPass;
+      GaussianBlurPass*  m_gaussianBlurPass;
 
       /** Blending */
       BlendingPass* m_blendingPass;
