@@ -19,6 +19,8 @@
 #include "Rendering/IntegrateBRDFPass.h"
 #include "Rendering/AmbientEmissivePass.h"
 #include "Rendering/SkyboxPass.h"
+#include "Rendering/BoxBloomPass.h"
+#include "Rendering/BlendingPass.h"
 #include "Rendering/ToneMappingPass.h"
 #include "Core/Context.h"
 #include "Core/Window.h"
@@ -68,6 +70,9 @@ namespace Mile
       m_ambientEmissivePassRenderBuffer(nullptr),
       m_aoFactor(0.6f),
       m_hdrBuffer(nullptr), 
+      m_bloomType(EBloomType::Box),
+      m_boxBloomPass(nullptr),
+      m_blendingPass(nullptr),
       m_toneMappingPass(nullptr),
       m_exposureFactor(DEFAULT_EXPOSURE_FACTOR), 
       m_gammaFactor(DEFAULT_GAMMA_FACTOR),
@@ -263,6 +268,30 @@ namespace Mile
          return false;
       }
 
+      m_boxBloomPass = new BoxBloomPass(this);
+      if (!m_boxBloomPass->Init(
+         static_cast<unsigned int>(screenRes.x),
+         static_cast<unsigned int>(screenRes.y)))
+      {
+         MELog(m_context,
+            TEXT("RendererDX11"),
+            ELogType::FATAL,
+            TEXT("Failed to create Bloom pass."), true);
+         return false;
+      }
+
+      m_blendingPass = new BlendingPass(this);
+      if (!m_blendingPass->Init(
+         static_cast<unsigned int>(screenRes.x),
+         static_cast<unsigned int>(screenRes.y)))
+      {
+         MELog(m_context,
+            TEXT("RendererDX11"),
+            ELogType::FATAL,
+            TEXT("Failed to create Blending pass."), true);
+         return false;
+      }
+
       m_toneMappingPass = new ToneMappingPass(this);
       if (!m_toneMappingPass->Init())
       {
@@ -377,6 +406,9 @@ namespace Mile
          SafeDelete(m_ambientEmissivePass);
          SafeDelete(m_ambientEmissivePassRenderBuffer);
          SafeDelete(m_skyboxPass);
+         SafeDelete(m_toneMappingPass);
+         SafeDelete(m_boxBloomPass);
+         SafeDelete(m_blendingPass);
          SafeDelete(m_gBuffer);
          SafeDelete(m_backBuffer);
          SafeDelete(m_depthStencilBuffer);
@@ -934,9 +966,69 @@ namespace Mile
       return nullptr;
    }
 
-   void RendererDX11::ToneMappingWithGammaCorrection(ID3D11DeviceContext& deviceContext)
+   RenderTargetDX11* RendererDX11::Bloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer)
    {
-      if (m_toneMappingPass->Bind(deviceContext, m_hdrBuffer))
+      RenderTargetDX11* output = renderBuffer;
+      switch (m_bloomType)
+      {
+      case EBloomType::Box:
+         output = BoxBloom(deviceContext, renderBuffer);
+         break;
+
+      case EBloomType::Gaussian:
+      case EBloomType::None:
+         break;
+      }
+
+      return output;
+   }
+
+   RenderTargetDX11* RendererDX11::BoxBloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer)
+   {
+      if (m_boxBloomPass->Bind(deviceContext, renderBuffer))
+      {
+         m_boxBloomPass->UpdateParameters(deviceContext, {});
+         m_depthDisable->Bind(deviceContext);
+         m_viewport->Bind(deviceContext);
+         m_defaultRasterizerState->Bind(deviceContext);
+         m_screenQuad->Bind(deviceContext, 0);
+
+         deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
+         m_boxBloomPass->Unbind(deviceContext);
+
+         return Blending(deviceContext, m_boxBloomPass->GetOutputBuffer(), renderBuffer);
+      }
+   }
+
+   RenderTargetDX11* RendererDX11::Blending(ID3D11DeviceContext& deviceContext, RenderTargetDX11* srcBuffer, RenderTargetDX11* destBuffer, float srcRatio, float destRatio)
+   {
+      if (srcBuffer != nullptr && destBuffer != nullptr)
+      {
+         if (m_blendingPass->Bind(deviceContext, srcBuffer, destBuffer))
+         {
+            m_blendingPass->UpdateParameters(deviceContext,
+               {
+                  srcRatio,
+                  destRatio
+               });
+            m_depthDisable->Bind(deviceContext);
+            m_viewport->Bind(deviceContext);
+            m_defaultRasterizerState->Bind(deviceContext);
+            m_screenQuad->Bind(deviceContext, 0);
+
+            deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
+            m_blendingPass->Unbind(deviceContext);
+
+            return m_blendingPass->GetOutputBuffer();
+         }
+      }
+
+      return destBuffer;
+   }
+
+   void RendererDX11::ToneMappingWithGammaCorrection(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer)
+   {
+      if (m_toneMappingPass->Bind(deviceContext, renderBuffer))
       {
          m_toneMappingPass->UpdateParameters(
             deviceContext,
@@ -963,7 +1055,8 @@ namespace Mile
       {
          ID3D11DeviceContext& deviceContext = *deviceContextPtr;
 
-         ToneMappingWithGammaCorrection(deviceContext);
+         RenderTargetDX11* output = Bloom(deviceContext, m_hdrBuffer);
+         ToneMappingWithGammaCorrection(deviceContext, output);
 
          ID3D11CommandList* commandList = nullptr;
          auto result = deviceContext.FinishCommandList(false, &commandList);

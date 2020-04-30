@@ -110,8 +110,8 @@ int main( )
       //Texture2D* helipadGoldenHourHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Helipad_GoldenHour/LA_Downtown_Helipad_GoldenHour_3k.hdr"));
       //renderer->SetEquirectangularMap(helipadGoldenHourHDR);
 
-      Texture2D* newPortHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Newport_Loft/Newport_Loft_Ref.hdr"));
-      renderer->SetEquirectangularMap(newPortHDR);
+      //Texture2D* newPortHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Newport_Loft/Newport_Loft_Ref.hdr"));
+      //renderer->SetEquirectangularMap(newPortHDR);
 
       //Texture2D* walkOfFameHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Walk_Of_Fame/Mans_Outside_2k.hdr"));
       //renderer->SetEquirectangularMap(walkOfFameHDR);
@@ -122,8 +122,8 @@ int main( )
       //Texture2D* barcelonaRooftopsHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Barcelona_Rooftops/Barce_Rooftop_C_3k.hdr"));
       //renderer->SetEquirectangularMap(barcelonaRooftopsHDR);
 
-      //Texture2D* snowMachineHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/snow_machine/test8_Ref.hdr"));
-      //renderer->SetEquirectangularMap(snowMachineHDR);
+      Texture2D* snowMachineHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/snow_machine/test8_Ref.hdr"));
+      renderer->SetEquirectangularMap(snowMachineHDR);
       
       renderer->SetComputeIBLAsRealtime(false);
       renderer->SetAmbientOcclusionFactor(0.7f);

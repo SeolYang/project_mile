@@ -136,7 +136,9 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\Runtime\Math\Vertex.h" />
     <ClInclude Include="..\Runtime\MT\ThreadPool.h" />
     <ClInclude Include="..\Runtime\Rendering\AmbientEmissivePass.h" />
+    <ClInclude Include="..\Runtime\Rendering\BlendingPass.h" />
     <ClInclude Include="..\Runtime\Rendering\BlendState.h" />
+    <ClInclude Include="..\Runtime\Rendering\BoxBloomPass.h" />
     <ClInclude Include="..\Runtime\Rendering\BufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ConstantBufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\Cube.h" />
@@ -281,7 +283,9 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Math\Vector3.cpp" />
     <ClCompile Include="..\Runtime\Math\Vector4.cpp" />
     <ClCompile Include="..\Runtime\Rendering\AmbientEmissivePass.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\BlendingPass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\BlendState.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\BoxBloomPass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\BufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\ConstantBufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Cube.cpp" />
@@ -326,6 +330,18 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Contents\Shaders\AmbientEmissivePass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\Blending.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\BoxBloom.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

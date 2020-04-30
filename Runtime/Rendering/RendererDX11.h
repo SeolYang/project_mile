@@ -14,6 +14,13 @@ namespace Mile
       EnumSize
    };
 
+   enum class EBloomType : UINT32
+   {
+      Box,
+      Gaussian,
+      None
+   };
+
    constexpr size_t REQUIRED_RENDERCONTEXT_NUM = (size_t)ERenderContextType::EnumSize - 1;
    constexpr unsigned int DYNAMIC_CUBEMAP_SIZE = 512;
    constexpr unsigned int IRRADIANCEMAP_SIZE = 32;
@@ -40,6 +47,8 @@ namespace Mile
    class LightingPass;
    class AmbientEmissivePass;
    class SkyboxPass;
+   class BoxBloomPass;
+   class BlendingPass;
    class ToneMappingPass;
    class Window;
    class World;
@@ -89,6 +98,9 @@ namespace Mile
       void SetExposure(float exposureFactor) { m_exposureFactor = exposureFactor; }
       float GetExposureFactor() const { return m_exposureFactor; }
 
+      void SetBloomType(EBloomType type) { m_bloomType = type; }
+      EBloomType GetBloomType() const { return m_bloomType; }
+
    private:
       /* Initialization methods **/
       bool CreateDeviceAndSwapChain();
@@ -111,7 +123,10 @@ namespace Mile
       ID3D11CommandList* RunLightingPass(ID3D11DeviceContext* deviceContextPtr);
 
       /* Post-Process **/
-      void ToneMappingWithGammaCorrection(ID3D11DeviceContext& deviceContext);
+      RenderTargetDX11* Bloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer);
+      RenderTargetDX11* BoxBloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer);
+      RenderTargetDX11* Blending(ID3D11DeviceContext& deviceContext, RenderTargetDX11* srcBuffer, RenderTargetDX11* destBuffer, float srcRatio = 1.0f, float destRatio = 1.0f);
+      void ToneMappingWithGammaCorrection(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer);
       ID3D11CommandList* RunPostProcessPass(ID3D11DeviceContext* deviceContextPtr);
    
       /* Helper Methods **/
@@ -194,6 +209,15 @@ namespace Mile
 
       /** Post-Process */
       RenderTargetDX11* m_hdrBuffer;
+
+      /** Bloom */
+      EBloomType    m_bloomType;
+      BoxBloomPass* m_boxBloomPass;
+
+      /** Blending */
+      BlendingPass* m_blendingPass;
+
+      /** Tone Mapping */
       ToneMappingPass* m_toneMappingPass;
       float m_exposureFactor;
       float m_gammaFactor;

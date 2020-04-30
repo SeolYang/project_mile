@@ -537,6 +537,12 @@
     <ClInclude Include="..\Runtime\Rendering\IntegrateBRDFPass.h">
       <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\BlendingPass.h">
+      <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\BoxBloomPass.h">
+      <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -722,6 +728,12 @@
     <ClCompile Include="..\Runtime\Rendering\IntegrateBRDFPass.cpp">
       <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
     </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\BlendingPass.cpp">
+      <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\BoxBloomPass.cpp">
+      <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Contents\Shaders\LightingPass.hlsl">
@@ -762,6 +774,12 @@
     </FxCompile>
     <FxCompile Include="Contents\Shaders\IntegrateBRDF.hlsl">
       <Filter>Shaders\PBS</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\Blending.hlsl">
+      <Filter>Shaders\Post-Process</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\BoxBloom.hlsl">
+      <Filter>Shaders\Post-Process</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
