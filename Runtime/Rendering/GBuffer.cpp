@@ -43,8 +43,8 @@ namespace Mile
 
          bool bBuffersInitialized =
             m_positionBuffer->Init(width, height, DXGI_FORMAT_R32G32B32A32_FLOAT) &&
-            m_albedoBuffer->Init(width, height, DXGI_FORMAT_R8G8B8A8_UNORM) &&
-            m_emissiveAOBuffer->Init(width, height, DXGI_FORMAT_R8G8B8A8_UNORM) &&
+            m_albedoBuffer->Init(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT) &&
+            m_emissiveAOBuffer->Init(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT) &&
             m_normalBuffer->Init(width, height, DXGI_FORMAT_R32G32B32A32_FLOAT) &&
             m_metallicRoughnessBuffer->Init(width, height, DXGI_FORMAT_R8G8B8A8_UNORM);
          if (bBuffersInitialized && m_blendState->Init())
