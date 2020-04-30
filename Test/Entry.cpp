@@ -38,6 +38,8 @@ int main( )
       MeshRenderComponent* cubeRenderComponent = cube->AddComponent<MeshRenderComponent>();
       RotateComponent* cubeRotation = cube->AddComponent<RotateComponent>();
       Material* cubeMaterial = resMng->Load<Material>(TEXT("Contents/Materials/Default.material"));
+      cubeMaterial->SetScalarFactor(MaterialFactorProperty::Metallic, 1.0f);
+      cubeMaterial->SetScalarFactor(MaterialFactorProperty::Roughness, 1.0f);
       cubeRenderComponent->SetMesh(cubeMesh);
       cubeRenderComponent->SetMaterial(cubeMaterial);
       cubeTransform->SetPosition(Vector3(3.5f, 0.0f, 1.5f));
@@ -51,19 +53,19 @@ int main( )
       camComponent->SetFov(90.0f);
       camTransform->SetPosition(Vector3(0.0f, 0.0f, -5.0f));
 
-      Entity* mainLight = world->CreateEntity(TEXT("Main Light"));
-      LightComponent* mainLightComponent = mainLight->AddComponent<LightComponent>();
-      Transform* mainLightTransform = mainLight->GetTransform();
-      mainLightComponent->SetLightType(ELightType::Point);
-      mainLightComponent->SetRadiance(Vector3(200.0f, 200.0f, 200.0f));
-      mainLightTransform->SetPosition(Vector3(-9.0f, 0.0f, -3.0f));
+      //Entity* mainLight = world->CreateEntity(TEXT("Main Light"));
+      //LightComponent* mainLightComponent = mainLight->AddComponent<LightComponent>();
+      //Transform* mainLightTransform = mainLight->GetTransform();
+      //mainLightComponent->SetLightType(ELightType::Point);
+      //mainLightComponent->SetRadiance(Vector3(200.0f, 200.0f, 200.0f));
+      //mainLightTransform->SetPosition(Vector3(-9.0f, 0.0f, -3.0f));
 
-      Entity* secondLight = world->CreateEntity(TEXT("Second Light"));
-      LightComponent* secondLightComponent = secondLight->AddComponent<LightComponent>();
-      Transform* secondLightTransform = secondLight->GetTransform();
-      secondLightComponent->SetLightType(ELightType::Point);
-      secondLightComponent->SetRadiance(Vector3(400.0f, 400.0f, 400.0f));
-      secondLightTransform->SetPosition(Vector3(0.0f, 7.0f, -3.0f));
+      //Entity* secondLight = world->CreateEntity(TEXT("Second Light"));
+      //LightComponent* secondLightComponent = secondLight->AddComponent<LightComponent>();
+      //Transform* secondLightTransform = secondLight->GetTransform();
+      //secondLightComponent->SetLightType(ELightType::Point);
+      //secondLightComponent->SetRadiance(Vector3(400.0f, 400.0f, 400.0f));
+      //secondLightTransform->SetPosition(Vector3(0.0f, 7.0f, -3.0f));
 
       Model* damagedHelmetModel = resMng->Load<Model>(TEXT("Contents/Models/DamagedHelmet/DamagedHelmet.gltf"));
       Entity* damagedHelmet = Model::Instantiate(damagedHelmetModel, world, TEXT("DamagedHelmet"));
@@ -109,7 +111,7 @@ int main( )
       renderer->SetComputeIBLAsRealtime(false);
       renderer->SetAmbientOcclusionFactor(0.7f);
       renderer->SetGammaFactor(2.2f);
-      renderer->SetToneMappingFactor(0.3f);
+      renderer->SetToneMappingFactor(0.6f);
       execute = engine->Execute();
    }
 

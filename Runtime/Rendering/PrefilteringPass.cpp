@@ -96,7 +96,7 @@ namespace Mile
             return false;
          }
 
-         if (!m_prefilteringParams->Bind(deviceContext, 1, EShaderType::PixelShader))
+         if (!m_prefilteringParams->Bind(deviceContext, 0, EShaderType::PixelShader))
          {
             return false;
          }

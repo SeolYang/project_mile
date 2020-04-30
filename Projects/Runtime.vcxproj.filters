@@ -748,9 +748,6 @@
     <FxCompile Include="Contents\Shaders\Equirectangular2Cube.hlsl">
       <Filter>Shaders\PBS</Filter>
     </FxCompile>
-    <FxCompile Include="Contents\Shaders\Test.hlsl">
-      <Filter>Shaders\PBS</Filter>
-    </FxCompile>
     <FxCompile Include="Contents\Shaders\SkyboxPass.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
