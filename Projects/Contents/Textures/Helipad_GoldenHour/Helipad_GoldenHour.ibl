@@ -1,0 +1,44 @@
+[Header]
+ICOfile = "LA_Downtown_Helipad_GoldenHour_thumb.jpg"
+PREVIEWfile = "LA_Downtown_Helipad_GoldenHour_preview.jpg"
+Name = "Helipad GoldenHour"
+Author = "Blochi"
+Location = "Los Angeles"
+Comment = "Downtown LA, and the last rays of sunlight."
+GEOlat = 34.0536079405555510
+GEOlong = -118.2563934325000000
+Date = "2009:08:25"
+Time = "19:19:00"
+Height = 1.900000
+
+[Background]
+BGfile = "LA_Downtown_Helipad_GoldenHour_8k.jpg"
+BGmap = 1
+BGu = 0.000000
+BGv = 0.000000
+BGheight = 4096
+
+[Enviroment]
+EVfile = "LA_Downtown_Helipad_GoldenHour_Env.hdr"
+EVmap = 1
+EVu = 0.000000
+EVv = 0.000000
+EVheight = 180
+EVmulti = 1.000000
+EVgamma = 1.600000
+
+[Reflection]
+REFfile = "LA_Downtown_Helipad_GoldenHour_3k.hdr"
+REFmap = 1
+REFu = 0.000000
+REFv = 0.000000
+REFheight = 1600
+REFmulti = 1.000000
+REFgamma = 1.600000
+
+[Sun]
+SUNcolor = 255,180,117
+SUNmulti = 1.200000
+SUNu = 0.798000
+SUNv = 0.468000
+

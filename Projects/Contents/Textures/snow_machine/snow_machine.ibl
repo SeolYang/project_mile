@@ -1,0 +1,39 @@
+[Header]
+ICOfile = "test8_Thumb.jpg"
+PREVIEWfile = "test8_preview.jpg"
+Name = "snow machine"
+Author = "tischbein3"
+Location = "splotchdog land"
+Comment = "Deep winter forst, snow, some stitching errors"
+
+[Background]
+BGfile = "test8_Bg.jpg"
+BGmap = 1
+BGu = 0.000000
+BGv = 0.000000
+BGheight = 4000
+
+[Enviroment]
+EVfile = "test8_Env.hdr"
+EVmap = 1
+EVu = 0.000000
+EVv = 0.000000
+EVheight = 180
+EVmulti = 2.035088
+EVgamma = 1.000000
+
+[Reflection]
+REFfile = "test8_Ref.hdr"
+REFmap = 1
+REFu = 0.000000
+REFv = 0.000000
+REFheight = 2000
+REFmulti = 2.315789
+REFgamma = 1.000000
+
+[Sun]
+SUNcolor = 255,250,246
+SUNmulti = 0.600000
+SUNu = 0.678000
+SUNv = 0.412000
+
