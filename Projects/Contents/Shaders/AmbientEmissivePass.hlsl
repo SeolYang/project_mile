@@ -20,13 +20,9 @@ struct PSInput
 };
 
 /* Constant Buffers (Pixel Shader) */
-cbuffer CameraParamsBuffer
-{
-	float3 CameraPos;
-};
-
 cbuffer AmbientParamsBuffer
 {
+	float3 CameraPos;
 	float Ao;
 };
 

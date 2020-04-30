@@ -10,13 +10,9 @@ namespace Mile
    class RenderTargetDX11;
    class MEAPI AmbientEmissivePass : public RenderingPass
    {
-      DEFINE_CONSTANT_BUFFER(CameraParamsConstantBuffer)
-      {
-         Vector3 CameraPos;
-      };
-
       DEFINE_CONSTANT_BUFFER(AmbientParamsConstantBuffer)
       {
+         Vector3 CameraPos;
          float Ao;
       };
 
@@ -32,7 +28,6 @@ namespace Mile
       void SetIrradianceMap(DynamicCubemap* irradianceMap);
       void SetPrefilteredMap(DynamicCubemap* prefilteredEnvMap);
       void SetBRDFLUT(RenderTargetDX11* brdfLUT);
-      void UpdateCameraParamsBuffer(ID3D11DeviceContext& deviceContext, CameraParamsConstantBuffer buffer);
       void UpdateAmbientParamsBuffer(ID3D11DeviceContext& deviceContext, AmbientParamsConstantBuffer buffer);
 
    private:
@@ -40,7 +35,6 @@ namespace Mile
       DynamicCubemap* m_irradianceMap;
       DynamicCubemap* m_prefilteredMap;
       RenderTargetDX11* m_brdfLUT;
-      CBufferPtr m_cameraParamsBuffer;
       CBufferPtr m_ambientParamsBuffer;
 
    };

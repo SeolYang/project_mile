@@ -14,7 +14,6 @@ namespace Mile
       m_irradianceMap(nullptr),
       m_prefilteredMap(nullptr),
       m_brdfLUT(nullptr),
-      m_cameraParamsBuffer(nullptr),
       m_ambientParamsBuffer(nullptr),
       RenderingPass(renderer)
    {
@@ -22,7 +21,6 @@ namespace Mile
 
    AmbientEmissivePass::~AmbientEmissivePass()
    {
-      SafeDelete(m_cameraParamsBuffer);
       SafeDelete(m_ambientParamsBuffer);
    }
 
@@ -34,12 +32,6 @@ namespace Mile
       }
 
       RendererDX11* renderer = GetRenderer();
-      m_cameraParamsBuffer = new ConstantBufferDX11(renderer);
-      if (!m_cameraParamsBuffer->Init(sizeof(CameraParamsConstantBuffer)))
-      {
-         return false;
-      }
-
       m_ambientParamsBuffer = new ConstantBufferDX11(renderer);
       if (!m_ambientParamsBuffer->Init(sizeof(AmbientParamsConstantBuffer)))
       {
@@ -85,12 +77,7 @@ namespace Mile
             return false;
          }
 
-         if (!m_cameraParamsBuffer->Bind(deviceContext, 0, EShaderType::PixelShader))
-         {
-            return false;
-         }
-
-         if (!m_ambientParamsBuffer->Bind(deviceContext, 1, EShaderType::PixelShader))
+         if (!m_ambientParamsBuffer->Bind(deviceContext, 0, EShaderType::PixelShader))
          {
             return false;
          }
@@ -108,11 +95,6 @@ namespace Mile
          if (m_gBuffer != nullptr)
          {
             m_gBuffer->UnbindShaderResource(deviceContext);
-         }
-
-         if (m_cameraParamsBuffer != nullptr)
-         {
-            m_cameraParamsBuffer->Unbind(deviceContext);
          }
 
          if (m_ambientParamsBuffer != nullptr)
@@ -157,14 +139,6 @@ namespace Mile
    void AmbientEmissivePass::SetBRDFLUT(RenderTargetDX11* brdfLUT)
    {
       m_brdfLUT = brdfLUT;
-   }
-
-   void AmbientEmissivePass::UpdateCameraParamsBuffer(ID3D11DeviceContext& deviceContext, CameraParamsConstantBuffer buffer)
-   {
-      if (m_cameraParamsBuffer != nullptr)
-      {
-         m_cameraParamsBuffer->Update(deviceContext, buffer);
-      }
    }
 
    void AmbientEmissivePass::UpdateAmbientParamsBuffer(ID3D11DeviceContext& deviceContext, AmbientParamsConstantBuffer buffer)

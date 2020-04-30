@@ -784,13 +784,12 @@ namespace Mile
          m_additiveBlendState->Bind(deviceContext);
          m_screenQuad->Bind(deviceContext, 0);
 
-         m_ambientEmissivePass->UpdateCameraParamsBuffer(
-            deviceContext,
-            { camTransform->GetPosition(TransformSpace::World) });
-
          m_ambientEmissivePass->UpdateAmbientParamsBuffer(
             deviceContext,
-            { m_aoFactor });
+            { 
+               camTransform->GetPosition(TransformSpace::World), 
+               m_aoFactor
+            });
 
          deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
 
