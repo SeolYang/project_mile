@@ -128,9 +128,10 @@ int main( )
       renderer->SetComputeIBLAsRealtime(false);
       renderer->SetAmbientOcclusionFactor(0.7f);
       renderer->SetGammaFactor(DEFAULT_GAMMA_FACTOR);
-      renderer->SetExposure(DEFAULT_EXPOSURE_FACTOR);
+      renderer->SetExposure(1.0f);
       renderer->SetBloomType(EBloomType::Gaussian);
       renderer->SetGaussianBloomAmount(8);
+      renderer->SetGaussianBloomIntensity(0.8f);
       execute = engine->Execute();
    }
 

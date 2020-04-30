@@ -32,6 +32,7 @@ namespace Mile
    constexpr float DISABLE_GAMMA_CORRECTION = -1.0f;
    constexpr float DEFAULT_AO_FACTOR = 0.6f;
    constexpr unsigned int DEFAULT_GAUSSIAN_BLOOM_AMOUNT = 4;
+   constexpr float DEFAULT_GAUSSIAN_BLOOM_INTENSITY = 0.8f;
 
    class DepthStencilBufferDX11;
    class RenderTargetDX11;
@@ -106,6 +107,9 @@ namespace Mile
 
       void SetGaussianBloomAmount(unsigned int amount) { m_gaussianBloomAmount = amount; }
       unsigned int GetGaussianBloomAmount() const { return m_gaussianBloomAmount; }
+
+      void SetGaussianBloomIntensity(float intensity) { m_gaussianBloomIntensity = intensity; }
+      float GetGaussianBloomIntensity() const { return m_gaussianBloomIntensity; }
 
    private:
       /* Initialization methods **/
@@ -221,6 +225,7 @@ namespace Mile
       EBloomType    m_bloomType;
       BoxBloomPass* m_boxBloomPass;
 
+      float m_gaussianBloomIntensity;
       unsigned int       m_gaussianBloomAmount;
       GaussianBloomPass* m_gaussianBloomPass;
 

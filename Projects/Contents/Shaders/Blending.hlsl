@@ -43,5 +43,6 @@ float4 MilePS(in PSInput input) : SV_Target0
 {
 	float3 srcColor = srcBuffer.Sample(Sampler, input.TexCoord).rgb * SrcRatio;
 	float3 destColor = destBuffer.Sample(Sampler, input.TexCoord).rgb * DestRatio;
+
 	return float4(srcColor + destColor, 1.0f);
 }

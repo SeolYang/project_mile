@@ -73,6 +73,7 @@ namespace Mile
       m_hdrBuffer(nullptr), 
       m_bloomType(EBloomType::Box),
       m_boxBloomPass(nullptr),
+      m_gaussianBloomIntensity(DEFAULT_GAUSSIAN_BLOOM_INTENSITY),
       m_gaussianBloomAmount(DEFAULT_GAUSSIAN_BLOOM_AMOUNT),
       m_gaussianBloomPass(nullptr),
       m_blendingPass(nullptr),
@@ -1042,7 +1043,7 @@ namespace Mile
          }
 
          m_gaussianBloomPass->Unbind(deviceContext);
-         return Blending(deviceContext, m_gaussianBloomPass->GetOutputBuffer(), renderBuffer);
+         return Blending(deviceContext, m_gaussianBloomPass->GetOutputBuffer(), renderBuffer, m_gaussianBloomIntensity, 1.0f);
       }
 
       return renderBuffer;
