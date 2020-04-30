@@ -802,7 +802,6 @@ namespace Mile
    {
       Transform* camTransform = m_mainCamera->GetTransform();
       if (m_skyboxPass->Bind(deviceContext, m_equirectToCubemapPass->GetCubemap()))
-      //if (m_skyboxPass->Bind(deviceContext, m_prefilterdEnvMap))
       {
          m_hdrBuffer->BindAsRenderTarget(deviceContext, false, false);
          m_depthLessEqual->Bind(deviceContext);

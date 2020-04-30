@@ -39,7 +39,7 @@ int main( )
       RotateComponent* cubeRotation = cube->AddComponent<RotateComponent>();
       Material* cubeMaterial = resMng->Load<Material>(TEXT("Contents/Materials/Default.material"));
       cubeMaterial->SetScalarFactor(MaterialFactorProperty::Metallic, 1.0f);
-      cubeMaterial->SetScalarFactor(MaterialFactorProperty::Roughness, 1.0f);
+      cubeMaterial->SetScalarFactor(MaterialFactorProperty::Roughness, 0.5f);
       cubeRenderComponent->SetMesh(cubeMesh);
       cubeRenderComponent->SetMaterial(cubeMaterial);
       cubeTransform->SetPosition(Vector3(3.5f, 0.0f, 1.5f));
@@ -49,9 +49,9 @@ int main( )
       CameraComponent* camComponent = camera->AddComponent<CameraComponent>();
       Transform* camTransform = camera->GetTransform();
       camComponent->SetNearPlane(0.1f);
-      camComponent->SetFarPlane(1000.0f);
-      camComponent->SetFov(90.0f);
-      camTransform->SetPosition(Vector3(0.0f, 0.0f, -5.0f));
+      camComponent->SetFarPlane(100.0f);
+      camComponent->SetFov(100.0f);
+      camTransform->SetPosition(Vector3(0.0f, 0.0f, -3.0f));
 
       Entity* mainLight = world->CreateEntity(TEXT("Main Light"));
       LightComponent* mainLightComponent = mainLight->AddComponent<LightComponent>();
@@ -108,7 +108,7 @@ int main( )
       renderer->SetComputeIBLAsRealtime(false);
       renderer->SetAmbientOcclusionFactor(0.7f);
       renderer->SetGammaFactor(DEFAULT_GAMMA_FACTOR);
-      renderer->SetExposure(2.0f);
+      renderer->SetExposure(1.2f);
       execute = engine->Execute();
    }
 

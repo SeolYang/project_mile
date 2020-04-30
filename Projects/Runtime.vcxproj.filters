@@ -724,9 +724,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Contents\Shaders\TestShader.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="Contents\Shaders\LightingPass.hlsl">
       <Filter>Shaders\PBS</Filter>
     </FxCompile>
