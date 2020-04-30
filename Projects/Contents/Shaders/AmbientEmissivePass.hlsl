@@ -51,16 +51,16 @@ VSOutput MileVS(in VSInput input)
 
 float4 MilePS(in PSInput input) : SV_Target0
 {
-	float3 worldPos = posBuffer.Sample(AnisoSampler, input.TexCoord).xyz;
+	float3 worldPos = posBuffer.Sample(LinearClampSampler, input.TexCoord).xyz;
 	float3 albedo = albedoBuffer.Sample(AnisoSampler, input.TexCoord).rgb;
-	float roughness = metallicRoughnessBuffer.Sample(AnisoSampler, input.TexCoord).g;
-	float metallic = metallicRoughnessBuffer.Sample(AnisoSampler, input.TexCoord).b;
+	float roughness = metallicRoughnessBuffer.Sample(LinearClampSampler, input.TexCoord).g;
+	float metallic = metallicRoughnessBuffer.Sample(LinearClampSampler, input.TexCoord).b;
 
-	float4 emissiveAO = emissiveAOBuffer.Sample(AnisoSampler, input.TexCoord).rgba;
+	float4 emissiveAO = emissiveAOBuffer.Sample(LinearClampSampler, input.TexCoord).rgba;
 	float3 emissive = emissiveAO.rgb;
 	float ao = emissiveAO.a > 0.0f ? emissiveAO.a : Ao;
 
-	float3 N = normalize(normalBuffer.Sample(AnisoSampler, input.TexCoord).xyz);
+	float3 N = normalize(normalBuffer.Sample(LinearClampSampler, input.TexCoord).xyz);
 	float3 V = normalize(CameraPos - worldPos);
 	float3 R = reflect(-V, N);
 
