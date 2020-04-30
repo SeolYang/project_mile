@@ -58,7 +58,7 @@ float4 MilePS(in PSInput input) : SV_Target0
 
 	float4 emissiveAO = emissiveAOBuffer.Sample(AnisoSampler, input.TexCoord).rgba;
 	float3 emissive = emissiveAO.rgb;
-	float ao = max(Ao, emissiveAO.a);
+	float ao = emissiveAO.a > 0.0f ? emissiveAO.a : Ao;
 
 	float3 N = normalize(normalBuffer.Sample(AnisoSampler, input.TexCoord).xyz);
 	float3 V = normalize(CameraPos - worldPos);

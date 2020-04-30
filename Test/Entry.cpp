@@ -104,7 +104,7 @@ int main( )
       Texture2D* iceLakeHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Ice_Lake/Ice_Lake_Ref.hdr"));
       Texture2D* walkOfFameHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Walk_Of_Fame/Mans_Outside_2k.hdr"));
       Texture2D* WinterForestHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Winter_Forest/WinterForest_Ref.hdr"));
-      renderer->SetEquirectangularMap(walkOfFameHDR);
+      renderer->SetEquirectangularMap(iceLakeHDR);
       renderer->SetComputeIBLAsRealtime(false);
       renderer->SetAmbientOcclusionFactor(0.7f);
       renderer->SetGammaFactor(DEFAULT_GAMMA_FACTOR);
