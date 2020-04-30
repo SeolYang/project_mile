@@ -1035,9 +1035,9 @@ namespace Mile
                m_gaussianBloomPass->SwapBuffers(deviceContext, bHorizontal);
             }
 
+            m_gaussianBloomPass->UpdateParameters(deviceContext, { bHorizontal });
             deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
 
-            m_gaussianBloomPass->UpdateParameters(deviceContext, { bHorizontal });
             bHorizontal = !bHorizontal;
          }
 
