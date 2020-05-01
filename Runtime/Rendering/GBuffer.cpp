@@ -4,7 +4,7 @@
 #include "Rendering/Texture2dDX11.h"
 #include "Rendering/BlendState.h"
 
-constexpr size_t GBUFFER_RENDER_TARGET_NUM = 5;
+constexpr unsigned int GBUFFER_RENDER_TARGET_NUM = 5;
 
 namespace Mile
 {
@@ -112,7 +112,7 @@ namespace Mile
          m_normalBuffer,
          m_metallicRoughnessBuffer };
 
-         for (unsigned int idx = 0; idx < targets.size(); ++idx)
+         for (unsigned int idx = 0; idx < GBUFFER_RENDER_TARGET_NUM; ++idx)
          {
             if (!targets[idx]->BindAsShaderResource(deviceContext, startSlot + idx, EShaderType::PixelShader))
             {
@@ -123,7 +123,7 @@ namespace Mile
          if (bBindDepthStencil)
          {
             ID3D11ShaderResourceView* depthSRV = m_depthStencilBuffer->GetSRV();
-            deviceContext.PSSetShaderResources(startSlot + targets.size(), 1, &depthSRV);
+            deviceContext.PSSetShaderResources(startSlot + GBUFFER_RENDER_TARGET_NUM, 1, &depthSRV);
             m_bBoundDepthAsShaderResource = bBindDepthStencil;
          }
 
@@ -148,7 +148,7 @@ namespace Mile
             ID3D11ShaderResourceView* nullSRV = nullptr;
             Texture2dDX11* positionTexture = m_positionBuffer->GetTexture();
             unsigned int startSlot = positionTexture->GetBoundSlot();
-            deviceContext.PSSetShaderResources(startSlot + 5, 1, &nullSRV);
+            deviceContext.PSSetShaderResources(startSlot + GBUFFER_RENDER_TARGET_NUM, 1, &nullSRV);
             m_bBoundDepthAsShaderResource = false;
          }
       }

@@ -12,7 +12,7 @@ namespace Mile
    {
    }
 
-   bool Texture2dDX11::Init(unsigned int width, unsigned int height, int channels, unsigned char* data, DXGI_FORMAT format)
+   bool Texture2dDX11::Init(unsigned int width, unsigned int height, unsigned int channels, unsigned char* data, DXGI_FORMAT format)
    {
       if (RenderObject::IsInitializable())
       {
@@ -33,7 +33,7 @@ namespace Mile
          desc.MiscFlags = 0;
          desc.CPUAccessFlags = 0;
 
-         size_t bytePerChannel = sizeof(unsigned char);
+         unsigned int bytePerChannel = sizeof(unsigned char);
          switch (format)
          {
          case DXGI_FORMAT_R32G32B32A32_FLOAT:

@@ -9,7 +9,7 @@ namespace Mile
       Texture2dDX11(RendererDX11* renderer);
       ~Texture2dDX11();
 
-      bool Init(unsigned int width, unsigned int height, int channels, unsigned char* data, DXGI_FORMAT format);
+      bool Init(unsigned int width, unsigned int height, unsigned int channels, unsigned char* data, DXGI_FORMAT format);
       bool Init(ID3D11Texture2D* texture);
 
    };
