@@ -22,11 +22,18 @@ struct PSInput
 /* Constant Buffers (Pixel Shader) */
 cbuffer ExtractPrams : register(b0)
 {
-	float3 Threshold;
+	float DepthThreshold;
+	float Threshold;
 };
 
 /* Textures & Samplers */
-Texture2D renderBuffer					: register(t0);
+Texture2D posBuffer						: register(t0);
+Texture2D albedoBuffer					: register(t1);
+Texture2D emissiveAOBuffer				: register(t2);
+Texture2D normalBuffer					: register(t3);
+Texture2D metallicRoughnessBuffer	: register(t4);
+Texture2D depthBuffer					: register(t5);
+Texture2D renderBuffer					: register(t6);
 SamplerState Sampler						: register(s0);
 
 VSOutput MileVS(in VSInput input)
@@ -40,11 +47,15 @@ VSOutput MileVS(in VSInput input)
 float4 MilePS(in PSInput input) : SV_Target0
 {
 	float3 result = 0.0f;
-	float3 color = renderBuffer.Sample(Sampler, input.TexCoord);
-	float brightness = dot(color, Threshold);
-	if (brightness > 1.0f)
+	float depth = depthBuffer.Sample(Sampler, input.TexCoord);
+	if (depth <= DepthThreshold)
 	{
-		result = color;
+		float3 color = renderBuffer.Sample(Sampler, input.TexCoord);
+		float brightness = dot(color, color);
+		if (brightness > Threshold)
+		{
+			result = color;
+		}
 	}
 
 	return float4(result, 1.0f);

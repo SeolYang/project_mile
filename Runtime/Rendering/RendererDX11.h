@@ -112,8 +112,8 @@ namespace Mile
       void SetGaussianBloomIntensity(float intensity) { m_gaussianBloomIntensity = intensity; }
       float GetGaussianBloomIntensity() const { return m_gaussianBloomIntensity; }
 
-      void SetGaussianBloomThreshold(Vector3 threshold) { m_gaussianBloomThreshold = threshold; }
-      Vector3 GetGaussianBloomThreshold() const { return m_gaussianBloomThreshold; }
+      void SetGaussianBloomThreshold(float threshold) { m_gaussianBloomThreshold = threshold; }
+      float GetGaussianBloomThreshold() const { return m_gaussianBloomThreshold; }
 
    private:
       /* Initialization methods **/
@@ -137,7 +137,7 @@ namespace Mile
       ID3D11CommandList* RunLightingPass(ID3D11DeviceContext* deviceContextPtr);
 
       /* Post-Process **/
-      RenderTargetDX11* ExtractBrightness(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer, const Vector3& threshold);
+      RenderTargetDX11* ExtractBrightness(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, RenderTargetDX11* renderBuffer, float depthThreshold, float threshold);
       RenderTargetDX11* GaussianBlur(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer, unsigned int gaussianAmount);
       RenderTargetDX11* Bloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer);
       RenderTargetDX11* BoxBloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer);
@@ -233,7 +233,7 @@ namespace Mile
 
       float        m_gaussianBloomIntensity;
       unsigned int m_gaussianBloomAmount;
-      Vector3      m_gaussianBloomThreshold;
+      float        m_gaussianBloomThreshold;
       ExtractBrightnessPass* m_extractBrightnessPass;
       GaussianBlurPass*      m_gaussianBlurPass;
 

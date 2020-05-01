@@ -10,7 +10,7 @@ namespace Mile
    {
       DEFINE_CONSTANT_BUFFER(BlurParameters)
       {
-         bool Horizontal;
+         unsigned int Horizontal;
       };
 
    public:

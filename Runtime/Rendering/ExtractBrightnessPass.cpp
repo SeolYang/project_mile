@@ -3,11 +3,13 @@
 #include "Rendering/DepthStencilBufferDX11.h"
 #include "Rendering/PixelShaderDX11.h"
 #include "Rendering/ConstantBufferDX11.h"
+#include "Rendering/GBuffer.h"
 
 namespace Mile
 {
    ExtractBrightnessPass::ExtractBrightnessPass(RendererDX11* renderer) :
       m_depthStencilBuffer(nullptr),
+      m_boundGBuffer(nullptr),
       m_boundHdrBuffer(nullptr),
       m_outputHDRBuffer(nullptr),
       m_params(nullptr),
@@ -60,17 +62,19 @@ namespace Mile
       return false;
    }
 
-   bool ExtractBrightnessPass::Bind(ID3D11DeviceContext& deviceContext, RenderTargetDX11* hdrBuffer)
+   bool ExtractBrightnessPass::Bind(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, RenderTargetDX11* hdrBuffer)
    {
-      bool bIsValidParams = hdrBuffer != nullptr;
+      bool bIsValidParams = hdrBuffer != nullptr && gBuffer != nullptr;
       if (bIsValidParams && RenderingPass::Bind(deviceContext))
       {
          bool bSuccess =
-            hdrBuffer->BindAsShaderResource(deviceContext, 0, EShaderType::PixelShader) &&
+            gBuffer->BindAsShaderResource(deviceContext, 0, true) &&
+            hdrBuffer->BindAsShaderResource(deviceContext, 6, EShaderType::PixelShader) &&
             m_outputHDRBuffer->BindAsRenderTarget(deviceContext) &&
             m_params->Bind(deviceContext, 0, EShaderType::PixelShader);
          if (bSuccess)
          {
+            m_boundGBuffer = gBuffer;
             m_boundHdrBuffer = hdrBuffer;
             return true;
          }
@@ -84,7 +88,18 @@ namespace Mile
    {
       if (RenderingPass::IsBindable())
       {
-         m_boundHdrBuffer->UnbindShaderResource(deviceContext);
+         if (m_boundGBuffer != nullptr)
+         {
+            m_boundGBuffer->UnbindShaderResource(deviceContext);
+            m_boundGBuffer = nullptr;
+         }
+
+         if (m_boundHdrBuffer != nullptr)
+         {
+            m_boundHdrBuffer->UnbindShaderResource(deviceContext);
+            m_boundHdrBuffer = nullptr;
+         }
+
          m_outputHDRBuffer->UnbindRenderTarget(deviceContext);
          m_params->Unbind(deviceContext);
          RenderingPass::Unbind(deviceContext);

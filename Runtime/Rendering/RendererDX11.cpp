@@ -76,7 +76,7 @@ namespace Mile
       m_boxBloomPass(nullptr),
       m_gaussianBloomIntensity(DEFAULT_GAUSSIAN_BLOOM_INTENSITY),
       m_gaussianBloomAmount(DEFAULT_GAUSSIAN_BLOOM_AMOUNT),
-      m_gaussianBloomThreshold({ 0.2126f, 0.7152f, 0.0722f }),
+      m_gaussianBloomThreshold(0.8f),
       m_extractBrightnessPass(nullptr),
       m_gaussianBlurPass(nullptr),
       m_blendingPass(nullptr),
@@ -644,15 +644,9 @@ namespace Mile
                GetRenderContextByType(ERenderContextType::LightingPass));
             auto lightingPassTask = threadPool->AddTask(lightingPassBinder);
 
-            auto postProcessBinder = std::bind(
-               &RendererDX11::RunPostProcessPass,
-               this,
-               GetRenderContextByType(ERenderContextType::PostProcessPass));
-            auto postProcessTask = threadPool->AddTask(postProcessBinder);
-
             ID3D11CommandList* geometryPassCmdList = geometryPassTask.get();
             ID3D11CommandList* lightingPassCmdList = lightingPassTask.get();
-            ID3D11CommandList* postProcessCmdList = postProcessTask.get();
+            ID3D11CommandList* postProcessCmdList = RunPostProcessPass(GetRenderContextByType(ERenderContextType::PostProcessPass));
 
             SAFE_EXECUTE_CMDLIST(m_immediateContext, geometryPassCmdList, false);
             SAFE_EXECUTE_CMDLIST(m_immediateContext, lightingPassCmdList, false);
@@ -999,16 +993,16 @@ namespace Mile
       return nullptr;
    }
 
-   RenderTargetDX11* RendererDX11::ExtractBrightness(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer, const Vector3& threshold)
+   RenderTargetDX11* RendererDX11::ExtractBrightness(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, RenderTargetDX11* renderBuffer, float depthThreshold, float threshold)
    {
-      if (m_extractBrightnessPass->Bind(deviceContext, renderBuffer))
+      if (m_extractBrightnessPass->Bind(deviceContext, gBuffer, renderBuffer))
       {
          m_depthDisable->Bind(deviceContext);
          m_viewport->Bind(deviceContext);
          m_defaultRasterizerState->Bind(deviceContext);
          m_screenQuad->Bind(deviceContext, 0);
 
-         m_extractBrightnessPass->UpdateParameters(deviceContext, { threshold });
+         m_extractBrightnessPass->UpdateParameters(deviceContext, { depthThreshold, threshold });
          deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
 
          m_extractBrightnessPass->Unbind(deviceContext);
@@ -1035,7 +1029,7 @@ namespace Mile
                m_gaussianBlurPass->SwapBuffers(deviceContext, bHorizontal);
             }
 
-            m_gaussianBlurPass->UpdateParameters(deviceContext, { bHorizontal });
+            m_gaussianBlurPass->UpdateParameters(deviceContext, { static_cast<unsigned int>( bHorizontal ? 1 : 0 ) });
             deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
 
             bHorizontal = !bHorizontal;
@@ -1087,7 +1081,7 @@ namespace Mile
 
    RenderTargetDX11* RendererDX11::GaussianBloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer)
    {
-      RenderTargetDX11* extractedBrightness = ExtractBrightness(deviceContext, renderBuffer, m_gaussianBloomThreshold);
+      RenderTargetDX11* extractedBrightness = ExtractBrightness(deviceContext, m_gBuffer, renderBuffer, 0.9999f, m_gaussianBloomThreshold);
       RenderTargetDX11* blurredExtractedBrightness = GaussianBlur(deviceContext, extractedBrightness, m_gaussianBloomAmount);
       return Blending(deviceContext, blurredExtractedBrightness, renderBuffer, m_gaussianBloomIntensity, 1.0f);
    }

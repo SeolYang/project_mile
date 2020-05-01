@@ -22,7 +22,7 @@ struct PSInput
 /* Constant Buffers (Pixel Shader) */
 cbuffer BloomParams : register(b0)
 {
-	bool  Horizontal;
+	unsigned int  Horizontal;
 };
 
 /* Textures & Samplers */
@@ -51,7 +51,7 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float3 color = renderBuffer.Sample(Sampler, input.TexCoord).rgb;
 	float3 result = color * ((HorizontalWeights[0] + VerticalWeights[1]) / 2.0f);
 
-	if (Horizontal)
+	if (Horizontal == 0)
 	{
 		for (int x = 1; x < 5; ++x)
 		{

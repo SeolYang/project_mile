@@ -7,11 +7,13 @@ namespace Mile
    class BlendState;
    class RenderTargetDX11;
    class DepthStencilBufferDX11;
+   class GBuffer;
    class MEAPI ExtractBrightnessPass : public RenderingPass
    {
       DEFINE_CONSTANT_BUFFER(ExtractParams)
       {
-         Vector3 Threshold;
+         float DepthThreshold;
+         float Threshold;
       };
 
    public:
@@ -19,7 +21,7 @@ namespace Mile
       ~ExtractBrightnessPass();
 
       bool Init(unsigned int width, unsigned int height);
-      bool Bind(ID3D11DeviceContext& deviceContext, RenderTargetDX11* hdrBuffer);
+      bool Bind(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, RenderTargetDX11* hdrBuffer);
       virtual void Unbind(ID3D11DeviceContext& deviceContext) override;
 
       void UpdateParameters(ID3D11DeviceContext& deviceContext, ExtractParams buffer);
@@ -28,6 +30,7 @@ namespace Mile
 
    private:
       DepthStencilBufferDX11* m_depthStencilBuffer;
+      GBuffer* m_boundGBuffer;
       RenderTargetDX11* m_boundHdrBuffer;
       RenderTargetDX11* m_outputHDRBuffer;
       CBufferPtr m_params;

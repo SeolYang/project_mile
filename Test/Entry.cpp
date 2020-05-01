@@ -130,9 +130,9 @@ int main( )
       renderer->SetGammaFactor(DEFAULT_GAMMA_FACTOR);
       renderer->SetExposure(1.0f);
       renderer->SetBloomType(EBloomType::Gaussian);
-      renderer->SetGaussianBloomAmount(8);
-      renderer->SetGaussianBloomIntensity(1.0f);
-      renderer->SetGaussianBloomThreshold(Vector3(0.5f, 0.5f, 0.5f));
+      renderer->SetGaussianBloomAmount(6);
+      renderer->SetGaussianBloomIntensity(0.7f);
+      renderer->SetGaussianBloomThreshold(0.8f);
       execute = engine->Execute();
    }
 
