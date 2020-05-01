@@ -48,7 +48,7 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float2 texSize = float2(float(width), float(height));
 	float2 texOffset = 1.0f / texSize;
 	float3 color = renderBuffer.Sample(Sampler, input.TexCoord).rgb;
-	float3 result = color * ((HorizontalWeights[0] + VerticalWeights[1]) / 2.0f);
+	float3 result = color * weights[0];
 
 	if (Horizontal == 0)
 	{
