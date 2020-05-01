@@ -15,9 +15,10 @@ namespace Mile
       bool Init(unsigned int width, unsigned int height);
 
       void SetDepthStencilBuffer(DepthStencilBufferDX11* buffer) { this->m_depthStencilBuffer = buffer; }
+      DepthStencilBufferDX11* GetDepthStencilBufferDX11() const { return this->m_depthStencilBuffer; }
 
       bool BindAsRenderTarget(ID3D11DeviceContext& deviceContext);
-      bool BindAsShaderResource(ID3D11DeviceContext& deviceContext, unsigned int startSlot);
+      bool BindAsShaderResource(ID3D11DeviceContext& deviceContext, unsigned int startSlot, bool bBindDepthStencil = false);
       void UnbindRenderTarget(ID3D11DeviceContext& deviceContext);
       void UnbindShaderResource(ID3D11DeviceContext& deviceContext);
 
@@ -29,6 +30,7 @@ namespace Mile
       RenderTargetDX11* m_normalBuffer;
       RenderTargetDX11* m_metallicRoughnessBuffer;
       BlendState*       m_blendState;
+      bool m_bBoundDepthAsShaderResource;
 
    };
 }

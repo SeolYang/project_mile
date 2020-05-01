@@ -1,6 +1,7 @@
 #include "Rendering/GBuffer.h"
 #include "Rendering/RenderTargetDX11.h"
 #include "Rendering/DepthStencilBufferDX11.h"
+#include "Rendering/Texture2dDX11.h"
 #include "Rendering/BlendState.h"
 
 constexpr size_t GBUFFER_RENDER_TARGET_NUM = 5;
@@ -15,6 +16,7 @@ namespace Mile
       m_normalBuffer(nullptr),
       m_metallicRoughnessBuffer(nullptr),
       m_blendState(nullptr),
+      m_bBoundDepthAsShaderResource(false),
       RenderObject(renderer)
    {
    }
@@ -99,7 +101,7 @@ namespace Mile
       return false;
    }
 
-   bool GBuffer::BindAsShaderResource(ID3D11DeviceContext& deviceContext, unsigned int startSlot)
+   bool GBuffer::BindAsShaderResource(ID3D11DeviceContext& deviceContext, unsigned int startSlot, bool bBindDepthStencil)
    {
       if (RenderObject::IsBindable())
       {
@@ -112,7 +114,17 @@ namespace Mile
 
          for (unsigned int idx = 0; idx < targets.size(); ++idx)
          {
-            targets[idx]->BindAsShaderResource(deviceContext, startSlot + idx, EShaderType::PixelShader);
+            if (!targets[idx]->BindAsShaderResource(deviceContext, startSlot + idx, EShaderType::PixelShader))
+            {
+               return false;
+            }
+         }
+
+         if (bBindDepthStencil)
+         {
+            ID3D11ShaderResourceView* depthSRV = m_depthStencilBuffer->GetSRV();
+            deviceContext.PSSetShaderResources(startSlot + targets.size(), 1, &depthSRV);
+            m_bBoundDepthAsShaderResource = bBindDepthStencil;
          }
 
          return true;
@@ -131,15 +143,14 @@ namespace Mile
          m_normalBuffer->UnbindShaderResource(deviceContext);
          m_metallicRoughnessBuffer->UnbindShaderResource(deviceContext);
 
-         std::array<ID3D11RenderTargetView*, GBUFFER_RENDER_TARGET_NUM> targets{
-            nullptr,
-            nullptr,
-            nullptr,
-            nullptr,
-            nullptr
-         };
-
-         deviceContext.OMSetRenderTargets(GBUFFER_RENDER_TARGET_NUM, targets.data(), nullptr);
+         if (m_bBoundDepthAsShaderResource)
+         {
+            ID3D11ShaderResourceView* nullSRV = nullptr;
+            Texture2dDX11* positionTexture = m_positionBuffer->GetTexture();
+            unsigned int startSlot = positionTexture->GetBoundSlot();
+            deviceContext.PSSetShaderResources(startSlot + 5, 1, &nullSRV);
+            m_bBoundDepthAsShaderResource = false;
+         }
       }
    }
 
