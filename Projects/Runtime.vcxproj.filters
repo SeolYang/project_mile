@@ -546,6 +546,9 @@
     <ClInclude Include="..\Runtime\Rendering\GaussianBlurPass.h">
       <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\ExtractBrightnessPass.h">
+      <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -740,6 +743,9 @@
     <ClCompile Include="..\Runtime\Rendering\GaussianBlurPass.cpp">
       <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
     </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\ExtractBrightnessPass.cpp">
+      <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Contents\Shaders\LightingPass.hlsl">
@@ -788,6 +794,9 @@
       <Filter>Shaders\Post-Process</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\GaussianBlur.hlsl">
+      <Filter>Shaders\Post-Process</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\ExtractBrightness.hlsl">
       <Filter>Shaders\Post-Process</Filter>
     </FxCompile>
   </ItemGroup>

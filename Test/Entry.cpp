@@ -131,7 +131,8 @@ int main( )
       renderer->SetExposure(1.0f);
       renderer->SetBloomType(EBloomType::Gaussian);
       renderer->SetGaussianBloomAmount(8);
-      renderer->SetGaussianBloomIntensity(0.8f);
+      renderer->SetGaussianBloomIntensity(1.0f);
+      renderer->SetGaussianBloomThreshold(Vector3(0.5f, 0.5f, 0.5f));
       execute = engine->Execute();
    }
 

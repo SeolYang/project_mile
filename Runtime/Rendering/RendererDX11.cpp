@@ -20,6 +20,7 @@
 #include "Rendering/AmbientEmissivePass.h"
 #include "Rendering/SkyboxPass.h"
 #include "Rendering/BoxBloomPass.h"
+#include "Rendering/ExtractBrightnessPass.h"
 #include "Rendering/GaussianBlurPass.h"
 #include "Rendering/BlendingPass.h"
 #include "Rendering/ToneMappingPass.h"
@@ -75,6 +76,8 @@ namespace Mile
       m_boxBloomPass(nullptr),
       m_gaussianBloomIntensity(DEFAULT_GAUSSIAN_BLOOM_INTENSITY),
       m_gaussianBloomAmount(DEFAULT_GAUSSIAN_BLOOM_AMOUNT),
+      m_gaussianBloomThreshold({ 0.2126f, 0.7152f, 0.0722f }),
+      m_extractBrightnessPass(nullptr),
       m_gaussianBlurPass(nullptr),
       m_blendingPass(nullptr),
       m_toneMappingPass(nullptr),
@@ -284,6 +287,18 @@ namespace Mile
          return false;
       }
 
+      m_extractBrightnessPass = new ExtractBrightnessPass(this);
+      if (!m_extractBrightnessPass->Init(
+         static_cast<unsigned int>(screenRes.x),
+         static_cast<unsigned int>(screenRes.y)))
+      {
+         MELog(m_context,
+            TEXT("RendererDX11"),
+            ELogType::FATAL,
+            TEXT("Failed to create Extract brightness pass."), true);
+         return false;
+      }
+
       m_gaussianBlurPass = new GaussianBlurPass(this);
       if (!m_gaussianBlurPass->Init(
          static_cast<unsigned int>(screenRes.x),
@@ -403,13 +418,13 @@ namespace Mile
    {
       if (m_bIsInitialized)
       {
+         SafeDelete(m_viewport);
          SafeDelete(m_depthDisable);
          SafeDelete(m_depthLessEqual);
-         SafeDelete(m_viewport);
          SafeDelete(m_additiveBlendState);
          SafeDelete(m_defaultBlendState);
-         SafeDelete(m_noCulling);
          SafeDelete(m_defaultRasterizerState);
+         SafeDelete(m_noCulling);
          SafeDelete(m_screenQuad);
          SafeDelete(m_cubeMesh);
          SafeDelete(m_equirectToCubemapPass);
@@ -424,6 +439,7 @@ namespace Mile
          SafeDelete(m_skyboxPass);
          SafeDelete(m_toneMappingPass);
          SafeDelete(m_boxBloomPass);
+         SafeDelete(m_extractBrightnessPass);
          SafeDelete(m_gaussianBlurPass);
          SafeDelete(m_blendingPass);
          SafeDelete(m_gBuffer);
@@ -983,6 +999,25 @@ namespace Mile
       return nullptr;
    }
 
+   RenderTargetDX11* RendererDX11::ExtractBrightness(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer, const Vector3& threshold)
+   {
+      if (m_extractBrightnessPass->Bind(deviceContext, renderBuffer))
+      {
+         m_depthDisable->Bind(deviceContext);
+         m_viewport->Bind(deviceContext);
+         m_defaultRasterizerState->Bind(deviceContext);
+         m_screenQuad->Bind(deviceContext, 0);
+
+         m_extractBrightnessPass->UpdateParameters(deviceContext, { threshold });
+         deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
+
+         m_extractBrightnessPass->Unbind(deviceContext);
+         return m_extractBrightnessPass->GetOutputBuffer();
+      }
+
+      return renderBuffer;
+   }
+
    RenderTargetDX11* RendererDX11::GaussianBlur(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer, unsigned int gaussianAmount)
    {
       if (m_gaussianBlurPass->Bind(deviceContext, renderBuffer))
@@ -1052,8 +1087,9 @@ namespace Mile
 
    RenderTargetDX11* RendererDX11::GaussianBloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer)
    {
-      RenderTargetDX11* blurredRenderBuffer = GaussianBlur(deviceContext, renderBuffer, m_gaussianBloomAmount);
-      return Blending(deviceContext, blurredRenderBuffer, renderBuffer, m_gaussianBloomIntensity, 1.0f);
+      RenderTargetDX11* extractedBrightness = ExtractBrightness(deviceContext, renderBuffer, m_gaussianBloomThreshold);
+      RenderTargetDX11* blurredExtractedBrightness = GaussianBlur(deviceContext, extractedBrightness, m_gaussianBloomAmount);
+      return Blending(deviceContext, blurredExtractedBrightness, renderBuffer, m_gaussianBloomIntensity, 1.0f);
    }
 
    RenderTargetDX11* RendererDX11::Blending(ID3D11DeviceContext& deviceContext, RenderTargetDX11* srcBuffer, RenderTargetDX11* destBuffer, float srcRatio, float destRatio)
