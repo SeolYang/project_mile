@@ -8,6 +8,7 @@
 namespace Mile
 {
    Material::Material(Context* context, const String& filePath) :
+      m_materialType(EMaterialType::Opaque),
       m_baseColor(nullptr),
       m_emissive(nullptr),
       m_metallicRoughness(nullptr),
@@ -183,6 +184,8 @@ namespace Mile
    {
       json serialized = Resource::Serialize();
 
+      serialized["Type"] = static_cast<unsigned int>(m_materialType);
+
       serialized["BaseColor"] = WString2String(m_baseColor->GetPath());
       serialized["BaseColorFactor"] = m_baseColorFactor.Serialize();
 
@@ -209,6 +212,11 @@ namespace Mile
          MELog(m_context, TEXT("Material"), ELogType::FATAL, TEXT("Couldn't load ResourceManager."), true);
          return;
       }
+
+      auto foundValue = jsonData.find("Type");
+      SetMaterialType(
+         foundValue != jsonData.end() ?
+         static_cast<EMaterialType>((unsigned int)*foundValue) : EMaterialType::Opaque);
 
       SetTexture2D(MaterialTextureProperty::BaseColor,
          resMng->Load<Texture2D>(String2WString(jsonData["BaseColor"])));

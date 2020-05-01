@@ -22,6 +22,13 @@ namespace Mile
       Roughness,
    };
 
+   enum class EMaterialType : unsigned int
+   {
+      Opaque = 0,
+      Translucent,
+      Water
+   };
+
    class Texture2D;
    class MEAPI Material : public Resource
    {
@@ -39,18 +46,22 @@ namespace Mile
       float GetScalarFactor(MaterialFactorProperty prop) const;
       Vector4 GetVector4Factor(MaterialFactorProperty prop) const;
 
+      void SetMaterialType(EMaterialType type) { m_materialType = type; }
+      EMaterialType GetMaterialType() const { return m_materialType; }
+
       virtual json Serialize() const override;
       virtual void DeSerialize(const json& jsonData) override;
 
    private:
+      EMaterialType m_materialType;
       Texture2D* m_baseColor;
       Texture2D* m_emissive;
       Texture2D* m_metallicRoughness;
       Texture2D* m_ao;
       Texture2D* m_normal;
 
-      Vector4		m_baseColorFactor;
-      Vector4		m_emissiveFactor;
+      Vector4  m_baseColorFactor;
+      Vector4  m_emissiveFactor;
       float		m_metallicFactor;
       float		m_roughnessFactor;
 

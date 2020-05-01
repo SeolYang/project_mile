@@ -906,57 +906,67 @@ namespace Mile
          {
             /* 물리 기반 머테리얼 정보 취득 **/
             Material* material = batchedMaterial.first;
-            Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
-            Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
-            Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
-            Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
-            Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
-
-            Vector4 baseColorFactor = material->GetVector4Factor(MaterialFactorProperty::BaseColor);
-            Vector4 emissiveFactor = material->GetVector4Factor(MaterialFactorProperty::Emissive);
-            float metallicFactor = material->GetScalarFactor(MaterialFactorProperty::Metallic);
-            float roughnessFactor = material->GetScalarFactor(MaterialFactorProperty::Roughness);
-
-            m_geometryPass->UpdateMaterialBuffer(
-               deviceContext,
-               { baseColorFactor, emissiveFactor, metallicFactor, roughnessFactor });
-
-            SAFE_TEX_BIND(baseColorTex, deviceContext, 0, EShaderType::PixelShader);
-            SAFE_TEX_BIND(emissiveTex, deviceContext, 1, EShaderType::PixelShader);
-            SAFE_TEX_BIND(metallicRoughnessTex, deviceContext, 2, EShaderType::PixelShader);
-            SAFE_TEX_BIND(aoTex, deviceContext, 3, EShaderType::PixelShader);
-            SAFE_TEX_BIND(normalTex, deviceContext, 4, EShaderType::PixelShader);
-
-            for (auto meshRenderer : batchedMaterial.second)
+            if (material != nullptr)
             {
-               Transform* transform = meshRenderer->GetTransform();
-               Mesh* mesh = meshRenderer->GetMesh();
+               EMaterialType materialType = material->GetMaterialType();
+               switch (materialType)
+               {
+               case EMaterialType::Opaque:
+               default:
+                  Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
+                  Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
+                  Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
+                  Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
+                  Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
 
-               Matrix worldMatrix = transform->GetWorldMatrix();
-               Matrix viewMatrix = Matrix::CreateView(
-                  camTransform->GetPosition(TransformSpace::World),
-                  camTransform->GetForward(TransformSpace::World),
-                  camTransform->GetUp(TransformSpace::World));
-               Matrix projMatrix = Matrix::CreatePerspectiveProj(
-                  m_mainCamera->GetFov(),
-                  m_window->GetAspectRatio(),
-                  m_mainCamera->GetNearPlane(),
-                  m_mainCamera->GetFarPlane());
+                  Vector4 baseColorFactor = material->GetVector4Factor(MaterialFactorProperty::BaseColor);
+                  Vector4 emissiveFactor = material->GetVector4Factor(MaterialFactorProperty::Emissive);
+                  float metallicFactor = material->GetScalarFactor(MaterialFactorProperty::Metallic);
+                  float roughnessFactor = material->GetScalarFactor(MaterialFactorProperty::Roughness);
 
-               Matrix worldViewMatrix = worldMatrix * viewMatrix;
-               m_geometryPass->UpdateTransformBuffer(
-                  deviceContext,
-                  { worldMatrix, worldViewMatrix, worldViewMatrix * projMatrix });
+                  m_geometryPass->UpdateMaterialBuffer(
+                     deviceContext,
+                     { baseColorFactor, emissiveFactor, metallicFactor, roughnessFactor });
 
-               mesh->Bind(deviceContext, 0);
-               deviceContext.DrawIndexed(mesh->GetIndexCount(), 0, 0);
+                  SAFE_TEX_BIND(baseColorTex, deviceContext, 0, EShaderType::PixelShader);
+                  SAFE_TEX_BIND(emissiveTex, deviceContext, 1, EShaderType::PixelShader);
+                  SAFE_TEX_BIND(metallicRoughnessTex, deviceContext, 2, EShaderType::PixelShader);
+                  SAFE_TEX_BIND(aoTex, deviceContext, 3, EShaderType::PixelShader);
+                  SAFE_TEX_BIND(normalTex, deviceContext, 4, EShaderType::PixelShader);
+
+                  for (auto meshRenderer : batchedMaterial.second)
+                  {
+                     Transform* transform = meshRenderer->GetTransform();
+                     Mesh* mesh = meshRenderer->GetMesh();
+
+                     Matrix worldMatrix = transform->GetWorldMatrix();
+                     Matrix viewMatrix = Matrix::CreateView(
+                        camTransform->GetPosition(TransformSpace::World),
+                        camTransform->GetForward(TransformSpace::World),
+                        camTransform->GetUp(TransformSpace::World));
+                     Matrix projMatrix = Matrix::CreatePerspectiveProj(
+                        m_mainCamera->GetFov(),
+                        m_window->GetAspectRatio(),
+                        m_mainCamera->GetNearPlane(),
+                        m_mainCamera->GetFarPlane());
+
+                     Matrix worldViewMatrix = worldMatrix * viewMatrix;
+                     m_geometryPass->UpdateTransformBuffer(
+                        deviceContext,
+                        { worldMatrix, worldViewMatrix, worldViewMatrix * projMatrix });
+
+                     mesh->Bind(deviceContext, 0);
+                     deviceContext.DrawIndexed(mesh->GetIndexCount(), 0, 0);
+                  }
+
+                  SAFE_TEX_UNBIND(baseColorTex, deviceContext);
+                  SAFE_TEX_UNBIND(emissiveTex, deviceContext);
+                  SAFE_TEX_UNBIND(metallicRoughnessTex, deviceContext);
+                  SAFE_TEX_UNBIND(aoTex, deviceContext);
+                  SAFE_TEX_UNBIND(normalTex, deviceContext);
+                  break;
+               }
             }
-
-            SAFE_TEX_UNBIND(baseColorTex, deviceContext);
-            SAFE_TEX_UNBIND(emissiveTex, deviceContext);
-            SAFE_TEX_UNBIND(metallicRoughnessTex, deviceContext);
-            SAFE_TEX_UNBIND(aoTex, deviceContext);
-            SAFE_TEX_UNBIND(normalTex, deviceContext);
          }
 
          m_geometryPass->Unbind(deviceContext);
