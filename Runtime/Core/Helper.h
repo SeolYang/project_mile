@@ -233,10 +233,17 @@ namespace Mile
       return TimeToWString(t);
    }
 
-   static String ToLower(const String & target)
+   static String ToLower(const String& target)
    {
       String temp = target;
       std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
       return temp;
+   }
+
+   template <typename Ty>
+   static Ty GetValueSafelyFromJson(const json& container, const std::string& key, const Ty& defaultValue = Ty())
+   {
+      auto foundValue = container.find(key);
+      return (foundValue != container.end()) ? (*foundValue) : defaultValue;
    }
 }
