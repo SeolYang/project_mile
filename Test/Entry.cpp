@@ -104,11 +104,11 @@ int main( )
 
       //world->GetComponentsFromEntities<Transform>(); // Transform은 Component를 상속하지 않기 때문에 컴파일되지 않는다.
 
-      //Texture2D* iceLakeHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Ice_Lake/Ice_Lake_Ref.hdr"));
-      //renderer->SetEquirectangularMap(iceLakeHDR);
+      Texture2D* iceLakeHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Ice_Lake/Ice_Lake_Ref.hdr"));
+      renderer->SetEquirectangularMap(iceLakeHDR);
 
-      Texture2D* helipadGoldenHourHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Helipad_GoldenHour/LA_Downtown_Helipad_GoldenHour_3k.hdr"));
-      renderer->SetEquirectangularMap(helipadGoldenHourHDR);
+      //Texture2D* helipadGoldenHourHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Helipad_GoldenHour/LA_Downtown_Helipad_GoldenHour_3k.hdr"));
+      //renderer->SetEquirectangularMap(helipadGoldenHourHDR);
 
       //Texture2D* newPortHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Newport_Loft/Newport_Loft_Ref.hdr"));
       //renderer->SetEquirectangularMap(newPortHDR);
@@ -131,7 +131,7 @@ int main( )
       renderer->SetExposure(1.0f);
       renderer->SetBloomType(EBloomType::Gaussian);
       renderer->SetGaussianBloomAmount(6);
-      renderer->SetGaussianBloomIntensity(0.7f);
+      renderer->SetGaussianBloomIntensity(1.2f);
       renderer->SetGaussianBloomThreshold(0.8f);
       execute = engine->Execute();
    }
