@@ -28,7 +28,8 @@ namespace Mile
        * @brief	깊이-스텐실 버퍼의 리소스 뷰를 반환 합니다.
        * @return Direct3D Depth-stencil buffer resource view
        */
-      ID3D11DepthStencilView* GetDSV() { return m_depthStencilView; }
+      ID3D11DepthStencilView* GetDSV() const { return m_depthStencilView; }
+      ID3D11ShaderResourceView* GetSRV() const { return m_srv; }
 
       /**
        * @brief	해당 버퍼가 스텐실이 활성화 된 상태로 초기화 되었는지 확인합니다.
@@ -39,6 +40,7 @@ namespace Mile
    private:
       ID3D11Texture2D*        m_depthStencilBuffer;
       ID3D11DepthStencilView* m_depthStencilView;
+      ID3D11ShaderResourceView* m_srv;
       bool m_bStencilEnabled;
 
    };
