@@ -49,12 +49,12 @@ int main( )
       mainLightComponent->SetRadiance(Vector3(200.0f, 200.0f, 200.0f));
       mainLightTransform->SetPosition(Vector3(-9.0f, 0.0f, -3.0f));
 
-      Entity* secondLight = world->CreateEntity(TEXT("Second Light"));
-      LightComponent* secondLightComponent = secondLight->AddComponent<LightComponent>();
-      Transform* secondLightTransform = secondLight->GetTransform();
-      secondLightComponent->SetLightType(ELightType::Point);
-      secondLightComponent->SetRadiance(Vector3(250.0f, 250.0f, 250.0f));
-      secondLightTransform->SetPosition(Vector3(0.0f, 7.0f, -3.0f));
+      //Entity* secondLight = world->CreateEntity(TEXT("Second Light"));
+      //LightComponent* secondLightComponent = secondLight->AddComponent<LightComponent>();
+      //Transform* secondLightTransform = secondLight->GetTransform();
+      //secondLightComponent->SetLightType(ELightType::Point);
+      //secondLightComponent->SetRadiance(Vector3(250.0f, 250.0f, 250.0f));
+      //secondLightTransform->SetPosition(Vector3(0.0f, 7.0f, -3.0f));
 
       Model* lanternModel = resMng->Load<Model>(TEXT("Contents/Models/Lantern/Lantern.gltf"));
       Entity* lantern = Model::Instantiate(lanternModel, world, TEXT("Lantern"));
@@ -126,7 +126,7 @@ int main( )
       //renderer->SetEquirectangularMap(snowMachineHDR);
       
       renderer->SetComputeIBLAsRealtime(false);
-      renderer->SetAmbientOcclusionFactor(0.7f);
+      renderer->SetAmbientOcclusionFactor(1.0f);
       renderer->SetGammaFactor(DEFAULT_GAMMA_FACTOR);
       renderer->SetExposure(1.0f);
       renderer->SetBloomType(EBloomType::Gaussian);
