@@ -76,7 +76,8 @@ namespace Mile
       m_boxBloomPass(nullptr),
       m_gaussianBloomIntensity(DEFAULT_GAUSSIAN_BLOOM_INTENSITY),
       m_gaussianBloomAmount(DEFAULT_GAUSSIAN_BLOOM_AMOUNT),
-      m_gaussianBloomThreshold(0.8f),
+      m_gaussianBloomThreshold(DEFAULT_GAUSSIAN_BLOOM_THRESHOLD),
+      m_gaussianBloomDepthThreshold(DEFAULT_GAUSSIAN_BLOOM_DEPTH_THRESHOLD),
       m_extractBrightnessPass(nullptr),
       m_gaussianBlurPass(nullptr),
       m_blendingPass(nullptr),
@@ -1081,7 +1082,7 @@ namespace Mile
 
    RenderTargetDX11* RendererDX11::GaussianBloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer)
    {
-      RenderTargetDX11* extractedBrightness = ExtractBrightness(deviceContext, m_gBuffer, renderBuffer, 0.9999f, m_gaussianBloomThreshold);
+      RenderTargetDX11* extractedBrightness = ExtractBrightness(deviceContext, m_gBuffer, renderBuffer, m_gaussianBloomDepthThreshold, m_gaussianBloomThreshold);
       RenderTargetDX11* blurredExtractedBrightness = GaussianBlur(deviceContext, extractedBrightness, m_gaussianBloomAmount);
       return Blending(deviceContext, blurredExtractedBrightness, renderBuffer, m_gaussianBloomIntensity, 1.0f);
    }

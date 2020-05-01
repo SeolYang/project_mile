@@ -33,6 +33,8 @@ namespace Mile
    constexpr float DEFAULT_AO_FACTOR = 0.6f;
    constexpr unsigned int DEFAULT_GAUSSIAN_BLOOM_AMOUNT = 4;
    constexpr float DEFAULT_GAUSSIAN_BLOOM_INTENSITY = 0.8f;
+   constexpr float DEFAULT_GAUSSIAN_BLOOM_THRESHOLD = 0.8f;
+   constexpr float DEFAULT_GAUSSIAN_BLOOM_DEPTH_THRESHOLD = 0.999f;
 
    class DepthStencilBufferDX11;
    class RenderTargetDX11;
@@ -114,6 +116,9 @@ namespace Mile
 
       void SetGaussianBloomThreshold(float threshold) { m_gaussianBloomThreshold = threshold; }
       float GetGaussianBloomThreshold() const { return m_gaussianBloomThreshold; }
+
+      void SetGaussianBloomDepthThreshold(float threshold) { m_gaussianBloomThreshold = threshold; }
+      float SetGaussianBloomDepthThreshold() const { return m_gaussianBloomDepthThreshold; }
 
    private:
       /* Initialization methods **/
@@ -234,6 +239,7 @@ namespace Mile
       float        m_gaussianBloomIntensity;
       unsigned int m_gaussianBloomAmount;
       float        m_gaussianBloomThreshold;
+      float        m_gaussianBloomDepthThreshold;
       ExtractBrightnessPass* m_extractBrightnessPass;
       GaussianBlurPass*      m_gaussianBlurPass;
 
