@@ -20,7 +20,7 @@ struct PSInput
 };
 
 /* Constant Buffers (Pixel Shader) */
-cbuffer ExtractPrams : register(b0)
+cbuffer ExtractParams : register(b0)
 {
 	float DepthThreshold;
 	float Threshold;
