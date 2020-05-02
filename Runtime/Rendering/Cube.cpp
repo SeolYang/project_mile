@@ -32,10 +32,10 @@ namespace Mile
          { Vector4(max.x, max.y, max.z, 1.0f), Vector2(1.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f) },
          { Vector4(max.x, max.y, min.z, 1.0f), Vector2(1.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f) },
 
-         { Vector4(min.x, min.y, min.z, 1.0f), Vector2(0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f) }, // lower-side face
-         { Vector4(min.x, min.y, max.z, 1.0f), Vector2(0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f) },
-         { Vector4(max.x, min.y, max.z, 1.0f), Vector2(1.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f) },
-         { Vector4(max.x, min.y, min.z, 1.0f), Vector2(1.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f) }
+         { Vector4(min.x, min.y, min.z, 1.0f), Vector2(0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f) }, // lower-side face
+         { Vector4(min.x, min.y, max.z, 1.0f), Vector2(0.0f, 1.0f), Vector3(0.0f, -1.0f, 0.0f) },
+         { Vector4(max.x, min.y, max.z, 1.0f), Vector2(1.0f, 1.0f), Vector3(0.0f, -1.0f, 0.0f) },
+         { Vector4(max.x, min.y, min.z, 1.0f), Vector2(1.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f) }
       };
 
       std::vector<UINT32> indices = {
@@ -54,8 +54,8 @@ namespace Mile
          16, 17, 18,
          16, 18, 19,
 
-         20, 21, 22,
-         20, 22, 23,
+         22, 21, 20,
+         23, 22, 20,
       };
 
       return Mesh::Init<VertexPTN>(vertices, indices);
