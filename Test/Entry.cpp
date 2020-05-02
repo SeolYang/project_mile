@@ -86,13 +86,14 @@ int main( )
       cubeTransform->SetPosition(Vector3(3.5f, 0.0f, 0.0f));
       cubeTransform->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
+      Material* planeMaterial = resMng->Load<Material>(TEXT("Contents/Materials/RoughMetal.material"));
       Quad* quadMesh = new Quad(renderer);
       quadMesh->Init(-1.0f, -1.0f, 1.0f, 1.0f);
       Entity* plane = world->CreateEntity(TEXT("Plane"));
       Transform* planeTransform = plane->GetTransform();
       MeshRenderComponent* planeRenderComponent = plane->AddComponent<MeshRenderComponent>();
       planeRenderComponent->SetMesh(quadMesh);
-      planeRenderComponent->SetMaterial(cubeMaterial);
+      planeRenderComponent->SetMaterial(planeMaterial);
       planeTransform->SetPosition(Vector3(0.0f, -6.0f, 0.0f));
       planeTransform->SetRotation(Quaternion(-90.0f, Vector3(1.0f, 0.0f, 0.0f)));
       planeTransform->SetScale(Vector3(30.0f, 30.0f, 30.0f));

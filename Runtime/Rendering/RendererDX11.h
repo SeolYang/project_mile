@@ -24,8 +24,8 @@ namespace Mile
    constexpr size_t REQUIRED_RENDERCONTEXT_NUM = (size_t)ERenderContextType::EnumSize - 1;
    constexpr unsigned int DYNAMIC_CUBEMAP_SIZE = 512;
    constexpr unsigned int IRRADIANCEMAP_SIZE = 32;
-   constexpr unsigned int PREFILTERED_CUBEMAP_SIZE = 128;
-   constexpr unsigned int PREFILTERED_CUBEMAP_MAX_MIPLEVELS = 4 + 1;
+   constexpr unsigned int PREFILTERED_CUBEMAP_SIZE = 512;
+   constexpr unsigned int PREFILTERED_CUBEMAP_MAX_MIPLEVELS = 6 + 1;
    constexpr float DEFAULT_EXPOSURE_FACTOR = 1.0f;
    constexpr float DISABLE_TONE_MAPPING = -1.0f;
    constexpr float DEFAULT_GAMMA_FACTOR = 2.2f;
