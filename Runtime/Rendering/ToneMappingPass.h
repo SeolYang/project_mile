@@ -1,5 +1,6 @@
 #pragma once
 #include "Rendering/RenderingPass.h"
+#include "Math/Vector2.h"
 #include "Math/Vector3.h"
 
 namespace Mile
@@ -12,6 +13,11 @@ namespace Mile
       {
          float ExposureFactor = 0.4f;
          float GammaFactor = 2.2f;
+      };
+
+      DEFINE_CONSTANT_BUFFER(PackedToneMappingParams)
+      {
+         Vector2 Factors;
       };
 
    public:

@@ -1,5 +1,6 @@
 #pragma once
 #include "Rendering/RenderingPass.h"
+#include "Math/Vector2.h"
 
 namespace Mile
 {
@@ -12,6 +13,11 @@ namespace Mile
       {
          float SrcRatio = 1.0f;
          float DestRatio = 1.0f;
+      };
+
+      DEFINE_CONSTANT_BUFFER(PackedBlendingParams)
+      {
+         Vector2 Ratios;
       };
 
    public:

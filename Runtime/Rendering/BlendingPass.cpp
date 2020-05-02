@@ -31,7 +31,7 @@ namespace Mile
          RendererDX11* renderer = GetRenderer();
 
          m_params = new ConstantBufferDX11(renderer);
-         if (!m_params->Init<BlendingParams>())
+         if (!m_params->Init<PackedBlendingParams>())
          {
             return false;
          }
@@ -99,7 +99,7 @@ namespace Mile
    {
       if (m_params != nullptr)
       {
-         m_params->Update(deviceContext, buffer);
+         m_params->Update(deviceContext, PackedBlendingParams{ Vector2(buffer.SrcRatio, buffer.DestRatio) });
       }
    }
 }

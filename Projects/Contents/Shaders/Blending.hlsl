@@ -22,8 +22,8 @@ struct PSInput
 /* Constant Buffers (Pixel Shader) */
 cbuffer BlendingParams : register(b0)
 {
-	float SrcRatio;
-	float DestRatio;
+	float SrcRatio		: packoffset(c0);
+	float DestRatio	: packoffset(c0.y);
 };
 
 /* Textures & Samplers */

@@ -24,7 +24,7 @@ namespace Mile
          RendererDX11* renderer = GetRenderer();
 
          m_params = new ConstantBufferDX11(renderer);
-         if (!m_params->Init<ToneMappingParams>())
+         if (!m_params->Init<PackedToneMappingParams>())
          {
             return false;
          }
@@ -75,7 +75,7 @@ namespace Mile
    {
       if (m_params != nullptr)
       {
-         m_params->Update(deviceContext, buffer);
+         m_params->Update(deviceContext, PackedToneMappingParams{ Vector2(buffer.ExposureFactor, buffer.GammaFactor) });
       }
    }
 }

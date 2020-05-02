@@ -25,6 +25,13 @@ namespace Mile
          Vector2 UVOffset;
       };
 
+      DEFINE_CONSTANT_BUFFER(PackedMaterialParams)
+      {
+         Vector4 BaseColorFactor;
+         Vector4 EmissiveColorFactor;
+         Vector4 metallicRoughnessUV;
+      };
+
    public:
       GeometryPass(RendererDX11* renderer);
       ~GeometryPass();

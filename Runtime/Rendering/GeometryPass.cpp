@@ -32,7 +32,7 @@ namespace Mile
          }
 
          m_materialBuffer = new ConstantBufferDX11(renderer);
-         if (!m_materialBuffer->Init(sizeof(MaterialConstantBuffer)))
+         if (!m_materialBuffer->Init<PackedMaterialParams>())
          {
             return false;
          }
@@ -103,7 +103,7 @@ namespace Mile
    {
       if (m_materialBuffer != nullptr)
       {
-         m_materialBuffer->Update(deviceContext, buffer);
+         m_materialBuffer->Update(deviceContext, PackedMaterialParams{ buffer.BaseColorFactor, buffer.EmissiveColorFactor, Vector4(buffer.metallicFactor, buffer.roughnessFactor, buffer.UVOffset.x, buffer.UVOffset.y) });
       }
    }
 }

@@ -23,8 +23,8 @@ struct PSInput
 /* Constant Buffers (Pixel Shader) */
 cbuffer ToneMappingParams : register(b0)
 {
-	float ExposureFactor;
-	float GammaFactor;
+	float ExposureFactor	: packoffset(c0);
+	float GammaFactor		: packoffset(c0.y);
 };
 
 /* Textures & Samplers */

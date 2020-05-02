@@ -46,7 +46,7 @@ Texture2D emissiveMap				: register(t1);
 Texture2D metallicRoughnessMap	: register(t2);
 Texture2D aoMap						: register(t3);
 Texture2D normalMap					: register(t4);
-SamplerState Sampler			: register(s0);
+SamplerState Sampler					: register(s0);
 
 /* Constant Buffers (Vertex Shader) */
 cbuffer TransformBuffer
@@ -59,11 +59,11 @@ cbuffer TransformBuffer
 /* Constant Buffers (Pixel Shader) */
 cbuffer MaterialBuffer
 {
-	float4	baseColorFactor;
-	float4	emissiveFactor;
-	float		metallicFactor;
-	float		roughnessFactor;
-	float2	uvOffset;
+	float4	baseColorFactor	: packoffset(c0);
+	float4	emissiveFactor		: packoffset(c1);
+	float		metallicFactor		: packoffset(c2);
+	float		roughnessFactor	: packoffset(c2.y);
+	float2	uvOffset				: packoffset(c2.z);
 }
 
 /* Shader Programs */
