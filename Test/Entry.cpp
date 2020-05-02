@@ -12,6 +12,7 @@
 #include "Resource/Material.h"
 #include "Resource/Texture2D.h"
 #include "Rendering/Cube.h"
+#include "Rendering/Quad.h"
 #include "Rendering/RendererDX11.h"
 #include "Math/Vector3.h"
 #include "MT/ThreadPool.h"
@@ -32,14 +33,16 @@ int main( )
       auto renderer = Engine::GetRenderer();
 
       Entity* cameraParent = world->CreateEntity(TEXT("CameraParent"));
-      RotateComponent* cameraRotation = cameraParent->AddComponent<RotateComponent>();
+      Transform* camParentTransform = cameraParent->GetTransform();
+      RotateComponent* cameraParentRotation = cameraParent->AddComponent<RotateComponent>();
       Entity* camera = world->CreateEntity(TEXT("Camera"));
       CameraComponent* camComponent = camera->AddComponent<CameraComponent>();
       Transform* camTransform = camera->GetTransform();
       camComponent->SetNearPlane(0.1f);
       camComponent->SetFarPlane(100.0f);
       camComponent->SetFov(45.0f);
-      camTransform->SetPosition(Vector3(0.0f, 0.0f, -5.0f));
+      camTransform->SetPosition(Vector3(0.0f, 2.0f, -7.0f));
+      camTransform->SetRotation(Quaternion(-20.0f, Vector3(1.0f, 0.0f, 0.0f)));
       cameraParent->AttachChild(camera);
 
       Entity* mainLight = world->CreateEntity(TEXT("Main Light"));
@@ -48,13 +51,6 @@ int main( )
       mainLightComponent->SetLightType(ELightType::Point);
       mainLightComponent->SetRadiance(Vector3(200.0f, 200.0f, 200.0f));
       mainLightTransform->SetPosition(Vector3(-9.0f, 0.0f, -3.0f));
-
-      //Entity* secondLight = world->CreateEntity(TEXT("Second Light"));
-      //LightComponent* secondLightComponent = secondLight->AddComponent<LightComponent>();
-      //Transform* secondLightTransform = secondLight->GetTransform();
-      //secondLightComponent->SetLightType(ELightType::Point);
-      //secondLightComponent->SetRadiance(Vector3(250.0f, 250.0f, 250.0f));
-      //secondLightTransform->SetPosition(Vector3(0.0f, 7.0f, -3.0f));
 
       Model* lanternModel = resMng->Load<Model>(TEXT("Contents/Models/Lantern/Lantern.gltf"));
       Entity* lantern = Model::Instantiate(lanternModel, world, TEXT("Lantern"));
@@ -71,7 +67,6 @@ int main( )
       Model* damagedHelmetModel = resMng->Load<Model>(TEXT("Contents/Models/DamagedHelmet/DamagedHelmet.gltf"));
       Entity* damagedHelmet = Model::Instantiate(damagedHelmetModel, world, TEXT("DamagedHelmet"));
       Entity* damagedHelmetMesh = damagedHelmet->GetChildren()[0];
-      //RotateComponent* damagedHelmetRotation = damagedHelmet->AddComponent<RotateComponent>();
       MeshRenderComponent* helmetRenderComponent = damagedHelmetMesh->GetComponent<MeshRenderComponent>();
       Material* damagedHelmetMaterial = helmetRenderComponent->GetMaterial();
       Transform* helmetTransform = damagedHelmet->GetTransform();
@@ -83,14 +78,23 @@ int main( )
       Entity* cube = world->CreateEntity(TEXT("Cube"));
       Transform* cubeTransform = cube->GetTransform();
       MeshRenderComponent* cubeRenderComponent = cube->AddComponent<MeshRenderComponent>();
-      //RotateComponent* cubeRotation = cube->AddComponent<RotateComponent>();
       Material* cubeMaterial = resMng->Load<Material>(TEXT("Contents/Materials/Default.material"));
-      cubeMaterial->SetScalarFactor(MaterialFactorProperty::Metallic, 1.0f);
-      cubeMaterial->SetScalarFactor(MaterialFactorProperty::Roughness, 0.5f);
+      cubeMaterial->SetScalarFactor(MaterialFactorProperty::Metallic, 0.0f);
+      cubeMaterial->SetScalarFactor(MaterialFactorProperty::Roughness, 1.0f);
       cubeRenderComponent->SetMesh(cubeMesh);
       cubeRenderComponent->SetMaterial(cubeMaterial);
       cubeTransform->SetPosition(Vector3(3.5f, 0.0f, 0.0f));
       cubeTransform->SetScale(Vector3(1.0f, 1.0f, 1.0f));
+
+      Quad* quadMesh = new Quad(renderer);
+      quadMesh->Init(-1.0f, -1.0f, 1.0f, 1.0f);
+      Entity* plane = world->CreateEntity(TEXT("Plane"));
+      Transform* planeTransform = plane->GetTransform();
+      MeshRenderComponent* planeRenderComponent = plane->AddComponent<MeshRenderComponent>();
+      planeRenderComponent->SetMesh(quadMesh);
+      planeRenderComponent->SetMaterial(cubeMaterial);
+      planeTransform->SetPosition(Vector3(0.0f, -1.0f, 0.0f));
+      planeTransform->SetRotation(Quaternion(-90.0f, Vector3(1.0f, 0.0f, 0.0f)));
 
       Model* metalRoughSpheresModel = resMng->Load<Model>(TEXT("Contents/Models/MetalRoughSpheres/MetalRoughSpheres.gltf"));
       Entity* spheresEntity = Model::Instantiate(metalRoughSpheresModel, world, TEXT("Spheres"));

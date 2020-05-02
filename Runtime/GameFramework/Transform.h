@@ -22,10 +22,8 @@ namespace Mile
          m_position(position),
          m_scale(scale),
          m_rotation(rotation),
-         m_bDirtyFlag(true),
          m_parent(nullptr)
       {
-         ForceUpdateMatrix();
       }
 
       Transform(Entity * entity) :
@@ -33,13 +31,6 @@ namespace Mile
             Quaternion(1.0f, 0.0f, 0.0f, 0.0f))
       {
       }
-
-      //std::string Serialize( ) const
-      //{
-      //   return "{ \"Position\":" + m_position.Serialize( ) +
-      //      ", \"Scale\":" + m_scale.Serialize( ) +
-      //      ", \"Rotation\":" + m_rotation.Serialize( ) + " }";
-      //}
 
       json Serialize() const
       {
@@ -55,38 +46,21 @@ namespace Mile
          m_position.DeSerialize(jsonObj["Position"]);
          m_scale.DeSerialize(jsonObj["Scale"]);
          m_rotation.DeSerialize(jsonObj["Rotation"]);
-         ForceUpdateMatrix();
       }
 
       Vector3 GetPosition(TransformSpace space = TransformSpace::Local) const
       {
          if (space == TransformSpace::World && HasParent())
          {
-            return m_position * m_worldMatrix;
+            return m_position * GetWorldRotTransMatrix();
          }
 
          return m_position;
       }
 
-      void SetPosition(const Vector3 & position, TransformSpace space = TransformSpace::Local, bool bImmediatelyUpdateMatrix = true)
+      void SetPosition(const Vector3& position)
       {
-         if (space == TransformSpace::World && HasParent())
-         {
-            m_position = position * m_parent->m_worldMatrix.Inversed();
-         }
-         else
-         {
-            m_position = position;
-         }
-
-         if (bImmediatelyUpdateMatrix)
-         {
-            ForceUpdateMatrix();
-         }
-         else
-         {
-            m_bDirtyFlag = true;
-         }
+         m_position = position;
       }
 
       Vector3 GetScale(TransformSpace space = TransformSpace::Local) const
@@ -99,53 +73,22 @@ namespace Mile
          return m_scale;
       }
 
-      void SetScale(const Vector3 & scale, TransformSpace space = TransformSpace::Local, bool bImmediatelyUpdateMatrix = true)
+      void SetScale(const Vector3& scale)
       {
-         if (space == TransformSpace::World && HasParent())
-         {
-            m_scale = scale / m_parent->GetScale(space);
-         }
-         else
-         {
-            m_scale = scale;
-         }
-
-         if (bImmediatelyUpdateMatrix)
-         {
-            ForceUpdateMatrix();
-         }
-         else
-         {
-            m_bDirtyFlag = true;
-         }
+         m_scale = scale;
       }
 
-      void SetRotation(const Quaternion & rot, TransformSpace space = TransformSpace::Local, bool bImmediatelyUpdateMatrix = true)
+      void SetRotation(const Quaternion& rot)
       {
-         if (space == TransformSpace::World && HasParent())
-         {
-            m_rotation = rot.Rotated(m_parent->GetRotation(space).Inverse());
-         }
-         else
-         {
-            m_rotation = rot;
-         }
-
-         if (bImmediatelyUpdateMatrix)
-         {
-            ForceUpdateMatrix();
-         }
-         else
-         {
-            m_bDirtyFlag = true;
-         }
+         m_rotation = rot;
       }
 
       Quaternion GetRotation(TransformSpace space = TransformSpace::Local) const
       {
          if (space == TransformSpace::World && HasParent())
          {
-            return m_rotation.Rotated(m_parent->GetRotation(space));
+            return m_parent->GetRotation(TransformSpace::World).Rotated(m_rotation);
+            //return m_rotation.Rotated(m_parent->GetRotation(TransformSpace::World));
          }
          else
          {
@@ -153,138 +96,88 @@ namespace Mile
          }
       }
 
-      void Translate(const Vector3 & vec, TransformSpace space = TransformSpace::Local, bool bImmediatelyUpdateMatrix = true)
+      void Translate(const Vector3& vec)
       {
-         if (space == TransformSpace::World && HasParent())
-         {
-            m_position += (vec * m_parent->m_worldMatrix);
-         }
-         else
-         {
-            m_position += vec;
-         }
-
-         if (bImmediatelyUpdateMatrix)
-         {
-            ForceUpdateMatrix();
-         }
-         else
-         {
-            m_bDirtyFlag = true;
-         }
+         m_position += vec;
       }
 
-      void Scale(const Vector3 & scale, TransformSpace space = TransformSpace::Local, bool bImmediatelyUpdateMatrix = true)
+      void Scale(const Vector3& scale)
       {
-         if (space == TransformSpace::World && HasParent())
-         {
-            m_scale *= scale / m_parent->GetScale(space);
-         }
-         else
-         {
-            m_scale *= scale;
-         }
-
-         if (bImmediatelyUpdateMatrix)
-         {
-            ForceUpdateMatrix();
-         }
-         else
-         {
-            m_bDirtyFlag = true;
-         }
+         m_scale *= scale;
       }
 
-      void Scale(float factor, bool bImmediatelyUpdateMatrix = true)
+      void Scale(float factor)
       {
          m_scale *= factor;
-         if (bImmediatelyUpdateMatrix)
-         {
-            ForceUpdateMatrix();
-         }
-         else
-         {
-            m_bDirtyFlag = true;
-         }
       }
 
-      void Rotate(const Quaternion & rot, TransformSpace space = TransformSpace::Local, bool bImmediatelyUpdateMatrix = true)
+      void Rotate(const Quaternion& rot)
       {
-         if (space == TransformSpace::World && HasParent())
-         {
-            m_rotation.Rotate(rot.Rotated(m_parent->GetRotation(space).Inverse()));
-         }
-         else
-         {
-            m_rotation.Rotate(rot);
-         }
-
-         if (bImmediatelyUpdateMatrix)
-         {
-            ForceUpdateMatrix();
-         }
-         else
-         {
-            m_bDirtyFlag = true;
-         }
+         m_rotation.Rotate(rot);
       }
 
       Transform* GetParent() const;
-
       bool HasParent() const { return m_parent != nullptr; }
-
       Entity* GetEntity() const { return m_entity; }
 
-      Matrix GetWorldMatrix()
-      {
-         UpdateMatrix();
-
-         return m_worldMatrix;
-      }
-
-      /*
-      * No guarantee that matrix is updated.
-      * If you called transform functions with immediately update flag, then is able to receive updated matrix.
-      */
       Matrix GetWorldMatrix() const
       {
-         return m_worldMatrix;
-      }
-
-      Matrix GetLocalMatrix()
-      {
-         UpdateMatrix();
-
-         return m_localMatrix;
-      }
-
-      /*
-      * No guarantee that matrix is updated.
-      * If you called transform functions with immediately update flag, then is able to receive updated matrix.
-      */
-      Matrix GetLocalMatrix() const
-      {
-         return m_localMatrix;
-      }
-
-      void UpdateMatrix()
-      {
-         if (m_bDirtyFlag)
+         Matrix localMatrix = Matrix::CreateTransformMatrix(m_position, m_scale, m_rotation);
+         if (m_parent != nullptr)
          {
-            ForceUpdateMatrix();
+            return localMatrix * m_parent->GetWorldMatrix();
          }
+
+         return localMatrix;
+      }
+
+      Matrix GetInverseWorldMatrix() const
+      {
+         Matrix invLocalMatrix = Matrix::CreateTransformMatrix(
+            Vector3(-m_position.x, -m_position.y, -m_position.z),
+            Vector3(1.0f/m_scale.x, 1.0f/m_scale.y, 1.0f/m_scale.z), 
+            m_rotation.Inverse());
+
+         if (m_parent != nullptr)
+         {
+            return invLocalMatrix * m_parent->GetInverseWorldMatrix();
+         }
+
+         return invLocalMatrix;
+      }
+
+      Matrix GetWorldRotTransMatrix() const
+      {
+         Matrix localMatrix = Matrix::CreateRotation(m_rotation) * Matrix::CreateTranslation(m_position);
+         if (m_parent != nullptr)
+         {
+            return localMatrix * m_parent->GetWorldRotTransMatrix();
+         }
+
+         return localMatrix;
       }
 
       Vector3 GetForward(TransformSpace space = TransformSpace::World) const;
       Vector3 GetUp(TransformSpace space = TransformSpace::World) const;
 
    private:
-      void SetParent(Transform * parent)
+      void SetParent(Transform* parent)
       {
-         m_parent = parent;
-      }
+         if (m_parent != nullptr)
+         {
+            SetPosition(GetPosition(TransformSpace::World));
+            SetScale(GetScale(TransformSpace::World));
+            SetRotation(GetRotation(TransformSpace::World));
+         }
 
-      void ForceUpdateMatrix();
+         m_parent = parent;
+         if (m_parent != nullptr)
+         {
+            SetPosition(GetPosition(TransformSpace::Local));
+            SetScale(GetScale(TransformSpace::Local));
+            SetRotation(GetRotation(TransformSpace::Local));
+         }
+      }
 
    private:
       /* Local Transform **/
@@ -292,12 +185,8 @@ namespace Mile
       Vector3     m_scale;
       Quaternion  m_rotation;
 
-      Matrix      m_localMatrix;
-      Matrix      m_worldMatrix;
-
-      Entity* m_entity;
-      Transform* m_parent;
-      bool        m_bDirtyFlag;
+      Entity*     m_entity;
+      Transform*  m_parent;
 
       friend Entity;
    };

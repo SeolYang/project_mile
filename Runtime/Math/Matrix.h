@@ -307,9 +307,9 @@ namespace Mile
          return mat.Transpose( );
       }
 
-      static Matrix CreateTransformMatrix( const Vector3& position, Vector3& scale, const Quaternion& rot )
+      static Matrix CreateTransformMatrix( const Vector3& position, const Vector3& scale, const Quaternion& rot )
       {
-         return  CreateRotation( rot ) * CreateScale( scale ) * CreateTranslation( position );
+         return CreateRotation(rot) * CreateScale(scale) * CreateTranslation(position);
       }
 
       /* Left-Handed View Matrix **/
