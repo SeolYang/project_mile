@@ -18,6 +18,7 @@ namespace Mile
       m_emissiveFactor(Vector4(0.0f, 0.0f, 0.0f, 1.0f)),
       m_metallicFactor(0.0f),
       m_roughnessFactor(0.0f),
+      m_uvOffset(Vector2(0.0f, 0.0f)),
       Resource(context, filePath, ResourceType::Material)
    {
       SetTexture2D(MaterialTextureProperty::BaseColor, nullptr);
@@ -126,6 +127,20 @@ namespace Mile
       }
    }
 
+   float Material::GetScalarFactor(MaterialFactorProperty prop) const
+   {
+      switch (prop)
+      {
+      case MaterialFactorProperty::Metallic:
+         return m_metallicFactor;
+      case MaterialFactorProperty::Roughness:
+         return m_roughnessFactor;
+      }
+
+      MELog(m_context, TEXT("Material::GetScalarFactor"), ELogType::WARNING, TEXT("Couldn't find out property from scalar factors."), true);
+      return 0.0f;
+   }
+
    void Material::SetVector4Factor(MaterialFactorProperty prop, const Vector4& factor)
    {
       switch (prop)
@@ -142,20 +157,6 @@ namespace Mile
       }
    }
 
-   float Material::GetScalarFactor(MaterialFactorProperty prop) const
-   {
-      switch (prop)
-      {
-      case MaterialFactorProperty::Metallic:
-         return m_metallicFactor;
-      case MaterialFactorProperty::Roughness:
-         return m_roughnessFactor;
-      }
-
-      MELog(m_context, TEXT("Material::GetScalarFactor"), ELogType::WARNING, TEXT("Couldn't find out property from scalar factors."), true);
-      return 0.0f;
-   }
-
    Vector4 Material::GetVector4Factor(MaterialFactorProperty prop) const
    {
       switch (prop)
@@ -168,6 +169,31 @@ namespace Mile
 
       MELog(m_context, TEXT("Material::GetVector4Factor"), ELogType::WARNING, TEXT("Couldn't find out property from Vector4 factors."), true);
       return Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+   }
+
+   void Material::SetVector2Factor(MaterialFactorProperty prop, const Vector2& factor)
+   {
+      switch (prop)
+      {
+      case MaterialFactorProperty::UVOffset:
+         m_uvOffset = factor;
+         break;
+      default:
+         MELog(m_context, TEXT("Material::SetVector4Factor"), ELogType::WARNING, TEXT("Wrong property passed as Vector4 factor."), true);
+         break;
+      }
+   }
+
+   Vector2 Material::GetVector2Factor(MaterialFactorProperty prop) const
+   {
+      switch (prop)
+      {
+      case MaterialFactorProperty::UVOffset:
+         return m_uvOffset;
+      }
+
+      MELog(m_context, TEXT("Material::GetVector2Factor"), ELogType::WARNING, TEXT("Couldn't find out property from Vector4 factors."), true);
+      return Vector2(0.0f, 0.0f);
    }
 
    bool Material::SaveTo(const String& filePath)
@@ -195,9 +221,9 @@ namespace Mile
       serialized["MetallicRoughness"] = WString2String(m_metallicRoughness->GetPath());
       serialized["MetallicFactor"] = m_metallicFactor;
       serialized["RoughnessFactor"] = m_roughnessFactor;
+      serialized["UVOffset"] = m_uvOffset.Serialize();
 
       serialized["AO"] = WString2String(m_ao->GetPath());
-
       serialized["Normal"] = WString2String(m_normal->GetPath());
 
       return serialized;
@@ -213,28 +239,42 @@ namespace Mile
          return;
       }
 
-      auto foundValue = jsonData.find("Type");
-      SetMaterialType(
-         foundValue != jsonData.end() ?
-         static_cast<EMaterialType>((unsigned int)*foundValue) : EMaterialType::Opaque);
+      SetTexture2D(
+         MaterialTextureProperty::BaseColor,
+         resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "BaseColor"))));
 
-      SetTexture2D(MaterialTextureProperty::BaseColor,
-         resMng->Load<Texture2D>(String2WString(jsonData["BaseColor"])));
-      m_baseColorFactor.DeSerialize(jsonData["BaseColorFactor"]);
+      m_baseColorFactor.DeSerialize(GetValueSafelyFromJson<json>(
+         jsonData, 
+         "BaseColorFactor",
+         m_baseColorFactor.Serialize()));
 
-      SetTexture2D(MaterialTextureProperty::Emissive,
-         resMng->Load<Texture2D>(String2WString(jsonData["Emissive"])));
-      m_emissiveFactor.DeSerialize(jsonData["EmissiveFactor"]);
+      SetTexture2D(
+         MaterialTextureProperty::Emissive,
+         resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "Emissive"))));
 
-      SetTexture2D(MaterialTextureProperty::MetallicRoughness,
-         resMng->Load<Texture2D>(String2WString(jsonData["MetallicRoughness"])));
-      m_metallicFactor = jsonData["MetallicFactor"];
-      m_roughnessFactor = jsonData["RoughnessFactor"];
+      m_emissiveFactor.DeSerialize(GetValueSafelyFromJson<json>(
+         jsonData,
+         "EmissiveFactor",
+         m_emissiveFactor.Serialize()));
 
-      SetTexture2D(MaterialTextureProperty::AO,
-         resMng->Load<Texture2D>(String2WString(jsonData["AO"])));
+      SetTexture2D(
+         MaterialTextureProperty::MetallicRoughness,
+         resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "MetallicRoughness"))));
 
-      SetTexture2D(MaterialTextureProperty::Normal,
-         resMng->Load<Texture2D>(String2WString(jsonData["Normal"])));
+      m_metallicFactor = GetValueSafelyFromJson(jsonData, "MetallicFactor", 0.0f);
+      m_roughnessFactor = GetValueSafelyFromJson(jsonData, "RoughnessFactor", 0.0f);
+
+      m_uvOffset.DeSerialize(GetValueSafelyFromJson<json>(
+         jsonData,
+         "UVOffset",
+         m_uvOffset.Serialize()));
+
+      SetTexture2D(
+         MaterialTextureProperty::AO,
+         resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "AO"))));
+
+      SetTexture2D(
+         MaterialTextureProperty::Normal,
+         resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "Normal"))));
    }
 }

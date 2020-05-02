@@ -20,6 +20,7 @@ namespace Mile
       Emissive,
       Metallic,
       Roughness,
+      UVOffset,
    };
 
    enum class EMaterialType : unsigned int
@@ -42,9 +43,11 @@ namespace Mile
       Texture2D* GetTexture2D(MaterialTextureProperty propertyType) const;
 
       void SetScalarFactor(MaterialFactorProperty prop, float factor);
-      void SetVector4Factor(MaterialFactorProperty prop, const Vector4& factor);
       float GetScalarFactor(MaterialFactorProperty prop) const;
+      void SetVector4Factor(MaterialFactorProperty prop, const Vector4& factor);
       Vector4 GetVector4Factor(MaterialFactorProperty prop) const;
+      void SetVector2Factor(MaterialFactorProperty prop, const Vector2& factor);
+      Vector2 GetVector2Factor(MaterialFactorProperty prop) const;
 
       void SetMaterialType(EMaterialType type) { m_materialType = type; }
       EMaterialType GetMaterialType() const { return m_materialType; }
@@ -60,6 +63,7 @@ namespace Mile
       Texture2D* m_ao;
       Texture2D* m_normal;
 
+      Vector2  m_uvOffset;
       Vector4  m_baseColorFactor;
       Vector4  m_emissiveFactor;
       float		m_metallicFactor;
