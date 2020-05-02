@@ -51,7 +51,7 @@ float4 MilePS(in PSInput input) : SV_Target0
 	if (depth <= DepthThreshold)
 	{
 		float3 color = renderBuffer.Sample(Sampler, input.TexCoord);
-		float brightness = dot(color, color);
+		float brightness = max(color.r, max(color.g, color.b));
 		if (brightness > Threshold)
 		{
 			result = color;
