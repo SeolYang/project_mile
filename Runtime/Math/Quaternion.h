@@ -23,7 +23,7 @@ namespace Mile
       Quaternion( float degree, const Vector3& axis )
       {
          Vector3 normalizedAxis = axis.GetNormalized( );
-         float radian = ( Math::DegreeToRadian( degree ) ) / 2.0f;
+         float radian = (Math::DegreeToRadian(degree / 2.0f));
          float sinVal = sinf( radian );
          float cosVal = cosf( radian );
 
@@ -31,11 +31,6 @@ namespace Mile
          this->x = sinVal * normalizedAxis.x;
          this->y = sinVal * normalizedAxis.y;
          this->z = sinVal * normalizedAxis.z;
-      }
-
-      Quaternion( const Vector3& imaginary ) :
-         Quaternion( 0.0f, imaginary )
-      {
       }
 
       Quaternion operator+( const Quaternion& quat ) const
@@ -98,7 +93,7 @@ namespace Mile
             ( x * quat.y - y * quat.x + z * quat.w + w * quat.z ) );
       }
 
-      Vector3 operator*( const Vector3& rhs )
+      Vector3 operator*( const Vector3& rhs ) const
       {
          Vector3 quatVec{ x, y, z };
          Vector3 norm{ quatVec ^ rhs };
@@ -143,14 +138,6 @@ namespace Mile
          z = quat.z;
          return ( *this );
       }
-
-      //std::string Serialize( ) const
-      //{
-      //   return "{ \"x\": " + std::to_string( x ) + ", "
-      //      + "\"y\": " + std::to_string( y ) + ", "
-      //      + "\"z\": " + std::to_string( z ) + ", "
-      //      + "\"w\": " + std::to_string( w ) + " }";
-      //}
 
 	  json Serialize() const
 	  {
@@ -224,14 +211,22 @@ namespace Mile
 
       Quaternion& Rotate( const Quaternion& rot )
       {
-         ( *this) = ( *this ) * this->Inverse( ) * rot * ( *this );
+         (*this) = rot * (*this);
          return ( *this );
       }
 
       Quaternion Rotated( const Quaternion& rot ) const
       {
-         auto inv = Inverse( );
-         return ( inv * rot * ( *this ) );
+         Quaternion result = (*this);
+         return result.Rotate(rot);
+      }
+
+      Vector3 Rotated(const Vector3& p) const
+      {
+         Quaternion conj = Conjugate();
+         Vector3 result = (*this) * p;
+         result = conj * p;
+         return result;
       }
 
    public:
