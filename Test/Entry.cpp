@@ -93,8 +93,9 @@ int main( )
       MeshRenderComponent* planeRenderComponent = plane->AddComponent<MeshRenderComponent>();
       planeRenderComponent->SetMesh(quadMesh);
       planeRenderComponent->SetMaterial(cubeMaterial);
-      planeTransform->SetPosition(Vector3(0.0f, -1.0f, 0.0f));
+      planeTransform->SetPosition(Vector3(0.0f, -6.0f, 0.0f));
       planeTransform->SetRotation(Quaternion(-90.0f, Vector3(1.0f, 0.0f, 0.0f)));
+      planeTransform->SetScale(Vector3(30.0f, 30.0f, 30.0f));
 
       Model* metalRoughSpheresModel = resMng->Load<Model>(TEXT("Contents/Models/MetalRoughSpheres/MetalRoughSpheres.gltf"));
       Entity* spheresEntity = Model::Instantiate(metalRoughSpheresModel, world, TEXT("Spheres"));
