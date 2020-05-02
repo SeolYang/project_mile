@@ -2,6 +2,7 @@
 #include "Rendering/RenderingPass.h"
 #include "Math/Matrix.h"
 #include "Math/Vector4.h"
+#include "Math/Vector2.h"
 
 namespace Mile
 {
@@ -21,6 +22,7 @@ namespace Mile
          Vector4 EmissiveColorFactor;
          float metallicFactor;
          float roughnessFactor;
+         Vector2 UVOffset;
       };
 
    public:

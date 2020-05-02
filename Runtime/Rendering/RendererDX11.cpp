@@ -923,10 +923,11 @@ namespace Mile
                   Vector4 emissiveFactor = material->GetVector4Factor(MaterialFactorProperty::Emissive);
                   float metallicFactor = material->GetScalarFactor(MaterialFactorProperty::Metallic);
                   float roughnessFactor = material->GetScalarFactor(MaterialFactorProperty::Roughness);
+                  Vector2 uvOffset = material->GetVector2Factor(MaterialFactorProperty::UVOffset);
 
                   m_geometryPass->UpdateMaterialBuffer(
                      deviceContext,
-                     { baseColorFactor, emissiveFactor, metallicFactor, roughnessFactor });
+                     { baseColorFactor, emissiveFactor, metallicFactor, roughnessFactor, uvOffset });
 
                   SAFE_TEX_BIND(baseColorTex, deviceContext, 0, EShaderType::PixelShader);
                   SAFE_TEX_BIND(emissiveTex, deviceContext, 1, EShaderType::PixelShader);

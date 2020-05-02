@@ -46,7 +46,7 @@ Texture2D emissiveMap				: register(t1);
 Texture2D metallicRoughnessMap	: register(t2);
 Texture2D aoMap						: register(t3);
 Texture2D normalMap					: register(t4);
-SamplerState AnisoSampler			: register(s0);
+SamplerState Sampler			: register(s0);
 
 /* Constant Buffers (Vertex Shader) */
 cbuffer TransformBuffer
@@ -63,6 +63,7 @@ cbuffer MaterialBuffer
 	float4	emissiveFactor;
 	float		metallicFactor;
 	float		roughnessFactor;
+	float2	uvOffset;
 }
 
 /* Shader Programs */
@@ -87,23 +88,24 @@ VSOutput MileVS(in VSInput input)
 
 PSOutput MilePS(in PSInput input)
 {
+	float2 uv = input.TexCoord + uvOffset;
 	/* Albedo */
-	float3 albedo = pow(baseColorMap.Sample(AnisoSampler, input.TexCoord), 2.2);
+	float3 albedo = pow(baseColorMap.Sample(Sampler, uv), 2.2);
 	albedo += pow(baseColorFactor, 2.2);
 	
 	/* Emissive */
-	float3 emissive = pow(emissiveMap.Sample(AnisoSampler, input.TexCoord), 2.2);
+	float3 emissive = pow(emissiveMap.Sample(Sampler, uv), 2.2);
 	emissive += pow(emissiveFactor, 2.2);
 	
 	/* Metallic-Roughness */
-	float roughness = metallicRoughnessMap.Sample(AnisoSampler, input.TexCoord).g;
+	float roughness = metallicRoughnessMap.Sample(Sampler, uv).g;
 	roughness = clamp(roughnessFactor + roughness, 0.0f, 1.0f);
 	
-	float metallic = metallicRoughnessMap.Sample(AnisoSampler, input.TexCoord).b;
+	float metallic = metallicRoughnessMap.Sample(Sampler, uv).b;
 	metallic = clamp(metallicFactor + metallic, 0.0, 1.0f);
 	
 	/* AO */
-	float ao = aoMap.Sample(AnisoSampler, input.TexCoord).r;
+	float ao = aoMap.Sample(Sampler, uv).r;
 	
 	/* Normal */
 	float3 normalWS = normalize(input.NormalWS);
@@ -112,7 +114,7 @@ PSOutput MilePS(in PSInput input)
                                        normalWS);
 	
 
-	float3 normalTS = normalMap.Sample(AnisoSampler, input.TexCoord).rgb;
+	float3 normalTS = normalMap.Sample(Sampler, uv).rgb;
 	normalTS = normalize(normalTS * 2.0f - 1.0f);
 	float3 normal = all(normalTS) ? normalWS : mul(normalTS, tangentFrameWS);
 
