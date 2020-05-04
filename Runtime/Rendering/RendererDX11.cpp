@@ -37,12 +37,13 @@
 #include "Resource/Texture2D.h"
 #include "Math/Vector2.h"
 #include "MT/ThreadPool.h"
+#include <random>
 
 namespace Mile
 {
    RendererDX11::RendererDX11(Context* context) :
       SubSystem(context),
-      m_window(nullptr), 
+      m_window(nullptr),
       m_device(nullptr),
       m_immediateContext(nullptr),
       m_deferredContexts{ nullptr },
@@ -51,12 +52,12 @@ namespace Mile
       m_depthStencilBuffer(nullptr),
       m_bDepthStencilEnabled(true),
       m_clearColor{ 0.0f, 0.0f, 0.0f, 1.0f },
-      m_gBuffer(nullptr), 
+      m_gBuffer(nullptr),
       m_geometryPass(nullptr),
       m_lightingPass(nullptr),
       m_lightingPassRenderBuffer(nullptr),
       m_skyboxPass(nullptr),
-      m_envMap(nullptr), 
+      m_envMap(nullptr),
       m_equirectToCubemapPass(nullptr),
       m_equirectangularMap(nullptr),
       m_cubeMesh(nullptr),
@@ -66,6 +67,9 @@ namespace Mile
       m_prefilterdEnvMap(nullptr),
       m_integrateBRDFPass(nullptr),
       m_brdfLUT(nullptr),
+      m_bEnableSSAO(true),
+      m_ssaoNoise(nullptr),
+      m_noiseScale(Vector2(1.0f, 1.0f)),
       m_bCubemapDirtyFlag(false),
       m_bAlwaysComputeIBL(false),
       m_ambientEmissivePass(nullptr),
@@ -108,8 +112,43 @@ namespace Mile
          return false;
       }
 
+      if (InitAPI())
+      {
+         if (!InitPBR())
+         {
+            MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize PBR render pass."), true);
+            return false;
+         }
+
+         if (!InitSSAO())
+         {
+            MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize SSAO pass."), true);
+            return false;
+         }
+
+         if (!InitPostProcess())
+         {
+            MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize post-process pass."), true);
+            return false;
+         }
+
+         if (!InitStates())
+         {
+            MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize render states."), true);
+            return false;
+         }
+      }
+
+      MELog(m_context, TEXT("RendererDX11"), ELogType::MESSAGE, TEXT("RendererDX11 Initialized!"), true);
+      m_bIsInitialized = true;
+      return true;
+   }
+
+   bool RendererDX11::InitAPI()
+   {
       /* Initialize low level rendering api **/
       m_window = m_context->GetSubSystem<Window>();
+      Vector2 screenRes{ m_window->GetResolution() };
       if (m_window == nullptr)
       {
          MELog(m_context,
@@ -164,11 +203,16 @@ namespace Mile
       }
 
       // @TODO: Multiple viewports
-      Vector2 screenRes{ m_window->GetResolution() };
       m_viewport = new Viewport(this);
       m_viewport->SetWidth(screenRes.x);
       m_viewport->SetHeight(screenRes.y);
 
+      return true;
+   }
+
+   bool RendererDX11::InitPBR()
+   {
+      Vector2 screenRes{ m_window->GetResolution() };
       m_gBuffer = new GBuffer(this);
       if (!m_gBuffer->Init(
          static_cast<unsigned int>(screenRes.x),
@@ -231,7 +275,7 @@ namespace Mile
             TEXT("Failed to create Geometry Pass."), true);
          return false;
       }
-      
+
       m_lightingPass = new LightingPass(this);
       if (!m_lightingPass->Init())
       {
@@ -262,10 +306,56 @@ namespace Mile
          return false;
       }
 
+      return true;
+   }
+
+   bool RendererDX11::InitSSAO()
+   {
+      Vector2 screenRes{ m_window->GetResolution() };
+      m_noiseScale = Vector2(screenRes.x / SSAO_NOISE_TEXTURE_RES, screenRes.y / SSAO_NOISE_TEXTURE_RES);
+
+      std::uniform_real_distribution<float> randomFloats(0.0f, 1.0f);
+      std::default_random_engine generator;
+      for (unsigned int idx = 0; idx < SSAO_KERNEL_SIZE; ++idx)
+      {
+         Vector3 sample{
+            randomFloats(generator) * 2.0f - 1.0f,
+            randomFloats(generator) * 2.0f - 1.0f,
+            randomFloats(generator) /* Hemisphere : z = [0, 1] */ };
+
+         sample.Normalize();
+         float scale = (float)idx / SSAO_KERNEL_SIZE;
+         scale = Math::Lerp(0.1f, 1.0f, scale * scale);
+         sample *= scale;
+         m_ssaoKernel[idx] = sample;
+      }
+
+      std::vector<Vector3> ssaoNoise;
+      for (unsigned int idx = 0; idx < (SSAO_NOISE_TEXTURE_RES * SSAO_NOISE_TEXTURE_RES); ++idx)
+      {
+         ssaoNoise.push_back(Vector3(
+            randomFloats(generator) * 2.0f - 1.0f,
+            randomFloats(generator) * 2.0f - 1.0f,
+            0.0f));
+      }
+
+      m_ssaoNoise = new Texture2dDX11(this);
+      if (!m_ssaoNoise->Init(SSAO_NOISE_TEXTURE_RES, SSAO_NOISE_TEXTURE_RES, 3, (unsigned char*)ssaoNoise.data(), DXGI_FORMAT_R16G16B16A16_FLOAT))
+      {
+         MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize SSAO Noise texture."), true);
+         return false;
+      }
+
+      return true;
+   }
+
+   bool RendererDX11::InitPostProcess()
+   {
+      Vector2 screenRes{ m_window->GetResolution() };
       m_hdrBuffer = new RenderTargetDX11(this);
       if (!m_hdrBuffer->Init(
          static_cast<unsigned int>(screenRes.x),
-         static_cast<unsigned int>(screenRes.y), 
+         static_cast<unsigned int>(screenRes.y),
          DXGI_FORMAT_R16G16B16A16_FLOAT,
          m_depthStencilBuffer))
       {
@@ -334,6 +424,11 @@ namespace Mile
          return false;
       }
 
+      return true;
+   }
+
+   bool RendererDX11::InitStates()
+   {
       m_defaultRasterizerState = new RasterizerState(this);
       if (!m_defaultRasterizerState->Init())
       {
@@ -410,8 +505,6 @@ namespace Mile
          return false;
       }
 
-      MELog(m_context, TEXT("RendererDX11"), ELogType::MESSAGE, TEXT("RendererDX11 Initialized!"), true);
-      m_bIsInitialized = true;
       return true;
    }
 
@@ -444,6 +537,7 @@ namespace Mile
          SafeDelete(m_gaussianBlurPass);
          SafeDelete(m_blendingPass);
          SafeDelete(m_gBuffer);
+         SafeDelete(m_ssaoNoise);
          SafeDelete(m_backBuffer);
          SafeDelete(m_depthStencilBuffer);
          SafeRelease(m_swapChain);

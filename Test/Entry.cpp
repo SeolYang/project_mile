@@ -86,7 +86,7 @@ int main( )
       cubeTransform->SetPosition(Vector3(3.5f, 0.0f, 0.0f));
       cubeTransform->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
-      Material* planeMaterial = resMng->Load<Material>(TEXT("Contents/Materials/RoughMetal.material"));
+      Material* planeMaterial = resMng->Load<Material>(TEXT("Contents/Materials/Metal.material"));
       Quad* quadMesh = new Quad(renderer);
       quadMesh->Init(-1.0f, -1.0f, 1.0f, 1.0f);
       Entity* plane = world->CreateEntity(TEXT("Plane"));

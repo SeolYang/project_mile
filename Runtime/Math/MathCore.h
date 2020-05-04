@@ -17,5 +17,9 @@ namespace Mile
          return ( radian / Pi ) * 180.0f;
       }
 
+      static float Lerp(float a, float b, float t)
+      {
+         return a + (t * (b - a));
+      }
    }
 }

@@ -35,6 +35,8 @@ namespace Mile
    constexpr float DEFAULT_GAUSSIAN_BLOOM_INTENSITY = 0.8f;
    constexpr float DEFAULT_GAUSSIAN_BLOOM_THRESHOLD = 0.8f;
    constexpr float DEFAULT_GAUSSIAN_BLOOM_DEPTH_THRESHOLD = 0.999f;
+   constexpr float SSAO_NOISE_TEXTURE_RES = 4.0f;
+   constexpr unsigned int SSAO_KERNEL_SIZE = 64;
 
    class DepthStencilBufferDX11;
    class RenderTargetDX11;
@@ -44,6 +46,7 @@ namespace Mile
    class GBuffer;
    class Viewport;
    class Texture2D;
+   class Texture2dDX11;
    class Equirect2CubemapPass;
    class IrradianceConvPass;
    class PrefilteringPass;
@@ -82,6 +85,12 @@ namespace Mile
       virtual ~RendererDX11();
 
       virtual bool Init() override;
+      bool InitAPI();
+      bool InitPBR();
+      bool InitSSAO();
+      bool InitPostProcess();
+      bool InitStates();
+
       virtual void DeInit() override;
 
       /* Rendering Methods **/
@@ -203,6 +212,12 @@ namespace Mile
       GeometryPass* m_geometryPass;
       LightingPass* m_lightingPass;
       RenderTargetDX11* m_lightingPassRenderBuffer;
+
+      /* SSAO **/
+      bool m_bEnableSSAO;
+      Vector3 m_ssaoKernel[SSAO_KERNEL_SIZE];
+      Texture2dDX11* m_ssaoNoise;
+      Vector2 m_noiseScale;
 
       /** Cubemap / Environment Map */
       bool  m_bCubemapDirtyFlag; // Diffuse Irradiance 와 Specular IBL 의 계산이 끝난 후에 false로 설정하여야 한다.
