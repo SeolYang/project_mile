@@ -8,7 +8,6 @@
 namespace Mile
 {
    ExtractBrightnessPass::ExtractBrightnessPass(RendererDX11* renderer) :
-      m_depthStencilBuffer(nullptr),
       m_boundGBuffer(nullptr),
       m_boundHdrBuffer(nullptr),
       m_outputHDRBuffer(nullptr),
@@ -19,12 +18,11 @@ namespace Mile
 
    ExtractBrightnessPass::~ExtractBrightnessPass()
    {
-      SafeDelete(m_depthStencilBuffer);
       SafeDelete(m_outputHDRBuffer);
       SafeDelete(m_params);
    }
 
-   bool ExtractBrightnessPass::Init(unsigned int width, unsigned int height)
+   bool ExtractBrightnessPass::Init(unsigned int width, unsigned int height, DepthStencilBufferDX11* globalDepthStencilBuffer)
    {
       bool bValidParams = (width > 0) && (height > 0);
       if (bValidParams && RenderingPass::Init(TEXT("Contents/Shaders/ExtractBrightness.hlsl")))
@@ -37,14 +35,8 @@ namespace Mile
             return false;
          }
 
-         m_depthStencilBuffer = new DepthStencilBufferDX11(renderer);
-         if (!m_depthStencilBuffer->Init(width, height, false))
-         {
-            return false;
-         }
-
          m_outputHDRBuffer = new RenderTargetDX11(renderer);
-         if (!m_outputHDRBuffer->Init(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, m_depthStencilBuffer))
+         if (!m_outputHDRBuffer->Init(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, globalDepthStencilBuffer))
          {
             return false;
          }
@@ -70,7 +62,7 @@ namespace Mile
          bool bSuccess =
             gBuffer->BindAsShaderResource(deviceContext, 0, true) &&
             hdrBuffer->BindAsShaderResource(deviceContext, 6, EShaderType::PixelShader) &&
-            m_outputHDRBuffer->BindAsRenderTarget(deviceContext) &&
+            m_outputHDRBuffer->BindAsRenderTarget(deviceContext, true, false) &&
             m_params->Bind(deviceContext, 0, EShaderType::PixelShader);
          if (bSuccess)
          {

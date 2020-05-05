@@ -7,7 +7,6 @@
 namespace Mile
 {
    GaussianBlurPass::GaussianBlurPass(RendererDX11* renderer) :
-      m_depthStencilBuffer(nullptr),
       m_boundHdrBuffer(nullptr),
       m_outputHDRBuffer(nullptr),
       m_pingPongBuffer({ nullptr, }),
@@ -18,7 +17,6 @@ namespace Mile
 
    GaussianBlurPass::~GaussianBlurPass()
    {
-      SafeDelete(m_depthStencilBuffer);
       for (size_t idx = 0; idx < m_pingPongBuffer.size(); ++idx)
       {
          SafeDelete(m_pingPongBuffer[idx]);
@@ -26,7 +24,7 @@ namespace Mile
       SafeDelete(m_params);
    }
 
-   bool GaussianBlurPass::Init(unsigned int width, unsigned int height)
+   bool GaussianBlurPass::Init(unsigned int width, unsigned int height, DepthStencilBufferDX11* globalDepthStencilBuffer)
    {
       bool bValidParams = (width > 0) && (height > 0);
       if (bValidParams && RenderingPass::Init(TEXT("Contents/Shaders/GaussianBlur.hlsl")))
@@ -39,16 +37,10 @@ namespace Mile
             return false;
          }
 
-         m_depthStencilBuffer = new DepthStencilBufferDX11(renderer);
-         if (!m_depthStencilBuffer->Init(width, height, false))
-         {
-            return false;
-         }
-
          for (size_t idx = 0; idx < m_pingPongBuffer.size(); ++idx)
          {
             m_pingPongBuffer[idx] = new RenderTargetDX11(renderer);
-            if (!m_pingPongBuffer[idx]->Init(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, m_depthStencilBuffer))
+            if (!m_pingPongBuffer[idx]->Init(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, globalDepthStencilBuffer))
             {
                return false;
             }
@@ -74,7 +66,7 @@ namespace Mile
       {
          bool bSuccess =
             hdrBuffer->BindAsShaderResource(deviceContext, 0, EShaderType::PixelShader) &&
-            m_pingPongBuffer[1]->BindAsRenderTarget(deviceContext) &&
+            m_pingPongBuffer[1]->BindAsRenderTarget(deviceContext, true, false) &&
             m_params->Bind(deviceContext, 0, EShaderType::PixelShader);
          if (bSuccess)
          {
@@ -107,7 +99,7 @@ namespace Mile
          m_outputHDRBuffer->UnbindRenderTarget(deviceContext);
 
          m_outputHDRBuffer = m_pingPongBuffer[horizontal];
-         if (m_outputHDRBuffer->BindAsRenderTarget(deviceContext))
+         if (m_outputHDRBuffer->BindAsRenderTarget(deviceContext, true, false))
          {
             m_boundHdrBuffer = m_pingPongBuffer[!horizontal];
             if (m_boundHdrBuffer->BindAsShaderResource(deviceContext, 0, EShaderType::PixelShader))

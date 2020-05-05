@@ -341,7 +341,8 @@ namespace Mile
       m_ssaoPass = new SSAOPass(this);
       if (!m_ssaoPass->Init(
          static_cast<unsigned int>(screenRes.x), 
-         static_cast<unsigned int>(screenRes.y)))
+         static_cast<unsigned int>(screenRes.y),
+         m_depthStencilBuffer))
       {
          MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize SSAO pass."), true);
          return false;
@@ -352,7 +353,8 @@ namespace Mile
       m_ssaoBlurPass = new SSAOBlurPass(this);
       if (!m_ssaoBlurPass->Init(
          static_cast<unsigned int>(screenRes.x),
-         static_cast<unsigned int>(screenRes.y)))
+         static_cast<unsigned int>(screenRes.y),
+         m_depthStencilBuffer))
       {
          MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize SSAO Blur pass."), true);
          return false;
@@ -416,7 +418,8 @@ namespace Mile
       m_boxBloomPass = new BoxBloomPass(this);
       if (!m_boxBloomPass->Init(
          static_cast<unsigned int>(screenRes.x),
-         static_cast<unsigned int>(screenRes.y)))
+         static_cast<unsigned int>(screenRes.y),
+         m_depthStencilBuffer))
       {
          MELog(m_context,
             TEXT("RendererDX11"),
@@ -428,7 +431,8 @@ namespace Mile
       m_extractBrightnessPass = new ExtractBrightnessPass(this);
       if (!m_extractBrightnessPass->Init(
          static_cast<unsigned int>(screenRes.x),
-         static_cast<unsigned int>(screenRes.y)))
+         static_cast<unsigned int>(screenRes.y),
+         m_depthStencilBuffer))
       {
          MELog(m_context,
             TEXT("RendererDX11"),
@@ -440,7 +444,8 @@ namespace Mile
       m_gaussianBlurPass = new GaussianBlurPass(this);
       if (!m_gaussianBlurPass->Init(
          static_cast<unsigned int>(screenRes.x),
-         static_cast<unsigned int>(screenRes.y)))
+         static_cast<unsigned int>(screenRes.y),
+         m_depthStencilBuffer))
       {
          MELog(m_context,
             TEXT("RendererDX11"),
@@ -452,7 +457,8 @@ namespace Mile
       m_blendingPass = new BlendingPass(this);
       if (!m_blendingPass->Init(
          static_cast<unsigned int>(screenRes.x),
-         static_cast<unsigned int>(screenRes.y)))
+         static_cast<unsigned int>(screenRes.y),
+         m_depthStencilBuffer))
       {
          MELog(m_context,
             TEXT("RendererDX11"),
@@ -932,12 +938,12 @@ namespace Mile
       if (deviceContextPtr != nullptr)
       {
          ID3D11DeviceContext& deviceContext = *deviceContextPtr;
-
          m_viewSpaceGBuffer = ConvertGBufferToViewSpace(deviceContext, m_gBuffer);
-         RenderAmbientEmissive(deviceContext);
-         RenderSkybox(deviceContext);
 
-         RenderTargetDX11* output = Bloom(deviceContext, m_hdrBuffer);
+         RenderTargetDX11* output = RenderAmbientEmissive(deviceContext, m_hdrBuffer);
+         output = Bloom(deviceContext, output);
+         output = RenderSkybox(deviceContext, output);
+
          ToneMappingWithGammaCorrection(deviceContext, output);
 
          ID3D11CommandList* commandList = nullptr;
@@ -1149,84 +1155,98 @@ namespace Mile
       return nullptr;
    }
 
-   void RendererDX11::RenderAmbientEmissive(ID3D11DeviceContext& deviceContext)
+   RenderTargetDX11* RendererDX11::RenderAmbientEmissive(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderTarget)
    {
-      RenderTargetDX11* aoBuffer = nullptr;
-      if (m_bEnableSSAO)
+      if (renderTarget != nullptr)
       {
-         aoBuffer = SSAO(deviceContext, m_viewSpaceGBuffer, m_ssaoRadius, m_ssaoBias);
-         aoBuffer = SSAOBlur(deviceContext, aoBuffer);
-      }
-
-      Transform* camTransform = m_mainCamera->GetTransform();
-      m_ambientEmissivePass->SetGBuffer(m_gBuffer);
-      m_ambientEmissivePass->SetIrradianceMap(m_irradianceConvPass->GetIrradianceMap());
-      m_ambientEmissivePass->SetPrefilteredMap(m_prefilterdEnvMap);
-      m_ambientEmissivePass->SetBRDFLUT(m_brdfLUT);
-      if (m_ambientEmissivePass->Bind(deviceContext))
-      {
-         m_hdrBuffer->BindAsRenderTarget(deviceContext, false, false);
-         m_depthDisable->Bind(deviceContext);
-         m_viewport->Bind(deviceContext);
-         m_defaultRasterizerState->Bind(deviceContext);
-         m_additiveBlendState->Bind(deviceContext);
-         m_screenQuad->Bind(deviceContext, 0);
-
-         if (aoBuffer != nullptr)
+         RenderTargetDX11* aoBuffer = nullptr;
+         if (m_bEnableSSAO)
          {
-            aoBuffer->BindAsShaderResource(deviceContext, 8, EShaderType::PixelShader);
+            aoBuffer = SSAO(deviceContext, m_viewSpaceGBuffer, m_ssaoRadius, m_ssaoBias);
+            aoBuffer = SSAOBlur(deviceContext, aoBuffer);
          }
 
-         m_ambientEmissivePass->UpdateAmbientParamsBuffer(
-            deviceContext,
-            { 
-               camTransform->GetPosition(TransformSpace::World), 
-               m_aoFactor, static_cast<unsigned int>(m_bEnableSSAO ? 1 : 0)
-            });
-
-         deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
-
-         if (aoBuffer != nullptr)
+         Transform* camTransform = m_mainCamera->GetTransform();
+         m_ambientEmissivePass->SetGBuffer(m_gBuffer);
+         m_ambientEmissivePass->SetIrradianceMap(m_irradianceConvPass->GetIrradianceMap());
+         m_ambientEmissivePass->SetPrefilteredMap(m_prefilterdEnvMap);
+         m_ambientEmissivePass->SetBRDFLUT(m_brdfLUT);
+         if (m_ambientEmissivePass->Bind(deviceContext))
          {
-            aoBuffer->UnbindShaderResource(deviceContext);
+            renderTarget->BindAsRenderTarget(deviceContext, false, false);
+            m_depthDisable->Bind(deviceContext);
+            m_viewport->Bind(deviceContext);
+            m_defaultRasterizerState->Bind(deviceContext);
+            m_additiveBlendState->Bind(deviceContext);
+            m_screenQuad->Bind(deviceContext, 0);
+
+            if (aoBuffer != nullptr)
+            {
+               aoBuffer->BindAsShaderResource(deviceContext, 8, EShaderType::PixelShader);
+            }
+
+            m_ambientEmissivePass->UpdateAmbientParamsBuffer(
+               deviceContext,
+               {
+                  camTransform->GetPosition(TransformSpace::World),
+                  m_aoFactor, static_cast<unsigned int>(m_bEnableSSAO ? 1 : 0)
+               });
+
+            deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
+
+            if (aoBuffer != nullptr)
+            {
+               aoBuffer->UnbindShaderResource(deviceContext);
+            }
+
+            renderTarget->UnbindRenderTarget(deviceContext);
+            m_ambientEmissivePass->Unbind(deviceContext);
          }
 
-         m_hdrBuffer->UnbindRenderTarget(deviceContext);
-         m_ambientEmissivePass->Unbind(deviceContext);
+         return renderTarget;
       }
+
+      return nullptr;
    }
 
-   void RendererDX11::RenderSkybox(ID3D11DeviceContext& deviceContext)
+   RenderTargetDX11* RendererDX11::RenderSkybox(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderTarget)
    {
-      Transform* camTransform = m_mainCamera->GetTransform();
-      if (m_skyboxPass->Bind(deviceContext, m_equirectToCubemapPass->GetCubemap()))
+      if (renderTarget != nullptr)
       {
-         m_hdrBuffer->BindAsRenderTarget(deviceContext, false, false);
-         m_depthLessEqual->Bind(deviceContext);
-         m_viewport->Bind(deviceContext);
-         m_noCulling->Bind(deviceContext);
+         Transform* camTransform = m_mainCamera->GetTransform();
+         if (m_skyboxPass->Bind(deviceContext, m_equirectToCubemapPass->GetCubemap()))
+         {
+            renderTarget->BindAsRenderTarget(deviceContext, false, false);
+            m_depthLessEqual->Bind(deviceContext);
+            m_viewport->Bind(deviceContext);
+            m_noCulling->Bind(deviceContext);
 
-         Matrix viewMatrix = Matrix::CreateView(
-            Vector3(0.0f, 0.0f, 0.0f),
-            camTransform->GetForward(TransformSpace::World),
-            camTransform->GetUp(TransformSpace::World));
-         Matrix projMatrix = Matrix::CreatePerspectiveProj(
-            m_mainCamera->GetFov(),
-            m_window->GetAspectRatio(),
-            0.1f,
-            10.0f);
+            Matrix viewMatrix = Matrix::CreateView(
+               Vector3(0.0f, 0.0f, 0.0f),
+               camTransform->GetForward(TransformSpace::World),
+               camTransform->GetUp(TransformSpace::World));
+            Matrix projMatrix = Matrix::CreatePerspectiveProj(
+               m_mainCamera->GetFov(),
+               m_window->GetAspectRatio(),
+               0.1f,
+               10.0f);
 
-         m_skyboxPass->UpdateTransformBuffer(
-            deviceContext,
-            {
-               viewMatrix * projMatrix
-            });
+            m_skyboxPass->UpdateTransformBuffer(
+               deviceContext,
+               {
+                  viewMatrix * projMatrix
+               });
 
-         m_cubeMesh->Bind(deviceContext, 0);
-         deviceContext.DrawIndexed(m_cubeMesh->GetIndexCount(), 0, 0);
-         m_hdrBuffer->UnbindRenderTarget(deviceContext);
-         m_skyboxPass->Unbind(deviceContext);
+            m_cubeMesh->Bind(deviceContext, 0);
+            deviceContext.DrawIndexed(m_cubeMesh->GetIndexCount(), 0, 0);
+            renderTarget->UnbindRenderTarget(deviceContext);
+            m_skyboxPass->Unbind(deviceContext);
+         }
+
+         return renderTarget;
       }
+
+      return nullptr;
    }
 
    RenderTargetDX11* RendererDX11::SSAO(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, float radius, float bias)

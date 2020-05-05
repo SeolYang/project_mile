@@ -9,7 +9,6 @@
 namespace Mile
 {
    SSAOPass::SSAOPass(RendererDX11* renderer) :
-      m_depthStencilBuffer(nullptr),
       m_boundGBuffer(nullptr),
       m_boundNoise(nullptr),
       m_outputBuffer(nullptr),
@@ -21,13 +20,12 @@ namespace Mile
 
    SSAOPass::~SSAOPass()
    {
-      SafeDelete(m_depthStencilBuffer);
       SafeDelete(m_outputBuffer);
       SafeDelete(m_variableParams);
       SafeDelete(m_params);
    }
 
-   bool SSAOPass::Init(unsigned int width, unsigned int height)
+   bool SSAOPass::Init(unsigned int width, unsigned int height, DepthStencilBufferDX11* globalDepthStencilBuffer)
    {
       bool bValidParams = (width > 0) && (height > 0);
       if (bValidParams && RenderingPass::Init(TEXT("Contents/Shaders/SSAO.hlsl")))
@@ -46,14 +44,8 @@ namespace Mile
             return false;
          }
 
-         m_depthStencilBuffer = new DepthStencilBufferDX11(renderer);
-         if (!m_depthStencilBuffer->Init(width, height, false))
-         {
-            return false;
-         }
-
          m_outputBuffer = new RenderTargetDX11(renderer);
-         if (!m_outputBuffer->Init(width, height, DXGI_FORMAT_R32_FLOAT, m_depthStencilBuffer))
+         if (!m_outputBuffer->Init(width, height, DXGI_FORMAT_R32_FLOAT, globalDepthStencilBuffer))
          {
             return false;
          }
@@ -89,7 +81,7 @@ namespace Mile
          bool bSuccess =
             gBuffer->BindAsShaderResource(deviceContext, 0) &&
             noiseTexture->Bind(deviceContext, 5, EShaderType::PixelShader) &&
-            m_outputBuffer->BindAsRenderTarget(deviceContext) &&
+            m_outputBuffer->BindAsRenderTarget(deviceContext, true, false) &&
             m_params->Bind(deviceContext, 0, EShaderType::PixelShader) &&
             m_variableParams->Bind(deviceContext, 1, EShaderType::PixelShader);
          if (bSuccess)

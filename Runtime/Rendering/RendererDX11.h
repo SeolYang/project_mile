@@ -169,8 +169,8 @@ namespace Mile
 
       /* Post-Process **/
       GBuffer* ConvertGBufferToViewSpace(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer);
-      void RenderAmbientEmissive(ID3D11DeviceContext& deviceContext);
-      void RenderSkybox(ID3D11DeviceContext& deviceContext);
+      RenderTargetDX11* RenderAmbientEmissive(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderTarget);
+      RenderTargetDX11* RenderSkybox(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderTarget);
       RenderTargetDX11* SSAO(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, float radius, float bias);
       RenderTargetDX11* SSAOBlur(ID3D11DeviceContext& deviceContext, RenderTargetDX11* ssaoInput);
       RenderTargetDX11* ExtractBrightness(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, RenderTargetDX11* renderBuffer, float depthThreshold, float threshold);

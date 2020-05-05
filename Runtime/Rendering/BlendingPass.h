@@ -24,7 +24,7 @@ namespace Mile
       BlendingPass(class RendererDX11* renderer);
       ~BlendingPass();
 
-      bool Init(unsigned int width, unsigned int height);
+      bool Init(unsigned int width, unsigned int height, DepthStencilBufferDX11* globalDepthStencilBuffer);
       bool Bind(ID3D11DeviceContext& deviceContext, RenderTargetDX11* srcBuffer, RenderTargetDX11* destBuffer);
       virtual void Unbind(ID3D11DeviceContext& deviceContext) override;
 
@@ -33,7 +33,6 @@ namespace Mile
       RenderTargetDX11* GetOutputBuffer() const { return m_outputHDRBuffer; }
 
    private:
-      DepthStencilBufferDX11* m_depthStencilBuffer;
       RenderTargetDX11* m_boundSrcBuffer;
       RenderTargetDX11* m_boundDestBuffer;
       RenderTargetDX11* m_outputHDRBuffer;

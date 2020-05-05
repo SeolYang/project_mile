@@ -28,7 +28,7 @@ namespace Mile
       SSAOPass(class RendererDX11* renderer);
       ~SSAOPass();
 
-      bool Init(unsigned int width, unsigned int height);
+      bool Init(unsigned int width, unsigned int height, DepthStencilBufferDX11* globalDepthStencilBuffer);
       bool Bind(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, Texture2dDX11* noiseTexture);
       virtual void Unbind(ID3D11DeviceContext& deviceContext) override;
 
@@ -38,7 +38,6 @@ namespace Mile
       RenderTargetDX11* GetOutputBuffer() const { return m_outputBuffer; }
 
    private:
-      DepthStencilBufferDX11* m_depthStencilBuffer;
       GBuffer* m_boundGBuffer;
       Texture2dDX11* m_boundNoise;
       RenderTargetDX11* m_outputBuffer;

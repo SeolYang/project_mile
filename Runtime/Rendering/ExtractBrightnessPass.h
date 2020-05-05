@@ -20,7 +20,7 @@ namespace Mile
       ExtractBrightnessPass(class RendererDX11* renderer);
       ~ExtractBrightnessPass();
 
-      bool Init(unsigned int width, unsigned int height);
+      bool Init(unsigned int width, unsigned int height, DepthStencilBufferDX11* globalDepthStencilBuffer);
       bool Bind(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, RenderTargetDX11* hdrBuffer);
       virtual void Unbind(ID3D11DeviceContext& deviceContext) override;
 
@@ -29,7 +29,6 @@ namespace Mile
       RenderTargetDX11* GetOutputBuffer() const { return m_outputHDRBuffer; }
 
    private:
-      DepthStencilBufferDX11* m_depthStencilBuffer;
       GBuffer* m_boundGBuffer;
       RenderTargetDX11* m_boundHdrBuffer;
       RenderTargetDX11* m_outputHDRBuffer;

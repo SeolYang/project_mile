@@ -9,7 +9,6 @@
 namespace Mile
 {
    SSAOBlurPass::SSAOBlurPass(RendererDX11* renderer) :
-      m_depthStencilBuffer(nullptr),
       m_boundSSAOInput(nullptr),
       m_outputBuffer(nullptr),
       RenderingPass(renderer)
@@ -18,25 +17,18 @@ namespace Mile
 
    SSAOBlurPass::~SSAOBlurPass()
    {
-      SafeDelete(m_depthStencilBuffer);
       SafeDelete(m_outputBuffer);
    }
 
-   bool SSAOBlurPass::Init(unsigned int width, unsigned int height)
+   bool SSAOBlurPass::Init(unsigned int width, unsigned int height, DepthStencilBufferDX11* globalDepthStencilBuffer)
    {
       bool bValidParams = (width > 0) && (height > 0);
       if (bValidParams && RenderingPass::Init(TEXT("Contents/Shaders/SSAOBlur.hlsl")))
       {
          RendererDX11* renderer = GetRenderer();
 
-         m_depthStencilBuffer = new DepthStencilBufferDX11(renderer);
-         if (!m_depthStencilBuffer->Init(width, height, false))
-         {
-            return false;
-         }
-
          m_outputBuffer = new RenderTargetDX11(renderer);
-         if (!m_outputBuffer->Init(width, height, DXGI_FORMAT_R32_FLOAT, m_depthStencilBuffer))
+         if (!m_outputBuffer->Init(width, height, DXGI_FORMAT_R32_FLOAT, globalDepthStencilBuffer))
          {
             return false;
          }
@@ -46,7 +38,6 @@ namespace Mile
             D3D11_FILTER_MIN_MAG_MIP_POINT,
             D3D11_TEXTURE_ADDRESS_CLAMP,
             D3D11_COMPARISON_ALWAYS);
-
 
          RenderObject::ConfirmInit();
          return true;
@@ -62,7 +53,7 @@ namespace Mile
       {
          bool bSuccess =
             ssaoInput->BindAsShaderResource(deviceContext, 0, EShaderType::PixelShader) &&
-            m_outputBuffer->BindAsRenderTarget(deviceContext);
+            m_outputBuffer->BindAsRenderTarget(deviceContext, true, false);
          if (bSuccess)
          {
             m_boundSSAOInput = ssaoInput;
