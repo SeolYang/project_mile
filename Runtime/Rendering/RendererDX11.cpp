@@ -17,6 +17,8 @@
 #include "Rendering/IrradianceConvPass.h"
 #include "Rendering/PrefilteringPass.h"
 #include "Rendering/IntegrateBRDFPass.h"
+#include "Rendering/SSAOPass.h"
+#include "Rendering/SSAOBlurPass.h"
 #include "Rendering/AmbientEmissivePass.h"
 #include "Rendering/SkyboxPass.h"
 #include "Rendering/BoxBloomPass.h"
@@ -68,7 +70,12 @@ namespace Mile
       m_integrateBRDFPass(nullptr),
       m_brdfLUT(nullptr),
       m_bEnableSSAO(true),
+      m_ssaoPass(nullptr),
+      m_ssaoBlurPass(nullptr),
       m_ssaoNoise(nullptr),
+      m_ssaoRadius(DEFAULT_SSAO_RADIUS),
+      m_ssaoBias(DEFAULT_SSAO_BIAS),
+      m_ssaoMagnitude(DEFAULT_SSAO_MAGNITUDE),
       m_noiseScale(Vector2(1.0f, 1.0f)),
       m_bCubemapDirtyFlag(false),
       m_bAlwaysComputeIBL(false),
@@ -117,12 +124,6 @@ namespace Mile
          if (!InitPBR())
          {
             MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize PBR render pass."), true);
-            return false;
-         }
-
-         if (!InitSSAO())
-         {
-            MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize SSAO pass."), true);
             return false;
          }
 
@@ -312,37 +313,65 @@ namespace Mile
    bool RendererDX11::InitSSAO()
    {
       Vector2 screenRes{ m_window->GetResolution() };
-      m_noiseScale = Vector2(screenRes.x / SSAO_NOISE_TEXTURE_RES, screenRes.y / SSAO_NOISE_TEXTURE_RES);
+      SSAOPass::SSAOParams ssaoParams;
+      ssaoParams.NoiseScale = Vector2(screenRes.x / SSAO_NOISE_TEXTURE_RES, screenRes.y / SSAO_NOISE_TEXTURE_RES);
 
       std::uniform_real_distribution<float> randomFloats(0.0f, 1.0f);
       std::default_random_engine generator;
       for (unsigned int idx = 0; idx < SSAO_KERNEL_SIZE; ++idx)
       {
-         Vector3 sample{
+         Vector4 sample{
             randomFloats(generator) * 2.0f - 1.0f,
             randomFloats(generator) * 2.0f - 1.0f,
-            randomFloats(generator) /* Hemisphere : z = [0, 1] */ };
-
+            randomFloats(generator) /* Hemisphere : z = [0, 1] */,
+            0.0f };
          sample.Normalize();
-         float scale = (float)idx / SSAO_KERNEL_SIZE;
+         sample *= randomFloats(generator);
+
+         float scale = (float)idx / (float)SSAO_KERNEL_SIZE;
          scale = Math::Lerp(0.1f, 1.0f, scale * scale);
          sample *= scale;
-         m_ssaoKernel[idx] = sample;
+
+         ssaoParams.Samples[idx] = sample;
       }
 
-      std::vector<Vector3> ssaoNoise;
-      for (unsigned int idx = 0; idx < (SSAO_NOISE_TEXTURE_RES * SSAO_NOISE_TEXTURE_RES); ++idx)
+      std::vector<Vector4> ssaoNoise;
+      for (unsigned int idx = 0; idx < static_cast<unsigned int>(SSAO_NOISE_TEXTURE_RES * SSAO_NOISE_TEXTURE_RES); ++idx)
       {
-         ssaoNoise.push_back(Vector3(
+         ssaoNoise.push_back(Vector4(
             randomFloats(generator) * 2.0f - 1.0f,
             randomFloats(generator) * 2.0f - 1.0f,
+            0.0f,
             0.0f));
       }
 
       m_ssaoNoise = new Texture2dDX11(this);
-      if (!m_ssaoNoise->Init(SSAO_NOISE_TEXTURE_RES, SSAO_NOISE_TEXTURE_RES, 3, (unsigned char*)ssaoNoise.data(), DXGI_FORMAT_R16G16B16A16_FLOAT))
+      if (!m_ssaoNoise->Init(
+         static_cast<unsigned int>(SSAO_NOISE_TEXTURE_RES), static_cast<unsigned int>(SSAO_NOISE_TEXTURE_RES), 4,
+         (unsigned char*)ssaoNoise.data(),
+         DXGI_FORMAT_R32G32B32A32_FLOAT))
       {
          MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize SSAO Noise texture."), true);
+         return false;
+      }
+
+      m_ssaoPass = new SSAOPass(this);
+      if (!m_ssaoPass->Init(
+         static_cast<unsigned int>(screenRes.x), 
+         static_cast<unsigned int>(screenRes.y)))
+      {
+         MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize SSAO pass."), true);
+         return false;
+      }
+
+      m_ssaoPass->UpdateParameters(*GetRenderContextByType(ERenderContextType::Immediate), ssaoParams);
+
+      m_ssaoBlurPass = new SSAOBlurPass(this);
+      if (!m_ssaoBlurPass->Init(
+         static_cast<unsigned int>(screenRes.x),
+         static_cast<unsigned int>(screenRes.y)))
+      {
+         MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize SSAO Blur pass."), true);
          return false;
       }
 
@@ -421,6 +450,12 @@ namespace Mile
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Tone mapping pass."), true);
+         return false;
+      }
+
+      if (!InitSSAO())
+      {
+         MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize SSAO pass."), true);
          return false;
       }
 
@@ -538,6 +573,8 @@ namespace Mile
          SafeDelete(m_blendingPass);
          SafeDelete(m_gBuffer);
          SafeDelete(m_ssaoNoise);
+         SafeDelete(m_ssaoPass);
+         SafeDelete(m_ssaoBlurPass);
          SafeDelete(m_backBuffer);
          SafeDelete(m_depthStencilBuffer);
          SafeRelease(m_swapChain);
@@ -924,6 +961,13 @@ namespace Mile
 
    void RendererDX11::RenderAmbientEmissive(ID3D11DeviceContext& deviceContext)
    {
+      RenderTargetDX11* aoBuffer = nullptr;
+      if (m_bEnableSSAO)
+      {
+         aoBuffer = SSAO(deviceContext, m_gBuffer, m_ssaoRadius, m_ssaoBias);
+         aoBuffer = SSAOBlur(deviceContext, aoBuffer);
+      }
+
       Transform* camTransform = m_mainCamera->GetTransform();
       m_ambientEmissivePass->SetGBuffer(m_gBuffer);
       m_ambientEmissivePass->SetIrradianceMap(m_irradianceConvPass->GetIrradianceMap());
@@ -938,14 +982,24 @@ namespace Mile
          m_additiveBlendState->Bind(deviceContext);
          m_screenQuad->Bind(deviceContext, 0);
 
+         if (aoBuffer != nullptr)
+         {
+            aoBuffer->BindAsShaderResource(deviceContext, 8, EShaderType::PixelShader);
+         }
+
          m_ambientEmissivePass->UpdateAmbientParamsBuffer(
             deviceContext,
             { 
                camTransform->GetPosition(TransformSpace::World), 
-               m_aoFactor
+               m_aoFactor, static_cast<unsigned int>(m_bEnableSSAO ? 1 : 0)
             });
 
          deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
+
+         if (aoBuffer != nullptr)
+         {
+            aoBuffer->UnbindShaderResource(deviceContext);
+         }
 
          m_hdrBuffer->UnbindRenderTarget(deviceContext);
          m_ambientEmissivePass->Unbind(deviceContext);
@@ -996,6 +1050,16 @@ namespace Mile
          m_viewport->Bind(deviceContext);
 
          auto camTransform = m_mainCamera->GetTransform();
+         Matrix viewMatrix = Matrix::CreateView(
+            camTransform->GetPosition(TransformSpace::World),
+            camTransform->GetForward(TransformSpace::World),
+            camTransform->GetUp(TransformSpace::World));
+         Matrix projMatrix = Matrix::CreatePerspectiveProj(
+            m_mainCamera->GetFov(),
+            m_window->GetAspectRatio(),
+            m_mainCamera->GetNearPlane(),
+            m_mainCamera->GetFarPlane());
+
          for (auto batchedMaterial : m_materialMap)
          {
             /* 물리 기반 머테리얼 정보 취득 **/
@@ -1035,15 +1099,6 @@ namespace Mile
                      Mesh* mesh = meshRenderer->GetMesh();
 
                      Matrix worldMatrix = transform->GetWorldMatrix();
-                     Matrix viewMatrix = Matrix::CreateView(
-                        camTransform->GetPosition(TransformSpace::World),
-                        camTransform->GetForward(TransformSpace::World),
-                        camTransform->GetUp(TransformSpace::World));
-                     Matrix projMatrix = Matrix::CreatePerspectiveProj(
-                        m_mainCamera->GetFov(),
-                        m_window->GetAspectRatio(),
-                        m_mainCamera->GetNearPlane(),
-                        m_mainCamera->GetFarPlane());
 
                      Matrix worldViewMatrix = worldMatrix * viewMatrix;
                      m_geometryPass->UpdateTransformBuffer(
@@ -1094,6 +1149,58 @@ namespace Mile
          {
             return commandList;
          }
+      }
+
+      return nullptr;
+   }
+
+   RenderTargetDX11* RendererDX11::SSAO(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, float radius, float bias)
+   {
+      if (m_ssaoPass->Bind(deviceContext, gBuffer, m_ssaoNoise))
+      {
+         m_depthDisable->Bind(deviceContext);
+         m_viewport->Bind(deviceContext);
+         m_defaultRasterizerState->Bind(deviceContext);
+         m_screenQuad->Bind(deviceContext, 0);
+
+         auto camTransform = m_mainCamera->GetTransform();
+         Matrix viewMatrix = Matrix::CreateView(
+            camTransform->GetPosition(TransformSpace::World),
+            camTransform->GetForward(TransformSpace::World),
+            camTransform->GetUp(TransformSpace::World));
+         Matrix projMatrix = Matrix::CreatePerspectiveProj(
+            m_mainCamera->GetFov(),
+            m_window->GetAspectRatio(),
+            m_mainCamera->GetNearPlane(),
+            m_mainCamera->GetFarPlane());
+
+         m_ssaoPass->UpdateVariableParams(deviceContext,
+            {
+               viewMatrix , projMatrix, 
+               m_ssaoRadius, m_ssaoBias, m_ssaoMagnitude
+            });
+         deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
+
+         m_ssaoPass->Unbind(deviceContext);
+         return m_ssaoPass->GetOutputBuffer();
+      }
+
+      return nullptr;
+   }
+
+   RenderTargetDX11* RendererDX11::SSAOBlur(ID3D11DeviceContext& deviceContext, RenderTargetDX11* ssaoInput)
+   {
+      if (m_ssaoBlurPass->Bind(deviceContext, ssaoInput))
+      {
+         m_depthDisable->Bind(deviceContext);
+         m_viewport->Bind(deviceContext);
+         m_defaultRasterizerState->Bind(deviceContext);
+         m_screenQuad->Bind(deviceContext, 0);
+
+         deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
+
+         m_ssaoBlurPass->Unbind(deviceContext);
+         return m_ssaoBlurPass->GetOutputBuffer();
       }
 
       return nullptr;

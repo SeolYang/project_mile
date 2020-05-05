@@ -7,35 +7,35 @@ namespace Mile
    {
       /* Vertex Structure : (Position, TexCoord, Normal) **/
       std::vector<VertexPTN> vertices = {
-         { Vector4(min.x, min.y, min.z, 1.0f), Vector2(0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f) }, // front face
-         { Vector4(min.x, max.y, min.z, 1.0f), Vector2(0.0f, 1.0f), Vector3(0.0f, 0.0f, -1.0f) },
-         { Vector4(max.x, max.y, min.z, 1.0f), Vector2(1.0f, 1.0f), Vector3(0.0f, 0.0f, -1.0f) },
-         { Vector4(max.x, min.y, min.z, 1.0f), Vector2(1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f) },
+         { Vector4(min.x, min.y, min.z, 1.0f), Vector2(0.0f, 1.0f), Vector3(0.0f, 0.0f, -1.0f) }, // front face
+         { Vector4(min.x, max.y, min.z, 1.0f), Vector2(0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f) },
+         { Vector4(max.x, max.y, min.z, 1.0f), Vector2(1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f) },
+         { Vector4(max.x, min.y, min.z, 1.0f), Vector2(1.0f, 1.0f), Vector3(0.0f, 0.0f, -1.0f) },
 
-         { Vector4(max.x, min.y, max.z, 1.0f), Vector2(0.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f) }, // back face
-         { Vector4(max.x, max.y, max.z, 1.0f), Vector2(0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f) },
-         { Vector4(min.x, max.y, max.z, 1.0f), Vector2(1.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f) },
-         { Vector4(min.x, min.y, max.z, 1.0f), Vector2(1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f) },
+         { Vector4(max.x, min.y, max.z, 1.0f), Vector2(0.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f) }, // back face
+         { Vector4(max.x, max.y, max.z, 1.0f), Vector2(0.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f) },
+         { Vector4(min.x, max.y, max.z, 1.0f), Vector2(1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f) },
+         { Vector4(min.x, min.y, max.z, 1.0f), Vector2(1.0f, 1.0f), Vector3(0.0f, 0.0f, 1.0f) },
 
-         { Vector4(min.x, min.y, max.z, 1.0f), Vector2(0.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f) }, // left-side face
-         { Vector4(min.x, max.y, max.z, 1.0f), Vector2(0.0f, 1.0f), Vector3(-1.0f, 0.0f, 0.0f) },
-         { Vector4(min.x, max.y, min.z, 1.0f), Vector2(1.0f, 1.0f), Vector3(-1.0f, 0.0f, 0.0f) },
-         { Vector4(min.x, min.x, min.z, 1.0f), Vector2(1.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f) },
+         { Vector4(min.x, min.y, max.z, 1.0f), Vector2(0.0f, 1.0f), Vector3(-1.0f, 0.0f, 0.0f) }, // left-side face
+         { Vector4(min.x, max.y, max.z, 1.0f), Vector2(0.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f) },
+         { Vector4(min.x, max.y, min.z, 1.0f), Vector2(1.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f) },
+         { Vector4(min.x, min.x, min.z, 1.0f), Vector2(1.0f, 1.0f), Vector3(-1.0f, 0.0f, 0.0f) },
 
-         { Vector4(max.x, min.y, min.z, 1.0f), Vector2(0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f) }, // right-side face
-         { Vector4(max.x, max.y, min.z, 1.0f), Vector2(0.0f, 1.0f), Vector3(1.0f, 0.0f, 0.0f) },
-         { Vector4(max.x, max.y, max.z, 1.0f), Vector2(1.0f, 1.0f), Vector3(1.0f, 0.0f, 0.0f) },
-         { Vector4(max.x, min.y, max.z, 1.0f), Vector2(1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f) },
+         { Vector4(max.x, min.y, min.z, 1.0f), Vector2(0.0f, 1.0f), Vector3(1.0f, 0.0f, 0.0f) }, // right-side face
+         { Vector4(max.x, max.y, min.z, 1.0f), Vector2(0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f) },
+         { Vector4(max.x, max.y, max.z, 1.0f), Vector2(1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f) },
+         { Vector4(max.x, min.y, max.z, 1.0f), Vector2(1.0f, 1.0f), Vector3(1.0f, 0.0f, 0.0f) },
 
-         { Vector4(min.x, max.y, min.z, 1.0f), Vector2(0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f) }, // upper-side face
-         { Vector4(min.x, max.y, max.z, 1.0f), Vector2(0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f) },
-         { Vector4(max.x, max.y, max.z, 1.0f), Vector2(1.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f) },
-         { Vector4(max.x, max.y, min.z, 1.0f), Vector2(1.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f) },
+         { Vector4(min.x, max.y, min.z, 1.0f), Vector2(0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f) }, // upper-side face
+         { Vector4(min.x, max.y, max.z, 1.0f), Vector2(0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f) },
+         { Vector4(max.x, max.y, max.z, 1.0f), Vector2(1.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f) },
+         { Vector4(max.x, max.y, min.z, 1.0f), Vector2(1.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f) },
 
-         { Vector4(min.x, min.y, min.z, 1.0f), Vector2(0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f) }, // lower-side face
-         { Vector4(min.x, min.y, max.z, 1.0f), Vector2(0.0f, 1.0f), Vector3(0.0f, -1.0f, 0.0f) },
-         { Vector4(max.x, min.y, max.z, 1.0f), Vector2(1.0f, 1.0f), Vector3(0.0f, -1.0f, 0.0f) },
-         { Vector4(max.x, min.y, min.z, 1.0f), Vector2(1.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f) }
+         { Vector4(min.x, min.y, min.z, 1.0f), Vector2(0.0f, 1.0f), Vector3(0.0f, -1.0f, 0.0f) }, // lower-side face
+         { Vector4(min.x, min.y, max.z, 1.0f), Vector2(0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f) },
+         { Vector4(max.x, min.y, max.z, 1.0f), Vector2(1.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f) },
+         { Vector4(max.x, min.y, min.z, 1.0f), Vector2(1.0f, 1.0f), Vector3(0.0f, -1.0f, 0.0f) }
       };
 
       std::vector<UINT32> indices = {

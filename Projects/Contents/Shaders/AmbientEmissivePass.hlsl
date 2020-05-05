@@ -24,6 +24,7 @@ cbuffer AmbientParamsBuffer
 {
 	float3 CameraPos;
 	float  Ao;
+	unsigned int SSAOEnabled;
 };
 
 /* Textures & Samplers */
@@ -37,9 +38,12 @@ Texture2D metallicRoughnessBuffer	: register(t4);
 TextureCube irradianceMap				: register(t5);
 TextureCube prefilteredMap				: register(t6);
 Texture2D brdfLUT							: register(t7);
+/* SSAO */
+Texture2D ssaoInput						: register(t8);
 
 SamplerState AnisoSampler				: register(s0);
 SamplerState LinearClampSampler		: register(s1);
+SamplerState SSAOSampler				: register(s2);
 
 VSOutput MileVS(in VSInput input)
 {
@@ -59,6 +63,10 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float4 emissiveAO = emissiveAOBuffer.Sample(LinearClampSampler, input.TexCoord).rgba;
 	float3 emissive = emissiveAO.rgb;
 	float ao = emissiveAO.a > 0.0f ? emissiveAO.a : Ao;
+	if (SSAOEnabled == 1)
+	{
+		ao = ssaoInput.Sample(SSAOSampler, input.TexCoord).r;
+	}
 
 	float3 N = normalize(normalBuffer.Sample(LinearClampSampler, input.TexCoord).xyz);
 	float3 V = normalize(CameraPos - worldPos);

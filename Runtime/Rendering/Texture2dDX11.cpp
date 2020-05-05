@@ -38,6 +38,7 @@ namespace Mile
          {
          case DXGI_FORMAT_R32G32B32A32_FLOAT:
          case DXGI_FORMAT_R16G16B16A16_FLOAT:
+         case DXGI_FORMAT_R32G32B32_FLOAT:
             bytePerChannel = sizeof(float);
             break;
          }

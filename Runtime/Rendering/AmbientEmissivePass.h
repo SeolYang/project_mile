@@ -14,6 +14,7 @@ namespace Mile
       {
          Vector3 CameraPos;
          float Ao;
+         unsigned int SSAOEnabled;
       };
 
    public:

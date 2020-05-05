@@ -37,6 +37,9 @@ namespace Mile
    constexpr float DEFAULT_GAUSSIAN_BLOOM_DEPTH_THRESHOLD = 0.999f;
    constexpr float SSAO_NOISE_TEXTURE_RES = 4.0f;
    constexpr unsigned int SSAO_KERNEL_SIZE = 64;
+   constexpr float DEFAULT_SSAO_RADIUS = 2.0f;
+   constexpr float DEFAULT_SSAO_BIAS = 0.01f;
+   constexpr float DEFAULT_SSAO_MAGNITUDE = 1.1f;
 
    class DepthStencilBufferDX11;
    class RenderTargetDX11;
@@ -53,6 +56,8 @@ namespace Mile
    class IntegrateBRDFPass;
    class GeometryPass;
    class LightingPass;
+   class SSAOPass;
+   class SSAOBlurPass;
    class AmbientEmissivePass;
    class SkyboxPass;
    class BoxBloomPass;
@@ -85,12 +90,6 @@ namespace Mile
       virtual ~RendererDX11();
 
       virtual bool Init() override;
-      bool InitAPI();
-      bool InitPBR();
-      bool InitSSAO();
-      bool InitPostProcess();
-      bool InitStates();
-
       virtual void DeInit() override;
 
       /* Rendering Methods **/
@@ -129,10 +128,28 @@ namespace Mile
       void SetGaussianBloomDepthThreshold(float threshold) { m_gaussianBloomThreshold = threshold; }
       float SetGaussianBloomDepthThreshold() const { return m_gaussianBloomDepthThreshold; }
 
+      void SetSSAOEanble(bool bEnable) { m_bEnableSSAO = bEnable; }
+      bool IsSSAOEnabled() const { return m_bEnableSSAO; }
+
+      void SetSSAORadius(float radius) { m_ssaoRadius = radius; }
+      float GetSSAORadius() const { return m_ssaoRadius; }
+
+      void SetSSAOBias(float bias) { m_ssaoBias = bias; }
+      float GetSSAOBias() const { return m_ssaoBias; }
+
+      void SetSSAOMagnitude(float mag) { m_ssaoMagnitude = mag; }
+      float GetSSAOMagnitude() const { return m_ssaoMagnitude; }
+
    private:
       /* Initialization methods **/
       bool CreateDeviceAndSwapChain();
       bool CreateDepthStencilBuffer();
+
+      bool InitAPI();
+      bool InitPBR();
+      bool InitSSAO();
+      bool InitPostProcess();
+      bool InitStates();
 
       /* Rendering Workflow **/
       ID3D11CommandList* RunGeometryPass(ID3D11DeviceContext* deviceContextPtr);
@@ -151,6 +168,8 @@ namespace Mile
       ID3D11CommandList* RunLightingPass(ID3D11DeviceContext* deviceContextPtr);
 
       /* Post-Process **/
+      RenderTargetDX11* SSAO(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, float radius, float bias);
+      RenderTargetDX11* SSAOBlur(ID3D11DeviceContext& deviceContext, RenderTargetDX11* ssaoInput);
       RenderTargetDX11* ExtractBrightness(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, RenderTargetDX11* renderBuffer, float depthThreshold, float threshold);
       RenderTargetDX11* GaussianBlur(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer, unsigned int gaussianAmount);
       RenderTargetDX11* Bloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer);
@@ -213,12 +232,6 @@ namespace Mile
       LightingPass* m_lightingPass;
       RenderTargetDX11* m_lightingPassRenderBuffer;
 
-      /* SSAO **/
-      bool m_bEnableSSAO;
-      Vector3 m_ssaoKernel[SSAO_KERNEL_SIZE];
-      Texture2dDX11* m_ssaoNoise;
-      Vector2 m_noiseScale;
-
       /** Cubemap / Environment Map */
       bool  m_bCubemapDirtyFlag; // Diffuse Irradiance 와 Specular IBL 의 계산이 끝난 후에 false로 설정하여야 한다.
       Equirect2CubemapPass* m_equirectToCubemapPass;
@@ -236,6 +249,17 @@ namespace Mile
 
       IntegrateBRDFPass* m_integrateBRDFPass;
       RenderTargetDX11* m_brdfLUT;
+
+      /* SSAO **/
+      bool m_bEnableSSAO;
+      std::array<Vector3, SSAO_KERNEL_SIZE> m_ssaoKernel;
+      Texture2dDX11* m_ssaoNoise;
+      Vector2 m_noiseScale;
+      float m_ssaoRadius;
+      float m_ssaoBias;
+      float m_ssaoMagnitude;
+      SSAOPass* m_ssaoPass;
+      SSAOBlurPass* m_ssaoBlurPass;
 
       /** Ambient Emissive Pass */
       float m_aoFactor;

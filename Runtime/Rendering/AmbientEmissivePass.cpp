@@ -47,6 +47,10 @@ namespace Mile
          D3D11_FILTER_MIN_MAG_MIP_LINEAR,
          D3D11_TEXTURE_ADDRESS_WRAP,
          D3D11_COMPARISON_ALWAYS);
+      pixelShader->AddSampler(
+         D3D11_FILTER_MIN_MAG_MIP_POINT,
+         D3D11_TEXTURE_ADDRESS_WRAP,
+         D3D11_COMPARISON_ALWAYS);
 
       RenderObject::ConfirmInit();
       return true;

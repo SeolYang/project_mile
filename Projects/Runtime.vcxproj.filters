@@ -549,6 +549,12 @@
     <ClInclude Include="..\Runtime\Rendering\ExtractBrightnessPass.h">
       <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\SSAOPass.h">
+      <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\SSAOBlurPass.h">
+      <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -746,6 +752,12 @@
     <ClCompile Include="..\Runtime\Rendering\ExtractBrightnessPass.cpp">
       <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
     </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\SSAOPass.cpp">
+      <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\SSAOBlurPass.cpp">
+      <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Contents\Shaders\LightingPass.hlsl">
@@ -798,6 +810,12 @@
     </FxCompile>
     <FxCompile Include="Contents\Shaders\GBuffer.hlsl">
       <Filter>Shaders\Light-Pre Pass</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\SSAO.hlsl">
+      <Filter>Shaders\Post-Process</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\SSAOBlur.hlsl">
+      <Filter>Shaders\Post-Process</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
