@@ -60,7 +60,7 @@ PSOutput MilePS(in PSInput input)
 	output.Albedo = albedoBuffer.Sample(Sampler, input.TexCoord).rgba;
 	output.EmissiveAO = emissiveAOBuffer.Sample(Sampler, input.TexCoord).rgba;
 	float3 normal = normalBuffer.Sample(Sampler, input.TexCoord).xyz;
-	output.Normal = float4(mul((float3x3)View, normal.xyz).xyz, 0.0f);
+	output.Normal = float4(normalize(mul((float3x3)View, normal.xyz).xyz), 0.0f);
 	output.MetallicRoughness = float4(metallicRoughnessBuffer.Sample(Sampler, input.TexCoord).rg, 0.0f, 0.0f);
 	return output;
 }
