@@ -12,7 +12,6 @@ namespace Mile
    {
       DEFINE_CONSTANT_BUFFER(ExtractParams)
       {
-         float DepthThreshold;
          float Threshold;
       };
 

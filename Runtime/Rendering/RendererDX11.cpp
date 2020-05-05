@@ -1306,7 +1306,7 @@ namespace Mile
          m_defaultRasterizerState->Bind(deviceContext);
          m_screenQuad->Bind(deviceContext, 0);
 
-         m_extractBrightnessPass->UpdateParameters(deviceContext, { depthThreshold, threshold });
+         m_extractBrightnessPass->UpdateParameters(deviceContext, { threshold });
          deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
 
          m_extractBrightnessPass->Unbind(deviceContext);

@@ -60,8 +60,8 @@ namespace Mile
       if (bIsValidParams && RenderingPass::Bind(deviceContext))
       {
          bool bSuccess =
-            gBuffer->BindAsShaderResource(deviceContext, 0, true) &&
-            hdrBuffer->BindAsShaderResource(deviceContext, 6, EShaderType::PixelShader) &&
+            gBuffer->BindAsShaderResource(deviceContext, 0) &&
+            hdrBuffer->BindAsShaderResource(deviceContext, 5, EShaderType::PixelShader) &&
             m_outputHDRBuffer->BindAsRenderTarget(deviceContext, true, false) &&
             m_params->Bind(deviceContext, 0, EShaderType::PixelShader);
          if (bSuccess)
