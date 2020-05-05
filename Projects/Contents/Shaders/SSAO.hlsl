@@ -65,6 +65,7 @@ float MilePS(in PSInput input) : SV_Target0
 	float3x3 tangentFrame = float3x3(tangent, bitangent, normal);
 
 	const uint kernelSize = 64;
+	const float kernelSizeFloat = 64.0f;
 	float occlusion = 0.0f;
 	for (uint idx = 0; idx < kernelSize; ++idx)
 	{
@@ -83,7 +84,7 @@ float MilePS(in PSInput input) : SV_Target0
 		occlusion +=  occluded * intensity;
 	}
 
-	occlusion = 1.0f - (occlusion / ((float)kernelSize));
+	occlusion = 1.0f - (occlusion / kernelSizeFloat);
 	occlusion = pow(occlusion, magnitude);
 	return float(occlusion);
 }

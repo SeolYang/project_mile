@@ -41,8 +41,8 @@ int main( )
       camComponent->SetNearPlane(0.1f);
       camComponent->SetFarPlane(100.0f);
       camComponent->SetFov(45.0f);
-      camTransform->SetPosition(Vector3(0.0f, 1.0f, -7.0f));
-      camTransform->SetRotation(Quaternion(-10.0f, Vector3(1.0f, 0.0f, 0.0f)));
+      camTransform->SetPosition(Vector3(0.0f, 2.0f, -7.0f));
+      camTransform->SetRotation(Quaternion(-20.0f, Vector3(1.0f, 0.0f, 0.0f)));
       cameraParent->AttachChild(camera);
 
       Entity* mainLight = world->CreateEntity(TEXT("Main Light"));
@@ -140,8 +140,9 @@ int main( )
       renderer->SetGaussianBloomIntensity(1.5f);
       renderer->SetGaussianBloomThreshold(0.8f);
       renderer->SetSSAOEanble(true);
-      renderer->SetSSAORadius(0.5f);
+      renderer->SetSSAORadius(2.0f);
       renderer->SetSSAOBias(0.01f);
+      renderer->SetSSAOMagnitude(3.f);
       execute = engine->Execute();
    }
 
