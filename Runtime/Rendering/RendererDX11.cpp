@@ -17,6 +17,7 @@
 #include "Rendering/IrradianceConvPass.h"
 #include "Rendering/PrefilteringPass.h"
 #include "Rendering/IntegrateBRDFPass.h"
+#include "Rendering/ConvertGBufferToViewPass.h"
 #include "Rendering/SSAOPass.h"
 #include "Rendering/SSAOBlurPass.h"
 #include "Rendering/AmbientEmissivePass.h"
@@ -69,6 +70,8 @@ namespace Mile
       m_prefilterdEnvMap(nullptr),
       m_integrateBRDFPass(nullptr),
       m_brdfLUT(nullptr),
+      m_convertGBufferToViewPass(nullptr),
+      m_viewSpaceGBuffer(nullptr),
       m_bEnableSSAO(true),
       m_ssaoPass(nullptr),
       m_ssaoBlurPass(nullptr),
@@ -287,26 +290,6 @@ namespace Mile
          return false;
       }
 
-      m_ambientEmissivePass = new AmbientEmissivePass(this);
-      if (!m_ambientEmissivePass->Init())
-      {
-         MELog(m_context,
-            TEXT("RendererDX11"),
-            ELogType::FATAL,
-            TEXT("Failed to create ambient emissive pass."), true);
-         return false;
-      }
-
-      m_skyboxPass = new SkyboxPass(this);
-      if (!m_skyboxPass->Init())
-      {
-         MELog(m_context,
-            TEXT("RendererDX11"),
-            ELogType::FATAL,
-            TEXT("Failed to create Skybox Pass."), true);
-         return false;
-      }
-
       return true;
    }
 
@@ -381,6 +364,7 @@ namespace Mile
    bool RendererDX11::InitPostProcess()
    {
       Vector2 screenRes{ m_window->GetResolution() };
+
       m_hdrBuffer = new RenderTargetDX11(this);
       if (!m_hdrBuffer->Init(
          static_cast<unsigned int>(screenRes.x),
@@ -392,6 +376,40 @@ namespace Mile
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create HDR Buffer."), true);
+         return false;
+      }
+
+      m_convertGBufferToViewPass = new ConvertGBufferToViewPass(this);
+      if (!m_convertGBufferToViewPass->Init(
+         static_cast<unsigned int>(screenRes.x),
+         static_cast<unsigned int>(screenRes.y),
+         m_depthStencilBuffer))
+      {
+         MELog(m_context,
+            TEXT("RendererDX11"),
+            ELogType::FATAL,
+            TEXT("Failed to create Convert GBuffer to view space pass."), true);
+         return false;
+      }
+      m_viewSpaceGBuffer = m_convertGBufferToViewPass->GetConvertedGBuffer();
+
+      m_ambientEmissivePass = new AmbientEmissivePass(this);
+      if (!m_ambientEmissivePass->Init())
+      {
+         MELog(m_context,
+            TEXT("RendererDX11"),
+            ELogType::FATAL,
+            TEXT("Failed to create ambient emissive pass."), true);
+         return false;
+      }
+
+      m_skyboxPass = new SkyboxPass(this);
+      if (!m_skyboxPass->Init())
+      {
+         MELog(m_context,
+            TEXT("RendererDX11"),
+            ELogType::FATAL,
+            TEXT("Failed to create Skybox Pass."), true);
          return false;
       }
 
@@ -572,6 +590,7 @@ namespace Mile
          SafeDelete(m_gaussianBlurPass);
          SafeDelete(m_blendingPass);
          SafeDelete(m_gBuffer);
+         SafeDelete(m_convertGBufferToViewPass);
          SafeDelete(m_ssaoNoise);
          SafeDelete(m_ssaoPass);
          SafeDelete(m_ssaoBlurPass);
@@ -793,6 +812,145 @@ namespace Mile
       Present();
    }
 
+   ID3D11CommandList* RendererDX11::RunGeometryPass(ID3D11DeviceContext* deviceContextPtr)
+   {
+      if (deviceContextPtr != nullptr)
+      {
+         ID3D11DeviceContext& deviceContext = *deviceContextPtr;
+         m_geometryPass->SetGBuffer(m_gBuffer);
+         if (m_geometryPass->Bind(deviceContext))
+         {
+            m_defaultRasterizerState->Bind(deviceContext);
+            m_viewport->Bind(deviceContext);
+
+            auto camTransform = m_mainCamera->GetTransform();
+            Matrix viewMatrix = Matrix::CreateView(
+               camTransform->GetPosition(TransformSpace::World),
+               camTransform->GetForward(TransformSpace::World),
+               camTransform->GetUp(TransformSpace::World));
+            Matrix projMatrix = Matrix::CreatePerspectiveProj(
+               m_mainCamera->GetFov(),
+               m_window->GetAspectRatio(),
+               m_mainCamera->GetNearPlane(),
+               m_mainCamera->GetFarPlane());
+
+            for (auto batchedMaterial : m_materialMap)
+            {
+               /* 물리 기반 머테리얼 정보 취득 **/
+               Material* material = batchedMaterial.first;
+               if (material != nullptr)
+               {
+                  EMaterialType materialType = material->GetMaterialType();
+                  switch (materialType)
+                  {
+                  case EMaterialType::Opaque:
+                  default:
+                     Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
+                     Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
+                     Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
+                     Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
+                     Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
+
+                     Vector4 baseColorFactor = material->GetVector4Factor(MaterialFactorProperty::BaseColor);
+                     Vector4 emissiveFactor = material->GetVector4Factor(MaterialFactorProperty::Emissive);
+                     float metallicFactor = material->GetScalarFactor(MaterialFactorProperty::Metallic);
+                     float roughnessFactor = material->GetScalarFactor(MaterialFactorProperty::Roughness);
+                     Vector2 uvOffset = material->GetVector2Factor(MaterialFactorProperty::UVOffset);
+
+                     m_geometryPass->UpdateMaterialBuffer(
+                        deviceContext,
+                        { baseColorFactor, emissiveFactor, metallicFactor, roughnessFactor, uvOffset });
+
+                     SAFE_TEX_BIND(baseColorTex, deviceContext, 0, EShaderType::PixelShader);
+                     SAFE_TEX_BIND(emissiveTex, deviceContext, 1, EShaderType::PixelShader);
+                     SAFE_TEX_BIND(metallicRoughnessTex, deviceContext, 2, EShaderType::PixelShader);
+                     SAFE_TEX_BIND(aoTex, deviceContext, 3, EShaderType::PixelShader);
+                     SAFE_TEX_BIND(normalTex, deviceContext, 4, EShaderType::PixelShader);
+
+                     for (auto meshRenderer : batchedMaterial.second)
+                     {
+                        Transform* transform = meshRenderer->GetTransform();
+                        Mesh* mesh = meshRenderer->GetMesh();
+
+                        Matrix worldMatrix = transform->GetWorldMatrix();
+
+                        Matrix worldViewMatrix = worldMatrix * viewMatrix;
+                        m_geometryPass->UpdateTransformBuffer(
+                           deviceContext,
+                           { worldMatrix, worldViewMatrix, worldViewMatrix * projMatrix });
+
+                        mesh->Bind(deviceContext, 0);
+                        deviceContext.DrawIndexed(mesh->GetIndexCount(), 0, 0);
+                     }
+
+                     SAFE_TEX_UNBIND(baseColorTex, deviceContext);
+                     SAFE_TEX_UNBIND(emissiveTex, deviceContext);
+                     SAFE_TEX_UNBIND(metallicRoughnessTex, deviceContext);
+                     SAFE_TEX_UNBIND(aoTex, deviceContext);
+                     SAFE_TEX_UNBIND(normalTex, deviceContext);
+                     break;
+                  }
+               }
+            }
+
+            m_geometryPass->Unbind(deviceContext);
+         }
+
+         ID3D11CommandList* commandList = nullptr;
+         auto result = deviceContext.FinishCommandList(false, &commandList);
+         if (!FAILED(result))
+         {
+            return commandList;
+         }
+      }
+
+      return nullptr;
+   }
+
+   ID3D11CommandList* RendererDX11::RunLightingPass(ID3D11DeviceContext* deviceContextPtr)
+   {
+      if (deviceContextPtr != nullptr)
+      {
+         ID3D11DeviceContext& deviceContext = *deviceContextPtr;
+
+         CalculateDiffuseIrradiance(deviceContext);
+         RenderLight(deviceContext);
+
+         ID3D11CommandList* commandList = nullptr;
+         auto result = deviceContext.FinishCommandList(false, &commandList);
+         if (!FAILED(result))
+         {
+            return commandList;
+         }
+      }
+
+      return nullptr;
+   }
+
+   ID3D11CommandList* RendererDX11::RunPostProcessPass(ID3D11DeviceContext* deviceContextPtr)
+   {
+      if (deviceContextPtr != nullptr)
+      {
+         ID3D11DeviceContext& deviceContext = *deviceContextPtr;
+
+         m_viewSpaceGBuffer = ConvertGBufferToViewSpace(deviceContext, m_gBuffer);
+         RenderAmbientEmissive(deviceContext);
+         RenderSkybox(deviceContext);
+
+         RenderTargetDX11* output = Bloom(deviceContext, m_hdrBuffer);
+         ToneMappingWithGammaCorrection(deviceContext, output);
+
+         ID3D11CommandList* commandList = nullptr;
+         auto result = deviceContext.FinishCommandList(false, &commandList);
+         if (!FAILED(result))
+         {
+            return commandList;
+         }
+      }
+
+      return nullptr;
+   }
+
    void RendererDX11::CalculateDiffuseIrradiance(ID3D11DeviceContext& deviceContext)
    {
       if (m_bCubemapDirtyFlag || m_bAlwaysComputeIBL)
@@ -959,12 +1117,44 @@ namespace Mile
       }
    }
 
+   GBuffer* RendererDX11::ConvertGBufferToViewSpace(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer)
+   {
+      if (gBuffer != nullptr)
+      {
+         auto camTransform = m_mainCamera->GetTransform();
+         Matrix viewMatrix = Matrix::CreateView(
+            camTransform->GetPosition(TransformSpace::World),
+            camTransform->GetForward(TransformSpace::World),
+            camTransform->GetUp(TransformSpace::World));
+
+         if (m_convertGBufferToViewPass->Bind(deviceContext, gBuffer))
+         {
+            m_depthDisable->Bind(deviceContext);
+            m_viewport->Bind(deviceContext);
+            m_defaultRasterizerState->Bind(deviceContext);
+            m_screenQuad->Bind(deviceContext, 0);
+
+            m_convertGBufferToViewPass->UpdateParameters(deviceContext,
+               {
+                  viewMatrix
+               });
+            deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
+
+            m_convertGBufferToViewPass->Unbind(deviceContext);
+         }
+
+         return m_convertGBufferToViewPass->GetConvertedGBuffer();
+      }
+
+      return nullptr;
+   }
+
    void RendererDX11::RenderAmbientEmissive(ID3D11DeviceContext& deviceContext)
    {
       RenderTargetDX11* aoBuffer = nullptr;
       if (m_bEnableSSAO)
       {
-         aoBuffer = SSAO(deviceContext, m_gBuffer, m_ssaoRadius, m_ssaoBias);
+         aoBuffer = SSAO(deviceContext, m_viewSpaceGBuffer, m_ssaoRadius, m_ssaoBias);
          aoBuffer = SSAOBlur(deviceContext, aoBuffer);
       }
 
@@ -1039,121 +1229,6 @@ namespace Mile
       }
    }
 
-   ID3D11CommandList* RendererDX11::RunGeometryPass(ID3D11DeviceContext* deviceContextPtr)
-   {
-      if (deviceContextPtr != nullptr)
-      {
-         ID3D11DeviceContext& deviceContext = *deviceContextPtr;
-         m_geometryPass->SetGBuffer(m_gBuffer);
-         m_geometryPass->Bind(deviceContext);
-         m_defaultRasterizerState->Bind(deviceContext);
-         m_viewport->Bind(deviceContext);
-
-         auto camTransform = m_mainCamera->GetTransform();
-         Matrix viewMatrix = Matrix::CreateView(
-            camTransform->GetPosition(TransformSpace::World),
-            camTransform->GetForward(TransformSpace::World),
-            camTransform->GetUp(TransformSpace::World));
-         Matrix projMatrix = Matrix::CreatePerspectiveProj(
-            m_mainCamera->GetFov(),
-            m_window->GetAspectRatio(),
-            m_mainCamera->GetNearPlane(),
-            m_mainCamera->GetFarPlane());
-
-         for (auto batchedMaterial : m_materialMap)
-         {
-            /* 물리 기반 머테리얼 정보 취득 **/
-            Material* material = batchedMaterial.first;
-            if (material != nullptr)
-            {
-               EMaterialType materialType = material->GetMaterialType();
-               switch (materialType)
-               {
-               case EMaterialType::Opaque:
-               default:
-                  Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
-                  Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
-                  Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
-                  Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
-                  Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
-
-                  Vector4 baseColorFactor = material->GetVector4Factor(MaterialFactorProperty::BaseColor);
-                  Vector4 emissiveFactor = material->GetVector4Factor(MaterialFactorProperty::Emissive);
-                  float metallicFactor = material->GetScalarFactor(MaterialFactorProperty::Metallic);
-                  float roughnessFactor = material->GetScalarFactor(MaterialFactorProperty::Roughness);
-                  Vector2 uvOffset = material->GetVector2Factor(MaterialFactorProperty::UVOffset);
-
-                  m_geometryPass->UpdateMaterialBuffer(
-                     deviceContext,
-                     { baseColorFactor, emissiveFactor, metallicFactor, roughnessFactor, uvOffset });
-
-                  SAFE_TEX_BIND(baseColorTex, deviceContext, 0, EShaderType::PixelShader);
-                  SAFE_TEX_BIND(emissiveTex, deviceContext, 1, EShaderType::PixelShader);
-                  SAFE_TEX_BIND(metallicRoughnessTex, deviceContext, 2, EShaderType::PixelShader);
-                  SAFE_TEX_BIND(aoTex, deviceContext, 3, EShaderType::PixelShader);
-                  SAFE_TEX_BIND(normalTex, deviceContext, 4, EShaderType::PixelShader);
-
-                  for (auto meshRenderer : batchedMaterial.second)
-                  {
-                     Transform* transform = meshRenderer->GetTransform();
-                     Mesh* mesh = meshRenderer->GetMesh();
-
-                     Matrix worldMatrix = transform->GetWorldMatrix();
-
-                     Matrix worldViewMatrix = worldMatrix * viewMatrix;
-                     m_geometryPass->UpdateTransformBuffer(
-                        deviceContext,
-                        { worldMatrix, worldViewMatrix, worldViewMatrix * projMatrix });
-
-                     mesh->Bind(deviceContext, 0);
-                     deviceContext.DrawIndexed(mesh->GetIndexCount(), 0, 0);
-                  }
-
-                  SAFE_TEX_UNBIND(baseColorTex, deviceContext);
-                  SAFE_TEX_UNBIND(emissiveTex, deviceContext);
-                  SAFE_TEX_UNBIND(metallicRoughnessTex, deviceContext);
-                  SAFE_TEX_UNBIND(aoTex, deviceContext);
-                  SAFE_TEX_UNBIND(normalTex, deviceContext);
-                  break;
-               }
-            }
-         }
-
-         m_geometryPass->Unbind(deviceContext);
-
-         ID3D11CommandList* commandList = nullptr;
-         auto result = deviceContext.FinishCommandList(false, &commandList);
-         if (!FAILED(result))
-         {
-            return commandList;
-         }
-      }
-
-      return nullptr;
-   }
-
-   ID3D11CommandList* RendererDX11::RunLightingPass(ID3D11DeviceContext* deviceContextPtr)
-   {
-      if (deviceContextPtr != nullptr)
-      {
-         ID3D11DeviceContext& deviceContext = *deviceContextPtr;
-
-         CalculateDiffuseIrradiance(deviceContext);
-         RenderLight(deviceContext);
-         RenderAmbientEmissive(deviceContext);
-         RenderSkybox(deviceContext);
-
-         ID3D11CommandList* commandList = nullptr;
-         auto result = deviceContext.FinishCommandList(false, &commandList);
-         if (!FAILED(result))
-         {
-            return commandList;
-         }
-      }
-
-      return nullptr;
-   }
-
    RenderTargetDX11* RendererDX11::SSAO(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, float radius, float bias)
    {
       if (m_ssaoPass->Bind(deviceContext, gBuffer, m_ssaoNoise))
@@ -1164,10 +1239,6 @@ namespace Mile
          m_screenQuad->Bind(deviceContext, 0);
 
          auto camTransform = m_mainCamera->GetTransform();
-         Matrix viewMatrix = Matrix::CreateView(
-            camTransform->GetPosition(TransformSpace::World),
-            camTransform->GetForward(TransformSpace::World),
-            camTransform->GetUp(TransformSpace::World));
          Matrix projMatrix = Matrix::CreatePerspectiveProj(
             m_mainCamera->GetFov(),
             m_window->GetAspectRatio(),
@@ -1176,7 +1247,7 @@ namespace Mile
 
          m_ssaoPass->UpdateVariableParams(deviceContext,
             {
-               viewMatrix , projMatrix, 
+               projMatrix, 
                m_ssaoRadius, m_ssaoBias, m_ssaoMagnitude
             });
          deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
@@ -1346,26 +1417,6 @@ namespace Mile
          m_backBuffer->UnbindRenderTarget(deviceContext);
          m_toneMappingPass->Unbind(deviceContext);
       }
-   }
-
-   ID3D11CommandList* RendererDX11::RunPostProcessPass(ID3D11DeviceContext* deviceContextPtr)
-   {
-      if (deviceContextPtr != nullptr)
-      {
-         ID3D11DeviceContext& deviceContext = *deviceContextPtr;
-
-         RenderTargetDX11* output = Bloom(deviceContext, m_hdrBuffer);
-         ToneMappingWithGammaCorrection(deviceContext, output);
-
-         ID3D11CommandList* commandList = nullptr;
-         auto result = deviceContext.FinishCommandList(false, &commandList);
-         if (!FAILED(result))
-         {
-            return commandList;
-         }
-      }
-
-      return nullptr;
    }
 
    void RendererDX11::Clear(ID3D11DeviceContext& deviceContext)

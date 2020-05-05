@@ -18,7 +18,6 @@ namespace Mile
 
       DEFINE_CONSTANT_BUFFER(SSAOVariableParams)
       {
-         Matrix View;
          Matrix Projection;
          float Radius;
          float Bias;

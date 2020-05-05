@@ -81,7 +81,10 @@ namespace Mile
             {
                float depthStencilSize = std::exp2(static_cast<float>(m_maxMipLevels - mipLevel));
                m_depthStencils[mipLevel] = new DepthStencilBufferDX11(renderer);
-               if (!m_depthStencils[mipLevel]->Init(depthStencilSize, depthStencilSize, false))
+               if (!m_depthStencils[mipLevel]->Init(
+                  static_cast<unsigned int>(depthStencilSize),
+                  static_cast<unsigned int>(depthStencilSize),
+                  false))
                {
                   return false;
                }

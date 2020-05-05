@@ -141,8 +141,8 @@ int main( )
       renderer->SetGaussianBloomThreshold(0.8f);
       renderer->SetSSAOEanble(true);
       renderer->SetSSAORadius(2.0f);
-      renderer->SetSSAOBias(0.01f);
-      renderer->SetSSAOMagnitude(3.f);
+      renderer->SetSSAOBias(0.02f);
+      renderer->SetSSAOMagnitude(3.2f);
       execute = engine->Execute();
    }
 

@@ -141,6 +141,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\Runtime\Rendering\BoxBloomPass.h" />
     <ClInclude Include="..\Runtime\Rendering\BufferDX11.h" />
     <ClInclude Include="..\Runtime\Rendering\ConstantBufferDX11.h" />
+    <ClInclude Include="..\Runtime\Rendering\ConvertGBufferToViewPass.h" />
     <ClInclude Include="..\Runtime\Rendering\Cube.h" />
     <ClInclude Include="..\Runtime\Rendering\DepthStencilState.h" />
     <ClInclude Include="..\Runtime\Rendering\Equirect2CubemapPass.h" />
@@ -292,6 +293,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Rendering\BoxBloomPass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\BufferDX11.cpp" />
     <ClCompile Include="..\Runtime\Rendering\ConstantBufferDX11.cpp" />
+    <ClCompile Include="..\Runtime\Rendering\ConvertGBufferToViewPass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Cube.cpp" />
     <ClCompile Include="..\Runtime\Rendering\DepthStencilState.cpp" />
     <ClCompile Include="..\Runtime\Rendering\Equirect2CubemapPass.cpp" />
@@ -443,6 +445,12 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\ToneMapping.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\ViewSpaceGBuffer.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

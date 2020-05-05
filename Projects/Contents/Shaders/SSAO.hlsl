@@ -28,7 +28,6 @@ cbuffer SSAOParams : register(b0)
 
 cbuffer SSAOVariableParams : register(b1)
 {
-	matrix View;
 	matrix Projection;
 	float Radius;
 	float Bias;
@@ -36,7 +35,7 @@ cbuffer SSAOVariableParams : register(b1)
 }
 
 /* Textures & Samplers */
-Texture2D posBuffer						: register(t0);
+Texture2D posBuffer						: register(t0); // : View Space G-Buffer
 Texture2D albedoBuffer					: register(t1);
 Texture2D emissiveAOBuffer				: register(t2);
 Texture2D normalBuffer					: register(t3);
@@ -56,8 +55,8 @@ VSOutput MileVS(in VSInput input)
 
 float MilePS(in PSInput input) : SV_Target0
 {
-	float3 pos = mul(View, float4(posBuffer.Sample(PositionSampler, input.TexCoord).xyz, 1.0f)).xyz;
-	float3 normal = normalize(mul((float3x3)View, normalBuffer.Sample(Sampler, input.TexCoord).xyz));
+	float3 pos = posBuffer.Sample(PositionSampler, input.TexCoord).xyz;
+	float3 normal = normalize(normalBuffer.Sample(Sampler, input.TexCoord).xyz);
 	float3 randomVec = texNoise.Sample(NoiseSampler, input.TexCoord * NoiseScale).xyz;
 
 	float3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
@@ -76,9 +75,9 @@ float MilePS(in PSInput input) : SV_Target0
 		offset = mul(Projection, offset);
 		offset.xyz /= offset.w;
 		offset.xy = offset.xy * 0.5f + 0.5f;
-		offset.y = 1.0f-offset.y; // Direct3D Texture Coordinate
+		offset.y = (1.0f - offset.y); // Convert to Direct3D Texture Coordinate
 
-		float sampleDepth = mul(View, float4(posBuffer.Sample(PositionSampler, offset.xy).xyz, 1.0f)).z;
+		float sampleDepth = posBuffer.Sample(PositionSampler, offset.xy).z;
 		float occluded = (_sample.z + Bias <= sampleDepth ? 0.0f : 1.0f);
 		float intensity = smoothstep(0.0f, 1.0f, Radius / abs(pos.z - sampleDepth));
 		occlusion +=  occluded * intensity;

@@ -59,7 +59,7 @@ namespace Mile
       return false;
    }
 
-   bool GBuffer::BindAsRenderTarget(ID3D11DeviceContext& deviceContext)
+   bool GBuffer::BindAsRenderTarget(ID3D11DeviceContext& deviceContext, bool clearRenderTargets, bool clearDepthStencil)
    {
       if (RenderObject::IsBindable())
       {
@@ -67,10 +67,13 @@ namespace Mile
          if (m_depthStencilBuffer != nullptr)
          {
             dsv = m_depthStencilBuffer->GetDSV();
-            deviceContext.ClearDepthStencilView(dsv,
-               D3D11_CLEAR_DEPTH,
-               1.0f,
-               0);
+            if (clearDepthStencil)
+            {
+               deviceContext.ClearDepthStencilView(dsv,
+                  D3D11_CLEAR_DEPTH,
+                  1.0f,
+                  0);
+            }
          }
 
          std::array<ID3D11RenderTargetView*, GBUFFER_RENDER_TARGET_NUM> targets{
@@ -81,10 +84,13 @@ namespace Mile
             m_metallicRoughnessBuffer->GetRTV()
          };
 
-         const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-         for (auto rtv : targets)
+         if (clearRenderTargets)
          {
-            deviceContext.ClearRenderTargetView(rtv, clearColor);
+            const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+            for (auto rtv : targets)
+            {
+               deviceContext.ClearRenderTargetView(rtv, clearColor);
+            }
          }
 
          deviceContext.OMSetRenderTargets(GBUFFER_RENDER_TARGET_NUM, targets.data(), dsv);

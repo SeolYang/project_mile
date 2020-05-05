@@ -56,6 +56,7 @@ namespace Mile
    class IntegrateBRDFPass;
    class GeometryPass;
    class LightingPass;
+   class ConvertGBufferToViewPass;
    class SSAOPass;
    class SSAOBlurPass;
    class AmbientEmissivePass;
@@ -153,6 +154,8 @@ namespace Mile
 
       /* Rendering Workflow **/
       ID3D11CommandList* RunGeometryPass(ID3D11DeviceContext* deviceContextPtr);
+      ID3D11CommandList* RunLightingPass(ID3D11DeviceContext* deviceContextPtr);
+      ID3D11CommandList* RunPostProcessPass(ID3D11DeviceContext* deviceContextPtr);
 
       /* Pre Computation **/
       void CalculateDiffuseIrradiance(ID3D11DeviceContext& deviceContext);
@@ -163,11 +166,11 @@ namespace Mile
 
       /* Lighting **/
       void RenderLight(ID3D11DeviceContext& deviceContext);
-      void RenderAmbientEmissive(ID3D11DeviceContext& deviceContext);
-      void RenderSkybox(ID3D11DeviceContext& deviceContext);
-      ID3D11CommandList* RunLightingPass(ID3D11DeviceContext* deviceContextPtr);
 
       /* Post-Process **/
+      GBuffer* ConvertGBufferToViewSpace(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer);
+      void RenderAmbientEmissive(ID3D11DeviceContext& deviceContext);
+      void RenderSkybox(ID3D11DeviceContext& deviceContext);
       RenderTargetDX11* SSAO(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, float radius, float bias);
       RenderTargetDX11* SSAOBlur(ID3D11DeviceContext& deviceContext, RenderTargetDX11* ssaoInput);
       RenderTargetDX11* ExtractBrightness(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, RenderTargetDX11* renderBuffer, float depthThreshold, float threshold);
@@ -177,7 +180,6 @@ namespace Mile
       RenderTargetDX11* GaussianBloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer);
       RenderTargetDX11* Blending(ID3D11DeviceContext& deviceContext, RenderTargetDX11* srcBuffer, RenderTargetDX11* destBuffer, float srcRatio = 1.0f, float destRatio = 1.0f);
       void ToneMappingWithGammaCorrection(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer);
-      ID3D11CommandList* RunPostProcessPass(ID3D11DeviceContext* deviceContextPtr);
    
       /* Helper Methods **/
       /* @TODO Entity 배열을 받는게 아닌 World Subsystem만 가져와서 특정 컴포넌트만 찾을 수 있도록 하기. **/
@@ -249,6 +251,9 @@ namespace Mile
 
       IntegrateBRDFPass* m_integrateBRDFPass;
       RenderTargetDX11* m_brdfLUT;
+
+      ConvertGBufferToViewPass* m_convertGBufferToViewPass;
+      GBuffer* m_viewSpaceGBuffer;
 
       /* SSAO **/
       bool m_bEnableSSAO;

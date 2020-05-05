@@ -531,9 +531,6 @@
     <ClInclude Include="..\Runtime\Rendering\PrefilteringPass.h">
       <Filter>Sources\Rendering\Rendering Passes\PreComputation</Filter>
     </ClInclude>
-    <ClInclude Include="..\Runtime\Rendering\AmbientEmissivePass.h">
-      <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
-    </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\IntegrateBRDFPass.h">
       <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
     </ClInclude>
@@ -553,6 +550,12 @@
       <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
     </ClInclude>
     <ClInclude Include="..\Runtime\Rendering\SSAOBlurPass.h">
+      <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\ConvertGBufferToViewPass.h">
+      <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Runtime\Rendering\AmbientEmissivePass.h">
       <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
     </ClInclude>
   </ItemGroup>
@@ -734,9 +737,6 @@
     <ClCompile Include="..\Runtime\Rendering\PrefilteringPass.cpp">
       <Filter>Sources\Rendering\Rendering Passes\PreComputation</Filter>
     </ClCompile>
-    <ClCompile Include="..\Runtime\Rendering\AmbientEmissivePass.cpp">
-      <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
-    </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\IntegrateBRDFPass.cpp">
       <Filter>Sources\Rendering\Rendering Passes\PBR</Filter>
     </ClCompile>
@@ -756,6 +756,12 @@
       <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\SSAOBlurPass.cpp">
+      <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\ConvertGBufferToViewPass.cpp">
+      <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Rendering\AmbientEmissivePass.cpp">
       <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
     </ClCompile>
   </ItemGroup>
@@ -782,9 +788,6 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\IrradianceConvolution.hlsl">
-      <Filter>Shaders\PBS</Filter>
-    </FxCompile>
-    <FxCompile Include="Contents\Shaders\AmbientEmissivePass.hlsl">
       <Filter>Shaders\PBS</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\ToneMapping.hlsl">
@@ -815,6 +818,12 @@
       <Filter>Shaders\Post-Process</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\SSAOBlur.hlsl">
+      <Filter>Shaders\Post-Process</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\ViewSpaceGBuffer.hlsl">
+      <Filter>Shaders\Post-Process</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\AmbientEmissivePass.hlsl">
       <Filter>Shaders\Post-Process</Filter>
     </FxCompile>
   </ItemGroup>
