@@ -327,6 +327,31 @@ namespace Mile
             -( xAxis | camPosition ), -( yAxis | camPosition ), -( zAxis | camPosition ), 1.0f };
       }
 
+      /* Left-Handed View Inverse Matrix **/
+      static Matrix CreateInverseView(const Vector3& camPosition, const Vector3& camDirection, const Vector3& up = Vector3::Up())
+      {
+         Vector3 upNor = up.GetNormalized();
+         Vector3 zAxis = camDirection.GetNormalized();
+         Vector3 xAxis = (upNor ^ zAxis).GetNormalized();
+         Vector3 yAxis = (zAxis ^ xAxis).GetNormalized();
+
+         Matrix invRot = Matrix{
+            xAxis.x, xAxis.y, xAxis.z, 0.0f,
+            yAxis.x, yAxis.y, yAxis.z, 0.0f,
+            zAxis.x, zAxis.y, zAxis.z, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+         };
+
+         Matrix invTrans = Matrix{
+            1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 1.0f, 0.0f,
+            (xAxis | camPosition), (yAxis | camPosition), (zAxis | camPosition), 1.0f
+         };
+
+         return (invTrans * invRot);
+      }
+
       /* Left-Handed Perspective Fov Proj **/
       static Matrix CreatePerspectiveProj( float degreeFov, float aspectRatio, float nearPlane, float farPlane )
       {
