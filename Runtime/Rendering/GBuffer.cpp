@@ -86,7 +86,7 @@ namespace Mile
 
          if (clearRenderTargets)
          {
-            const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+            const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
             for (auto rtv : targets)
             {
                deviceContext.ClearRenderTargetView(rtv, clearColor);
