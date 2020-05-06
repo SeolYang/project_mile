@@ -103,7 +103,11 @@ namespace Mile
    {
       if (m_materialBuffer != nullptr)
       {
-         m_materialBuffer->Update(deviceContext, PackedMaterialParams{ buffer.BaseColorFactor, buffer.EmissiveColorFactor, Vector4(buffer.metallicFactor, buffer.roughnessFactor, buffer.UVOffset.x, buffer.UVOffset.y) });
+         m_materialBuffer->Update(deviceContext, PackedMaterialParams{
+            buffer.BaseColorFactor, 
+            buffer.EmissiveColorFactor, 
+            Vector4(buffer.MetallicFactor, buffer.RoughnessFactor, buffer.UVOffset.x, buffer.UVOffset.y),
+            buffer.SpecularFactor });
       }
    }
 }

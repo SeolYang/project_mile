@@ -12,6 +12,7 @@ namespace Mile
       m_baseColor(nullptr),
       m_emissive(nullptr),
       m_metallicRoughness(nullptr),
+      m_specularMap(nullptr),
       m_ao(nullptr),
       m_normal(nullptr),
       m_baseColorFactor(Vector4(0.0f, 0.0f, 0.0f, 1.0f)),
@@ -19,11 +20,13 @@ namespace Mile
       m_metallicFactor(0.0f),
       m_roughnessFactor(0.0f),
       m_uvOffset(Vector2(0.0f, 0.0f)),
+      m_specularFactor(0.0f),
       Resource(context, filePath, ResourceType::Material)
    {
       SetTexture2D(MaterialTextureProperty::BaseColor, nullptr);
       SetTexture2D(MaterialTextureProperty::Emissive, nullptr);
       SetTexture2D(MaterialTextureProperty::MetallicRoughness, nullptr);
+      SetTexture2D(MaterialTextureProperty::Specular, nullptr);
       SetTexture2D(MaterialTextureProperty::AO, nullptr);
       SetTexture2D(MaterialTextureProperty::Normal, nullptr);
    }
@@ -83,6 +86,9 @@ namespace Mile
       case MaterialTextureProperty::MetallicRoughness:
          m_metallicRoughness = texture;
          break;
+      case MaterialTextureProperty::Specular:
+         m_specularMap = texture;
+         break;
       case MaterialTextureProperty::AO:
          m_ao = texture;
          break;
@@ -102,6 +108,8 @@ namespace Mile
          return m_emissive;
       case MaterialTextureProperty::MetallicRoughness:
          return m_metallicRoughness;
+      case MaterialTextureProperty::Specular:
+         return m_specularMap;
       case MaterialTextureProperty::Normal:
          return m_normal;
       case MaterialTextureProperty::AO:
@@ -121,6 +129,9 @@ namespace Mile
       case MaterialFactorProperty::Roughness:
          m_roughnessFactor = factor;
          break;
+      case MaterialFactorProperty::Specular:
+         m_specularFactor = factor;
+         break;
       default:
          MELog(m_context, TEXT("Material::SetScalarFactor"), ELogType::WARNING, TEXT("Wrong property passed as scalar factor."), true);
          break;
@@ -135,6 +146,8 @@ namespace Mile
          return m_metallicFactor;
       case MaterialFactorProperty::Roughness:
          return m_roughnessFactor;
+      case MaterialFactorProperty::Specular:
+         return m_specularFactor;
       }
 
       MELog(m_context, TEXT("Material::GetScalarFactor"), ELogType::WARNING, TEXT("Couldn't find out property from scalar factors."), true);
@@ -221,6 +234,10 @@ namespace Mile
       serialized["MetallicRoughness"] = WString2String(m_metallicRoughness->GetPath());
       serialized["MetallicFactor"] = m_metallicFactor;
       serialized["RoughnessFactor"] = m_roughnessFactor;
+
+      serialized["Specular"] = WString2String(m_specularMap->GetPath());
+      serialized["SpecularFactor"] = m_specularFactor;
+
       serialized["UVOffset"] = m_uvOffset.Serialize();
 
       serialized["AO"] = WString2String(m_ao->GetPath());
@@ -263,6 +280,12 @@ namespace Mile
 
       m_metallicFactor = GetValueSafelyFromJson(jsonData, "MetallicFactor", 0.0f);
       m_roughnessFactor = GetValueSafelyFromJson(jsonData, "RoughnessFactor", 0.0f);
+
+      SetTexture2D(
+         MaterialTextureProperty::Specular,
+         resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "Specular"))));
+
+      m_specularFactor = GetValueSafelyFromJson(jsonData, "SpecularFactor", 0.0f);
 
       m_uvOffset.DeSerialize(GetValueSafelyFromJson<json>(
          jsonData,

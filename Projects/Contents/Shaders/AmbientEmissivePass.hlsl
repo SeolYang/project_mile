@@ -33,7 +33,7 @@ Texture2D posBuffer						: register(t0);
 Texture2D albedoBuffer					: register(t1);
 Texture2D emissiveAOBuffer				: register(t2);
 Texture2D normalBuffer					: register(t3);
-Texture2D metallicRoughnessBuffer	: register(t4);
+Texture2D extraComponents				: register(t4);
 /* IBL */
 TextureCube irradianceMap				: register(t5);
 TextureCube prefilteredMap				: register(t6);
@@ -57,8 +57,8 @@ float4 MilePS(in PSInput input) : SV_Target0
 {
 	float3 worldPos = posBuffer.Sample(LinearClampSampler, input.TexCoord).xyz;
 	float3 albedo = albedoBuffer.Sample(AnisoSampler, input.TexCoord).rgb;
-	float roughness = metallicRoughnessBuffer.Sample(LinearClampSampler, input.TexCoord).g;
-	float metallic = metallicRoughnessBuffer.Sample(LinearClampSampler, input.TexCoord).b;
+	float roughness = extraComponents.Sample(LinearClampSampler, input.TexCoord).g;
+	float metallic = extraComponents.Sample(LinearClampSampler, input.TexCoord).b;
 
 	float4 emissiveAO = emissiveAOBuffer.Sample(LinearClampSampler, input.TexCoord).rgba;
 	float3 emissive = emissiveAO.rgb;

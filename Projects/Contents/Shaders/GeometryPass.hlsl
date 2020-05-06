@@ -37,15 +37,17 @@ struct PSOutput
 	float4 Albedo					: SV_Target1;
 	float4 EmissiveAO				: SV_Target2;
 	float4 Normal					: SV_Target3;
-	float4 MetallicRoughness	: SV_Target4;
+	/* R : Reflectivity, G : ROUGHNESS, B : METALLIC, A : Specular */
+	float4 ExtraComponents		: SV_Target4;
 };
 
 /* Textures & Samplers */
 Texture2D baseColorMap				: register(t0);
 Texture2D emissiveMap				: register(t1);
 Texture2D metallicRoughnessMap	: register(t2);
-Texture2D aoMap						: register(t3);
-Texture2D normalMap					: register(t4);
+Texture2D specularMap				: register(t3);
+Texture2D aoMap						: register(t4);
+Texture2D normalMap					: register(t5);
 SamplerState Sampler					: register(s0);
 
 /* Constant Buffers (Vertex Shader) */
@@ -64,6 +66,7 @@ cbuffer MaterialBuffer
 	float		metallicFactor		: packoffset(c2);
 	float		roughnessFactor	: packoffset(c2.y);
 	float2	uvOffset				: packoffset(c2.z);
+	float		specularFactor		: packoffset(c3);
 }
 
 /* Shader Programs */
@@ -90,11 +93,11 @@ PSOutput MilePS(in PSInput input)
 {
 	float2 uv = input.TexCoord + uvOffset;
 	/* Albedo */
-	float3 albedo = pow(baseColorMap.Sample(Sampler, uv), 2.2);
+	float3 albedo = pow(baseColorMap.Sample(Sampler, uv), 2.2).rgb;
 	albedo += pow(baseColorFactor, 2.2);
 	
 	/* Emissive */
-	float3 emissive = pow(emissiveMap.Sample(Sampler, uv), 2.2);
+	float3 emissive = pow(emissiveMap.Sample(Sampler, uv), 2.2).rgb;
 	emissive += pow(emissiveFactor, 2.2);
 	
 	/* Metallic-Roughness */
@@ -102,7 +105,15 @@ PSOutput MilePS(in PSInput input)
 	roughness = clamp(roughnessFactor + roughness, 0.0f, 1.0f);
 	
 	float metallic = metallicRoughnessMap.Sample(Sampler, uv).b;
-	metallic = clamp(metallicFactor + metallic, 0.0, 1.0f);
+	metallic = clamp(metallicFactor + metallic, 0.0f, 1.0f);
+
+	/* Specular */
+	float specular = specularMap.Sample(Sampler, uv).r;
+	specular = clamp(specularFactor + specular, 0.0f, 1.0f);
+
+	/* Reflectivity */
+	const float reflectivityThreshold = 0.01f;
+	float reflectivity = metallic > reflectivityThreshold ? metallic : specular;
 	
 	/* AO */
 	float ao = aoMap.Sample(Sampler, uv).r;
@@ -123,7 +134,7 @@ PSOutput MilePS(in PSInput input)
 	output.Albedo = float4(albedo, 1.0f);
 	output.EmissiveAO = float4(emissive, ao);
 	output.Normal = float4(normal, 1.0f);
-	output.MetallicRoughness = float4(0.0f, roughness, metallic, 1.0f);
+	output.ExtraComponents = float4(reflectivity, roughness, metallic, specular);
 
 	return output;
 }

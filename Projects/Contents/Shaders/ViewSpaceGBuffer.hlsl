@@ -25,7 +25,7 @@ struct PSOutput
 	float4 Albedo					: SV_Target1;
 	float4 EmissiveAO				: SV_Target2;
 	float4 Normal					: SV_Target3;
-	float4 MetallicRoughness	: SV_Target4;
+	float4 ExtraComponents		: SV_Target4;
 };
 
 /* Constant Buffers (Pixel Shader) */
@@ -39,7 +39,7 @@ Texture2D posBuffer						: register(t0);
 Texture2D albedoBuffer					: register(t1);
 Texture2D emissiveAOBuffer				: register(t2);
 Texture2D normalBuffer					: register(t3);
-Texture2D metallicRoughnessBuffer	: register(t4);
+Texture2D extraComponents				: register(t4);
 Texture2D depthBuffer					: register(t5);
 SamplerState Sampler						: register(s0);
 
@@ -61,6 +61,6 @@ PSOutput MilePS(in PSInput input)
 	output.EmissiveAO = emissiveAOBuffer.Sample(Sampler, input.TexCoord).rgba;
 	float3 normal = normalBuffer.Sample(Sampler, input.TexCoord).xyz;
 	output.Normal = float4(normalize(mul((float3x3)View, normal.xyz).xyz), 0.0f);
-	output.MetallicRoughness = float4(metallicRoughnessBuffer.Sample(Sampler, input.TexCoord).rg, 0.0f, 0.0f);
+	output.ExtraComponents = extraComponents.Sample(Sampler, input.TexCoord).rgba;
 	return output;
 }

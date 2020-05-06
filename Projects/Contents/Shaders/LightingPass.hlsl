@@ -38,7 +38,7 @@ Texture2D posBuffer						: register(t0);
 Texture2D albedoBuffer					: register(t1);
 Texture2D emissiveAOBuffer				: register(t2);
 Texture2D normalBuffer					: register(t3);
-Texture2D metallicRoughnessBuffer	: register(t4);
+Texture2D extraComponents				: register(t4);
 SamplerState AnisoSampler				: register(s0);
 
 VSOutput MileVS(in VSInput input)
@@ -53,8 +53,8 @@ float4 MilePS(in PSInput input) : SV_Target0
 {
 	float3 worldPos = posBuffer.Sample(AnisoSampler, input.TexCoord).xyz;
 	float3 albedo = albedoBuffer.Sample(AnisoSampler, input.TexCoord).rgb;
-	float roughness = metallicRoughnessBuffer.Sample(AnisoSampler, input.TexCoord).g;
-	float metallic = metallicRoughnessBuffer.Sample(AnisoSampler, input.TexCoord).b;
+	float roughness = extraComponents.Sample(AnisoSampler, input.TexCoord).g;
+	float metallic = extraComponents.Sample(AnisoSampler, input.TexCoord).b;
 	
 	float3 N = normalize(normalBuffer.Sample(AnisoSampler, input.TexCoord).xyz);
 	float3 V = normalize(CameraPos - worldPos);
@@ -67,7 +67,7 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float3 Lo = 0.0f;
 	float distance = length(LightPos.xyz - worldPos);
 	float attenuation = 1.0f / (distance * distance);
-	float3 radiance = LightRadiance * attenuation;
+	float3 radiance = LightRadiance.rgb * attenuation;
 	
 	// Cook-Torrance BRDF
 	float NDF = DistributionGGX(N, H, roughness);

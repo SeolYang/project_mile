@@ -10,6 +10,7 @@ namespace Mile
       BaseColor,
       Emissive,
       MetallicRoughness,
+      Specular,
       AO,
       Normal,
    };
@@ -20,6 +21,7 @@ namespace Mile
       Emissive,
       Metallic,
       Roughness,
+      Specular,
       UVOffset,
    };
 
@@ -60,6 +62,7 @@ namespace Mile
       Texture2D* m_baseColor;
       Texture2D* m_emissive;
       Texture2D* m_metallicRoughness;
+      Texture2D* m_specularMap;
       Texture2D* m_ao;
       Texture2D* m_normal;
 
@@ -68,6 +71,7 @@ namespace Mile
       Vector4  m_emissiveFactor;
       float		m_metallicFactor;
       float		m_roughnessFactor;
+      float    m_specularFactor;
 
    };
 }

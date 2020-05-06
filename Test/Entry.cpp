@@ -98,15 +98,15 @@ int main( )
       planeTransform->SetRotation(Quaternion(-90.0f, Vector3(1.0f, 0.0f, 0.0f)));
       planeTransform->SetScale(Vector3(30.0f, 1.0f, 30.0f));
 
-      //Model* metalRoughSpheresModel = resMng->Load<Model>(TEXT("Contents/Models/MetalRoughSpheres/MetalRoughSpheres.gltf"));
-      //Entity* spheresEntity = Model::Instantiate(metalRoughSpheresModel, world, TEXT("Spheres"));
-      //Entity* spheresMesh = spheresEntity->GetChildren()[0];
-      //MeshRenderComponent* spheresRenderComponent = spheresMesh->GetComponent<MeshRenderComponent>();
-      //Material* spheresMaterial = spheresRenderComponent->GetMaterial();
-      //spheresMaterial->Save();
+      Model* metalRoughSpheresModel = resMng->Load<Model>(TEXT("Contents/Models/MetalRoughSpheres/MetalRoughSpheres.gltf"));
+      Entity* spheresEntity = Model::Instantiate(metalRoughSpheresModel, world, TEXT("Spheres"));
+      Entity* spheresMesh = spheresEntity->GetChildren()[0];
+      MeshRenderComponent* spheresRenderComponent = spheresMesh->GetComponent<MeshRenderComponent>();
+      Material* spheresMaterial = spheresRenderComponent->GetMaterial();
+      spheresMaterial->Save();
 
-      //Transform* spheresTransform = spheresEntity->GetTransform();
-      //spheresTransform->SetPosition(Vector3(0.0f, 0.0f, 4.0f));
+      Transform* spheresTransform = spheresEntity->GetTransform();
+      spheresTransform->SetPosition(Vector3(0.0f, 0.0f, 4.0f));
 
       //world->GetComponentsFromEntities<Transform>(); // Transform은 Component를 상속하지 않기 때문에 컴파일되지 않는다.
 

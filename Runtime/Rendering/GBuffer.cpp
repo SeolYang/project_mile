@@ -14,7 +14,7 @@ namespace Mile
       m_albedoBuffer(nullptr),
       m_emissiveAOBuffer(nullptr),
       m_normalBuffer(nullptr),
-      m_metallicRoughnessBuffer(nullptr),
+      m_extraComponents(nullptr),
       m_blendState(nullptr),
       m_bBoundDepthAsShaderResource(false),
       RenderObject(renderer)
@@ -27,7 +27,7 @@ namespace Mile
       SafeDelete(m_albedoBuffer);
       SafeDelete(m_emissiveAOBuffer);
       SafeDelete(m_normalBuffer);
-      SafeDelete(m_metallicRoughnessBuffer);
+      SafeDelete(m_extraComponents);
       SafeDelete(m_blendState);
    }
 
@@ -40,15 +40,15 @@ namespace Mile
          m_albedoBuffer = new RenderTargetDX11(renderer);
          m_emissiveAOBuffer = new RenderTargetDX11(renderer);
          m_normalBuffer = new RenderTargetDX11(renderer);
-         m_metallicRoughnessBuffer = new RenderTargetDX11(renderer);
+         m_extraComponents = new RenderTargetDX11(renderer);
          m_blendState = new BlendState(renderer);
 
          bool bBuffersInitialized =
             m_positionBuffer->Init(width, height, DXGI_FORMAT_R32G32B32A32_FLOAT) &&
             m_albedoBuffer->Init(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT) &&
             m_emissiveAOBuffer->Init(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT) &&
-            m_normalBuffer->Init(width, height, DXGI_FORMAT_R32G32B32A32_FLOAT) &&
-            m_metallicRoughnessBuffer->Init(width, height, DXGI_FORMAT_R8G8B8A8_UNORM);
+            m_normalBuffer->Init(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT) &&
+            m_extraComponents->Init(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT);
          if (bBuffersInitialized && m_blendState->Init())
          {
             RenderObject::ConfirmInit();
@@ -81,7 +81,7 @@ namespace Mile
             m_albedoBuffer->GetRTV(),
             m_emissiveAOBuffer->GetRTV(),
             m_normalBuffer->GetRTV(),
-            m_metallicRoughnessBuffer->GetRTV()
+            m_extraComponents->GetRTV()
          };
 
          if (clearRenderTargets)
@@ -116,7 +116,7 @@ namespace Mile
          m_albedoBuffer,
          m_emissiveAOBuffer,
          m_normalBuffer,
-         m_metallicRoughnessBuffer };
+         m_extraComponents };
 
          for (unsigned int idx = 0; idx < GBUFFER_RENDER_TARGET_NUM; ++idx)
          {
@@ -147,7 +147,7 @@ namespace Mile
          m_albedoBuffer->UnbindShaderResource(deviceContext);
          m_emissiveAOBuffer->UnbindShaderResource(deviceContext);
          m_normalBuffer->UnbindShaderResource(deviceContext);
-         m_metallicRoughnessBuffer->UnbindShaderResource(deviceContext);
+         m_extraComponents->UnbindShaderResource(deviceContext);
 
          if (m_bBoundDepthAsShaderResource)
          {

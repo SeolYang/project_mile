@@ -20,16 +20,18 @@ namespace Mile
       {
          Vector4 BaseColorFactor;
          Vector4 EmissiveColorFactor;
-         float metallicFactor;
-         float roughnessFactor;
+         float MetallicFactor;
+         float RoughnessFactor;
          Vector2 UVOffset;
+         float SpecularFactor;
       };
 
       DEFINE_CONSTANT_BUFFER(PackedMaterialParams)
       {
          Vector4 BaseColorFactor;
          Vector4 EmissiveColorFactor;
-         Vector4 metallicRoughnessUV;
+         Vector4 MetallicRoughnessUV;
+         float SpecularFactor;
       };
 
    public:

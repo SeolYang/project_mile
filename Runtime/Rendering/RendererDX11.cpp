@@ -854,6 +854,7 @@ namespace Mile
                      Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
                      Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
                      Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
+                     Texture2dDX11* specularMapTex = material->GetTexture2D(MaterialTextureProperty::Specular)->GetRawTexture();
                      Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
                      Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
 
@@ -861,17 +862,19 @@ namespace Mile
                      Vector4 emissiveFactor = material->GetVector4Factor(MaterialFactorProperty::Emissive);
                      float metallicFactor = material->GetScalarFactor(MaterialFactorProperty::Metallic);
                      float roughnessFactor = material->GetScalarFactor(MaterialFactorProperty::Roughness);
+                     float specularFactor = material->GetScalarFactor(MaterialFactorProperty::Specular);
                      Vector2 uvOffset = material->GetVector2Factor(MaterialFactorProperty::UVOffset);
 
                      m_geometryPass->UpdateMaterialBuffer(
                         deviceContext,
-                        { baseColorFactor, emissiveFactor, metallicFactor, roughnessFactor, uvOffset });
+                        { baseColorFactor, emissiveFactor, metallicFactor, roughnessFactor, uvOffset, specularFactor });
 
                      SAFE_TEX_BIND(baseColorTex, deviceContext, 0, EShaderType::PixelShader);
                      SAFE_TEX_BIND(emissiveTex, deviceContext, 1, EShaderType::PixelShader);
                      SAFE_TEX_BIND(metallicRoughnessTex, deviceContext, 2, EShaderType::PixelShader);
-                     SAFE_TEX_BIND(aoTex, deviceContext, 3, EShaderType::PixelShader);
-                     SAFE_TEX_BIND(normalTex, deviceContext, 4, EShaderType::PixelShader);
+                     SAFE_TEX_BIND(specularMapTex, deviceContext, 3, EShaderType::PixelShader);
+                     SAFE_TEX_BIND(aoTex, deviceContext, 4, EShaderType::PixelShader);
+                     SAFE_TEX_BIND(normalTex, deviceContext, 5, EShaderType::PixelShader);
 
                      for (auto meshRenderer : batchedMaterial.second)
                      {
@@ -892,6 +895,7 @@ namespace Mile
                      SAFE_TEX_UNBIND(baseColorTex, deviceContext);
                      SAFE_TEX_UNBIND(emissiveTex, deviceContext);
                      SAFE_TEX_UNBIND(metallicRoughnessTex, deviceContext);
+                     SAFE_TEX_UNBIND(specularMapTex, deviceContext);
                      SAFE_TEX_UNBIND(aoTex, deviceContext);
                      SAFE_TEX_UNBIND(normalTex, deviceContext);
                      break;

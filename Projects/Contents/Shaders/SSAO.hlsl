@@ -39,7 +39,7 @@ Texture2D posBuffer						: register(t0); // : View Space G-Buffer
 Texture2D albedoBuffer					: register(t1);
 Texture2D emissiveAOBuffer				: register(t2);
 Texture2D normalBuffer					: register(t3);
-Texture2D metallicRoughnessBuffer	: register(t4);
+Texture2D extraComponents				: register(t4);
 Texture2D texNoise						: register(t5);
 SamplerState Sampler						: register(s0);
 SamplerState NoiseSampler				: register(s1);

@@ -28,7 +28,7 @@ namespace Mile
       RenderTargetDX11* m_albedoBuffer;
       RenderTargetDX11* m_emissiveAOBuffer;
       RenderTargetDX11* m_normalBuffer;
-      RenderTargetDX11* m_metallicRoughnessBuffer;
+      RenderTargetDX11* m_extraComponents;
       BlendState*       m_blendState;
       bool m_bBoundDepthAsShaderResource;
 
