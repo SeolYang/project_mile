@@ -14,6 +14,7 @@ namespace Mile
       ~Timer();
 
       virtual bool Init() override;
+      virtual void DeInit() override;
 
       void BeginFrame();
       /**

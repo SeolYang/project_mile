@@ -35,8 +35,6 @@ namespace Mile
          {
             std::unique_lock<std::mutex> lock(m_mutex);
             m_bStop = true;
-            // Compel initialized to ended up every threads.
-            m_bIsInitialized = true;
          }
 
          // Wake up all threads to stop thread pool.
@@ -53,65 +51,67 @@ namespace Mile
 
       virtual bool Init() override
       {
-         if (m_context == nullptr || m_bIsInitialized)
+         Context* context = GetContext();
+         if (SubSystem::Init())
          {
-            MELog(m_context, TEXT("ThreadPool"), ELogType::WARNING, TEXT("Thread Pool already initialized."), true);
-            return false;
-         }
-
-         // Thread Pool must init once.
-         // But its able to mark as Deinitialized.
-         m_bStop = false;
-         if (m_workers.empty())
-         {
-            for (size_t idx = 0; idx < m_threadNum; ++idx)
+            // Thread Pool must init once.
+            // But its able to mark as Deinitialized.
+            m_bStop = false;
+            if (m_workers.empty())
             {
-               // Actual thread initialize.
-               m_workers.emplace_front([this]
-                  {
-                     while (true)
+               for (size_t idx = 0; idx < m_threadNum; ++idx)
+               {
+                  // Actual thread initialize.
+                  m_workers.emplace_front([this]
                      {
-                        std::function<void()> task;
-
-                        // Mutex Scope
+                        while (true)
                         {
-                           std::unique_lock<std::mutex> lock(this->m_mutex);
+                           std::function<void()> task;
 
-                           // Waiting for task.
-                           this->m_condition.wait(lock, [this]
-                              {
-                                 return (this->m_bStop ||
-                                    !this->m_tasks.empty()) &&
-                                    this->m_bIsInitialized;
-                              });
-
-                           if (this->m_bStop && this->m_tasks.empty())
+                           // Mutex Scope
                            {
-                              return;
+                              std::unique_lock<std::mutex> lock(this->m_mutex);
+
+                              // Waiting for task.
+                              this->m_condition.wait(lock, [this]
+                                 {
+                                    return (this->m_bStop ||
+                                       !this->m_tasks.empty()) &&
+                                       this->IsInitialized();
+                                 });
+
+                              if (this->m_bStop && this->m_tasks.empty())
+                              {
+                                 return;
+                              }
+
+                              task = std::move(this->m_tasks.front());
+                              this->m_tasks.pop();
                            }
 
-                           task = std::move(this->m_tasks.front());
-                           this->m_tasks.pop();
+                           // Running task in thread!
+                           task();
                         }
-
-                        // Running task in thread!
-                        task();
-                     }
-                  });
+                     });
+               }
             }
+
+            MELog(context, TEXT("ThreadPool"), ELogType::MESSAGE, TEXT("Thread Pool initialized."), true);
+            SubSystem::InitSucceed();
+            return true;
          }
 
-         MELog(m_context, TEXT("ThreadPool"), ELogType::MESSAGE, TEXT("Thread Pool initialized."), true);
-         m_bIsInitialized = true;
-         return true;
+         MELog(context, TEXT("ThreadPool"), ELogType::FATAL, TEXT("Failed to initialize Thread Pool."), true);
+         return false;
       }
 
       virtual void DeInit() override
       {
-         if (m_bIsInitialized)
+         if (IsInitialized())
          {
+            Context* context = GetContext();
             SubSystem::DeInit();
-            MELog(m_context, TEXT("ThreadPool"), ELogType::MESSAGE, TEXT("Thread Pool deinitialized."), true);
+            MELog(context, TEXT("ThreadPool"), ELogType::MESSAGE, TEXT("Thread Pool deinitialized."), true);
          }
       }
 

@@ -11,16 +11,35 @@ namespace Mile
 
    Timer::~Timer()
    {
+      DeInit();
    }
 
    bool Timer::Init()
    {
-      m_frameBeginTime = m_frameEndTime = std::chrono::steady_clock::now();
-      m_deltaTime = std::chrono::duration_cast<std::chrono::nanoseconds>
-         (m_frameEndTime - m_frameBeginTime);
-      m_frameCount = 0;
-      MELog(m_context, TEXT("Timer"), ELogType::MESSAGE, TEXT("Timer initialized."), true);
-      return true;
+      Context* context = GetContext();
+      if (SubSystem::Init())
+      {
+         m_frameBeginTime = m_frameEndTime = std::chrono::steady_clock::now();
+         m_deltaTime = std::chrono::duration_cast<std::chrono::nanoseconds>
+            (m_frameEndTime - m_frameBeginTime);
+         m_frameCount = 0;
+
+         MELog(context, TEXT("Timer"), ELogType::MESSAGE, TEXT("Timer initialized."), true);
+         SubSystem::InitSucceed();
+         return true;
+      }
+
+      MELog(context, TEXT("Timer"), ELogType::FATAL, TEXT("Failed to initialize Timer."), true);
+      return false;
+   }
+
+   void Timer::DeInit()
+   {
+      if (IsInitialized())
+      {
+         SubSystem::DeInit();
+         MELog(GetContext(), TEXT("Timer"), ELogType::MESSAGE, TEXT("Timer deinitialized."), true);
+      }
    }
 
    void Timer::BeginFrame()

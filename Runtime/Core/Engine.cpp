@@ -18,109 +18,107 @@ namespace Mile
       SubSystem(context), m_bIsRunning(false), m_bShutdownFlag(false),
       m_maxFPS(0), m_targetTimePerFrame(0)
    {
-      m_context->RegisterSubSystem(this);
+      context->RegisterSubSystem(this);
 
-      m_logger = new Logger(m_context);
-      m_context->RegisterSubSystem(m_logger);
+      m_logger = new Logger(context);
+      context->RegisterSubSystem(m_logger);
 
-      m_timer = new Timer(m_context);
-      m_context->RegisterSubSystem(m_timer);
+      m_timer = new Timer(context);
+      context->RegisterSubSystem(m_timer);
 
-      m_threadPool = new ThreadPool(m_context);
-      m_context->RegisterSubSystem(m_threadPool);
+      m_threadPool = new ThreadPool(context);
+      context->RegisterSubSystem(m_threadPool);
 
-      m_resourceManager = new ResourceManager(m_context);
-      m_context->RegisterSubSystem(m_resourceManager);
+      m_resourceManager = new ResourceManager(context);
+      context->RegisterSubSystem(m_resourceManager);
 
-      m_configSys = new ConfigSystem(m_context);
-      m_context->RegisterSubSystem(m_configSys);
+      m_configSys = new ConfigSystem(context);
+      context->RegisterSubSystem(m_configSys);
 
-      m_window = new Window(m_context);
-      m_context->RegisterSubSystem(m_window);
+      m_window = new Window(context);
+      context->RegisterSubSystem(m_window);
 
-      m_renderer = new RendererDX11(m_context);
-      m_context->RegisterSubSystem(m_renderer);
+      m_renderer = new RendererDX11(context);
+      context->RegisterSubSystem(m_renderer);
 
-      m_world = new World(m_context);
-      m_context->RegisterSubSystem(m_world);
+      m_world = new World(context);
+      context->RegisterSubSystem(m_world);
    }
 
    bool Engine::Init()
    {
-      if (m_context == nullptr || m_instance != nullptr)
+      if (SubSystem::Init() && m_instance == nullptr)
       {
-         return false;
+         m_instance = this;
+         // -* Initialize subsystems *-
+         Context* context = GetContext();
+
+         // Initialize Logger
+         if (!context->GetSubSystem<Logger>()->Init())
+         {
+            m_instance = nullptr;
+            return false;
+         }
+
+         // Initialize Timer
+         if (!context->GetSubSystem<Timer>()->Init())
+         {
+            m_instance = nullptr;
+            return false;
+         }
+
+         // Initialize Thread Pool
+         if (!context->GetSubSystem<ThreadPool>()->Init())
+         {
+            m_instance = nullptr;
+            return false;
+         }
+
+         // Initialize Resource manager
+         if (!context->GetSubSystem<ResourceManager>()->Init())
+         {
+            m_instance = nullptr;
+            return false;
+         }
+
+         // Initialize ConfigSystem
+         if (!context->GetSubSystem<ConfigSystem>()->Init())
+         {
+            m_instance = nullptr;
+            return false;
+         }
+
+         // Initialize Window Subsystem
+         if (!context->GetSubSystem<Window>()->Init())
+         {
+            m_instance = nullptr;
+            return false;
+         }
+
+         if (!context->GetSubSystem<RendererDX11>()->Init())
+         {
+            m_instance = nullptr;
+            return false;
+         }
+
+         // Initialize World
+         if (!context->GetSubSystem<World>()->Init())
+         {
+            m_instance = nullptr;
+            return false;
+         }
+
+
+         auto engineConfig = m_configSys->GetConfig(TEXT("Engine"));
+         m_maxFPS = std::clamp(static_cast<unsigned int>(engineConfig.second["MaxFPS"]), LOWER_BOUND_OF_ENGINE_FPS, UPPER_BOUND_OF_ENGINE_FPS);
+         m_targetTimePerFrame = static_cast<long long>((1.0 / static_cast<double>(m_maxFPS)) * 1000.0);
+
+         SubSystem::InitSucceed();
+         MELog(context, TEXT("Engine"), ELogType::MESSAGE, TEXT("Engine initialized."));
+         return true;
       }
 
-      m_instance = this;
-      // -* Initialize subsystems *-
-      // Initialize Logger
-      if (!m_context->GetSubSystem<Logger>()->Init())
-      {
-         m_instance = nullptr;
-         return false;
-      }
-
-      // Initialize Timer
-      if (!m_context->GetSubSystem<Timer>()->Init())
-      {
-         m_logger->Logging(TEXT("Engine"), ELogType::FATAL, TEXT("Timer failed to intiialize!"), true);
-         m_instance = nullptr;
-         return false;
-      }
-
-      // Initialize Thread Pool
-      if (!m_context->GetSubSystem<ThreadPool>()->Init())
-      {
-         m_logger->Logging(TEXT("Engine"), ELogType::FATAL, TEXT("Thread Pool failed to intiialize!"), true);
-         m_instance = nullptr;
-         return false;
-      }
-
-      // Initialize Resource manager
-      if (!m_context->GetSubSystem<ResourceManager>()->Init())
-      {
-         m_logger->Logging(TEXT("Engine"), ELogType::FATAL, TEXT("Resource Manager failed to intiialize!"), true);
-         m_instance = nullptr;
-         return false;
-      }
-
-      // Initialize ConfigSystem
-      if (!m_context->GetSubSystem<ConfigSystem>()->Init())
-      {
-         m_logger->Logging(TEXT("Engine"), ELogType::FATAL, TEXT("Config System failed to intiialize!"), true);
-         m_instance = nullptr;
-         return false;
-      }
-
-      // Initialize Window Subsystem
-      if (!m_context->GetSubSystem<Window>()->Init())
-      {
-         m_logger->Logging(TEXT("Engine"), ELogType::FATAL, TEXT("Resource Manager failed to intiialize!"), true);
-         m_instance = nullptr;
-         return false;
-      }
-
-      if (!m_context->GetSubSystem<RendererDX11>()->Init())
-      {
-         m_logger->Logging(TEXT("Engine"), ELogType::FATAL, TEXT("RendererDX11 failed to intiialize!"), true);
-         m_instance = nullptr;
-         return false;
-      }
-
-      // Initialize World
-      if (!m_context->GetSubSystem<World>()->Init())
-      {
-         m_logger->Logging(TEXT("Engine"), ELogType::FATAL, TEXT("World failed to intiialize!"), true);
-         m_instance = nullptr;
-         return false;
-      }
-
-
-      auto engineConfig = m_configSys->GetConfig(TEXT("Engine"));
-      m_maxFPS = std::clamp(static_cast<unsigned int>(engineConfig.second["MaxFPS"]), LOWER_BOUND_OF_ENGINE_FPS, UPPER_BOUND_OF_ENGINE_FPS);
-      m_targetTimePerFrame = static_cast<long long>((1.0 / static_cast<double>(m_maxFPS)) * 1000.0);
-      return true;
+      return false;
    }
 
    int Engine::Execute()
@@ -163,7 +161,7 @@ namespace Mile
 
    void Engine::ShutDown()
    {
-      SubSystem::DeInit();
+      Context* context = GetContext();
       m_bIsRunning = false;
       m_logger = nullptr;
       m_timer = nullptr;
@@ -173,7 +171,8 @@ namespace Mile
       m_window = nullptr;
       m_renderer = nullptr;
       m_world = nullptr;
-      MELog(m_context, TEXT("Engine"), ELogType::MESSAGE, TEXT("Engine shutting down."), true);
+      SubSystem::DeInit();
+      MELog(context, TEXT("Engine"), ELogType::MESSAGE, TEXT("Engine shutting down."), true);
    }
 
    Logger* Engine::GetLogger()

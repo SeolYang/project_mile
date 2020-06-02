@@ -16,15 +16,17 @@ namespace Mile
          DeInit();
       }
 
-      virtual bool Init() = 0;
+      virtual bool Init() { return (m_context != nullptr) && !m_bIsInitialized; }
       virtual void Update() { }
       virtual void DeInit() { m_bIsInitialized = false; }
 
       Context* GetContext() const { return m_context; }
-
       bool IsInitialized() const { return m_bIsInitialized; }
 
    protected:
+      void InitSucceed() { m_bIsInitialized = true; }
+
+   private:
       Context* m_context;
       bool     m_bIsInitialized;
 

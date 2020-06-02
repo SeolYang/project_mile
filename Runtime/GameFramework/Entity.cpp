@@ -28,10 +28,8 @@ namespace Mile
       {
          SafeDelete(component);
       }
-      for (auto child : m_children)
-      {
-         SafeDelete(child);
-      }
+
+      m_children.clear();
    }
 
    json Entity::Serialize() const

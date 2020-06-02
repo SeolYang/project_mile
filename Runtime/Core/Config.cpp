@@ -18,30 +18,35 @@ namespace Mile
 
    bool ConfigSystem::Init()
    {
-      if (m_context == nullptr || m_bIsInitialized)
+      Context* context = GetContext();
+      if (SubSystem::Init())
       {
-         MELog(m_context, TEXT("ConfigSystem"), ELogType::WARNING, TEXT("Config System already initialized."), true);
-         return false;
+
+         if (!LoadConfig(TEXT("Engine")))
+         {
+            MELog(context, TEXT("ConfigSystem"), ELogType::FATAL, TEXT("Faeild to load Engine default config. "), true);
+            return false;
+         }
+
+         MELog(context, TEXT("ConfigSystem"), ELogType::MESSAGE, TEXT("Config System Initialized!"), true);
+         
+         SubSystem::InitSucceed();
+         return true;
       }
 
-      if (!LoadConfig(TEXT("Engine")))
-      {
-         MELog(m_context, TEXT("ConfigSystem"), ELogType::FATAL, TEXT("Faeild to load Engine default config. "), true);
-         return false;
-      }
-
-      MELog(m_context, TEXT("ConfigSystem"), ELogType::MESSAGE, TEXT("Config System Initialized!"), true);
-      m_bIsInitialized = true;
-      return true;
+      MELog(context, TEXT("ConfigSystem"), ELogType::WARNING, TEXT("Config System already initialized."), true);
+      return false;
    }
 
    void ConfigSystem::DeInit()
    {
-      if (m_bIsInitialized)
+      if (IsInitialized())
       {
+         Context* context = GetContext();
          UnloadAllConfigs();
+
          SubSystem::DeInit();
-         MELog(m_context, TEXT("ConfigSystem"), ELogType::MESSAGE, TEXT("Config System deintialized."), true);
+         MELog(context, TEXT("ConfigSystem"), ELogType::MESSAGE, TEXT("Config System deintialized."), true);
       }
    }
 
@@ -62,7 +67,8 @@ namespace Mile
    {
       if (!IsExist(configName))
       {
-         auto resManager = m_context->GetSubSystem<ResourceManager>();
+         Context* context = GetContext();
+         auto resManager = context->GetSubSystem<ResourceManager>();
          auto text = resManager->Load<PlainText<>>(GetPathFromName(configName));
 
          if (text != nullptr)
@@ -103,8 +109,9 @@ namespace Mile
    {
       if (IsExist(configName))
       {
+         Context* context = GetContext();
          Config& config = GetConfig(configName);
-         auto resManager = m_context->GetSubSystem<ResourceManager>();
+         auto resManager = context->GetSubSystem<ResourceManager>();
          auto plainText = resManager->Load<PlainText<>>(GetPathFromName(configName));
          auto dumpData = config.second.dump();
          plainText->SetData(String2WString(dumpData));
@@ -116,7 +123,8 @@ namespace Mile
 
    void ConfigSystem::SaveAllConfigs()
    {
-      auto resManager = m_context->GetSubSystem<ResourceManager>();
+      Context* context = GetContext();
+      auto resManager = context->GetSubSystem<ResourceManager>();
       for (auto& config : m_configs)
       {
          auto plainText = resManager->Load<PlainText<>>(GetPathFromName(config.first));

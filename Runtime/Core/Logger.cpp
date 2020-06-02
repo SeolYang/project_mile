@@ -19,23 +19,25 @@ namespace Mile
 
    bool Logger::Init()
    {
-      if (m_context == nullptr || m_bIsInitialized)
+      if (SubSystem::Init())
       {
-         return false;
+         m_loggingBeginTime = std::chrono::system_clock::now();
+         Logging(TEXT("Logger"), ELogType::MESSAGE, TEXT("Logger initialized!"), true);
+
+         SubSystem::InitSucceed();
+         return true;
       }
 
-      m_loggingBeginTime = std::chrono::system_clock::now();
-      Logging(TEXT("Logger"), ELogType::MESSAGE, TEXT("Logger initialized!"), true);
-      m_bIsInitialized = true;
-      return true;
+      return false;
    }
 
    void Logger::DeInit()
    {
-      if (m_bIsInitialized)
+      if (IsInitialized())
       {
          Logging(TEXT("Logger"), ELogType::MESSAGE, TEXT("Logger deinitialized."), true);
          Flush();
+
          SubSystem::DeInit();
       }
    }

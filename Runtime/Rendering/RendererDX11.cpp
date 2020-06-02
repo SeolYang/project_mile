@@ -116,46 +116,48 @@ namespace Mile
 
    bool RendererDX11::Init()
    {
-      if (m_context == nullptr || m_bIsInitialized)
+      Context* context = GetContext();
+      if (SubSystem::Init())
       {
-         MELog(m_context, TEXT("RendererDX11"), ELogType::WARNING, TEXT("RendererDX11 already initialized."), true);
-         return false;
+         if (InitAPI())
+         {
+            if (!InitPBR())
+            {
+               MELog(context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize PBR render pass."), true);
+               return false;
+            }
+
+            if (!InitPostProcess())
+            {
+               MELog(context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize post-process pass."), true);
+               return false;
+            }
+
+            if (!InitStates())
+            {
+               MELog(context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize render states."), true);
+               return false;
+            }
+         }
+
+         MELog(context, TEXT("RendererDX11"), ELogType::MESSAGE, TEXT("RendererDX11 Initialized!"), true);
+         SubSystem::InitSucceed();
+         return true;
       }
 
-      if (InitAPI())
-      {
-         if (!InitPBR())
-         {
-            MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize PBR render pass."), true);
-            return false;
-         }
-
-         if (!InitPostProcess())
-         {
-            MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize post-process pass."), true);
-            return false;
-         }
-
-         if (!InitStates())
-         {
-            MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize render states."), true);
-            return false;
-         }
-      }
-
-      MELog(m_context, TEXT("RendererDX11"), ELogType::MESSAGE, TEXT("RendererDX11 Initialized!"), true);
-      m_bIsInitialized = true;
-      return true;
+      MELog(context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize RendererDX11."), true);
+      return false;
    }
 
    bool RendererDX11::InitAPI()
    {
+      Context* context = GetContext();
       /* Initialize low level rendering api **/
-      m_window = m_context->GetSubSystem<Window>();
+      m_window = context->GetSubSystem<Window>();
       Vector2 screenRes{ m_window->GetResolution() };
       if (m_window == nullptr)
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Cannot found Window subsystem from Context."), true);
@@ -164,7 +166,7 @@ namespace Mile
 
       if (!CreateDeviceAndSwapChain())
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Device and SwapChain."), true);
@@ -173,7 +175,7 @@ namespace Mile
 
       if (!CreateDepthStencilBuffer())
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Depth-Stencil Buffer."), true);
@@ -189,7 +191,7 @@ namespace Mile
       m_screenQuad = new Quad(this);
       if (!m_screenQuad->Init(-1.0f, -1.0f, 1.0f, 1.0f))
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create screen quad."), true);
@@ -199,7 +201,7 @@ namespace Mile
       m_cubeMesh = new Cube(this);
       if (!m_cubeMesh->Init(Vector3(-1.0f, -1.0f, -1.0f), Vector3(1.0f, 1.0f, 1.0f)))
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Cube mesh."), true);
@@ -216,13 +218,14 @@ namespace Mile
 
    bool RendererDX11::InitPBR()
    {
+      Context* context = GetContext();
       Vector2 screenRes{ m_window->GetResolution() };
       m_gBuffer = new GBuffer(this);
       if (!m_gBuffer->Init(
          static_cast<unsigned int>(screenRes.x),
          static_cast<unsigned int>(screenRes.y)))
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create GBuffer."), true);
@@ -233,7 +236,7 @@ namespace Mile
       m_equirectToCubemapPass = new Equirect2CubemapPass(this);
       if (!m_equirectToCubemapPass->Init(DYNAMIC_CUBEMAP_SIZE))
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Equirectangular to cubemap convert pass."), true);
@@ -243,7 +246,7 @@ namespace Mile
       m_irradianceConvPass = new IrradianceConvPass(this);
       if (!m_irradianceConvPass->Init(IRRADIANCEMAP_SIZE))
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Irradiance Convolution pass."), true);
@@ -253,7 +256,7 @@ namespace Mile
       m_prefilteringPass = new PrefilteringPass(this);
       if (!m_prefilteringPass->Init(PREFILTERED_CUBEMAP_SIZE))
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Prefiltering pass."), true);
@@ -263,7 +266,7 @@ namespace Mile
       m_integrateBRDFPass = new IntegrateBRDFPass(this);
       if (!m_integrateBRDFPass->Init())
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Integrate brdf pass."), true);
@@ -273,7 +276,7 @@ namespace Mile
       m_geometryPass = new GeometryPass(this);
       if (!m_geometryPass->Init())
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Geometry Pass."), true);
@@ -283,7 +286,7 @@ namespace Mile
       m_lightingPass = new LightingPass(this);
       if (!m_lightingPass->Init())
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Lighting Pass."), true);
@@ -295,6 +298,7 @@ namespace Mile
 
    bool RendererDX11::InitSSAO()
    {
+      Context* context = GetContext();
       Vector2 screenRes{ m_window->GetResolution() };
       SSAOPass::SSAOParams ssaoParams;
       ssaoParams.NoiseScale = Vector2(screenRes.x / SSAO_NOISE_TEXTURE_RES, screenRes.y / SSAO_NOISE_TEXTURE_RES);
@@ -334,7 +338,7 @@ namespace Mile
          (unsigned char*)ssaoNoise.data(),
          DXGI_FORMAT_R32G32B32A32_FLOAT))
       {
-         MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize SSAO Noise texture."), true);
+         MELog(context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize SSAO Noise texture."), true);
          return false;
       }
 
@@ -344,7 +348,7 @@ namespace Mile
          static_cast<unsigned int>(screenRes.y),
          m_depthStencilBuffer))
       {
-         MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize SSAO pass."), true);
+         MELog(context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize SSAO pass."), true);
          return false;
       }
 
@@ -356,7 +360,7 @@ namespace Mile
          static_cast<unsigned int>(screenRes.y),
          m_depthStencilBuffer))
       {
-         MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize SSAO Blur pass."), true);
+         MELog(context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize SSAO Blur pass."), true);
          return false;
       }
 
@@ -365,6 +369,7 @@ namespace Mile
 
    bool RendererDX11::InitPostProcess()
    {
+      Context* context = GetContext();
       Vector2 screenRes{ m_window->GetResolution() };
 
       m_hdrBuffer = new RenderTargetDX11(this);
@@ -374,7 +379,7 @@ namespace Mile
          DXGI_FORMAT_R16G16B16A16_FLOAT,
          m_depthStencilBuffer))
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create HDR Buffer."), true);
@@ -387,7 +392,7 @@ namespace Mile
          static_cast<unsigned int>(screenRes.y),
          m_depthStencilBuffer))
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Convert GBuffer to view space pass."), true);
@@ -398,7 +403,7 @@ namespace Mile
       m_ambientEmissivePass = new AmbientEmissivePass(this);
       if (!m_ambientEmissivePass->Init())
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create ambient emissive pass."), true);
@@ -408,7 +413,7 @@ namespace Mile
       m_skyboxPass = new SkyboxPass(this);
       if (!m_skyboxPass->Init())
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Skybox Pass."), true);
@@ -421,7 +426,7 @@ namespace Mile
          static_cast<unsigned int>(screenRes.y),
          m_depthStencilBuffer))
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Box Bloom pass."), true);
@@ -434,7 +439,7 @@ namespace Mile
          static_cast<unsigned int>(screenRes.y),
          m_depthStencilBuffer))
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Extract brightness pass."), true);
@@ -447,7 +452,7 @@ namespace Mile
          static_cast<unsigned int>(screenRes.y),
          m_depthStencilBuffer))
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Gaussian blur pass."), true);
@@ -460,7 +465,7 @@ namespace Mile
          static_cast<unsigned int>(screenRes.y),
          m_depthStencilBuffer))
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Blending pass."), true);
@@ -470,7 +475,7 @@ namespace Mile
       m_toneMappingPass = new ToneMappingPass(this);
       if (!m_toneMappingPass->Init())
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Tone mapping pass."), true);
@@ -479,7 +484,7 @@ namespace Mile
 
       if (!InitSSAO())
       {
-         MELog(m_context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize SSAO pass."), true);
+         MELog(context, TEXT("RendererDX11"), ELogType::FATAL, TEXT("Failed to initialize SSAO pass."), true);
          return false;
       }
 
@@ -488,10 +493,11 @@ namespace Mile
 
    bool RendererDX11::InitStates()
    {
+      Context* context = GetContext();
       m_defaultRasterizerState = new RasterizerState(this);
       if (!m_defaultRasterizerState->Init())
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create Default RasteirzerState."), true);
@@ -502,7 +508,7 @@ namespace Mile
       m_noCulling->SetCullMode(CullMode::NONE);
       if (!m_noCulling->Init())
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create no culling rasterizer state."), true);
@@ -512,7 +518,7 @@ namespace Mile
       m_defaultBlendState = new BlendState(this);
       if (!m_defaultBlendState->Init())
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create default blend state."), true);
@@ -522,7 +528,7 @@ namespace Mile
       m_additiveBlendState = new BlendState(this);
       if (!m_additiveBlendState->Init())
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create additive blend state."), true);
@@ -544,7 +550,7 @@ namespace Mile
       m_depthLessEqual->SetDesc(depthLessEqualDesc);
       if (!m_depthLessEqual->Init())
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create DEPTH LESS EQUAL state."), true);
@@ -557,7 +563,7 @@ namespace Mile
       m_depthDisable->SetDesc(depthDisableDesc);
       if (!m_depthDisable->Init())
       {
-         MELog(m_context,
+         MELog(context,
             TEXT("RendererDX11"),
             ELogType::FATAL,
             TEXT("Failed to create DEPTH DISALBE state."), true);
@@ -569,7 +575,7 @@ namespace Mile
 
    void RendererDX11::DeInit()
    {
-      if (m_bIsInitialized)
+      if (IsInitialized())
       {
          SafeDelete(m_viewport);
          SafeDelete(m_depthDisable);
@@ -613,7 +619,7 @@ namespace Mile
          SafeRelease(m_device);
 
          SubSystem::DeInit();
-         MELog(m_context, TEXT("RendererDX11"), ELogType::MESSAGE, TEXT("RendererDX11 deinitialized."), true);
+         MELog(GetContext(), TEXT("RendererDX11"), ELogType::MESSAGE, TEXT("RendererDX11 deinitialized."), true);
       }
    }
 
@@ -759,10 +765,11 @@ namespace Mile
 
    void RendererDX11::Render()
    {
-      auto threadPool = m_context->GetSubSystem<ThreadPool>();
+      Context* context = GetContext();
+      auto threadPool = context->GetSubSystem<ThreadPool>();
       //Clear( *m_immediateContext );
 
-      World* world = m_context->GetSubSystem<World>();
+      World* world = context->GetSubSystem<World>();
       if (world != nullptr)
       {
          /* Pre-process part**/

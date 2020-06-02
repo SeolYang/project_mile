@@ -23,7 +23,8 @@ namespace Mile
                return GetByPath<Ty>(relativePath);
             }
 
-            auto newResource = new Ty(m_context, relativePath);
+            Context* context = GetContext();
+            auto newResource = new Ty(context, relativePath);
             if (newResource->Init())
             {
                m_cache->Add(static_cast<ResourcePtr>(newResource));
@@ -70,7 +71,8 @@ namespace Mile
                return res;
             }
 
-            auto newResource = new Ty(m_context, relativePath);
+            Context* context = GetContext();
+            auto newResource = new Ty(context, relativePath);
             if (newResource->Save())
             {
                m_cache->Add(static_cast<Resource*>(newResource));

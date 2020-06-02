@@ -51,34 +51,41 @@ namespace Mile
 
    bool World::Init()
    {
-      if (m_context == nullptr || m_bIsInitialized)
+      Context* context = GetContext();
+      if (SubSystem::Init())
       {
-         MELog(m_context, TEXT("World"), ELogType::WARNING, TEXT("World already initialized."), true);
-         return false;
+         auto configSys = context->GetSubSystem<ConfigSystem>();
+         auto engineConfig = configSys->GetConfig(TEXT("Engine"));
+         String defaultPath = String2WString(engineConfig.second["World"]);
+
+         auto loaded = LoadFrom(defaultPath);
+         if (!loaded)
+         {
+            MELog(context, TEXT("World"), ELogType::FATAL, TEXT("Failed to load world from ") + defaultPath, true);
+            return false;
+         }
+
+         MELog(context, TEXT("World"), ELogType::MESSAGE, TEXT("World Initialized!"), true);
+         SubSystem::InitSucceed();
+         return true;
       }
 
-      auto configSys = m_context->GetSubSystem<ConfigSystem>();
-      auto engineConfig = configSys->GetConfig(TEXT("Engine"));
-      String defaultPath = String2WString(engineConfig.second["World"]);
-
-      auto loaded = LoadFrom(defaultPath);
-      if (!loaded)
-      {
-         MELog(m_context, TEXT("World"), ELogType::FATAL, TEXT("Failed to load world from ") + defaultPath, true);
-         return false;
-      }
-
-      MELog(m_context, TEXT("World"), ELogType::MESSAGE, TEXT("World Initialized!"), true);
-      m_bIsInitialized = true;
-      return true;
+      MELog(context, TEXT("World"), ELogType::FATAL, TEXT("Failed to initialize world."), true);
+      return false;
    }
 
    void World::DeInit()
    {
-      if (m_bIsInitialized)
+      if (IsInitialized())
       {
+         for (auto entity : m_entities)
+         {
+            SafeDelete(entity);
+         }
+         m_entities.clear();
+
          SubSystem::DeInit();
-         MELog(m_context, TEXT("World"), ELogType::MESSAGE, TEXT("World deinitialized."), true);
+         MELog(GetContext(), TEXT("World"), ELogType::MESSAGE, TEXT("World deinitialized."), true);
       }
    }
 
@@ -140,23 +147,25 @@ namespace Mile
 
    bool World::LoadFrom(const String& filePath)
    {
-      auto resMng = m_context->GetSubSystem<ResourceManager>();
+      Context* context = GetContext();
+      auto resMng = context->GetSubSystem<ResourceManager>();
       auto res = resMng->Create<PlainText<std::string>>(filePath);
       if (res != nullptr)
       {
          this->m_loadedData = res;
          this->DeSerialize(json::parse(res->GetData().empty() ? "{}" : res->GetData()));
-         MELog(m_context, TEXT("World"), ELogType::MESSAGE, TEXT("World loaded. : ") + filePath, true);
+         MELog(context, TEXT("World"), ELogType::MESSAGE, TEXT("World loaded. : ") + filePath, true);
          return true;
       }
 
-      MELog(m_context, TEXT("World"), ELogType::FATAL, TEXT("World load failed. : ") + filePath, true);
+      MELog(context, TEXT("World"), ELogType::FATAL, TEXT("World load failed. : ") + filePath, true);
       return false;
    }
 
    bool World::SaveTo(const String& filePath)
    {
-      auto resMng = m_context->GetSubSystem<ResourceManager>();
+      Context* context = GetContext();
+      auto resMng = context->GetSubSystem<ResourceManager>();
       auto res = resMng->GetByPath<PlainText<std::string>>(filePath);
 
       if (res == nullptr)
@@ -169,7 +178,7 @@ namespace Mile
          res->SetData(this->Serialize().dump());
          if (res->Save())
          {
-            MELog(m_context, TEXT("World"), ELogType::MESSAGE, TEXT("World data saved. : ") + res->GetPath(), true);
+            MELog(context, TEXT("World"), ELogType::MESSAGE, TEXT("World data saved. : ") + res->GetPath(), true);
             return true;
          }
       }
@@ -184,7 +193,7 @@ namespace Mile
          m_loadedData->SetData(this->Serialize().dump());
          if (m_loadedData->Save())
          {
-            MELog(m_context, TEXT("World"), ELogType::MESSAGE, TEXT("World data saved. : ") + m_loadedData->GetPath(), true);
+            MELog(GetContext(), TEXT("World"), ELogType::MESSAGE, TEXT("World data saved. : ") + m_loadedData->GetPath(), true);
             return true;
          }
       }

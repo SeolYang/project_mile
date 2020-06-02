@@ -41,15 +41,15 @@ int main( )
       camComponent->SetNearPlane(0.1f);
       camComponent->SetFarPlane(100.0f);
       camComponent->SetFov(45.0f);
-      camTransform->SetPosition(Vector3(0.0f, 2.0f, -7.0f));
-      camTransform->SetRotation(Quaternion(-20.0f, Vector3(1.0f, 0.0f, 0.0f)));
+      camTransform->SetPosition(Vector3(0.0f, 0.5f, -4.0f));
+      camTransform->SetRotation(Quaternion(-5.0f, Vector3(1.0f, 0.0f, 0.0f)));
       cameraParent->AttachChild(camera);
 
       Entity* mainLight = world->CreateEntity(TEXT("Main Light"));
       LightComponent* mainLightComponent = mainLight->AddComponent<LightComponent>();
       Transform* mainLightTransform = mainLight->GetTransform();
       mainLightComponent->SetLightType(ELightType::Point);
-      mainLightComponent->SetRadiance(Vector3(200.0f, 200.0f, 200.0f));
+      mainLightComponent->SetRadiance(Vector3(5.0f, 5.0f, 5.0f));
       mainLightTransform->SetPosition(Vector3(-9.0f, 0.0f, -3.0f));
 
       Model* lanternModel = resMng->Load<Model>(TEXT("Contents/Models/Lantern/Lantern.gltf"));
@@ -94,19 +94,9 @@ int main( )
       MeshRenderComponent* planeRenderComponent = plane->AddComponent<MeshRenderComponent>();
       planeRenderComponent->SetMesh(quadMesh);
       planeRenderComponent->SetMaterial(cubeMaterial);
-      planeTransform->SetPosition(Vector3(0.0f, -0.2f, 0.0f));
+      planeTransform->SetPosition(Vector3(0.0f, -1.0f, 0.0f));
       planeTransform->SetRotation(Quaternion(-90.0f, Vector3(1.0f, 0.0f, 0.0f)));
       planeTransform->SetScale(Vector3(30.0f, 1.0f, 30.0f));
-
-      Model* metalRoughSpheresModel = resMng->Load<Model>(TEXT("Contents/Models/MetalRoughSpheres/MetalRoughSpheres.gltf"));
-      Entity* spheresEntity = Model::Instantiate(metalRoughSpheresModel, world, TEXT("Spheres"));
-      Entity* spheresMesh = spheresEntity->GetChildren()[0];
-      MeshRenderComponent* spheresRenderComponent = spheresMesh->GetComponent<MeshRenderComponent>();
-      Material* spheresMaterial = spheresRenderComponent->GetMaterial();
-      spheresMaterial->Save();
-
-      Transform* spheresTransform = spheresEntity->GetTransform();
-      spheresTransform->SetPosition(Vector3(0.0f, 0.0f, 4.0f));
 
       //world->GetComponentsFromEntities<Transform>(); // Transform은 Component를 상속하지 않기 때문에 컴파일되지 않는다.
 
@@ -137,12 +127,12 @@ int main( )
       renderer->SetExposure(1.0f);
       renderer->SetBloomType(EBloomType::Gaussian);
       renderer->SetGaussianBloomAmount(16);
-      renderer->SetGaussianBloomIntensity(1.5f);
+      renderer->SetGaussianBloomIntensity(1.25f);
       renderer->SetGaussianBloomThreshold(0.8f);
       renderer->SetSSAOEanble(true);
-      renderer->SetSSAORadius(2.0f);
+      renderer->SetSSAORadius(1.5f);
       renderer->SetSSAOBias(0.02f);
-      renderer->SetSSAOMagnitude(3.2f);
+      renderer->SetSSAOMagnitude(1.2f);
       execute = engine->Execute();
    }
 

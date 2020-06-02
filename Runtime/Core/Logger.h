@@ -95,7 +95,7 @@ namespace Mile
       const Mile::String& category,
       ELogType type,
       const Mile::String& message,
-      bool printConsole = false)
+      bool printConsole = true)
    {
       if (context == nullptr)
       {
