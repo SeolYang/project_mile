@@ -120,6 +120,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\Runtime\Core\CoreMinimal.h" />
     <ClInclude Include="..\Runtime\Core\Engine.h" />
     <ClInclude Include="..\Runtime\Core\Helper.h" />
+    <ClInclude Include="..\Runtime\Core\InputManager.h" />
     <ClInclude Include="..\Runtime\Core\Logger.h" />
     <ClInclude Include="..\Runtime\Core\SubSystem.h" />
     <ClInclude Include="..\Runtime\Core\Timer.h" />
@@ -277,6 +278,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Core\Config.cpp" />
     <ClCompile Include="..\Runtime\Core\Context.cpp" />
     <ClCompile Include="..\Runtime\Core\Engine.cpp" />
+    <ClCompile Include="..\Runtime\Core\InputManager.cpp" />
     <ClCompile Include="..\Runtime\Core\Logger.cpp" />
     <ClCompile Include="..\Runtime\Core\SubSystem.cpp" />
     <ClCompile Include="..\Runtime\Core\Timer.cpp" />

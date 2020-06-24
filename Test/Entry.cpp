@@ -1,6 +1,7 @@
 #include "Core/Context.h"
 #include "Core/Engine.h"
 #include "Core/Logger.h"
+#include "Core/InputManager.h"
 #include "GameFramework/World.h"
 #include "GameFramework/Entity.h"
 #include "Component/CameraComponent.h"
@@ -17,6 +18,7 @@
 #include "Math/Vector3.h"
 #include "MT/ThreadPool.h"
 #include "RotateComponent.h"
+#include "InputTestComponent.h"
 
 using namespace Mile;
 
@@ -31,8 +33,12 @@ int main( )
       auto world = Engine::GetWorld();
       auto resMng = Engine::GetResourceManager();
       auto renderer = Engine::GetRenderer();
+      auto inputMng = Engine::GetInputManager();
+
+      inputMng->MapAction(EInputKey::W, TEXT("Forward"));
 
       Entity* cameraParent = world->CreateEntity(TEXT("CameraParent"));
+      InputTestComponent* inputTest = cameraParent->AddComponent<InputTestComponent>();
       Transform* camParentTransform = cameraParent->GetTransform();
       RotateComponent* cameraParentRotation = cameraParent->AddComponent<RotateComponent>();
       Entity* camera = world->CreateEntity(TEXT("Camera"));

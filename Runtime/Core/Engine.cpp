@@ -3,6 +3,7 @@
 #include "Core/Logger.h"
 #include "Core/Timer.h"
 #include "Core/Config.h"
+#include "Core/InputManager.h"
 #include "Core/Window.h"
 #include "GameFramework/World.h"
 #include "Resource/ResourceManager.h"
@@ -34,6 +35,9 @@ namespace Mile
 
       m_configSys = new ConfigSystem(context);
       context->RegisterSubSystem(m_configSys);
+
+      m_inputManager = new InputManager(context);
+      context->RegisterSubSystem(m_inputManager);
 
       m_window = new Window(context);
       context->RegisterSubSystem(m_window);
@@ -83,6 +87,13 @@ namespace Mile
 
          // Initialize ConfigSystem
          if (!context->GetSubSystem<ConfigSystem>()->Init())
+         {
+            m_instance = nullptr;
+            return false;
+         }
+
+         // Initialize Input Manager
+         if (!context->GetSubSystem<InputManager>()->Init())
          {
             m_instance = nullptr;
             return false;
@@ -198,6 +209,11 @@ namespace Mile
    ConfigSystem* Engine::GetConfigSystem()
    {
       return (m_instance != nullptr) ? m_instance->m_configSys : nullptr;
+   }
+
+   InputManager* Engine::GetInputManager()
+   {
+      return (m_instance != nullptr) ? m_instance->m_inputManager : nullptr;
    }
 
    Window* Engine::GetWindow()

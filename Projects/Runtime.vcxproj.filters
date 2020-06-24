@@ -558,6 +558,9 @@
     <ClInclude Include="..\Runtime\Rendering\AmbientEmissivePass.h">
       <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Core\InputManager.h">
+      <Filter>Sources\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -763,6 +766,9 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Rendering\AmbientEmissivePass.cpp">
       <Filter>Sources\Rendering\Rendering Passes\Post-Process</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Core\InputManager.cpp">
+      <Filter>Sources\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

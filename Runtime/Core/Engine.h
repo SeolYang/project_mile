@@ -10,6 +10,7 @@ namespace Mile
    class Timer;
    class ThreadPool;
    class ConfigSystem;
+   class InputManager;
    class Window;
    class ResourceManager;
    class RendererDX11;
@@ -48,6 +49,7 @@ namespace Mile
       static ThreadPool* GetThreadPool();
       static ResourceManager* GetResourceManager();
       static ConfigSystem* GetConfigSystem();
+      static InputManager* GetInputManager();
       static Window* GetWindow();
       static RendererDX11* GetRenderer();
       static World* GetWorld();
@@ -63,6 +65,7 @@ namespace Mile
       ThreadPool*       m_threadPool;
       ResourceManager*  m_resourceManager;
       ConfigSystem*     m_configSys;
+      InputManager*     m_inputManager;
       Window*           m_window;
       RendererDX11*     m_renderer;
       World*            m_world;

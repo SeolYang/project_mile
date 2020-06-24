@@ -3,6 +3,7 @@
 #include "Core/Engine.h"
 #include "Core/Logger.h"
 #include "Core/Config.h"
+#include "Core/InputManager.h"
 
 namespace Mile
 {
@@ -89,6 +90,12 @@ namespace Mile
       case WM_CLOSE:
          PostQuitMessage(0);
          break;
+      }
+
+      InputManager* inputManager = Engine::GetInputManager();
+      if (inputManager != nullptr)
+      {
+         inputManager->HandleWin32(Msg, wParam, lParam);
       }
 
       return DefWindowProc(Handle, Msg, wParam, lParam);

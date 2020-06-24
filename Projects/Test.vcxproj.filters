@@ -17,5 +17,8 @@
     <ClInclude Include="..\Test\RotateComponent.h">
       <Filter>Application</Filter>
     </ClInclude>
+    <ClInclude Include="..\Test\InputTestComponent.h">
+      <Filter>Application</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
