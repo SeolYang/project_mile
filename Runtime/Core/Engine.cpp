@@ -5,6 +5,7 @@
 #include "Core/Config.h"
 #include "Core/InputManager.h"
 #include "Core/Window.h"
+#include "Core/Application.h"
 #include "GameFramework/World.h"
 #include "Resource/ResourceManager.h"
 #include "Rendering/RendererDX11.h"
@@ -15,7 +16,7 @@
 namespace Mile
 {
    Engine* Engine::m_instance = nullptr;
-   Engine::Engine(Context* context) :
+   Engine::Engine(Context* context, Application* app) :
       SubSystem(context), m_bIsRunning(false), m_bShutdownFlag(false),
       m_maxFPS(0), m_targetTimePerFrame(0)
    {
@@ -47,6 +48,12 @@ namespace Mile
 
       m_world = new World(context);
       context->RegisterSubSystem(m_world);
+
+      m_app = app;
+      if (m_app != nullptr)
+      {
+         context->RegisterSubSystem(m_app);
+      }
    }
 
    bool Engine::Init()
@@ -60,6 +67,7 @@ namespace Mile
          // Initialize Logger
          if (!context->GetSubSystem<Logger>()->Init())
          {
+            std::cerr << "Engine : Failed to initialize Logger!" << std::endl;
             m_instance = nullptr;
             return false;
          }
@@ -67,6 +75,7 @@ namespace Mile
          // Initialize Timer
          if (!context->GetSubSystem<Timer>()->Init())
          {
+            MELog(context, TEXT("Engine"), ELogType::FATAL, TEXT("Failed to initialize Timer!"));
             m_instance = nullptr;
             return false;
          }
@@ -74,6 +83,7 @@ namespace Mile
          // Initialize Thread Pool
          if (!context->GetSubSystem<ThreadPool>()->Init())
          {
+            MELog(context, TEXT("Engine"), ELogType::FATAL, TEXT("Failed to initialize ThreadPool!"));
             m_instance = nullptr;
             return false;
          }
@@ -81,6 +91,7 @@ namespace Mile
          // Initialize Resource manager
          if (!context->GetSubSystem<ResourceManager>()->Init())
          {
+            MELog(context, TEXT("Engine"), ELogType::FATAL, TEXT("Failed to initialize ResourceManager!"));
             m_instance = nullptr;
             return false;
          }
@@ -88,6 +99,7 @@ namespace Mile
          // Initialize ConfigSystem
          if (!context->GetSubSystem<ConfigSystem>()->Init())
          {
+            MELog(context, TEXT("Engine"), ELogType::FATAL, TEXT("Failed to initialize ConfigSystem!"));
             m_instance = nullptr;
             return false;
          }
@@ -95,6 +107,7 @@ namespace Mile
          // Initialize Input Manager
          if (!context->GetSubSystem<InputManager>()->Init())
          {
+            MELog(context, TEXT("Engine"), ELogType::FATAL, TEXT("Failed to initialize InputManager!"));
             m_instance = nullptr;
             return false;
          }
@@ -102,12 +115,14 @@ namespace Mile
          // Initialize Window Subsystem
          if (!context->GetSubSystem<Window>()->Init())
          {
+            MELog(context, TEXT("Engine"), ELogType::FATAL, TEXT("Failed to initialize Window Subsystem!"));
             m_instance = nullptr;
             return false;
          }
 
          if (!context->GetSubSystem<RendererDX11>()->Init())
          {
+            MELog(context, TEXT("Engine"), ELogType::FATAL, TEXT("Failed to initialize Renderer!"));
             m_instance = nullptr;
             return false;
          }
@@ -115,10 +130,18 @@ namespace Mile
          // Initialize World
          if (!context->GetSubSystem<World>()->Init())
          {
+            MELog(context, TEXT("Engine"), ELogType::FATAL, TEXT("Failed to initialize World!"));
             m_instance = nullptr;
             return false;
          }
 
+         Application* app = context->GetSubSystem<Application>();
+         if (app == nullptr || !app->Init())
+         {
+            MELog(context, TEXT("Engine"), ELogType::FATAL, TEXT("Failed to initialize Application!"));
+            m_instance = nullptr;
+            return false;
+         }
 
          auto engineConfig = m_configSys->GetConfig(TEXT("Engine"));
          m_maxFPS = std::clamp(static_cast<unsigned int>(engineConfig.second["MaxFPS"]), LOWER_BOUND_OF_ENGINE_FPS, UPPER_BOUND_OF_ENGINE_FPS);
@@ -147,7 +170,9 @@ namespace Mile
             m_timer->BeginFrame();
 
             this->Update();
+            m_app->Update();
             m_renderer->Render();
+            m_app->RenderIMGUI();
 
             m_timer->PreEndFrame();
 
@@ -182,6 +207,7 @@ namespace Mile
       m_window = nullptr;
       m_renderer = nullptr;
       m_world = nullptr;
+      m_app = nullptr;
       SubSystem::DeInit();
       MELog(context, TEXT("Engine"), ELogType::MESSAGE, TEXT("Engine shutting down."), true);
    }

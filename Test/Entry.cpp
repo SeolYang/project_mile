@@ -2,6 +2,7 @@
 #include "Core/Engine.h"
 #include "Core/Logger.h"
 #include "Core/InputManager.h"
+#include "Core/Application.h"
 #include "GameFramework/World.h"
 #include "GameFramework/Entity.h"
 #include "Component/CameraComponent.h"
@@ -19,13 +20,15 @@
 #include "MT/ThreadPool.h"
 #include "RotateComponent.h"
 #include "InputTestComponent.h"
+#include "TestApp.h"
 
 using namespace Mile;
 
-int main( )
+int main()
 {
    auto context = new Context();
-   auto engine = new Engine(context);
+   auto app = new TestApp(context);
+   auto engine = new Engine(context, app);
    int execute = 1;
 
    if (engine->Init())
@@ -126,7 +129,7 @@ int main( )
 
       //Texture2D* snowMachineHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/snow_machine/test8_Ref.hdr"));
       //renderer->SetEquirectangularMap(snowMachineHDR);
-      
+
       renderer->SetComputeIBLAsRealtime(false);
       renderer->SetAmbientOcclusionFactor(1.0f);
       renderer->SetGammaFactor(DEFAULT_GAMMA_FACTOR);

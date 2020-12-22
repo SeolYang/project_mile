@@ -15,7 +15,7 @@
     <ProjectGuid>{5862A8D8-525E-4271-A925-E11865B4B705}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Test</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -47,11 +47,13 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
     <IntDir>..\Binaries\VSOBJ\Test\$(Configuration)\</IntDir>
+    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\ThirdParty\imgui\include;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
     <IntDir>..\Binaries\VSOBJ\Test\$(Configuration)\</IntDir>
+    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\ThirdParty\imgui\include;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -60,7 +62,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Runtime;..\ThirdParty\json\src;..\Test;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Test;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include;</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -78,7 +80,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Runtime;..\ThirdParty\json\src;..\Test;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Test;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include;</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -91,11 +93,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Test\Entry.cpp" />
+    <ClCompile Include="..\Test\imGUIDemoLayer.cpp" />
     <ClCompile Include="..\Test\RotateComponent.cpp" />
+    <ClCompile Include="..\Test\TestApp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Test\ImGUIDemoLayer.h" />
     <ClInclude Include="..\Test\InputTestComponent.h" />
     <ClInclude Include="..\Test\RotateComponent.h" />
+    <ClInclude Include="..\Test\TestApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

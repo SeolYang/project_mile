@@ -15,17 +15,17 @@
     <ProjectGuid>{6742BECA-60F9-4DF9-9B98-4F684457CCE8}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Runtime</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -48,7 +48,7 @@
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
     <IntDir>..\Binaries\VSOBJ\Runtime\$(Configuration)\</IntDir>
     <TargetName>Runtime</TargetName>
-    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;$(SourcePath)</SourcePath>
+    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\ThirdParty\imgui\include;$(SourcePath)</SourcePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -56,7 +56,7 @@
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
     <IntDir>..\Binaries\VSOBJ\Runtime\$(Configuration)\</IntDir>
     <TargetName>Runtime</TargetName>
-    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;$(SourcePath)</SourcePath>
+    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\ThirdParty\imgui\include;$(SourcePath)</SourcePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -66,7 +66,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -81,6 +81,10 @@ copy "..\ThirdParty\FreeImage\dlls\Debug" "..\Binaries\$(Configuration)\";</Comm
     <PostBuildEvent>
       <Message>Copy Third Party dlls</Message>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalLibraryDirectories>..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\zlib\libs;..\ThirdParty\libpng\libs;..\ThirdParty\assimp\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>FreeImage.lib;assimp_d.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -91,7 +95,7 @@ copy "..\ThirdParty\FreeImage\dlls\Debug" "..\Binaries\$(Configuration)\";</Comm
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -108,6 +112,10 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <PostBuildEvent>
       <Message>Copy Third Party dlls</Message>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalLibraryDirectories>..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\assimp\lib;..\ThirdParty\FreeImage\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>FreeImage.lib;assimp.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Runtime\Component\CameraComponent.h" />
@@ -115,12 +123,16 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\Runtime\Component\ComponentRegister.h" />
     <ClInclude Include="..\Runtime\Component\LightComponent.h" />
     <ClInclude Include="..\Runtime\Component\MeshRenderComponent.h" />
+    <ClInclude Include="..\Runtime\Core\Application.h" />
     <ClInclude Include="..\Runtime\Core\Config.h" />
     <ClInclude Include="..\Runtime\Core\Context.h" />
     <ClInclude Include="..\Runtime\Core\CoreMinimal.h" />
     <ClInclude Include="..\Runtime\Core\Engine.h" />
     <ClInclude Include="..\Runtime\Core\Helper.h" />
+    <ClInclude Include="..\Runtime\Core\IMGUILayer.h" />
     <ClInclude Include="..\Runtime\Core\InputManager.h" />
+    <ClInclude Include="..\Runtime\Core\Layer.h" />
+    <ClInclude Include="..\Runtime\Core\LayerStack.h" />
     <ClInclude Include="..\Runtime\Core\Logger.h" />
     <ClInclude Include="..\Runtime\Core\SubSystem.h" />
     <ClInclude Include="..\Runtime\Core\Timer.h" />
@@ -267,6 +279,14 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\ZipArchiveIOSystem.h" />
     <ClInclude Include="..\ThirdParty\FreeImage\include\FreeImage.h" />
     <ClInclude Include="..\ThirdParty\FreeImage\include\Utilities.h" />
+    <ClInclude Include="..\ThirdParty\imgui\include\imconfig.h" />
+    <ClInclude Include="..\ThirdParty\imgui\include\imgui.h" />
+    <ClInclude Include="..\ThirdParty\imgui\include\imgui_impl_dx11.h" />
+    <ClInclude Include="..\ThirdParty\imgui\include\imgui_impl_win32.h" />
+    <ClInclude Include="..\ThirdParty\imgui\include\imgui_internal.h" />
+    <ClInclude Include="..\ThirdParty\imgui\include\imstb_rectpack.h" />
+    <ClInclude Include="..\ThirdParty\imgui\include\imstb_textedit.h" />
+    <ClInclude Include="..\ThirdParty\imgui\include\imstb_truetype.h" />
     <ClInclude Include="..\ThirdParty\json\src\json.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -275,10 +295,14 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Component\ComponentRegister.cpp" />
     <ClCompile Include="..\Runtime\Component\LightComponent.cpp" />
     <ClCompile Include="..\Runtime\Component\MeshRenderComponent.cpp" />
+    <ClCompile Include="..\Runtime\Core\Application.cpp" />
     <ClCompile Include="..\Runtime\Core\Config.cpp" />
     <ClCompile Include="..\Runtime\Core\Context.cpp" />
     <ClCompile Include="..\Runtime\Core\Engine.cpp" />
+    <ClCompile Include="..\Runtime\Core\IMGUILayer.cpp" />
     <ClCompile Include="..\Runtime\Core\InputManager.cpp" />
+    <ClCompile Include="..\Runtime\Core\Layer.cpp" />
+    <ClCompile Include="..\Runtime\Core\LayerStack.cpp" />
     <ClCompile Include="..\Runtime\Core\Logger.cpp" />
     <ClCompile Include="..\Runtime\Core\SubSystem.cpp" />
     <ClCompile Include="..\Runtime\Core\Timer.cpp" />
@@ -339,6 +363,13 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Resource\ResourceManager.cpp" />
     <ClCompile Include="..\Runtime\Resource\Texture2D.cpp" />
     <ClCompile Include="..\Runtime\Resource\TextureLoader.cpp" />
+    <ClCompile Include="..\ThirdParty\imgui\include\imgui.cpp" />
+    <ClCompile Include="..\ThirdParty\imgui\include\imgui_demo.cpp" />
+    <ClCompile Include="..\ThirdParty\imgui\include\imgui_draw.cpp" />
+    <ClCompile Include="..\ThirdParty\imgui\include\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\ThirdParty\imgui\include\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\ThirdParty\imgui\include\imgui_tables.cpp" />
+    <ClCompile Include="..\ThirdParty\imgui\include\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Contents\Shaders\AmbientEmissivePass.hlsl">

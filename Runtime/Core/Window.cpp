@@ -4,7 +4,11 @@
 #include "Core/Logger.h"
 #include "Core/Config.h"
 #include "Core/InputManager.h"
+#include "imgui.h"
+#include "imgui_impl_win32.h"
+#include "imgui_impl_dx11.h"
 
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 namespace Mile
 {
    Window::Window(Context* context) : SubSystem(context),
@@ -82,14 +86,24 @@ namespace Mile
       }
    }
 
+   void Window::SetTitle(const String& title)
+   {
+      SetWindowText(m_handle, title.c_str());
+   }
+
    LRESULT WinProc(HWND Handle, unsigned int Msg, WPARAM wParam, LPARAM lParam)
    {
+      if (ImGui_ImplWin32_WndProcHandler(Handle, Msg, wParam, lParam))
+      {
+         return true;
+      }
+
       switch (Msg)
       {
       case WM_DESTROY:
       case WM_CLOSE:
          PostQuitMessage(0);
-         break;
+         return 0;
       }
 
       InputManager* inputManager = Engine::GetInputManager();

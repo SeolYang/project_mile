@@ -4,7 +4,7 @@
 namespace Mile
 {
    constexpr unsigned int LOWER_BOUND_OF_ENGINE_FPS = 1;
-   constexpr unsigned int UPPER_BOUND_OF_ENGINE_FPS = 960;
+   constexpr unsigned int UPPER_BOUND_OF_ENGINE_FPS = 300;
 
    class Logger;
    class Timer;
@@ -14,6 +14,7 @@ namespace Mile
    class Window;
    class ResourceManager;
    class RendererDX11;
+   class Application;
    class World;
    /**
     * @brief	모든 Subsystem 들의 root 역할을 합니다. 엔진에서 사용할 Subsystem 들의 초기화, 업데이트 그리고 할당 해제를 당담하는 클래스 입니다.
@@ -21,7 +22,8 @@ namespace Mile
    class MEAPI Engine : public SubSystem
    {
    public:
-      Engine(Context* context);
+      Engine(Context* context, Application* app);
+      ~Engine() = default;
 
       /**
       * @brief Engine의 Subsystem 들을 초기화합니다.
@@ -69,5 +71,7 @@ namespace Mile
       Window*           m_window;
       RendererDX11*     m_renderer;
       World*            m_world;
+      Application*      m_app;
+
    };
 }

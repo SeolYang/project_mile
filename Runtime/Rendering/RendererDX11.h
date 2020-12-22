@@ -97,6 +97,9 @@ namespace Mile
       void Render();
 
       ID3D11Device* GetDevice() { return m_device; }
+      ID3D11DeviceContext* GetImmediateContext() { return m_immediateContext; }
+
+      void Present();
 
       void SetBackbufferAsRenderTarget(ID3D11DeviceContext& deviceContext);
       void SetClearColor(Vector4 clearColor);
@@ -201,7 +204,6 @@ namespace Mile
       **/
       void AcquireCameras(World* world);
 
-      ID3D11DeviceContext* GetImmediateContext() { return m_immediateContext; }
       ID3D11DeviceContext* GetRenderContextByType(ERenderContextType type);
 
       void SetDepthStencilEnable(ID3D11DeviceContext& deviceContext, bool bDepthEnabled);
@@ -209,7 +211,6 @@ namespace Mile
 
       void Clear(ID3D11DeviceContext& deviceContext);
       void ClearDepthStencil(ID3D11DeviceContext& deviceContext);
-      void Present();
 
    private:
       Window* m_window;

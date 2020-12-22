@@ -39,9 +39,10 @@ namespace Mile
    {
       for (const auto& subSys : m_subSystems)
       {
-         if (typeid(T) == typeid(*subSys))
+         T* casted = dynamic_cast<T*>(subSys);
+         if (casted != nullptr)
          {
-            return static_cast<T*>(subSys);
+            return casted;
          }
       }
 

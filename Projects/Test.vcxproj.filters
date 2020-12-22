@@ -12,12 +12,24 @@
     <ClCompile Include="..\Test\RotateComponent.cpp">
       <Filter>Application</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\TestApp.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\imGUIDemoLayer.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Test\RotateComponent.h">
       <Filter>Application</Filter>
     </ClInclude>
     <ClInclude Include="..\Test\InputTestComponent.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\TestApp.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\ImGUIDemoLayer.h">
       <Filter>Application</Filter>
     </ClInclude>
   </ItemGroup>

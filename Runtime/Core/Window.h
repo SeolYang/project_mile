@@ -60,6 +60,8 @@ namespace Mile
 
       virtual void Update() override;
 
+      void SetTitle(const String& title);
+
    private:
       HWND m_handle;
       unsigned int m_resWidth;
