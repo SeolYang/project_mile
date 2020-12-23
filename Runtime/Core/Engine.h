@@ -46,6 +46,7 @@ namespace Mile
 
       bool IsRunning() const { return m_bIsRunning; }
 
+      static Engine* GetInstance();
       static Logger* GetLogger();
       static Timer* GetTimer();
       static ThreadPool* GetThreadPool();

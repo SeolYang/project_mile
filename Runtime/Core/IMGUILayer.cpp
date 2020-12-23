@@ -82,7 +82,9 @@ namespace Mile
       io.DisplaySize = ImVec2((float)window->GetResWidth(), (float)window->GetResHeight());
 
       ImGui::Render();
-      renderer->SetBackbufferAsRenderTarget(*renderer->GetImmediateContext());
+      auto immediateContext = renderer->GetImmediateContext();
+      renderer->SetBackbufferAsRenderTarget(*immediateContext);
+      renderer->ClearDepthStencil(*immediateContext);
       ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
       if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -90,7 +92,5 @@ namespace Mile
          ImGui::UpdatePlatformWindows();
          ImGui::RenderPlatformWindowsDefault();
       }
-
-      renderer->Present();
    }
 }

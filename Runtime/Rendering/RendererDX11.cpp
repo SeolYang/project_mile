@@ -49,6 +49,7 @@ namespace Mile
       m_window(nullptr),
       m_device(nullptr),
       m_immediateContext(nullptr),
+      m_vsyncEnabled(false),
       m_deferredContexts{ nullptr },
       m_swapChain(nullptr),
       m_renderTargetView(nullptr),
@@ -623,6 +624,11 @@ namespace Mile
       }
    }
 
+   void RendererDX11::SetVsync(bool enabled)
+   {
+      m_vsyncEnabled = enabled;
+   }
+
    bool RendererDX11::CreateDeviceAndSwapChain()
    {
       DXGI_SWAP_CHAIN_DESC swDesc;
@@ -822,7 +828,7 @@ namespace Mile
          }
       }
 
-      Present();
+      //Present();
    }
 
    ID3D11CommandList* RendererDX11::RunGeometryPass(ID3D11DeviceContext* deviceContextPtr)
@@ -1474,7 +1480,14 @@ namespace Mile
       if (m_swapChain != nullptr)
       {
          /* @TODO: Impl VSYNC **/
-         m_swapChain->Present(0, 0);
+         if (m_vsyncEnabled)
+         {
+            m_swapChain->Present(1, 0);
+         }
+         else
+         {
+            m_swapChain->Present(0, 0);
+         }
       }
    }
 

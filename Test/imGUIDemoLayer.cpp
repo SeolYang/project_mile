@@ -1,5 +1,7 @@
 #include "ImGUIDemoLayer.h"
 #include "imgui.h"
+#include "Core/Engine.h"
+#include "Core/Timer.h"
 
 ImGUIDemoLayer::ImGUIDemoLayer(Context* context) :
    Layer(context, TEXT("ImGUIDemoLayer"))
@@ -30,7 +32,8 @@ void ImGUIDemoLayer::OnIMGUIRender()
       ImGui::SameLine();
       ImGui::Text("counter = %d", counter);
 
-      ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+      float deltaTime = Engine::GetTimer()->GetDeltaTime();
+      ImGui::Text("App dt %.4f ms", deltaTime);
       ImGui::End();
    }
 }

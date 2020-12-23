@@ -173,6 +173,7 @@ namespace Mile
             m_app->Update();
             m_renderer->Render();
             m_app->RenderIMGUI();
+            m_renderer->Present();
 
             m_timer->PreEndFrame();
 
@@ -212,9 +213,14 @@ namespace Mile
       MELog(context, TEXT("Engine"), ELogType::MESSAGE, TEXT("Engine shutting down."), true);
    }
 
+   Engine* Engine::GetInstance()
+   {
+      return m_instance;
+   }
+
    Logger* Engine::GetLogger()
    {
-      { return (m_instance != nullptr) ? m_instance->m_logger : nullptr; }
+      return (m_instance != nullptr) ? m_instance->m_logger : nullptr;
    }
 
    Timer* Engine::GetTimer()

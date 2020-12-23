@@ -2,8 +2,8 @@
     "Title": "Engine",
     "PosX": 0,
     "PosY": 0,
-    "ResolutionWidth": 1280,
-    "ResolutionHeight": 720,
+    "ResolutionWidth": 1920,
+    "ResolutionHeight": 1080,
     "World": "Contents/Worlds/Default.json",
-    "MaxFPS": 144
+    "MaxFPS": 300
 }

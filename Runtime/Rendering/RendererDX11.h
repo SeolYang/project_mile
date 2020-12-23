@@ -93,8 +93,14 @@ namespace Mile
       virtual bool Init() override;
       virtual void DeInit() override;
 
+      void SetVsync(bool enable = false);
+      bool IsVsyncEnabled() const { return m_vsyncEnabled; }
+
       /* Rendering Methods **/
       void Render();
+
+      void Clear(ID3D11DeviceContext& deviceContext);
+      void ClearDepthStencil(ID3D11DeviceContext& deviceContext);
 
       ID3D11Device* GetDevice() { return m_device; }
       ID3D11DeviceContext* GetImmediateContext() { return m_immediateContext; }
@@ -209,13 +215,13 @@ namespace Mile
       void SetDepthStencilEnable(ID3D11DeviceContext& deviceContext, bool bDepthEnabled);
       bool IsDepthStencilEnabled() const { return m_bDepthStencilEnabled; }
 
-      void Clear(ID3D11DeviceContext& deviceContext);
-      void ClearDepthStencil(ID3D11DeviceContext& deviceContext);
-
    private:
       Window* m_window;
       ID3D11Device* m_device;
       ID3D11DeviceContext* m_immediateContext;
+
+      /* Rendering settings **/
+      bool m_vsyncEnabled;
 
       /* Deferred Contexts **/
       std::array<ID3D11DeviceContext*, REQUIRED_RENDERCONTEXT_NUM> m_deferredContexts;

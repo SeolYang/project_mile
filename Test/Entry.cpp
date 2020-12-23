@@ -142,6 +142,7 @@ int main()
       renderer->SetSSAORadius(1.5f);
       renderer->SetSSAOBias(0.02f);
       renderer->SetSSAOMagnitude(1.2f);
+      renderer->SetVsync(false);
       execute = engine->Execute();
    }
 
