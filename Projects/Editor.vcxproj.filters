@@ -5,15 +5,30 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Sources\Layers">
+      <UniqueIdentifier>{e1a73348-019b-47d2-bf11-4d0f64855563}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Editor\Editor.h">
       <Filter>Sources</Filter>
     </ClInclude>
+    <ClInclude Include="..\Editor\EditorApp.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Editor\Layers\SceneHierarchyLayer.h">
+      <Filter>Sources\Layers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Editor\EditorMain.cpp">
       <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Editor\EditorApp.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Editor\Layers\SceneHierarchyLayer.cpp">
+      <Filter>Sources\Layers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
