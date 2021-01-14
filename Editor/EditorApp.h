@@ -4,9 +4,12 @@
 namespace Mile
 {
    class Engine;
+   class World;
+   class Window;
    namespace Editor
    {
-      class SceneHierarchyLayer;
+      class WorldHierarchyLayer;
+      class MenuBarLayer;
       class EditorApp : public Application
       {
       public:
@@ -17,7 +20,8 @@ namespace Mile
 
       private:
          Engine* m_engineInstance;
-         SceneHierarchyLayer* m_sceneHierarchyLayer;
+         WorldHierarchyLayer* m_worldHierarchyLayer;
+         MenuBarLayer* m_menuBarLayer;
 
       };
    }

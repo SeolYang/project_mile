@@ -16,7 +16,10 @@
     <ClInclude Include="..\Editor\EditorApp.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="..\Editor\Layers\SceneHierarchyLayer.h">
+    <ClInclude Include="..\Editor\Layers\MenuBarLayer.h">
+      <Filter>Sources\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Editor\Layers\WorldHierarchyLayer.h">
       <Filter>Sources\Layers</Filter>
     </ClInclude>
   </ItemGroup>
@@ -27,7 +30,10 @@
     <ClCompile Include="..\Editor\EditorApp.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\Editor\Layers\SceneHierarchyLayer.cpp">
+    <ClCompile Include="..\Editor\Layers\MenuBarLayer.cpp">
+      <Filter>Sources\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Editor\Layers\WorldHierarchyLayer.cpp">
       <Filter>Sources\Layers</Filter>
     </ClCompile>
   </ItemGroup>

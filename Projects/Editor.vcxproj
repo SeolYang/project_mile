@@ -13,12 +13,14 @@
   <ItemGroup>
     <ClInclude Include="..\Editor\Editor.h" />
     <ClInclude Include="..\Editor\EditorApp.h" />
-    <ClInclude Include="..\Editor\Layers\SceneHierarchyLayer.h" />
+    <ClInclude Include="..\Editor\Layers\MenuBarLayer.h" />
+    <ClInclude Include="..\Editor\Layers\WorldHierarchyLayer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Editor\EditorApp.cpp" />
     <ClCompile Include="..\Editor\EditorMain.cpp" />
-    <ClCompile Include="..\Editor\Layers\SceneHierarchyLayer.cpp" />
+    <ClCompile Include="..\Editor\Layers\MenuBarLayer.cpp" />
+    <ClCompile Include="..\Editor\Layers\WorldHierarchyLayer.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -1,7 +1,8 @@
 #include "EditorApp.h"
 #include "Core/Context.h"
 #include "Core/Engine.h"
-#include "Layers/SceneHierarchyLayer.h"
+#include "Layers/WorldHierarchyLayer.h"
+#include "Layers/MenuBarLayer.h"
 
 namespace Mile
 {
@@ -9,7 +10,8 @@ namespace Mile
    {
       EditorApp::EditorApp(Context* context) :
          m_engineInstance(nullptr),
-         m_sceneHierarchyLayer(nullptr),
+         m_worldHierarchyLayer(nullptr),
+         m_menuBarLayer(nullptr),
          Application(context, TEXT("MileEditor"))
       {
       }
@@ -17,7 +19,8 @@ namespace Mile
       EditorApp::~EditorApp()
       {
          m_engineInstance = nullptr;
-         m_sceneHierarchyLayer = nullptr;
+         m_worldHierarchyLayer = nullptr;
+         m_menuBarLayer = nullptr;
       }
 
       bool EditorApp::Init()
@@ -28,9 +31,16 @@ namespace Mile
             m_engineInstance = context->GetSubSystem<Engine>();
             if (m_engineInstance != nullptr)
             {
-               m_sceneHierarchyLayer = new SceneHierarchyLayer(context);
-               m_sceneHierarchyLayer->SetTargetWorld(m_engineInstance->GetWorld());
-               PushLayer(m_sceneHierarchyLayer);
+               World* world = m_engineInstance->GetWorld();
+               Window* window = m_engineInstance->GetWindow();
+               m_worldHierarchyLayer = new WorldHierarchyLayer(context);
+               m_worldHierarchyLayer->SetTargetWorld(world);
+               PushLayer(m_worldHierarchyLayer);
+
+               m_menuBarLayer = new MenuBarLayer(context);
+               m_menuBarLayer->SetTargetWorld(world);
+               m_menuBarLayer->SetWindow(window);
+               PushLayer(m_menuBarLayer);
                return true;
             }
          }

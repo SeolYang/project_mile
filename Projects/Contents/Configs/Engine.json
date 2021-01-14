@@ -1,8 +1,7 @@
 {
-    "Title": "Engine",
-    "ResolutionWidth": 1280,
-    "ResolutionHeight": 720,
-    "World": "Contents/Worlds/Default.json",
-    "MaxFPS": 300,
-    "WindowStyle" : 2
+  "Title": "Engine",
+  "ResolutionWidth": 1280,
+  "ResolutionHeight": 720,
+  "MaxFPS": 300,
+  "WindowStyle": 2
 }

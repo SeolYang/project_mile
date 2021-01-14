@@ -97,6 +97,8 @@ namespace Mile
       bool SaveTo(const String& filePath);
       bool Save();
 
+      bool IsSaved() const { return (m_loadedData != nullptr); }
+
       /**
        * @breif   월드에 생성되어 있는 모든 Entity를 삭제합니다.
        */
