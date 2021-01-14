@@ -10,6 +10,7 @@
 namespace Mile
 {
    World::World(Context* context) :
+      m_name(TEXT("Untitled")),
       m_loadedData(nullptr),
       SubSystem(context)
    {
@@ -54,17 +55,6 @@ namespace Mile
       Context* context = GetContext();
       if (SubSystem::Init())
       {
-         auto configSys = context->GetSubSystem<ConfigSystem>();
-         auto engineConfig = configSys->GetConfig(TEXT("Engine"));
-         String defaultPath = String2WString(engineConfig.second["World"]);
-
-         auto loaded = LoadFrom(defaultPath);
-         if (!loaded)
-         {
-            MELog(context, TEXT("World"), ELogType::FATAL, TEXT("Failed to load world from ") + defaultPath, true);
-            return false;
-         }
-
          MELog(context, TEXT("World"), ELogType::MESSAGE, TEXT("World Initialized!"), true);
          SubSystem::InitSucceed();
          return true;
@@ -79,7 +69,6 @@ namespace Mile
       if (IsInitialized())
       {
          Clear();
-
          SubSystem::DeInit();
          MELog(GetContext(), TEXT("World"), ELogType::MESSAGE, TEXT("World deinitialized."), true);
       }
@@ -154,6 +143,7 @@ namespace Mile
          }
 
          this->m_loadedData = res;
+         this->m_name = m_loadedData->GetName();
          this->DeSerialize(json::parse(res->GetData().empty() ? "{}" : res->GetData()));
          MELog(context, TEXT("World"), ELogType::MESSAGE, TEXT("World loaded. : ") + filePath, true);
          return true;
@@ -179,6 +169,8 @@ namespace Mile
          res->SetData(this->Serialize().dump());
          if (res->Save())
          {
+            m_loadedData = res;
+            m_name = m_loadedData->GetName();
             MELog(context, TEXT("World"), ELogType::MESSAGE, TEXT("World data saved. : ") + res->GetPath(), true);
             return true;
          }
@@ -199,7 +191,7 @@ namespace Mile
          }
       }
 
-      return SaveTo(TEXT("NewWorld.world"));
+      return false;
    }
 
    void World::Clear()
@@ -210,5 +202,10 @@ namespace Mile
       }
 
       m_entities.clear();
+      m_loadedData = nullptr;
+
+      m_name = TEXT("Untitled");
+
+      MELog(GetContext(), TEXT("World"), ELogType::MESSAGE, TEXT("World has been cleared."), true);
    }
 }

@@ -102,7 +102,10 @@ namespace Mile
        */
       void Clear();
 
+      String GetWorldName() const { return m_name; }
+
    private:
+      String m_name;
       std::vector<Entity*> m_entities;
       PlainText<std::string>* m_loadedData;
 
