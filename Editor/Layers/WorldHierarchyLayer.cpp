@@ -15,7 +15,7 @@ namespace Mile
 
       void WorldHierarchyLayer::OnIMGUIRender()
       {
-         ImGui::Begin("Scene Hierarchy");
+         ImGui::Begin("World Hierarchy");
          if (ImGui::TreeNode("Scene"))
          {
             if (m_target != nullptr)
