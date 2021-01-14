@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/SubSystem.h"
 #include "Component/Component.h"
+#include "GameFramework/Entity.h"
 
 namespace Mile
 {
