@@ -11,6 +11,8 @@ namespace Mile
       Layer(Context* context, const String& name = TEXT("Layer"));
       virtual ~Layer() { }
 
+      virtual bool Init() { return true; }
+
       virtual void OnAttach() { }
       virtual void OnDetach() { }
       virtual void OnUpdate() { }
