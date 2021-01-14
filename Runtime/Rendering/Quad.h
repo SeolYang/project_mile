@@ -8,7 +8,7 @@ namespace Mile
    {
    public:
       Quad(RendererDX11* renderer) :
-         Mesh(renderer, TEXT("Quad"), TEXT(""))
+         Mesh(renderer, TEXT("Quad"), TEXT(""), EStaticMeshType::Quad)
       {
       }
 

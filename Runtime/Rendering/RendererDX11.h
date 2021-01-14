@@ -150,6 +150,9 @@ namespace Mile
       void SetSSAOMagnitude(float mag) { m_ssaoMagnitude = mag; }
       float GetSSAOMagnitude() const { return m_ssaoMagnitude; }
 
+      Mesh* GetCubeMesh() const { return reinterpret_cast<Mesh*>(m_cubeMesh); }
+      Mesh* GetQuadMesh() const { return reinterpret_cast<Mesh*>(m_screenQuad); }
+
    private:
       /* Initialization methods **/
       bool CreateDeviceAndSwapChain();

@@ -7,7 +7,7 @@ namespace Mile
    {
    public:
       Cube(RendererDX11* renderer) :
-         Mesh(renderer, TEXT("Cube"), TEXT(""))
+         Mesh(renderer, TEXT("Cube"), TEXT(""), EStaticMeshType::Cube)
       {
       }
 

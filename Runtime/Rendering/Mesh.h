@@ -6,11 +6,19 @@
 
 namespace Mile
 {
+   enum class EStaticMeshType
+   {
+      External = 0,
+      Cube = 1,
+      Quad = 2,
+   };
+
    class RendererDX11;
    class MEAPI Mesh : public RenderObject
    {
    public:
-      Mesh(RendererDX11* renderer, const std::wstring& name, const String& modelPath) :
+      Mesh(RendererDX11* renderer, const std::wstring& name, const String& modelPath, EStaticMeshType type = EStaticMeshType::External) :
+         m_type(type),
          m_name(name),
          m_vertexBuffer(nullptr),
          m_indexBuffer(nullptr),
@@ -67,8 +75,11 @@ namespace Mile
       std::wstring GetName() const { return m_name; }
       String GetModelPath() const { return m_modelPath; }
 
+      EStaticMeshType GetMeshType() const { return m_type; }
+
    private:
-      IndexBufferDX11* m_indexBuffer;
+      EStaticMeshType   m_type;
+      IndexBufferDX11*  m_indexBuffer;
       VertexBufferDX11* m_vertexBuffer;
 
       std::wstring      m_name;

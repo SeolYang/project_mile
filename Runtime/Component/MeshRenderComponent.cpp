@@ -1,5 +1,7 @@
 #include "Component/MeshRenderComponent.h"
 #include "Core/Context.h"
+#include "Core/Engine.h"
+#include "Rendering/RendererDX11.h"
 #include "GameFramework/Entity.h"
 #include "Resource/ResourceManager.h"
 #include "Resource/Model.h"
@@ -10,18 +12,6 @@ namespace Mile
 {
    RegisterComponent(MeshRenderComponent);
 
-   //std::string MeshRenderComponent::Serialize() const
-   //{
-   //	// { "Mesh": { "Model": (Model filepath), "Name": (Mesh Name) },
-   //	// "Material": (Material filepath) }
-   //	std::string res = "{ \"Type\": \"MeshRenderComponent\", "
-   //		+ Component::Serialize() +
-   //		", \"Mesh\": { \"Model\": \"" + WString2String(m_mesh->GetModelPath()) +
-   //		"\", \"Name\": \"" + WString2String(m_mesh->GetName()) + "\" }, "
-   //		" \"Material\": \"" + WString2String(m_material->GetPath()) + "\" }";
-   //	return res;
-   //}
-
    json MeshRenderComponent::Serialize() const
    {
       json serialized = Component::Serialize();
@@ -30,6 +20,7 @@ namespace Mile
       json meshData;
       meshData["Model"] = WString2String(m_mesh->GetModelPath());
       meshData["Name"] = WString2String(m_mesh->GetName());
+      meshData["Type"] = static_cast<int>(m_mesh->GetMeshType());
 
       serialized["Mesh"] = meshData;
       serialized["Material"] = WString2String(m_material->GetPath());
@@ -42,11 +33,27 @@ namespace Mile
       Component::DeSerialize(jsonData);
       auto resMng = m_entity->GetContext()->GetSubSystem<ResourceManager>();
       json meshData = jsonData["Mesh"];
-      auto loadedModel = resMng->Load<Model>(String2WString(meshData["Model"]));
-      if (loadedModel != nullptr)
+      Model* loadedModel = nullptr;
+
+      switch (static_cast<EStaticMeshType>(meshData["Type"]))
       {
-         m_mesh = loadedModel->GetMeshByName(String2WString(meshData["Name"]));
-         m_material = resMng->Load<Material>(String2WString(jsonData["Material"]));
+      case EStaticMeshType::External:
+         loadedModel = resMng->Load<Model>(String2WString(meshData["Model"]));
+         if (loadedModel != nullptr)
+         {
+            m_mesh = loadedModel->GetMeshByName(String2WString(meshData["Name"]));
+         }
+         break;
+
+      case EStaticMeshType::Cube:
+         m_mesh = Engine::GetRenderer()->GetCubeMesh();
+         break;
+
+      case EStaticMeshType::Quad:
+         m_mesh = Engine::GetRenderer()->GetQuadMesh();
+         break;
       }
+
+      m_material = resMng->Load<Material>(String2WString(jsonData["Material"]));
    }
 }

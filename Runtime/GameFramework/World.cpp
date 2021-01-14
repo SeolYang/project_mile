@@ -199,7 +199,7 @@ namespace Mile
          }
       }
 
-      return false;
+      return SaveTo(TEXT("NewWorld.world"));
    }
 
    void World::Clear()
