@@ -5,6 +5,27 @@
 
 namespace Mile
 {
+   enum class EWindowStyle
+   {
+      FullScreen,
+      Borderless,
+      Windowed
+   };
+
+   static EWindowStyle IndexToWindowStyle(unsigned int idx)
+   {
+      switch (idx)
+      {
+      case 0:
+         return EWindowStyle::FullScreen;
+      case 1:
+         return EWindowStyle::Borderless;
+      case 2:
+      default:
+         return EWindowStyle::Windowed;
+      }
+   }
+
    /**
     * @brief	화면이 보여질 윈도우를 나타내는 서브 시스템 클래스입니다.
     */
