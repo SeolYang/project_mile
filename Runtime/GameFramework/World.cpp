@@ -78,11 +78,7 @@ namespace Mile
    {
       if (IsInitialized())
       {
-         for (auto entity : m_entities)
-         {
-            SafeDelete(entity);
-         }
-         m_entities.clear();
+         Clear();
 
          SubSystem::DeInit();
          MELog(GetContext(), TEXT("World"), ELogType::MESSAGE, TEXT("World deinitialized."), true);
@@ -145,13 +141,18 @@ namespace Mile
       return rootEntities;
    }
 
-   bool World::LoadFrom(const String& filePath)
+   bool World::LoadFrom(const String& filePath, bool bClearWorld)
    {
       Context* context = GetContext();
       auto resMng = context->GetSubSystem<ResourceManager>();
       auto res = resMng->Create<PlainText<std::string>>(filePath);
       if (res != nullptr)
       {
+         if (bClearWorld)
+         {
+            Clear();
+         }
+
          this->m_loadedData = res;
          this->DeSerialize(json::parse(res->GetData().empty() ? "{}" : res->GetData()));
          MELog(context, TEXT("World"), ELogType::MESSAGE, TEXT("World loaded. : ") + filePath, true);
@@ -199,5 +200,14 @@ namespace Mile
       }
 
       return false;
+   }
+
+   void World::Clear()
+   {
+      for (auto entity : m_entities)
+      {
+         SafeDelete(entity);
+      }
+      m_entities.clear();
    }
 }

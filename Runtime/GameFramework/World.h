@@ -93,9 +93,14 @@ namespace Mile
          return foundComponents;
       }
 
-      bool LoadFrom(const String& filePath);
+      bool LoadFrom(const String& filePath, bool bClearWorld = true);
       bool SaveTo(const String& filePath);
       bool Save();
+
+      /**
+       * @breif   월드에 생성되어 있는 모든 Entity를 삭제합니다.
+       */
+      void Clear();
 
    private:
       std::vector<Entity*> m_entities;
