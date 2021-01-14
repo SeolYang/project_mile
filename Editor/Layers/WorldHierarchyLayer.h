@@ -7,10 +7,10 @@ namespace Mile
    class Entity;
    namespace Editor
    {
-      class SceneHierarchyLayer : public Layer
+      class WorldHierarchyLayer : public Layer
       {
          public:
-            SceneHierarchyLayer(Context* context);
+            WorldHierarchyLayer(Context* context);
             virtual void OnIMGUIRender();
 
             void SetTargetWorld(World* world) { m_target = world; }

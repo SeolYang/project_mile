@@ -208,6 +208,7 @@ namespace Mile
       {
          SafeDelete(entity);
       }
+
       m_entities.clear();
    }
 }

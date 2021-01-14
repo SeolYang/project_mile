@@ -773,7 +773,7 @@ namespace Mile
    {
       Context* context = GetContext();
       auto threadPool = context->GetSubSystem<ThreadPool>();
-      //Clear( *m_immediateContext );
+      Clear( *m_immediateContext );
 
       World* world = context->GetSubSystem<World>();
       if (world != nullptr)

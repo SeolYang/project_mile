@@ -1,4 +1,4 @@
-#include "Layers/SceneHierarchyLayer.h"
+#include "Layers/WorldHierarchyLayer.h"
 #include "GameFramework/World.h"
 #include "GameFramework/Entity.h"
 #include "imgui.h"
@@ -7,13 +7,13 @@ namespace Mile
 {
    namespace Editor
    {
-      SceneHierarchyLayer::SceneHierarchyLayer(Context* context) :
+      WorldHierarchyLayer::WorldHierarchyLayer(Context* context) :
          m_target(nullptr),
-         Layer(context, TEXT("SceneHierarchyLayer"))
+         Layer(context, TEXT("WorldHierarchyLayer"))
       {
       }
 
-      void SceneHierarchyLayer::OnIMGUIRender()
+      void WorldHierarchyLayer::OnIMGUIRender()
       {
          ImGui::Begin("Scene Hierarchy");
          if (ImGui::TreeNode("Scene"))
@@ -32,7 +32,7 @@ namespace Mile
          ImGui::End();
       }
 
-      void SceneHierarchyLayer::ConstructTree(Entity* targetRoot)
+      void WorldHierarchyLayer::ConstructTree(Entity* targetRoot)
       {
          if (targetRoot != nullptr)
          {
