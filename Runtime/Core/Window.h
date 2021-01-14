@@ -7,9 +7,9 @@ namespace Mile
 {
    enum class EWindowStyle
    {
-      FullScreen,
-      Borderless,
-      Windowed
+      FullScreen, // 0
+      Borderless, // 1
+      Windowed    // 2 and else
    };
 
    static EWindowStyle IndexToWindowStyle(unsigned int idx)
@@ -24,6 +24,24 @@ namespace Mile
       default:
          return EWindowStyle::Windowed;
       }
+   }
+
+   static void WinSetVideoMode(int width, int height, int bpp)
+   {
+      DEVMODE Mode;
+      EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &Mode);
+      Mode.dmBitsPerPel = bpp;
+      Mode.dmPelsWidth = width;
+      Mode.dmPelsHeight = height;
+      Mode.dmSize = sizeof(Mode);
+      Mode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
+
+      ChangeDisplaySettings(&Mode, CDS_FULLSCREEN);
+   }
+
+   static void WinRestoreVideoMode()
+   {
+      ChangeDisplaySettings(NULL, 0);
    }
 
    /**

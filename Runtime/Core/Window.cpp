@@ -40,15 +40,58 @@ namespace Mile
          wndClass.lpszClassName = windowTitle.c_str();
          RegisterClass(&wndClass);
 
-         unsigned int posX = config.second["PosX"];
-         unsigned int posY = config.second["PosY"];
          m_resWidth = config.second["ResolutionWidth"];
          m_resHeight = config.second["ResolutionHeight"];
 
-         m_handle = CreateWindow(windowTitle.c_str(), windowTitle.c_str(),
-            WS_CAPTION | WS_SYSMENU | WS_VISIBLE | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,
-            posX, posY, m_resWidth, m_resHeight,
+         int systemResX = GetSystemMetrics(SM_CXSCREEN);
+         int systemResY = GetSystemMetrics(SM_CYSCREEN);
+
+         unsigned int posX = (systemResX - m_resWidth) / 2;
+         unsigned int posY = (systemResY - m_resHeight) / 2;
+
+         EWindowStyle windowStyle = IndexToWindowStyle(config.second["WindowStyle"]);
+         RECT windowRect;
+         windowRect.left = 0;
+         windowRect.right = m_resWidth;
+         windowRect.bottom = m_resHeight;
+         windowRect.top = 0;
+
+         auto style = WS_POPUP;
+         auto exStyle = WS_EX_APPWINDOW;
+         switch (windowStyle)
+         {
+         case EWindowStyle::Windowed:
+            style = WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+            if (AdjustWindowRectEx(&windowRect, style, false, exStyle) == 0)
+            {
+               return false;
+            }
+
+            break;
+
+         case EWindowStyle::Borderless:
+            break;
+
+         case EWindowStyle::FullScreen:
+            posX = 0;
+            posY = 0;
+            windowRect.right = systemResX;
+            windowRect.bottom = systemResY;
+            WinSetVideoMode(systemResX, systemResY, 32);
+            ShowCursor(false);
+            break;
+         }
+
+         m_handle = CreateWindowEx(
+            exStyle,
+            windowTitle.c_str(), windowTitle.c_str(),
+            style,
+            posX, posY,
+            windowRect.right - windowRect.left,
+            windowRect.bottom - windowRect.top,
             nullptr, nullptr, nullptr, nullptr);
+
+         ShowWindow(m_handle, SW_SHOW);
 
          MELog(context, TEXT("Window"), ELogType::MESSAGE, TEXT("Window Initialized!"), true);
          SubSystem::InitSucceed();
