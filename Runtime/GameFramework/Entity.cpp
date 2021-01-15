@@ -7,10 +7,11 @@
 
 namespace Mile
 {
-   Entity::Entity(World* world, const String& name) :
+   Entity::Entity(World* world, const String& name, const String& tag) :
       m_world(world),
       m_context(nullptr),
       m_name(name),
+      m_tag(tag),
       m_bIsActivated(true),
       m_transform(new Transform(this)),
       m_parent(nullptr)
@@ -35,7 +36,8 @@ namespace Mile
    json Entity::Serialize() const
    {
       json serialized;
-      serialized["Name"] = Mile::WString2String(m_name);
+      serialized["Name"] = WString2String(m_name);
+      serialized["Tag"] = WString2String(m_tag);
       serialized["IsActivated"] = m_bIsActivated;
       serialized["Transform"] = m_transform->Serialize();
 
@@ -58,7 +60,8 @@ namespace Mile
 
    void Entity::DeSerialize(const json& jsonData)
    {
-      m_name = Mile::String2WString(jsonData["Name"]);
+      m_name = String2WString(jsonData["Name"]);
+      m_tag = String2WString(jsonData["Tag"]);
       m_bIsActivated = jsonData["IsActivated"];
 
       std::vector<json> components = jsonData["Components"];

@@ -3,6 +3,9 @@
 #include "Component/Component.h"
 #include "GameFramework/Transform.h"
 
+#define DEFAULT_ENTITY_NAME TEXT("Entity")
+#define DEFAULT_ENTITY_TAG TEXT("Default")
+
 namespace Mile
 {
    class Context;
@@ -14,7 +17,7 @@ namespace Mile
       friend class ModelLoader;
 
    private:
-      Entity(World* world, const String& name);
+      Entity(World* world, const String& name = DEFAULT_ENTITY_NAME, const String& tag = DEFAULT_ENTITY_TAG);
 
    public:
       ~Entity();
@@ -96,6 +99,10 @@ namespace Mile
       */
       void SetName(const String& name) { m_name = name; }
 
+      String GetTag() const { return m_tag; }
+
+      void SetTag(const String& tag) { m_tag = tag; }
+
       bool AttachChild(Entity* child);
       bool DetachChild(Entity* child);
 
@@ -104,6 +111,7 @@ namespace Mile
       bool HasParent() { return m_parent != nullptr; }
 
       std::vector<Entity*> GetChildren() const { return m_children; }
+      std::vector<Entity*> GetChildren() { return m_children; }
 
       void Start();
       void Update();
@@ -119,9 +127,10 @@ namespace Mile
       World*   m_world;
       Entity*  m_parent;
       Transform* m_transform;
-      std::vector<Component*>   m_components;
-      std::vector<Entity*>      m_children;
-      String                    m_name;
+      std::vector<Component*> m_components;
+      std::vector<Entity*>    m_children;
+      String   m_name;
+      String   m_tag;
 
    };
 
