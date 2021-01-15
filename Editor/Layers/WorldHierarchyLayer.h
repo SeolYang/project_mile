@@ -16,10 +16,14 @@ namespace Mile
             void SetTargetWorld(World* world) { m_target = world; }
 
       private:
-            void ConstructTree(Entity* targetRoot);
+            void DrawEntityNode(Entity* targetRoot);
+
+            void DrawHierarchyPanel();
+            void DrawPropertiesPanel();
 
       private:
          World* m_target;
+         Entity* m_selectedEntity;
 
       };
    }
