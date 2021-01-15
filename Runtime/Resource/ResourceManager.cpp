@@ -1,7 +1,6 @@
 #include "Resource/ResourceManager.h"
 #include "Resource/ResourceCache.h"
 #include "Core/Context.h"
-#include "Core/Logger.h"
 
 namespace Mile
 {
@@ -26,12 +25,18 @@ namespace Mile
             return false;
          }
 
-         MELog(context, TEXT("ResourceManager"), ELogType::MESSAGE, TEXT("Resource Manager Initialized!"), true);
+         MELog(context, 
+            MILE_RESOURCE_MANAGER_LOG_CATEGORY,
+            ELogType::MESSAGE,
+            TEXT("Resource Manager Initialized!"));
          SubSystem::InitSucceed();
          return true;
       }
 
-      MELog(context, TEXT("ResourceManager"), ELogType::FATAL, TEXT("Failed to initialize Resource Manager."), true);
+      MELog(context, 
+         MILE_RESOURCE_MANAGER_LOG_CATEGORY,
+         ELogType::FATAL, 
+         TEXT("Failed to initialize Resource Manager."));
       return false;
    }
 
@@ -40,7 +45,10 @@ namespace Mile
       if (IsInitialized())
       {
          ClearCache();
-         MELog(GetContext(), TEXT("ResourceManager"), ELogType::MESSAGE, TEXT("Resource Manager deinitialized!"), true);
+         MELog(GetContext(),
+            MILE_RESOURCE_MANAGER_LOG_CATEGORY,
+            ELogType::MESSAGE, 
+            TEXT("Resource Manager deinitialized!"));
          SubSystem::DeInit();
       }
    }
@@ -48,6 +56,10 @@ namespace Mile
    void ResourceManager::ClearCache()
    {
       m_cache->Clear();
+      MELog(GetContext(),
+         MILE_RESOURCE_MANAGER_LOG_CATEGORY,
+         ELogType::MESSAGE,
+         TEXT("Resource cache has been cleared."));
    }
 
 }
