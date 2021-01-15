@@ -42,5 +42,4 @@ public:
       serialized["Type"] = "InputTestComponent";
       return serialized;
    }
-
 };

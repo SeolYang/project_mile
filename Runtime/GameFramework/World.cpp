@@ -98,6 +98,42 @@ namespace Mile
       return newEntity;
    }
 
+   bool World::DestroyEntity(Entity* target)
+   {
+      for (auto itr = m_entities.begin(); itr != m_entities.end(); ++itr)
+      {
+         if (target == (*itr))
+         {
+            MELog(GetContext(),
+               MILE_WORLD_LOG_CATEGORY, 
+               ELogType::MESSAGE, String(TEXT("Destroy entity : ")) + target->GetName());
+            m_entities.erase(itr);
+            for (auto child : target->GetChildren())
+            {
+               DestroyEntity(child);
+            }
+
+            SafeDelete(target);
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   bool World::CheckEntityValidation(Entity* target) const
+   {
+      for (Entity* entity : m_entities)
+      {
+         if (entity == target)
+         {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
    Entity* World::GetEntityByName(const String& name) const
    {
       for (const auto& entity : m_entities)

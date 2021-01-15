@@ -3,6 +3,8 @@
 #include "Component/Component.h"
 #include "GameFramework/Entity.h"
 
+#define MILE_WORLD_LOG_CATEGORY TEXT("World")
+
 namespace Mile
 {
    template<typename Ty>
@@ -39,6 +41,17 @@ namespace Mile
       * @return   생성된 Entity
       */
       Entity* CreateEntity(const String& name);
+
+      /**
+       * @brief   World에서 지정된 Entity를 찾아 삭제합니다
+       * @return  삭제에 성공했는지
+       */
+      bool DestroyEntity(Entity* target);
+
+      /**
+       * @breif   이 World에 속해있는 Entity인지 확인합니다.
+       */
+      bool CheckEntityValidation(Entity* target) const;
 
       /**
       * @brief    World에 생성되어있는 Entitiy중 주어진 이름을 가진 Entity를 반환합니다.
