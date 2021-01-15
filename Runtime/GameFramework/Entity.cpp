@@ -72,8 +72,7 @@ namespace Mile
          {
             MELog(this->GetContext(),
                TEXT("Entity"), ELogType::FATAL,
-               TEXT("Can't findout any type information from serialized data!"),
-               true);
+               TEXT("Can't findout any type information from serialized data!"));
          }
 
          std::string type = (*foundedType);

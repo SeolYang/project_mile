@@ -93,12 +93,12 @@ namespace Mile
 
          ShowWindow(m_handle, SW_SHOW);
 
-         MELog(context, TEXT("Window"), ELogType::MESSAGE, TEXT("Window Initialized!"), true);
+         MELog(context, TEXT("Window"), ELogType::MESSAGE, TEXT("Window Initialized!"));
          SubSystem::InitSucceed();
          return true;
       }
 
-      MELog(context, TEXT("Window"), ELogType::WARNING, TEXT("Window already initialized."), true);
+      MELog(context, TEXT("Window"), ELogType::WARNING, TEXT("Window already initialized."));
       return false;
    }
 
@@ -107,7 +107,7 @@ namespace Mile
       if (IsInitialized())
       {
          SubSystem::DeInit();
-         MELog(GetContext(), TEXT("Window"), ELogType::MESSAGE, TEXT("Window deinitialized."), true);
+         MELog(GetContext(), TEXT("Window"), ELogType::MESSAGE, TEXT("Window deinitialized."));
       }
    }
 

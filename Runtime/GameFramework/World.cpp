@@ -55,12 +55,12 @@ namespace Mile
       Context* context = GetContext();
       if (SubSystem::Init())
       {
-         MELog(context, TEXT("World"), ELogType::MESSAGE, TEXT("World Initialized!"), true);
+         MELog(context, TEXT("World"), ELogType::MESSAGE, TEXT("World Initialized!"));
          SubSystem::InitSucceed();
          return true;
       }
 
-      MELog(context, TEXT("World"), ELogType::FATAL, TEXT("Failed to initialize world."), true);
+      MELog(context, TEXT("World"), ELogType::FATAL, TEXT("Failed to initialize world."));
       return false;
    }
 
@@ -70,7 +70,7 @@ namespace Mile
       {
          Clear();
          SubSystem::DeInit();
-         MELog(GetContext(), TEXT("World"), ELogType::MESSAGE, TEXT("World deinitialized."), true);
+         MELog(GetContext(), TEXT("World"), ELogType::MESSAGE, TEXT("World deinitialized."));
       }
    }
 
@@ -181,11 +181,11 @@ namespace Mile
          this->m_loadedData = res;
          this->m_name = m_loadedData->GetName();
          this->DeSerialize(json::parse(res->GetData().empty() ? "{}" : res->GetData()));
-         MELog(context, TEXT("World"), ELogType::MESSAGE, TEXT("World loaded. : ") + filePath, true);
+         MELog(context, TEXT("World"), ELogType::MESSAGE, TEXT("World loaded. : ") + filePath);
          return true;
       }
 
-      MELog(context, TEXT("World"), ELogType::FATAL, TEXT("World load failed. : ") + filePath, true);
+      MELog(context, TEXT("World"), ELogType::FATAL, TEXT("World load failed. : ") + filePath);
       return false;
    }
 
@@ -207,7 +207,7 @@ namespace Mile
          {
             m_loadedData = res;
             m_name = m_loadedData->GetName();
-            MELog(context, TEXT("World"), ELogType::MESSAGE, TEXT("World data saved. : ") + res->GetPath(), true);
+            MELog(context, TEXT("World"), ELogType::MESSAGE, TEXT("World data saved. : ") + res->GetPath());
             return true;
          }
       }
@@ -222,7 +222,7 @@ namespace Mile
          m_loadedData->SetData(this->Serialize().dump());
          if (m_loadedData->Save())
          {
-            MELog(GetContext(), TEXT("World"), ELogType::MESSAGE, TEXT("World data saved. : ") + m_loadedData->GetPath(), true);
+            MELog(GetContext(), TEXT("World"), ELogType::MESSAGE, TEXT("World data saved. : ") + m_loadedData->GetPath());
             return true;
          }
       }
@@ -242,6 +242,6 @@ namespace Mile
 
       m_name = TEXT("Untitled");
 
-      MELog(GetContext(), TEXT("World"), ELogType::MESSAGE, TEXT("World has been cleared."), true);
+      MELog(GetContext(), TEXT("World"), ELogType::MESSAGE, TEXT("World has been cleared."));
    }
 }

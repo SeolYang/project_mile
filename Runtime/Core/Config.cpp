@@ -24,17 +24,17 @@ namespace Mile
 
          if (!LoadConfig(TEXT("Engine")))
          {
-            MELog(context, TEXT("ConfigSystem"), ELogType::FATAL, TEXT("Faeild to load Engine default config. "), true);
+            MELog(context, TEXT("ConfigSystem"), ELogType::FATAL, TEXT("Faeild to load Engine default config. "));
             return false;
          }
 
-         MELog(context, TEXT("ConfigSystem"), ELogType::MESSAGE, TEXT("Config System Initialized!"), true);
+         MELog(context, TEXT("ConfigSystem"), ELogType::MESSAGE, TEXT("Config System Initialized!"));
          
          SubSystem::InitSucceed();
          return true;
       }
 
-      MELog(context, TEXT("ConfigSystem"), ELogType::WARNING, TEXT("Config System already initialized."), true);
+      MELog(context, TEXT("ConfigSystem"), ELogType::WARNING, TEXT("Config System already initialized."));
       return false;
    }
 
@@ -46,7 +46,7 @@ namespace Mile
          UnloadAllConfigs();
 
          SubSystem::DeInit();
-         MELog(context, TEXT("ConfigSystem"), ELogType::MESSAGE, TEXT("Config System deintialized."), true);
+         MELog(context, TEXT("ConfigSystem"), ELogType::MESSAGE, TEXT("Config System deintialized."));
       }
    }
 

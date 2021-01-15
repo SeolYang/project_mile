@@ -91,6 +91,7 @@ namespace Mile
 
    };
 
+#ifdef _DEBUG
    static bool MELog(Context* const context,
       const Mile::String& category,
       ELogType type,
@@ -112,4 +113,27 @@ namespace Mile
 
       return true;
    }
+#elif
+   static bool MELog(Context* const context,
+      const Mile::String& category,
+      ELogType type,
+      const Mile::String& message,
+      bool printConsole = false)
+   {
+      if (context == nullptr)
+      {
+         return false;
+      }
+
+      auto logger = context->GetSubSystem<Logger>();
+      if (logger == nullptr)
+      {
+         return false;
+      }
+
+      logger->Logging(category, type, message, printConsole);
+
+      return true;
+   }
+#endif
 }

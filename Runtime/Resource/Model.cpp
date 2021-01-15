@@ -34,7 +34,7 @@ namespace Mile
       m_instance = ModelLoader::LoadModel(m_context, this, m_path);
       if (m_instance == nullptr)
       {
-         MELog(m_context, TEXT("Model"), ELogType::WARNING, TEXT("Failed to load model from ") + m_path, true);
+         MELog(m_context, TEXT("Model"), ELogType::WARNING, TEXT("Failed to load model from ") + m_path);
          return false;
       }
 

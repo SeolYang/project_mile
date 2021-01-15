@@ -210,7 +210,7 @@ namespace Mile
       m_world = nullptr;
       m_app = nullptr;
       SubSystem::DeInit();
-      MELog(context, TEXT("Engine"), ELogType::MESSAGE, TEXT("Engine shutting down."), true);
+      MELog(context, TEXT("Engine"), ELogType::MESSAGE, TEXT("Engine shutting down."));
    }
 
    Engine* Engine::GetInstance()

@@ -163,8 +163,7 @@ namespace Mile
       {
          MELog(contextInst,
             TEXT("ModelLoader::ReconstructMeshWithAiMesh"),
-            ELogType::FATAL, TEXT("Couldn't load ResourceManager."),
-            true);
+            ELogType::FATAL, TEXT("Couldn't load ResourceManager."));
       }
 
       auto matPath = target->GetFolder()
