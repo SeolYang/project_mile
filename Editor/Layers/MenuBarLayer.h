@@ -4,7 +4,9 @@
 namespace Mile
 {
    class World;
+   class RendererDX11;
    class Window;
+   class ConfigSystem;
    namespace Editor
    {
       class MenuBarLayer : public Layer
@@ -15,13 +17,19 @@ namespace Mile
 
          void SetTargetWorld(World* target) { m_world = target; }
          void SetWindow(Window* window) { m_window = window; }
+         void SetRenderer(RendererDX11* renderer) { m_renderer = renderer; }
+         void SetConfigSystem(ConfigSystem* configSys) { m_configSys = configSys; }
 
       private:
          void FileMenu();
+         void RendererConfig();
 
       private:
          World* m_world;
          Window* m_window;
+         RendererDX11* m_renderer;
+         ConfigSystem* m_configSys;
+         bool m_bIsRendererConfigOpened;
 
       };
    }

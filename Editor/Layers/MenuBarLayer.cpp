@@ -2,6 +2,7 @@
 #include "Core/Window.h"
 #include "Core/Logger.h"
 #include "GameFramework/World.h"
+#include "Rendering/RendererDX11.h"
 #include "imgui.h"
 #include <Windows.h>
 
@@ -12,6 +13,9 @@ namespace Mile
       MenuBarLayer::MenuBarLayer(Context* context) :
          m_world(nullptr),
          m_window(nullptr),
+         m_renderer(nullptr),
+         m_configSys(nullptr),
+         m_bIsRendererConfigOpened(false),
          Layer(context, TEXT("MenuBarLayer"))
       {
       }
@@ -26,7 +30,18 @@ namespace Mile
                ImGui::EndMenu();
             }
 
+            if (ImGui::BeginMenu("Config"))
+            {
+               ImGui::MenuItem("Renderer", NULL, &m_bIsRendererConfigOpened);
+               ImGui::EndMenu();
+            }
+
             ImGui::EndMainMenuBar();
+
+            if (m_bIsRendererConfigOpened)
+            {
+               RendererConfig();
+            }
          }
       }
 
@@ -109,6 +124,119 @@ namespace Mile
                }
             }
          }
+      }
+
+      void MenuBarLayer::RendererConfig()
+      {
+         ImGui::Begin("Renderer Configuration");
+         if (m_renderer != nullptr)
+         {
+            /** Post Process */
+            ImGui::Text("Post-Process");
+
+            float exposure = m_renderer->GetExposureFactor();
+            if (ImGui::SliderFloat("Exposure", &exposure, 0.0f, 64.0f))
+            {
+               m_renderer->SetExposure(exposure);
+            }
+
+            float gamma = m_renderer->GetGammaFactor();
+            if (ImGui::SliderFloat("Gamma", &gamma, 0.0f, 10.0f))
+            {
+               m_renderer->SetGammaFactor(gamma);
+            }
+
+            float ao = m_renderer->GetAmbientOcclusionFactor();
+            if (ImGui::SliderFloat("Ambient Occlusion", &ao, 0.0f, 1.0f))
+            {
+               m_renderer->SetAmbientOcclusionFactor(ao);
+            }
+
+            EBloomType bloomType = m_renderer->GetBloomType();
+            auto bloomTypeIdx = static_cast<int>(bloomType);
+            constexpr auto BloomTypeEnumSize = static_cast<unsigned int>(EBloomType::EnumSize);
+            const char* bloomTypeNames[BloomTypeEnumSize] = { "Box", "Gaussian", "None" };
+            const char* bloomTypeName = (bloomTypeIdx >= 0 && bloomTypeIdx < BloomTypeEnumSize ?
+               bloomTypeNames[bloomTypeIdx] : "Unknown");
+            if (ImGui::SliderInt("Bloom Type", &bloomTypeIdx, 0, BloomTypeEnumSize - 1, bloomTypeName))
+            {
+               m_renderer->SetBloomType(static_cast<EBloomType>(bloomTypeIdx));
+            }
+
+            int gaussianBloomAmount = m_renderer->GetGaussianBloomAmount();
+            float gaussianBloomIntensity = m_renderer->GetGaussianBloomIntensity();
+            float gaussianBloomThreshold = m_renderer->GetGaussianBloomThreshold();
+            float gaussianBloomDepthThreshold = m_renderer->GetGaussianBloomDepthThreshold();
+            switch (static_cast<EBloomType>(bloomTypeIdx))
+            {
+            case EBloomType::Box:
+               break;
+            case EBloomType::Gaussian:
+               ImGui::Text("Gaussian Bloom");
+               if (ImGui::SliderInt("Amount", &gaussianBloomAmount, 0, 16))
+               {
+                  m_renderer->SetGaussianBloomAmount(gaussianBloomAmount);
+               }
+               if (ImGui::SliderFloat("Intensity", &gaussianBloomIntensity, 0.0f, 30.0f))
+               {
+                  m_renderer->SetGaussianBloomIntensity(gaussianBloomIntensity);
+               }
+               if (ImGui::SliderFloat("Threshold", &gaussianBloomThreshold, 0.0f, 1.0f))
+               {
+                  m_renderer->SetGaussianBloomThreshold(gaussianBloomThreshold);
+               }
+               break;
+            }
+
+            bool bIsSSAOEnabled = m_renderer->IsSSAOEnabled();
+            float ssaoRadius = m_renderer->GetSSAORadius();
+            float ssaoBias = m_renderer->GetSSAOBias();
+            float ssaoMagnitude = m_renderer->GetSSAOMagnitude();
+            if (ImGui::Checkbox("Enable SSAO", &bIsSSAOEnabled))
+            {
+               m_renderer->SetSSAOEanble(bIsSSAOEnabled);
+            }
+            if (bIsSSAOEnabled)
+            {
+               if(ImGui::SliderFloat("SSAO Radius", &ssaoRadius, 0.0f, 32.0f))
+               {
+                  m_renderer->SetSSAORadius(ssaoRadius);
+               }
+               if (ImGui::SliderFloat("SSAO Bias", &ssaoBias, -16.0f, 16.0f))
+               {
+                  m_renderer->SetSSAOBias(ssaoBias);
+               }
+               if (ImGui::SliderFloat("SSAO Magnitude", &ssaoMagnitude, 0.0f, 16.0f))
+               {
+                  m_renderer->SetSSAOMagnitude(ssaoMagnitude);
+               }
+            }
+
+            /** Compute */
+            ImGui::Text("Compute");
+            bool bIsComputeIBLAsRealtime = m_renderer->IsComputeIBLAsRealtime();
+            if (ImGui::Checkbox("Realtime IBL", &bIsComputeIBLAsRealtime))
+            {
+               m_renderer->SetComputeIBLAsRealtime(bIsComputeIBLAsRealtime);
+            }
+
+            /** Display */
+            ImGui::Text("Display");
+            bool bIsVsyncEnabled = m_renderer->IsVsyncEnabled();
+            if (ImGui::Checkbox("Vsync", &bIsVsyncEnabled))
+            {
+               m_renderer->SetVsync(bIsVsyncEnabled);
+            }
+         }
+         else
+         {
+            MELog(GetContext(),
+               TEXT("MenuBarLayer"),
+               ELogType::FATAL,
+               TEXT("Renderer doest not exist!"));
+            ImGui::Text("Renderer does not exist or outdated.");
+         }
+         ImGui::End();
       }
    }
 }

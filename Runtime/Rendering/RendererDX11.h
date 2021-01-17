@@ -18,7 +18,8 @@ namespace Mile
    {
       Box,
       Gaussian,
-      None
+      None,
+      EnumSize
    };
 
    constexpr size_t REQUIRED_RENDERCONTEXT_NUM = (size_t)ERenderContextType::EnumSize - 1;
@@ -113,6 +114,7 @@ namespace Mile
 
       void SetEquirectangularMap(Texture2D* texture);
       void SetComputeIBLAsRealtime(bool bComputeIBLAsRealtime = false);
+      bool IsComputeIBLAsRealtime() const { return m_bAlwaysComputeIBL; }
 
       void SetAmbientOcclusionFactor(float factor) { m_aoFactor = factor; }
       float GetAmbientOcclusionFactor() const { return m_aoFactor; }
@@ -136,7 +138,7 @@ namespace Mile
       float GetGaussianBloomThreshold() const { return m_gaussianBloomThreshold; }
 
       void SetGaussianBloomDepthThreshold(float threshold) { m_gaussianBloomThreshold = threshold; }
-      float SetGaussianBloomDepthThreshold() const { return m_gaussianBloomDepthThreshold; }
+      float GetGaussianBloomDepthThreshold() const { return m_gaussianBloomDepthThreshold; }
 
       void SetSSAOEanble(bool bEnable) { m_bEnableSSAO = bEnable; }
       bool IsSSAOEnabled() const { return m_bEnableSSAO; }

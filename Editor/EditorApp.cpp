@@ -33,6 +33,8 @@ namespace Mile
             {
                World* world = m_engineInstance->GetWorld();
                Window* window = m_engineInstance->GetWindow();
+               RendererDX11* renderer = m_engineInstance->GetRenderer();
+               ConfigSystem* configSys = m_engineInstance->GetConfigSystem();
                m_worldHierarchyLayer = new WorldHierarchyLayer(context);
                m_worldHierarchyLayer->SetTargetWorld(world);
                PushLayer(m_worldHierarchyLayer);
@@ -40,6 +42,8 @@ namespace Mile
                m_menuBarLayer = new MenuBarLayer(context);
                m_menuBarLayer->SetTargetWorld(world);
                m_menuBarLayer->SetWindow(window);
+               m_menuBarLayer->SetRenderer(renderer);
+               m_menuBarLayer->SetConfigSystem(configSys);
                PushLayer(m_menuBarLayer);
                return true;
             }
