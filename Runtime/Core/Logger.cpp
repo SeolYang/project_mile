@@ -22,7 +22,7 @@ namespace Mile
       if (SubSystem::Init())
       {
          m_loggingBeginTime = std::chrono::system_clock::now();
-         Logging(TEXT("Logger"), ELogType::MESSAGE, TEXT("Logger initialized!"), true);
+         Logging(TEXT("Logger"), ELogType::DEBUG, TEXT("Logger initialized!"), true);
 
          SubSystem::InitSucceed();
          return true;
@@ -35,7 +35,7 @@ namespace Mile
    {
       if (IsInitialized())
       {
-         Logging(TEXT("Logger"), ELogType::MESSAGE, TEXT("Logger deinitialized."), true);
+         Logging(TEXT("Logger"), ELogType::DEBUG, TEXT("Logger deinitialized."), true);
          Flush();
 
          SubSystem::DeInit();

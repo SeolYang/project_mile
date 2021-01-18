@@ -28,7 +28,7 @@ namespace Mile
             return false;
          }
 
-         MELog(context, TEXT("ConfigSystem"), ELogType::MESSAGE, TEXT("Config System Initialized!"));
+         MELog(context, TEXT("ConfigSystem"), ELogType::DEBUG, TEXT("Config System Initialized!"));
          
          SubSystem::InitSucceed();
          return true;
@@ -46,7 +46,7 @@ namespace Mile
          UnloadAllConfigs();
 
          SubSystem::DeInit();
-         MELog(context, TEXT("ConfigSystem"), ELogType::MESSAGE, TEXT("Config System deintialized."));
+         MELog(context, TEXT("ConfigSystem"), ELogType::DEBUG, TEXT("Config System deintialized."));
       }
    }
 

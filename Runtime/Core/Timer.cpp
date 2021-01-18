@@ -24,7 +24,7 @@ namespace Mile
             (m_frameEndTime - m_frameBeginTime);
          m_frameCount = 0;
 
-         MELog(context, TEXT("Timer"), ELogType::MESSAGE, TEXT("Timer initialized."));
+         MELog(context, TEXT("Timer"), ELogType::DEBUG, TEXT("Timer initialized."));
          SubSystem::InitSucceed();
          return true;
       }
@@ -38,7 +38,7 @@ namespace Mile
       if (IsInitialized())
       {
          SubSystem::DeInit();
-         MELog(GetContext(), TEXT("Timer"), ELogType::MESSAGE, TEXT("Timer deinitialized."));
+         MELog(GetContext(), TEXT("Timer"), ELogType::DEBUG, TEXT("Timer deinitialized."));
       }
    }
 

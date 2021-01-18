@@ -37,7 +37,7 @@ namespace Mile
             {
                m_selectedEntity = targetRoot;
                MELog(GetContext(), TEXT("WorldHierarchyLayer"),
-                  ELogType::MESSAGE,
+                  ELogType::DEBUG,
                   TEXT("Entity has been selected at hierarchy : ") + m_selectedEntity->GetName());
             }
 

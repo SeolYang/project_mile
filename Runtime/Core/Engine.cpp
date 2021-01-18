@@ -148,7 +148,7 @@ namespace Mile
          m_targetTimePerFrame = static_cast<long long>((1.0 / static_cast<double>(m_maxFPS)) * 1000.0);
 
          SubSystem::InitSucceed();
-         MELog(context, TEXT("Engine"), ELogType::MESSAGE, TEXT("Engine initialized."));
+         MELog(context, TEXT("Engine"), ELogType::DEBUG, TEXT("Engine initialized."));
          return true;
       }
 
@@ -210,7 +210,7 @@ namespace Mile
       m_world = nullptr;
       m_app = nullptr;
       SubSystem::DeInit();
-      MELog(context, TEXT("Engine"), ELogType::MESSAGE, TEXT("Engine shutting down."));
+      MELog(context, TEXT("Engine"), ELogType::DEBUG, TEXT("Engine shutting down."));
    }
 
    Engine* Engine::GetInstance()

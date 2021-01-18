@@ -1,4 +1,5 @@
 #include "Core/InputManager.h"
+#include "Core/Logger.h"
 #include <utility>
 
 namespace Mile
@@ -16,6 +17,7 @@ namespace Mile
    {
       if (SubSystem::Init())
       {
+         MELog(GetContext(), TEXT("InputManager"), ELogType::DEBUG, TEXT("InputManager initialized."));
          return true;
       }
 
