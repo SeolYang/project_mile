@@ -94,7 +94,7 @@ namespace Mile
             /* Save World **/
             if (m_world != nullptr)
             {
-               failedToSave = m_world->Save();
+               failedToSave = !m_world->Save();
             }
          }
          if (ImGui::MenuItem("Save World As..") || failedToSave)
