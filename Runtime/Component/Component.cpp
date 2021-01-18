@@ -11,7 +11,7 @@ namespace Mile
 
    bool Component::IsActivated() const
    {
-      return m_bIsActivated;
+      return (m_entity->IsActivated() && m_bIsActivated);
    }
 
    void Component::SetActive(bool bIsActive)

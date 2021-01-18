@@ -739,7 +739,7 @@ namespace Mile
          m_meshRenderComponents.clear();
          m_materialMap.clear();
 
-         m_meshRenderComponents = std::move(world->GetComponentsFromEntities<MeshRenderComponent>(true, true));
+         m_meshRenderComponents = std::move(world->GetComponentsFromEntities<MeshRenderComponent>());
          for (auto renderComponent : m_meshRenderComponents)
          {
             Material* material = renderComponent->GetMaterial();
@@ -756,7 +756,7 @@ namespace Mile
       if (world != nullptr)
       {
          m_lightComponents.clear();
-         m_lightComponents = std::move(world->GetComponentsFromEntities<LightComponent>(true, true));
+         m_lightComponents = std::move(world->GetComponentsFromEntities<LightComponent>());
       }
    }
 
@@ -765,7 +765,7 @@ namespace Mile
       m_cameras.clear();
       if (world != nullptr)
       {
-         m_cameras = std::move(world->GetComponentsFromEntities<CameraComponent>(true, true));
+         m_cameras = std::move(world->GetComponentsFromEntities<CameraComponent>());
       }
    }
 

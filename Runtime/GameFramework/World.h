@@ -76,7 +76,7 @@ namespace Mile
        */
       template <typename ComponentType, 
          std::enable_if_t<std::is_base_of_v<Component, ComponentType>, bool> = true>
-      std::vector<ComponentType*> GetComponentsFromEntities(bool onlyActivatedOwner = false, bool onlyActivated = false) const
+      std::vector<ComponentType*> GetComponentsFromEntities(bool onlyActivated = true) const
       {
          std::vector<ComponentType*> foundComponents;
          for (Entity* entity : m_entities)
@@ -84,14 +84,7 @@ namespace Mile
             if (entity != nullptr)
             {
                ComponentType* foundComponent = nullptr;
-               if ((onlyActivatedOwner && entity->IsActivated()) || (!onlyActivatedOwner))
-               {
-                  /**
-                  *  월드에서는 자식 entity/부모 entity 상관없이 월드상에 존재할 수 있는 모든 entity들을 가지고 있기때문에.
-                  *  각각의 entity에 대해서 개별적으로 GetComponent를 이용해서 컴포넌트를 가져온다.
-                  */
-                  foundComponent = entity->GetComponent<ComponentType>();
-               }
+               foundComponent = entity->GetComponent<ComponentType>();
 
                if (foundComponent != nullptr)
                {

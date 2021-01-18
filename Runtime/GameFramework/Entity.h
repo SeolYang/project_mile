@@ -71,7 +71,7 @@ namespace Mile
       * @brief    Entity가 활성화 되어있는지 확인합니다.
       * @return   Entity의 활성화 여부
       */
-      bool IsActivated() const { return m_bIsActivated; }
+      bool IsActivated() const { return (m_parent != nullptr) ? m_bIsActivated && m_parent->IsActivated() : m_bIsActivated; }
 
       /**
       * @brief    Entity를 활성화 시키거나 비 활성화 시킵니다.
