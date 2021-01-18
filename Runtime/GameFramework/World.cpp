@@ -55,7 +55,7 @@ namespace Mile
       Context* context = GetContext();
       if (SubSystem::Init())
       {
-         MELog(context, TEXT("World"), ELogType::MESSAGE, TEXT("World Initialized!"));
+         MELog(context, TEXT("World"), ELogType::DEBUG, TEXT("World Initialized!"));
          SubSystem::InitSucceed();
          return true;
       }
@@ -70,7 +70,7 @@ namespace Mile
       {
          Clear();
          SubSystem::DeInit();
-         MELog(GetContext(), TEXT("World"), ELogType::MESSAGE, TEXT("World deinitialized."));
+         MELog(GetContext(), TEXT("World"), ELogType::DEBUG, TEXT("World deinitialized."));
       }
    }
 

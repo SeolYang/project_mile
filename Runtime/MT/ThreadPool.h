@@ -96,7 +96,7 @@ namespace Mile
                }
             }
 
-            MELog(context, TEXT("ThreadPool"), ELogType::MESSAGE, TEXT("Thread Pool initialized."));
+            MELog(context, TEXT("ThreadPool"), ELogType::DEBUG, TEXT("Thread Pool initialized."));
             SubSystem::InitSucceed();
             return true;
          }
@@ -111,7 +111,7 @@ namespace Mile
          {
             Context* context = GetContext();
             SubSystem::DeInit();
-            MELog(context, TEXT("ThreadPool"), ELogType::MESSAGE, TEXT("Thread Pool deinitialized."));
+            MELog(context, TEXT("ThreadPool"), ELogType::DEBUG, TEXT("Thread Pool deinitialized."));
          }
       }
 

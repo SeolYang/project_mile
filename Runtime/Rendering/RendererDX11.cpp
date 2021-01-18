@@ -141,7 +141,7 @@ namespace Mile
             }
          }
 
-         MELog(context, TEXT("RendererDX11"), ELogType::MESSAGE, TEXT("RendererDX11 Initialized!"));
+         MELog(context, TEXT("RendererDX11"), ELogType::DEBUG, TEXT("RendererDX11 Initialized!"));
          SubSystem::InitSucceed();
          return true;
       }
@@ -620,7 +620,7 @@ namespace Mile
          SafeRelease(m_device);
 
          SubSystem::DeInit();
-         MELog(GetContext(), TEXT("RendererDX11"), ELogType::MESSAGE, TEXT("RendererDX11 deinitialized."));
+         MELog(GetContext(), TEXT("RendererDX11"), ELogType::DEBUG, TEXT("RendererDX11 deinitialized."));
       }
    }
 

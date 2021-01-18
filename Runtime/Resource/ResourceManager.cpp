@@ -27,7 +27,7 @@ namespace Mile
 
          MELog(context, 
             MILE_RESOURCE_MANAGER_LOG_CATEGORY,
-            ELogType::MESSAGE,
+            ELogType::DEBUG,
             TEXT("Resource Manager Initialized!"));
          SubSystem::InitSucceed();
          return true;
@@ -47,7 +47,7 @@ namespace Mile
          ClearCache();
          MELog(GetContext(),
             MILE_RESOURCE_MANAGER_LOG_CATEGORY,
-            ELogType::MESSAGE, 
+            ELogType::DEBUG,
             TEXT("Resource Manager deinitialized!"));
          SubSystem::DeInit();
       }
@@ -58,7 +58,7 @@ namespace Mile
       m_cache->Clear();
       MELog(GetContext(),
          MILE_RESOURCE_MANAGER_LOG_CATEGORY,
-         ELogType::MESSAGE,
+         ELogType::DEBUG,
          TEXT("Resource cache has been cleared."));
    }
 
