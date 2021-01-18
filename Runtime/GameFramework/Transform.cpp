@@ -17,14 +17,14 @@ namespace Mile
 
    Vector3 Transform::GetForward(TransformSpace space) const
    {
-      Vector3 res = GetRotation(space).Rotated(Vector3::Forward());
+      Vector3 res = GetRotation(space).RotateVector(Vector3::Forward());
       res.Normalize();
       return res;
    }
 
    Vector3 Transform::GetUp(TransformSpace space) const
    {
-      Vector3 res = GetRotation(space).Rotated(Vector3::Up());
+      Vector3 res = GetRotation(space).RotateVector(Vector3::Up());
       res.Normalize();
       return res;
    }

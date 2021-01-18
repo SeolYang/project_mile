@@ -124,9 +124,9 @@ namespace Mile
                   Math::QuaternionToEulerAngles(rotation));
                if (ImGui::InputFloat3("Rotation", rotationEuler.elements))
                {
-                  entitiyTransform->SetRotation(
-                     Math::EulerToQuaternion(
-                        Math::DegEulerAnglesToRadEulerAngles(rotationEuler)));
+                  Quaternion newQuat;
+                  newQuat.Rotate(rotationEuler);
+                  entitiyTransform->SetRotation(newQuat);
                }
 
                auto scale = entitiyTransform->GetScale();

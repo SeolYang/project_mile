@@ -88,7 +88,6 @@ namespace Mile
          if (space == TransformSpace::World && HasParent())
          {
             return m_parent->GetRotation(TransformSpace::World).Rotated(m_rotation);
-            //return m_rotation.Rotated(m_parent->GetRotation(TransformSpace::World));
          }
          else
          {

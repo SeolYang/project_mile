@@ -215,13 +215,50 @@ namespace Mile
          return ( *this );
       }
 
+      Quaternion& Rotate(float degree, const Vector3& axis)
+      {
+         Quaternion newRot;
+
+         Vector3 normalizedAxis = axis.GetNormalized();
+         float radian = (Math::DegreeToRadian(degree / 2.0f));
+         float sinVal = sinf(radian);
+         float cosVal = cosf(radian);
+
+         newRot.w = cosVal;
+         newRot.x = sinVal * normalizedAxis.x;
+         newRot.y = sinVal * normalizedAxis.y;
+         newRot.z = sinVal * normalizedAxis.z;
+
+         return Rotate(newRot);
+      }
+
+      Quaternion& Rotate(const Vector3& eulerAnglesDegree)
+      {
+         this->Rotate(eulerAnglesDegree.x, Vector3(1.0f, 0.0f, 0.0f));
+         this->Rotate(eulerAnglesDegree.y, Vector3(0.0f, 1.0f, 0.0f));
+         this->Rotate(eulerAnglesDegree.z, Vector3(0.0f, 0.0f, 1.0f));
+         return (*this);
+      }
+
       Quaternion Rotated( const Quaternion& rot ) const
       {
          Quaternion result = (*this);
          return result.Rotate(rot);
       }
 
-      Vector3 Rotated(const Vector3& p) const
+      Quaternion Rotated(float degree, const Vector3& axis) const
+      {
+         Quaternion result = (*this);
+         return result.Rotate(degree, axis);
+      }
+
+      Quaternion Rotated(const Vector3& eulerAnglesDegree) const
+      {
+         Quaternion result = (*this);
+         return result.Rotate(eulerAnglesDegree);
+      }
+
+      Vector3 RotateVector(const Vector3& p) const
       {
          Quaternion conj = Conjugate();
          Vector3 result = (*this) * p;
