@@ -600,6 +600,9 @@
     <ClInclude Include="..\ThirdParty\imgui\include\imgui_impl_win32.h">
       <Filter>ThirdParty\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Math\MathHelper.h">
+      <Filter>Sources\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">

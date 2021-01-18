@@ -141,6 +141,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\Runtime\GameFramework\Transform.h" />
     <ClInclude Include="..\Runtime\GameFramework\World.h" />
     <ClInclude Include="..\Runtime\Math\MathCore.h" />
+    <ClInclude Include="..\Runtime\Math\MathHelper.h" />
     <ClInclude Include="..\Runtime\Math\Matrix.h" />
     <ClInclude Include="..\Runtime\Math\Quaternion.h" />
     <ClInclude Include="..\Runtime\Math\Vector2.h" />
