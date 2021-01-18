@@ -1,10 +1,13 @@
 #include "Layers/MenuBarLayer.h"
 #include "Core/Window.h"
 #include "Core/Logger.h"
+#include "Core/Engine.h"
+#include "Resource/ResourceManager.h"
+#include "Resource/Texture2D.h"
 #include "GameFramework/World.h"
 #include "Rendering/RendererDX11.h"
-#include "imgui.h"
-#include <Windows.h>
+#include "Rendering/Texture2dDX11.h"
+#include "ImGUIHelper.h"
 
 namespace Mile
 {
@@ -47,7 +50,6 @@ namespace Mile
 
       void MenuBarLayer::FileMenu()
       {
-         constexpr unsigned int MAX_FILE_LENGTH = 260;
          OPENFILENAME openFileName;
          TCHAR szFile[MAX_FILE_LENGTH] = { 0 };
          ZeroMemory(&openFileName, sizeof(openFileName));
@@ -218,6 +220,48 @@ namespace Mile
             if (ImGui::Checkbox("Realtime IBL", &bIsComputeIBLAsRealtime))
             {
                m_renderer->SetComputeIBLAsRealtime(bIsComputeIBLAsRealtime);
+            }
+
+            /** For test! */
+            ImGui::Text("Equirectangular Map");
+            Texture2D* equirectangularMap = m_renderer->GetEquirectangularMap();
+            if (ImGui::Button("Choose.."))
+            {
+               OPENFILENAME openFileName;
+               TCHAR szFile[MAX_FILE_LENGTH] = { 0 };
+               ZeroMemory(&openFileName, sizeof(openFileName));
+               openFileName.lStructSize = sizeof(openFileName);
+               openFileName.hwndOwner = (HWND)m_window->GetHandle();
+               openFileName.lpstrTitle = TEXT("Select HDR file to open.");
+               openFileName.lpstrFile = szFile;
+               openFileName.nMaxFile = sizeof(szFile);
+               openFileName.lpstrFilter = TEXT("Irradiance Map\0*.hdr\0All\0*.*\0");
+               openFileName.nFilterIndex = 1;
+               openFileName.nMaxFileTitle = 0;
+               openFileName.lpstrInitialDir = NULL;
+               openFileName.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+
+               if (GetOpenFileName(&openFileName) == TRUE)
+               {
+                  String filePath = String(openFileName.lpstrFile);
+                  MELog(GetContext(), TEXT("MenuBarLayer"), ELogType::MESSAGE, String(TEXT("Open irradiance map from ")) + filePath);
+                  equirectangularMap = Engine::GetResourceManager()->Load<Texture2D>(filePath);
+                  m_renderer->SetEquirectangularMap(equirectangularMap);
+               }
+            }
+
+            if (equirectangularMap != nullptr)
+            {
+               Texture2dDX11* mapRawTexture = equirectangularMap->GetRawTexture();
+               ImVec2 mapRes{ (float)mapRawTexture->GetWidth(), (float)mapRawTexture->GetHeight() };
+               ImVec2 outputRes{ 640.0f, 360.0f };
+               ImGui::Text((std::string("Texture Path: ") + WString2String(equirectangularMap->GetPath())).c_str());
+               ImGui::Text((std::string("Map Resolution : Width = ") + std::to_string(mapRes.x) + ", Height = " + std::to_string(mapRes.y)).c_str());
+               ImGui::Image((void*)mapRawTexture->GetSRV(), outputRes);
+            }
+            else
+            {
+               ImGui::Text("Equirectangular Map does not exist!");
             }
 
             /** Display */

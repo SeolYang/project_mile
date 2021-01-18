@@ -1514,7 +1514,7 @@ namespace Mile
    void RendererDX11::SetComputeIBLAsRealtime(bool bComputeIBLAsRealtime)
    {
       m_bAlwaysComputeIBL = 
-         (m_equirectangularMap != nullptr) ? 
+         (m_equirectangularMap != nullptr) ?
          bComputeIBLAsRealtime : false;
    }
 

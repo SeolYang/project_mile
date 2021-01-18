@@ -113,6 +113,7 @@ namespace Mile
       Vector4 GetClearColor() const { return m_clearColor; }
 
       void SetEquirectangularMap(Texture2D* texture);
+      Texture2D* GetEquirectangularMap() const { return m_equirectangularMap; }
       void SetComputeIBLAsRealtime(bool bComputeIBLAsRealtime = false);
       bool IsComputeIBLAsRealtime() const { return m_bAlwaysComputeIBL; }
 
