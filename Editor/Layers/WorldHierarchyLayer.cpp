@@ -2,7 +2,7 @@
 #include "GameFramework/World.h"
 #include "GameFramework/Entity.h"
 #include "Math/MathHelper.h"
-#include "imgui.h"
+#include "ImGUIHelper.h"
 
 namespace Mile
 {
@@ -90,44 +90,50 @@ namespace Mile
          ImGui::Begin("Properties");
          if (m_selectedEntity != nullptr)
          {
-            ImGui::Text("Entity Properties");
-            bool bIsEntityActivated = m_selectedEntity->IsActivated();
-            if (ImGui::Checkbox("Activate", &bIsEntityActivated))
+            if (m_target->CheckEntityValidation(m_selectedEntity))
             {
-               m_selectedEntity->SetActive(bIsEntityActivated);
-            }
+               ImGui::Text("Entity Properties");
+               bool bIsEntityActivated = m_selectedEntity->IsActivated();
+               if (ImGui::Checkbox("Activate", &bIsEntityActivated))
+               {
+                  m_selectedEntity->SetActive(bIsEntityActivated);
+               }
 
-            constexpr unsigned int BufferSize = 64;
-            char buffer[BufferSize] = { 0 };
-            strcpy_s(buffer, WString2String(m_selectedEntity->GetName()).c_str());
-            if (ImGui::InputText("Name", buffer, BufferSize))
-            {
-               std::string newName = buffer;
-               m_selectedEntity->SetName(String2WString(newName));
-            }
+               char buffer[DEFAULT_STR_INPUT_BUFFER_SIZE] = { 0 };
+               strcpy_s(buffer, WString2String(m_selectedEntity->GetName()).c_str());
+               if (ImGui::InputText("Name", buffer, DEFAULT_STR_INPUT_BUFFER_SIZE))
+               {
+                  std::string newName = buffer;
+                  m_selectedEntity->SetName(String2WString(newName));
+               }
 
-            ImGui::Text("Transform");
-            Transform* entitiyTransform = m_selectedEntity->GetTransform();
-            auto position = entitiyTransform->GetPosition();
-            if (ImGui::InputFloat3("Position", position.elements))
-            {
-               entitiyTransform->SetPosition(position);
-            }
-            
-            auto rotation = entitiyTransform->GetRotation();
-            auto rotationEuler = Math::RadEulerAnglesToDegEulerAngles(
-               Math::QuaternionToEulerAngles(rotation));
-            if (ImGui::InputFloat3("Rotation", rotationEuler.elements))
-            {
-               entitiyTransform->SetRotation(
-                  Math::EulerToQuaternion(
-                  Math::DegEulerAnglesToRadEulerAngles(rotationEuler)));
-            }
+               ImGui::Text("Transform");
+               Transform* entitiyTransform = m_selectedEntity->GetTransform();
+               auto position = entitiyTransform->GetPosition();
+               if (ImGui::InputFloat3("Position", position.elements))
+               {
+                  entitiyTransform->SetPosition(position);
+               }
 
-            auto scale = entitiyTransform->GetScale();
-            if (ImGui::InputFloat3("Scale", scale.elements))
+               auto rotation = entitiyTransform->GetRotation();
+               auto rotationEuler = Math::RadEulerAnglesToDegEulerAngles(
+                  Math::QuaternionToEulerAngles(rotation));
+               if (ImGui::InputFloat3("Rotation", rotationEuler.elements))
+               {
+                  entitiyTransform->SetRotation(
+                     Math::EulerToQuaternion(
+                        Math::DegEulerAnglesToRadEulerAngles(rotationEuler)));
+               }
+
+               auto scale = entitiyTransform->GetScale();
+               if (ImGui::InputFloat3("Scale", scale.elements))
+               {
+                  entitiyTransform->SetScale(scale);
+               }
+            }
+            else
             {
-               entitiyTransform->SetScale(scale);
+               m_selectedEntity = nullptr;
             }
          }
          ImGui::End();
