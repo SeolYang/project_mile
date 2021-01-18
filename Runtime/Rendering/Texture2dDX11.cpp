@@ -53,6 +53,8 @@ namespace Mile
          {
             if (InitSRV(desc))
             {
+               m_width = width;
+               m_height = height;
                ResourceDX11::ConfirmInit();
                return true;
             }
