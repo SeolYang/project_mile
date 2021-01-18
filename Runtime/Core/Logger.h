@@ -71,15 +71,31 @@ namespace Mile
          return TEXT("None");
       }
 
-      static Mile::String LogToStr(Log log)
+      static int LogTypeToConsoleColor(ELogType type)
+      {
+         switch (type)
+         {
+         default:
+         case ELogType::MESSAGE:
+            return FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY;
+         case ELogType::DEBUG:
+            return FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+         case ELogType::WARNING:
+            return FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY;
+         case ELogType::FATAL:
+            return FOREGROUND_RED | FOREGROUND_INTENSITY;
+         }
+      }
+
+      static Mile::String LogToStr(const Log& log)
       {
          // [Category][Type][Time] Message
          auto typeStr = Logger::LogTypeToStr(log.Type);
          auto timeStr = TimeToWString(log.Time);
          auto result = Formatting(TEXT("[%s][%s][%s] %s"),
+            timeStr.c_str(),
             log.Category.c_str(),
             typeStr.c_str(),
-            timeStr.c_str(),
             log.Message.c_str());
          return result;
       }

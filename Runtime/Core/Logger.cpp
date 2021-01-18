@@ -58,8 +58,12 @@ namespace Mile
 #ifdef _DEBUG
       if (printConsole)
       {
-         auto formattedLog = LogToStr(log);
-         std::wcout << formattedLog << std::endl;
+         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), LogTypeToConsoleColor(log.Type));
+         std::wcout << TEXT("[") << TimeToWString(log.Time) << TEXT("]");
+         std::wcout << TEXT("[") << log.Category << TEXT("]");
+         std::wcout << TEXT("[") << LogTypeToStr(log.Type) << TEXT("]");
+         std::wcout << TEXT(" ") << log.Message << std::endl;
+         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), LogTypeToConsoleColor(ELogType::MESSAGE));
       }
 #endif
    }

@@ -1,6 +1,7 @@
 #include "Layers/WorldHierarchyLayer.h"
 #include "GameFramework/World.h"
 #include "GameFramework/Entity.h"
+#include "Core/Logger.h"
 #include "Math/MathHelper.h"
 #include "ImGUIHelper.h"
 
@@ -35,6 +36,9 @@ namespace Mile
             if (ImGui::IsItemClicked())
             {
                m_selectedEntity = targetRoot;
+               MELog(GetContext(), TEXT("WorldHierarchyLayer"),
+                  ELogType::MESSAGE,
+                  TEXT("Entity has been selected at hierarchy : ") + m_selectedEntity->GetName());
             }
 
             bool bIsEntityDeleted = false;
