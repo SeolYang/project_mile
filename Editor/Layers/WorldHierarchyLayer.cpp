@@ -2,7 +2,6 @@
 #include "GameFramework/World.h"
 #include "GameFramework/Entity.h"
 #include "Core/Logger.h"
-#include "Math/MathHelper.h"
 #include "ImGUIHelper.h"
 
 namespace Mile
@@ -36,6 +35,7 @@ namespace Mile
             if (ImGui::IsItemClicked())
             {
                m_selectedEntity = targetRoot;
+               m_tempEulerRotation = Math::QuaternionToEulerAngles(m_selectedEntity->GetTransform()->GetRotation());
                MELog(GetContext(), TEXT("WorldHierarchyLayer"),
                   ELogType::DEBUG,
                   TEXT("Entity has been selected at hierarchy : ") + m_selectedEntity->GetName());
@@ -114,23 +114,18 @@ namespace Mile
                ImGui::Text("Transform");
                Transform* entitiyTransform = m_selectedEntity->GetTransform();
                auto position = entitiyTransform->GetPosition();
-               if (ImGui::InputFloat3("Position", position.elements))
+               if (ImGui::InputFloat3("Position(X, Y, Z)", position.elements, "%.8f"))
                {
                   entitiyTransform->SetPosition(position);
                }
 
-               auto rotation = entitiyTransform->GetRotation();
-               auto rotationEuler = Math::RadEulerAnglesToDegEulerAngles(
-                  Math::QuaternionToEulerAngles(rotation));
-               if (ImGui::InputFloat3("Rotation", rotationEuler.elements))
+               if (ImGui::InputFloat3("Rotation(Pitch, Yaw, Roll)", m_tempEulerRotation.elements, "%.8f"))
                {
-                  Quaternion newQuat;
-                  newQuat.Rotate(rotationEuler);
-                  entitiyTransform->SetRotation(newQuat);
+                  entitiyTransform->SetRotation(Math::EulerToQuaternion(m_tempEulerRotation));
                }
 
                auto scale = entitiyTransform->GetScale();
-               if (ImGui::InputFloat3("Scale", scale.elements))
+               if (ImGui::InputFloat3("Scale(X, Y, Z)", scale.elements, "%.8f"))
                {
                   entitiyTransform->SetScale(scale);
                }

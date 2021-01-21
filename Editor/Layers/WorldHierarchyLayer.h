@@ -1,5 +1,6 @@
 #pragma once
 #include "Core/Layer.h"
+#include "Math/MathHelper.h"
 
 namespace Mile
 {
@@ -24,6 +25,7 @@ namespace Mile
       private:
          World* m_target;
          Entity* m_selectedEntity;
+         Vector3 m_tempEulerRotation;
 
       };
    }
