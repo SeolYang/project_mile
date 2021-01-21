@@ -114,18 +114,18 @@ namespace Mile
                ImGui::Text("Transform");
                Transform* entitiyTransform = m_selectedEntity->GetTransform();
                auto position = entitiyTransform->GetPosition();
-               if (ImGui::InputFloat3("Position(X, Y, Z)", position.elements, "%.8f"))
+               if (ImGui::InputFloat3("Position(X, Y, Z)", position.elements, "%.3f"))
                {
                   entitiyTransform->SetPosition(position);
                }
 
-               if (ImGui::InputFloat3("Rotation(Pitch, Yaw, Roll)", m_tempEulerRotation.elements, "%.8f"))
+               if (ImGui::InputFloat3("Rotation(Pitch, Yaw, Roll)", m_tempEulerRotation.elements, "%.3f"))
                {
                   entitiyTransform->SetRotation(Math::EulerToQuaternion(m_tempEulerRotation));
                }
 
                auto scale = entitiyTransform->GetScale();
-               if (ImGui::InputFloat3("Scale(X, Y, Z)", scale.elements, "%.8f"))
+               if (ImGui::InputFloat3("Scale(X, Y, Z)", scale.elements, "%.3f"))
                {
                   entitiyTransform->SetScale(scale);
                }

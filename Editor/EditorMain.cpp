@@ -43,20 +43,6 @@ int main()
 
       inputMng->MapAction(EInputKey::W, TEXT("Forward"));
 
-      renderer->SetComputeIBLAsRealtime(false);
-      renderer->SetAmbientOcclusionFactor(1.0f);
-      renderer->SetGammaFactor(DEFAULT_GAMMA_FACTOR);
-      renderer->SetExposure(1.0f);
-      renderer->SetBloomType(EBloomType::Gaussian);
-      renderer->SetGaussianBloomAmount(16);
-      renderer->SetGaussianBloomIntensity(1.25f);
-      renderer->SetGaussianBloomThreshold(0.8f);
-      renderer->SetSSAOEanble(true);
-      renderer->SetSSAORadius(1.5f);
-      renderer->SetSSAOBias(0.02f);
-      renderer->SetSSAOMagnitude(1.2f);
-      renderer->SetVsync(false);
-
       Texture2D* iceLakeHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Ice_Lake/Ice_Lake_Ref.hdr"));
       renderer->SetEquirectangularMap(iceLakeHDR);
       /* TEST CODES END*/
