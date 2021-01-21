@@ -20,7 +20,7 @@ namespace Mile
       }
 
       //virtual std::string Serialize( ) const { return ( "\"IsActivated\": " + Mile::BoolSerialize( m_bIsActive )); }
-      virtual json Serialize() const { json obj; obj["IsActivated"] = m_bIsActivated; return obj; }
+      virtual json Serialize() const { json obj; obj["IsActivated"] = m_bIsActivated; obj["Type"] = WString2String(GetType()); return obj; }
       virtual void DeSerialize(const json& jsonData)
       {
          m_bIsActivated = jsonData["IsActivated"];

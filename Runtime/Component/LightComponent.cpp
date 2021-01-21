@@ -28,7 +28,6 @@ namespace Mile
    json LightComponent::Serialize() const
    {
       json serialized = Component::Serialize();
-      serialized["Type"] = "LightComponent";
       serialized["LightType"] = LightTypeToString(m_type);
       serialized["Radiance"] = m_radiance.Serialize();
       return serialized;

@@ -16,7 +16,6 @@ namespace Mile
    json CameraComponent::Serialize() const
    {
       json serialized = Component::Serialize();
-      serialized["Type"] = "CameraComponent";
       serialized["FOV"] = m_fov;
       serialized["NearPlane"] = m_nearPlane;
       serialized["FarPlane"] = m_farPlane;

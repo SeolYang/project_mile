@@ -15,7 +15,6 @@ namespace Mile
    json MeshRenderComponent::Serialize() const
    {
       json serialized = Component::Serialize();
-      serialized["Type"] = "MeshRenderComponent";
 
       json meshData;
       meshData["Model"] = WString2String(m_mesh->GetModelPath());

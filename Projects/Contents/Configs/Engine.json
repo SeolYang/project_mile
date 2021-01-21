@@ -1,7 +1,7 @@
 {
   "Title": "Engine",
-  "ResolutionWidth": 1280,
-  "ResolutionHeight": 720,
+  "ResolutionWidth": 1600,
+  "ResolutionHeight": 900,
   "MaxFPS": 300,
   "WindowStyle": 2
 }
