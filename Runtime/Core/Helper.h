@@ -42,6 +42,16 @@ namespace Mile
       return "false";
    }
 
+   static bool StringToBool(const std::string& value)
+   {
+      if (value == "true")
+      {
+         return true;
+      }
+
+      return false;
+   }
+
    /**
    * @brief    주어진 문자열을 토큰을 기준으로 나눕니다.
    * @param    Array를 만드는데 사용될 할당자
@@ -244,6 +254,6 @@ namespace Mile
    static Ty GetValueSafelyFromJson(const json& container, const std::string& key, const Ty& defaultValue = Ty())
    {
       auto foundValue = container.find(key);
-      return (foundValue != container.end()) ? (*foundValue) : defaultValue;
+      return (foundValue != container.end()) ? (Ty)(*foundValue) : defaultValue;
    }
 }
