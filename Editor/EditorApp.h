@@ -6,6 +6,7 @@ namespace Mile
    class Engine;
    class World;
    class Window;
+   class ConfigSystem;
    namespace Editor
    {
       class WorldHierarchyLayer;
@@ -18,10 +19,18 @@ namespace Mile
 
          virtual bool Init() override;
 
+         void LoadEditorConfig();
+         void SaveEditorConfig();
+
+      private:
+         void InitGUIStyle();
+
       private:
          Engine* m_engineInstance;
          WorldHierarchyLayer* m_worldHierarchyLayer;
          MenuBarLayer* m_menuBarLayer;
+         bool m_bIsDarkStyle;
+         float m_guiAlpha;
 
       };
    }
