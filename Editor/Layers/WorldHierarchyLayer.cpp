@@ -2,7 +2,7 @@
 #include "GameFramework/World.h"
 #include "GameFramework/Entity.h"
 #include "Core/Logger.h"
-#include "ImGUIHelper.h"
+#include "Core/imguiHelper.h"
 
 namespace Mile
 {
@@ -129,6 +129,10 @@ namespace Mile
                {
                   entitiyTransform->SetScale(scale);
                }
+
+               ImGui::Text("Components");
+               auto& components = m_selectedEntity->GetComponents();
+
             }
             else
             {

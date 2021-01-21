@@ -54,7 +54,7 @@ namespace Mile
          // Pitch = x, Yaw = y, Roll = z
          Vector3 target = DegEulerAnglesToRadEulerAngles(eulerAngles);
          target.x = std::fmod(target.x, 360.0f);
-         target.y = -std::fmod(target.y, 360.0f);
+         target.y = std::fmod(target.y, 360.0f);
          target.z = std::fmod(target.z, 360.0f);
          float cy = cos(target.z * 0.5f);
          float sy = sin(target.z * 0.5f);
@@ -103,7 +103,7 @@ namespace Mile
             angles.x = atan2(2.0f * (q.x * q.w - q.y * q.z), 1.0f - 2.0f * (sqx - sqz));
          }
 
-         angles.y = -angles.y;
+         //angles.y = -angles.y;
          //angles.z = -angles.z;
          return RadEulerAnglesToDegEulerAngles(angles);
       }
