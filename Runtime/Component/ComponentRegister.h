@@ -27,6 +27,7 @@ namespace Mile
    };
 }
 
-#define RegisterComponent(TYPE) TYPE TYPE::_registeryInst
-#define ComponentBegin(TYPE) private: static TYPE _registeryInst; \
-   TYPE() { Mile::ComponentRegister::GetInstance().Register<TYPE>( #TYPE ); }
+#define RegisterComponent(TYPE) TYPE TYPE::_registeryInst; String TYPE::_type = TEXT(#TYPE)
+#define ComponentBegin(TYPE) private: static TYPE _registeryInst; static String _type; \
+   TYPE() : TYPE(nullptr) { Mile::ComponentRegister::GetInstance().Register<TYPE>( #TYPE ); } \
+   public: virtual String GetType() const { return TYPE::_type; }
