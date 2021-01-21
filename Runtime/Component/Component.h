@@ -42,6 +42,8 @@ namespace Mile
       virtual void OnEnable() { }
       virtual void OnDisable() { }
 
+      virtual void OnGUI() { }
+
       Entity* GetEntity() const { return m_entity; }
       Context* GetContext() const;
       Transform* GetTransform() const;
