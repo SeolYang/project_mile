@@ -132,7 +132,10 @@ namespace Mile
 
                ImGui::Text("Components");
                auto& components = m_selectedEntity->GetComponents();
-
+               for (auto component : components)
+               {
+                  component->OnGUI();
+               }
             }
             else
             {
