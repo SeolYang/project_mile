@@ -111,6 +111,7 @@ namespace Mile
                   m_selectedEntity->SetName(String2WString(newName));
                }
 
+               ImGui::Dummy(ImVec2(0.0f, 5.0f));
                ImGui::Text("Transform");
                Transform* entitiyTransform = m_selectedEntity->GetTransform();
                auto position = entitiyTransform->GetPosition();
@@ -130,11 +131,15 @@ namespace Mile
                   entitiyTransform->SetScale(scale);
                }
 
+               ImGui::Dummy(ImVec2(0.0f, 5.0f));
                ImGui::Text("Components");
+               ImGui::Dummy(ImVec2(0.0f, 5.0f));
                auto& components = m_selectedEntity->GetComponents();
                for (auto component : components)
                {
+                  component->OnGUIBegin();
                   component->OnGUI();
+                  component->OnGUIEnd();
                }
             }
             else

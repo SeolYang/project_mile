@@ -1,5 +1,6 @@
 #include "Component/Component.h"
 #include "GameFramework/Entity.h"
+#include "Core/imguiHelper.h"
 
 namespace Mile
 {
@@ -38,5 +39,14 @@ namespace Mile
    Transform* Component::GetTransform() const
    {
       return m_entity->GetTransform();
+   }
+
+   void Component::OnGUIBegin()
+   {
+      ImGui::Text(WString2String(GetType()).c_str());
+   }
+
+   void Component::OnGUIEnd()
+   {
    }
 }
