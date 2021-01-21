@@ -9,46 +9,26 @@ namespace Mile
 {
    namespace Math
    {
-      static Quaternion EulerToQuaternion(const Vector3& eulerAngles)
+      static float ClampAngle(float degree)
       {
-         float cy = cos(eulerAngles.z * 0.5f);
-         float sy = sin(eulerAngles.z * 0.5f);
-         float cp = cos(eulerAngles.y * 0.5f);
-         float sp = sin(eulerAngles.y * 0.5f);
-         float cr = cos(eulerAngles.x * 0.5f);
-         float sr = sin(eulerAngles.x * 0.5f);
+         degree = std::fmod(degree, 360.0f);
+         if (degree < 0.0f)
+         {
+            degree += 360.0f;
+         }
 
-         Quaternion q;
-         q.w = cr * cp * cy + sr * sp * sy;
-         q.x = sr * cp * cy - cr * sp * sy;
-         q.y = cr * sp * cy + sr * cp * sy;
-         q.z = cr * cp * sy - sr * sp * cy;
-
-         return q;
+         return degree;
       }
 
-      static Vector3 QuaternionToEulerAngles(const Quaternion& q)
+      static float NormalizeAngle(float degree)
       {
-         Vector3 angles;
-         float sinr_cosp = 2.0f * (q.w * q.x + q.y * q.z);
-         float cosr_cosp = 1.0f - 2.0f * (q.x * q.x + q.y * q.y);
-         angles.x = std::atan2(sinr_cosp, cosr_cosp);
-
-         float sinp = 2.0f * (q.w * q.y - q.z * q.x);
-         if (std::abs(sinp) >= 1.0f)
+         degree = ClampAngle(degree);
+         if (degree > 180.0f)
          {
-            angles.y = std::copysign(Math::Pi / 2.0f, sinp);
-         }
-         else
-         {
-            angles.y = std::asin(sinp);
+            degree -= 360.0f;
          }
 
-         float siny_cosp = 2.0f * (q.w * q.z + q.x * q.y);
-         float cosy_cosp = 1.0f - 2.0f * (q.y * q.y + q.z * q.z);
-         angles.z = std::atan2(siny_cosp, cosy_cosp);
-
-         return angles;
+         return degree;
       }
 
       static Vector3 RadEulerAnglesToDegEulerAngles(const Vector3& radEuler)
@@ -65,6 +45,65 @@ namespace Mile
             DegreeToRadian(degEuler.x),
             DegreeToRadian(degEuler.y),
             DegreeToRadian(degEuler.z));
+      }
+
+      /* Degree Euler Angles to Quaternion */
+      static Quaternion EulerToQuaternion(const Vector3& eulerAngles)
+      {
+         // Pitch = x, Yaw = y, Roll = z
+         Vector3 target = DegEulerAnglesToRadEulerAngles(eulerAngles);
+         target.x = std::fmod(target.x, 360.0f);
+         target.y = std::fmod(target.y, 360.0f);
+         target.z = std::fmod(target.z, 360.0f);
+         float cy = cos(target.z * 0.5f);
+         float sy = sin(target.z * 0.5f);
+         float cp = cos(target.y * 0.5f);
+         float sp = sin(target.y * 0.5f);
+         float cr = cos(target.x * 0.5f);
+         float sr = sin(target.x * 0.5f);
+
+         Quaternion q;
+         q.w = cr * cp * cy + sr * sp * sy;
+         q.x = sr * cp * cy - cr * sp * sy;
+         q.y = cr * sp * cy + sr * cp * sy;
+         q.z = cr * cp * sy - sr * sp * cy;
+         q.Normalize();
+
+         return q;
+      }
+
+      /* Quaternion To Degree Euler Angles */
+      static Vector3 QuaternionToEulerAngles(const Quaternion& target)
+      {
+         // attitude = x, heading = y, bank = z
+         constexpr float SigularityThreshold = 0.4999999f;
+         Quaternion q = target.Normalized();
+         Vector3 angles;
+
+         float test = q.x * q.y + q.z * q.w;
+         if (test > SigularityThreshold)
+         {
+            angles.y = 2.0f * atan2(q.x, q.w);
+            angles.z = Pi * 0.5f;
+            angles.x = 0.0f;
+         }
+         else if (test < -SigularityThreshold)
+         {
+            angles.y = -2.0f * atan2(q.x, q.w);
+            angles.z = -Pi * 0.5f;
+            angles.x = 0.0f;
+         }
+         else
+         {
+            float sqx = q.x * q.x;
+            float sqy = q.y * q.y;
+            float sqz = q.z * q.z;
+            angles.y = atan2(2.0f*(q.y * q.w -q.x * q.z), 1.0f - 2.0f * (sqy - sqz));
+            angles.z = asin(2.0f * test);
+            angles.x = atan2(2.0f * (q.x * q.w - q.y * q.z), 1.0f - 2.0f * (sqx - sqz));
+         }
+
+         return RadEulerAnglesToDegEulerAngles(angles);
       }
    }
 }

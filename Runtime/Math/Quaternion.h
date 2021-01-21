@@ -212,7 +212,7 @@ namespace Mile
       Quaternion& Rotate( const Quaternion& rot )
       {
          (*this) = rot * (*this);
-         return ( *this );
+         return Normalize();
       }
 
       Quaternion& Rotate(float degree, const Vector3& axis)
@@ -237,7 +237,7 @@ namespace Mile
          this->Rotate(eulerAnglesDegree.x, Vector3(1.0f, 0.0f, 0.0f));
          this->Rotate(eulerAnglesDegree.y, Vector3(0.0f, 1.0f, 0.0f));
          this->Rotate(eulerAnglesDegree.z, Vector3(0.0f, 0.0f, 1.0f));
-         return (*this);
+         return Normalize();
       }
 
       Quaternion Rotated( const Quaternion& rot ) const
