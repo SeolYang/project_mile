@@ -129,6 +129,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\Runtime\Core\CoreMinimal.h" />
     <ClInclude Include="..\Runtime\Core\Engine.h" />
     <ClInclude Include="..\Runtime\Core\Helper.h" />
+    <ClInclude Include="..\Runtime\Core\imguiHelper.h" />
     <ClInclude Include="..\Runtime\Core\IMGUILayer.h" />
     <ClInclude Include="..\Runtime\Core\InputManager.h" />
     <ClInclude Include="..\Runtime\Core\Layer.h" />

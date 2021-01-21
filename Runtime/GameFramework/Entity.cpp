@@ -220,4 +220,14 @@ namespace Mile
          }
       }
    }
+
+   std::vector<Component*>& Entity::GetComponents()
+   {
+      return m_components;
+   }
+
+   std::vector<Component*> Entity::GetComponents() const
+   {
+      return m_components;
+   }
 }

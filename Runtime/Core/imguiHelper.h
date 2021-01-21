@@ -8,4 +8,6 @@ namespace Mile
 {
    constexpr unsigned int DEFAULT_STR_INPUT_BUFFER_SIZE = 64;
    constexpr unsigned int MAX_FILE_LENGTH = 256;
+
+
 }

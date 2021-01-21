@@ -53,13 +53,14 @@ namespace Mile
       * @brief    템플릿 파라미터로 주어진 형식의 컴포넌트중 가장 먼저 추가된 컴포넌트를 반환합니다.
       * @return   가장 먼저 추가된 해당 형식의 컴포넌트
       */
-      template <typename Ty> Ty* GetComponent();
+      template <typename Ty> Ty* GetComponent() const;
 
       /**
       * @brief    Entitiy에 추가되어있는 모든 컴포넌트들을 반환합니다.
       * @return   Entitiy에 추가되어있는 컴포넌트 들의 배열
       */
-      template <typename Ty> std::vector<Ty*> GetComponents();
+      std::vector<Component*>& GetComponents();
+      std::vector<Component*> GetComponents() const;
 
       /**
       * @brief    템플릿 파라미터로 주어진 형식의 컴포넌트가 Entity에 추가되어있는지 확인합니다.
@@ -100,7 +101,6 @@ namespace Mile
       void SetName(const String& name) { m_name = name; }
 
       String GetTag() const { return m_tag; }
-
       void SetTag(const String& tag) { m_tag = tag; }
 
       bool AttachChild(Entity* child);
@@ -175,7 +175,7 @@ namespace Mile
    }
 
    template <typename Ty>
-   Ty* Entity::GetComponent()
+   Ty* Entity::GetComponent() const
    {
       for (auto component : m_components)
       {
@@ -186,22 +186,6 @@ namespace Mile
       }
 
       return nullptr;
-   }
-
-   template <typename Ty>
-   std::vector<Ty*> Entity::GetComponents()
-   {
-      std::vector<Ty*> tempArr{ };
-
-      for (auto component : m_components)
-      {
-         if (typeid(Ty) == typeid(*component))
-         {
-            tempArr.push_back(component);
-         }
-      }
-
-      return std::move(tempArr);
    }
 
    template <typename Ty>

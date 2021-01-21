@@ -13,7 +13,6 @@
   <ItemGroup>
     <ClInclude Include="..\Editor\Editor.h" />
     <ClInclude Include="..\Editor\EditorApp.h" />
-    <ClInclude Include="..\Editor\ImGUIHelper.h" />
     <ClInclude Include="..\Editor\Layers\MenuBarLayer.h" />
     <ClInclude Include="..\Editor\Layers\WorldHierarchyLayer.h" />
   </ItemGroup>

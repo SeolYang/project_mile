@@ -22,9 +22,6 @@
     <ClInclude Include="..\Editor\Layers\WorldHierarchyLayer.h">
       <Filter>Sources\Layers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Editor\ImGUIHelper.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Editor\EditorMain.cpp">
