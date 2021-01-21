@@ -24,7 +24,7 @@ namespace Mile
 
          if (!LoadConfig(TEXT("Engine")))
          {
-            MELog(context, TEXT("ConfigSystem"), ELogType::FATAL, TEXT("Faeild to load Engine default config. "));
+            MELog(context, TEXT("ConfigSystem"), ELogType::FATAL, TEXT("Failed to load Engine default config. "));
             return false;
          }
 
