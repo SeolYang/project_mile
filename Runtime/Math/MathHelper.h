@@ -48,12 +48,13 @@ namespace Mile
       }
 
       /* Degree Euler Angles to Quaternion */
+      // +angles = cw(clock wise) rotation for (Roll, Yaw)
       static Quaternion EulerToQuaternion(const Vector3& eulerAngles)
       {
          // Pitch = x, Yaw = y, Roll = z
          Vector3 target = DegEulerAnglesToRadEulerAngles(eulerAngles);
          target.x = std::fmod(target.x, 360.0f);
-         target.y = std::fmod(target.y, 360.0f);
+         target.y = -std::fmod(target.y, 360.0f);
          target.z = std::fmod(target.z, 360.0f);
          float cy = cos(target.z * 0.5f);
          float sy = sin(target.z * 0.5f);
@@ -75,7 +76,6 @@ namespace Mile
       /* Quaternion To Degree Euler Angles */
       static Vector3 QuaternionToEulerAngles(const Quaternion& target)
       {
-         // attitude = x, heading = y, bank = z
          constexpr float SigularityThreshold = 0.4999999f;
          Quaternion q = target.Normalized();
          Vector3 angles;
@@ -103,6 +103,8 @@ namespace Mile
             angles.x = atan2(2.0f * (q.x * q.w - q.y * q.z), 1.0f - 2.0f * (sqx - sqz));
          }
 
+         angles.y = -angles.y;
+         //angles.z = -angles.z;
          return RadEulerAnglesToDegEulerAngles(angles);
       }
    }
