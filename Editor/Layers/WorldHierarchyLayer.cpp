@@ -23,7 +23,7 @@ namespace Mile
 
       void WorldHierarchyLayer::DrawEntityNode(Entity* targetRoot)
       {
-         if (targetRoot != nullptr)
+         if (targetRoot != nullptr && targetRoot->IsVisibleOnHierarchy())
          {
             std::string entityName = WString2String(targetRoot->GetName());
 

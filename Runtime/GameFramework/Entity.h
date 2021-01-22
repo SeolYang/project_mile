@@ -110,6 +110,12 @@ namespace Mile
       Entity* GetChildByName(const String& name);
       bool HasParent() { return m_parent != nullptr; }
 
+      bool IsVisibleOnHierarchy() const { return m_bIsVisibleOnHierarchy; }
+      void SetVisibleOnHierarchy(bool bIsVisible) { m_bIsVisibleOnHierarchy = bIsVisible; }
+
+      bool IsSerializationDisabled() const { return m_bIsSerializable; }
+      void SetSerializable(bool bIsSerializable) { m_bIsSerializable = bIsSerializable; }
+
       std::vector<Entity*> GetChildren() const { return m_children; }
       std::vector<Entity*> GetChildren() { return m_children; }
 
@@ -131,6 +137,9 @@ namespace Mile
       std::vector<Entity*>    m_children;
       String   m_name;
       String   m_tag;
+
+      bool  m_bIsVisibleOnHierarchy;
+      bool  m_bIsSerializable;
 
    };
 

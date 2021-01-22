@@ -14,7 +14,9 @@ namespace Mile
       m_tag(tag),
       m_bIsActivated(true),
       m_transform(new Transform(this)),
-      m_parent(nullptr)
+      m_parent(nullptr),
+      m_bIsVisibleOnHierarchy(true),
+      m_bIsSerializable(true)
    {
       if (m_world != nullptr)
       {
@@ -36,24 +38,27 @@ namespace Mile
    json Entity::Serialize() const
    {
       json serialized;
-      serialized["Name"] = WString2String(m_name);
-      serialized["Tag"] = WString2String(m_tag);
-      serialized["IsActivated"] = m_bIsActivated;
-      serialized["Transform"] = m_transform->Serialize();
-
-      std::vector<json> components;
-      for (auto comp : m_components)
+      if (m_bIsSerializable)
       {
-         components.push_back(comp->Serialize());
-      }
-      serialized["Components"] = components;
+         serialized["Name"] = WString2String(m_name);
+         serialized["Tag"] = WString2String(m_tag);
+         serialized["IsActivated"] = m_bIsActivated;
+         serialized["Transform"] = m_transform->Serialize();
 
-      std::vector<json> children;
-      for (auto child : m_children)
-      {
-         children.push_back(child->Serialize());
+         std::vector<json> components;
+         for (auto comp : m_components)
+         {
+            components.push_back(comp->Serialize());
+         }
+         serialized["Components"] = components;
+
+         std::vector<json> children;
+         for (auto child : m_children)
+         {
+            children.push_back(child->Serialize());
+         }
+         serialized["Children"] = children;
       }
-      serialized["Children"] = children;
 
       return serialized;
    }
