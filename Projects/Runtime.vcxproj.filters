@@ -606,6 +606,9 @@
     <ClInclude Include="..\Runtime\Core\imguiHelper.h">
       <Filter>Sources\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Resource\RenderTexture.h">
+      <Filter>Sources\Resource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -847,6 +850,9 @@
     </ClCompile>
     <ClCompile Include="..\ThirdParty\imgui\include\imgui_impl_dx11.cpp">
       <Filter>ThirdParty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Resource\RenderTexture.cpp">
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

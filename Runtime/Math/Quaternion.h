@@ -151,10 +151,10 @@ namespace Mile
 
       void DeSerialize( const json& jsonData )
       {
-         w = jsonData[ "w" ];
-         x = jsonData[ "x" ];
-         y = jsonData[ "y" ];
-         z = jsonData[ "z" ];
+         w = GetValueSafelyFromJson(jsonData, "w", 0.0f);
+         x = GetValueSafelyFromJson(jsonData, "x", 0.0f);
+         y = GetValueSafelyFromJson(jsonData, "y", 0.0f);
+         z = GetValueSafelyFromJson(jsonData, "z", 0.0f);
       }
 
       float Norm( ) const

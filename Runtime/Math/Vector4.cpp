@@ -213,10 +213,10 @@ namespace Mile
 
     void Vector4::DeSerialize( const json& jsonData )
     {
-       x = jsonData[ "x" ];
-       y = jsonData[ "y" ];
-       z = jsonData[ "z" ];
-       w = jsonData[ "w" ];
+       x = GetValueSafelyFromJson(jsonData, "x", 0.0f);
+       y = GetValueSafelyFromJson(jsonData, "y", 0.0f);
+       z = GetValueSafelyFromJson(jsonData, "z", 0.0f);
+       w = GetValueSafelyFromJson(jsonData, "w", 0.0f);
     }
 
     float Vector4::GetX( ) const
