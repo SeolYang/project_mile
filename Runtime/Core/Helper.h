@@ -27,6 +27,9 @@
 #include "json.hpp"
 using json = nlohmann::json;
 
+#define NULL_TEXT TEXT("null")
+#define NULL_TEXT_STD "null"
+
 namespace Mile
 {
    using String = std::wstring;

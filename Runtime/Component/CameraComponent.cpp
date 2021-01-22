@@ -1,4 +1,7 @@
 #include "Component/CameraComponent.h"
+#include "Core/Engine.h"
+#include "Resource/ResourceManager.h"
+#include "Resource/RenderTexture.h"
 
 namespace Mile
 {
@@ -9,6 +12,7 @@ namespace Mile
       m_nearPlane(1.0f),
       m_farPlane(500.0f),
       m_clearColor(Vector4(0.133f, 0.137f, 0.15f, 1.0f)),
+      m_renderTexture(nullptr),
       Component(entity)
    {
    }
@@ -20,6 +24,15 @@ namespace Mile
       serialized["NearPlane"] = m_nearPlane;
       serialized["FarPlane"] = m_farPlane;
       serialized["ClearColor"] = m_clearColor.Serialize();
+      if (m_renderTexture == nullptr)
+      {
+         serialized["RenderTexture"] = NULL_TEXT_STD;
+      }
+      else
+      {
+         serialized["RenderTexture"] = WString2String(m_renderTexture->GetPath());
+      }
+
       return serialized;
    }
 
@@ -30,6 +43,20 @@ namespace Mile
       m_nearPlane = GetValueSafelyFromJson(jsonData, "NearPlane", 1.0f);
       m_farPlane = GetValueSafelyFromJson(jsonData, "FarPlane", 500.0f);
       m_clearColor.DeSerialize(jsonData["ClearColor"]);
+
+      std::string renderTexture = GetValueSafelyFromJson(jsonData, "RenderTexture", std::string());
+      if (renderTexture == NULL_TEXT_STD)
+      {
+         m_renderTexture = nullptr;
+      }
+      else
+      {
+         auto resMng = Engine::GetResourceManager();
+         if (resMng != nullptr)
+         {
+            m_renderTexture = resMng->Load<RenderTexture>(String2WString(renderTexture));
+         }
+      }
    }
 
 }

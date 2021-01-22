@@ -4,6 +4,7 @@
 
 namespace Mile
 {
+   class RenderTexture;
    /**
     * @brief	카메라의 속성들을 가지고 있는 컴포넌트 입니다.
     *			기본적으로 FOV 값, 평면들과의 거리, 프레임 버퍼를 초기화 시킬 색상을 속성으로 가지고 있습니다.
@@ -55,6 +56,9 @@ namespace Mile
       */
       void SetClearColor(const Vector4& clearColor) { m_clearColor = clearColor; }
 
+      void SetRenderTexture(RenderTexture* renderTexture) { m_renderTexture = renderTexture; }
+      RenderTexture* GetRenderTexture() const { return m_renderTexture; }
+
       virtual json Serialize() const override;
       virtual void DeSerialize(const json& jsonData) override;
 
@@ -64,6 +68,8 @@ namespace Mile
       float m_farPlane;
 
       Vector4 m_clearColor;
+
+      RenderTexture* m_renderTexture;
 
    };
 }
