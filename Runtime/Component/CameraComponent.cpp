@@ -26,9 +26,9 @@ namespace Mile
    void CameraComponent::DeSerialize(const json& jsonData)
    {
       Component::DeSerialize(jsonData);
-      m_fov = jsonData["FOV"];
-      m_nearPlane = jsonData["NearPlane"];
-      m_farPlane = jsonData["FarPlane"];
+      m_fov = GetValueSafelyFromJson(jsonData, "FOV", 45.0f);
+      m_nearPlane = GetValueSafelyFromJson(jsonData, "NearPlane", 1.0f);
+      m_farPlane = GetValueSafelyFromJson(jsonData, "FarPlane", 500.0f);
       m_clearColor.DeSerialize(jsonData["ClearColor"]);
    }
 

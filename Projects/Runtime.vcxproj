@@ -197,6 +197,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\Runtime\Resource\Model.h" />
     <ClInclude Include="..\Runtime\Resource\ModelLoader.h" />
     <ClInclude Include="..\Runtime\Resource\PlainText.h" />
+    <ClInclude Include="..\Runtime\Resource\RenderTexture.h" />
     <ClInclude Include="..\Runtime\Resource\Resource.h" />
     <ClInclude Include="..\Runtime\Resource\ResourceCache.h" />
     <ClInclude Include="..\Runtime\Resource\ResourceManager.h" />
@@ -360,6 +361,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Resource\Model.cpp" />
     <ClCompile Include="..\Runtime\Resource\ModelLoader.cpp" />
     <ClCompile Include="..\Runtime\Resource\PlainText.cpp" />
+    <ClCompile Include="..\Runtime\Resource\RenderTexture.cpp" />
     <ClCompile Include="..\Runtime\Resource\Resource.cpp" />
     <ClCompile Include="..\Runtime\Resource\ResourceCache.cpp" />
     <ClCompile Include="..\Runtime\Resource\ResourceManager.cpp" />

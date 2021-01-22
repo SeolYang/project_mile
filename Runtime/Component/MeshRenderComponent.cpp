@@ -31,16 +31,16 @@ namespace Mile
    {
       Component::DeSerialize(jsonData);
       auto resMng = m_entity->GetContext()->GetSubSystem<ResourceManager>();
-      json meshData = jsonData["Mesh"];
+      json meshData = GetValueSafelyFromJson(jsonData, "Mesh", json());
       Model* loadedModel = nullptr;
 
-      switch (static_cast<EStaticMeshType>(meshData["Type"]))
+      switch (static_cast<EStaticMeshType>(GetValueSafelyFromJson(meshData, "Type", 0)))
       {
       case EStaticMeshType::External:
-         loadedModel = resMng->Load<Model>(String2WString(meshData["Model"]));
+         loadedModel = resMng->Load<Model>(String2WString(GetValueSafelyFromJson(meshData, "Model", std::string())));
          if (loadedModel != nullptr)
          {
-            m_mesh = loadedModel->GetMeshByName(String2WString(meshData["Name"]));
+            m_mesh = loadedModel->GetMeshByName(String2WString(GetValueSafelyFromJson(meshData, "Name", std::string())));
          }
          break;
 
@@ -53,6 +53,6 @@ namespace Mile
          break;
       }
 
-      m_material = resMng->Load<Material>(String2WString(jsonData["Material"]));
+      m_material = resMng->Load<Material>(String2WString(GetValueSafelyFromJson(jsonData, "Material", std::string())));
    }
 }

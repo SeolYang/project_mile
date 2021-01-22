@@ -36,7 +36,7 @@ namespace Mile
    void LightComponent::DeSerialize(const json& jsonData)
    {
       Component::DeSerialize(jsonData);
-      m_type = StringToLightType(jsonData["LightType"]);
+      m_type = StringToLightType(GetValueSafelyFromJson<std::string>(jsonData, "LightType", ""));
       m_radiance.DeSerialize(jsonData["Radiance"]);
    }
 }
