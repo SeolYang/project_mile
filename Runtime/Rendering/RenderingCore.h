@@ -191,7 +191,7 @@ enum class EColorFormat : UINT32
    NV12 = 103,
    P010 = 104,
    P016 = 105,
-   420_OPAQUE = 106,
+   _420_OPAQUE = 106,
    YUY2 = 107,
    Y210 = 108,
    Y216 = 109,
