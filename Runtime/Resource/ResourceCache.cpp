@@ -80,4 +80,17 @@ namespace Mile
       return false;
    }
 
+   bool ResourceCache::IsValid(ResourcePtr target) const
+   {
+      for (auto resource : m_resources)
+      {
+         if (resource == target)
+         {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
 }

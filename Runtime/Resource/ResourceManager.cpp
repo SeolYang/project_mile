@@ -53,6 +53,11 @@ namespace Mile
       }
    }
 
+   bool ResourceManager::IsValid(Resource* target) const
+   {
+      return m_cache->IsValid(target);
+   }
+
    void ResourceManager::ClearCache()
    {
       m_cache->Clear();
@@ -61,5 +66,4 @@ namespace Mile
          ELogType::DEBUG,
          TEXT("Resource cache has been cleared."));
    }
-
 }

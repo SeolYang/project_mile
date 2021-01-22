@@ -17,6 +17,7 @@ namespace Mile
       ResourcePtr GetByName(const String& name);
       bool HasByPath(const String& path);
       bool HasByName(const String& name);
+      bool IsValid(ResourcePtr target) const;
 
    private:
       Context* m_context;

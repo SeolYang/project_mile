@@ -111,6 +111,8 @@ namespace Mile
          return nullptr;
       }
 
+      bool IsValid(Resource* target) const;
+
       void ClearCache();
 
    private:
