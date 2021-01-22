@@ -11,6 +11,7 @@ namespace Mile
       Texture1D,
       Texture2D,
       Texture3D,
+      RenderTexture,
       Model,
       Material,
       Shader,
