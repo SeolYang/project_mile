@@ -46,7 +46,7 @@ namespace Mile
 
       UINT32 GetHeight() const { return m_height; }
 
-      bool SetEnableStencil(bool enable)
+      void SetEnableStencil(bool enable)
       {
          if (m_bEnableStencil != enable)
          {
