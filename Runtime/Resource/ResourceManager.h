@@ -17,17 +17,21 @@ namespace Mile
       virtual void DeInit() override;
 
       template < typename Ty >
-      Ty* Load(const String& relativePath)
+      Ty* Load(const String& relativePath, bool bDoNotLeaveCachingLog = false)
       {
          if (!relativePath.empty())
          {
             Context* context = GetContext();
             if (m_cache->HasByPath(relativePath))
             {
-               MELog(context,
-                  MILE_RESOURCE_MANAGER_LOG_CATEGORY,
-                  ELogType::MESSAGE,
-                  TEXT("Successfully load resource from Cache : ") + relativePath);
+               if (!bDoNotLeaveCachingLog)
+               {
+                  MELog(context,
+                     MILE_RESOURCE_MANAGER_LOG_CATEGORY,
+                     ELogType::MESSAGE,
+                     TEXT("Successfully load resource from Cache : ") + relativePath);
+               }
+
                return GetByPath<Ty>(relativePath);
             }
 

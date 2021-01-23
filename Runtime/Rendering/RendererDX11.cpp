@@ -810,7 +810,7 @@ namespace Mile
             {
 #ifdef MILE_EDITOR
                ResourceManager* resMng = Engine::GetResourceManager();
-               renderTexture = resMng->Load<RenderTexture>(EDITOR_GAME_VIEW_RENDER_TEXTURE);
+               renderTexture = resMng->Load<RenderTexture>(EDITOR_GAME_VIEW_RENDER_TEXTURE, true);
                if (renderTexture != nullptr)
                {
                   m_outputRenderTarget = renderTexture->GetRenderTarget();
