@@ -9,6 +9,12 @@
 
 namespace Mile
 {
+   RenderTexture::~RenderTexture()
+   {
+      SafeDelete(m_renderTarget);
+      SafeDelete(m_depthStencil);
+   }
+
    bool RenderTexture::Init()
    {
       if (m_context == nullptr || m_bIsInitialized)
@@ -85,6 +91,7 @@ namespace Mile
       RendererDX11* renderer = Engine::GetRenderer();
       if (renderer != nullptr)
       {
+         SafeDelete(m_depthStencil);
          m_depthStencil = new DepthStencilBufferDX11(renderer);
          if (!m_depthStencil->Init(m_width, m_height, m_bEnableStencil))
          {
@@ -92,12 +99,15 @@ namespace Mile
             return;
          }
 
+         SafeDelete(m_renderTarget);
          m_renderTarget = new RenderTargetDX11(renderer);
-         if (m_renderTarget->Init(m_width, m_height, ColorFormatToDXGIFormat(m_colorFormat)))
+         if (!m_renderTarget->Init(m_width, m_height, ColorFormatToDXGIFormat(m_colorFormat), m_depthStencil))
          {
             MELog(m_context, TEXT("RenderTexture"), ELogType::FATAL, TEXT("Failed to initialize render target"));
             return;
          }
+
+         m_bIsDirty = false;
       }
       else
       {
