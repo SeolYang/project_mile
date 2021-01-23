@@ -40,20 +40,29 @@ namespace Mile
 
       void GameViewLayer::OnIMGUIRender()
       {
+         ImGuiWindowFlags windowFlag = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
          auto world = Engine::GetWorld();
          auto window = Engine::GetWindow();
          Vector2 maxRes = window->GetResolution();
 
          ImGui::SetNextWindowSizeConstraints(ImVec2{ 50.0f, 50.0f }, ImVec2{ maxRes.x, maxRes.y });
-         ImGui::Begin("Game");
+         ImGui::Begin("Game", nullptr, windowFlag);
          if (m_editorCameraRenderTex != nullptr)
          {
             WindowFocusedEffect(0, 255, 0, 0.9f);
             auto contentRegion = ImGui::GetContentRegionAvail();
-            ImVec2 outputRes{ contentRegion.x, contentRegion.y };
-            m_editorCameraRenderTex->SetWidth(outputRes.x);
-            m_editorCameraRenderTex->SetHeight(outputRes.y);
+
+            ImVec2 windowSize = ImGui::GetWindowSize();
+            float titleBarHeight = ImGui::GetCurrentWindow()->TitleBarHeight();
+            ImVec2 actualContentArea = ImVec2{ windowSize.x, windowSize.y - titleBarHeight };
+
+            Vector2 relativeOutputRes = FindResolutionWithAspectRatio(actualContentArea.x, actualContentArea.y, (maxRes.x / maxRes.y));
+            ImVec2 outputRes{ relativeOutputRes.x, relativeOutputRes.y };
+            m_editorCameraRenderTex->SetWidth(maxRes.x);
+            m_editorCameraRenderTex->SetHeight(maxRes.y);
             //m_editorCameraComponent->SetFov(GameViewDefaultFOV * ((outputRes.x + outputRes.y) / (GameViewDefaultWidth + GameViewDefaultHeight)));
+            ImGui::SetCursorPosX((actualContentArea.x - outputRes.x) * 0.5f);
+            ImGui::SetCursorPosY((actualContentArea.y - outputRes.y ) * 0.5f + titleBarHeight);
             ImGui::Image((void*)m_editorCameraRenderTex->GetRenderTarget()->GetTexture()->GetSRV(), outputRes);
          }
          ImGui::End();
