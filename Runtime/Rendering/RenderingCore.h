@@ -79,7 +79,7 @@ namespace Mile
       PRIMITIVE_TOPOLOGY_32_CONTROL_POINT_PATCHLIST = 64
    };
 
-   static D3D11_PRIMITIVE_TOPOLOGY PrimitiveTopologyToD3D11(EPrimitiveTopology topology)
+   static inline D3D11_PRIMITIVE_TOPOLOGY PrimitiveTopologyToD3D11(EPrimitiveTopology topology)
    {
       return static_cast<D3D11_PRIMITIVE_TOPOLOGY>(topology);
    }
@@ -211,7 +211,7 @@ namespace Mile
       FORCE_UINT = 0xffffffff
    };
 
-   static DXGI_FORMAT ColorFormatToDXGIFormat(EColorFormat format)
+   static inline DXGI_FORMAT ColorFormatToDXGIFormat(EColorFormat format)
    {
       return static_cast<DXGI_FORMAT>(format);
    }
