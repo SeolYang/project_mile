@@ -48,11 +48,11 @@ namespace Mile
 
          ImGui::SetNextWindowSizeConstraints(ImVec2{ 50.0f, 50.0f }, ImVec2{ maxRes.x, maxRes.y });
          ImGui::Begin("Game", nullptr, windowFlag);
+         WindowFocusedEffect(0, 255, 0, 1.5f);
          if (renderer->IsRenderedFrame())
          {
             if (m_editorCameraRenderTex != nullptr)
             {
-               WindowFocusedEffect(0, 255, 0, 0.9f);
                auto contentRegion = ImGui::GetContentRegionAvail();
 
                ImVec2 windowSize = ImGui::GetWindowSize();
