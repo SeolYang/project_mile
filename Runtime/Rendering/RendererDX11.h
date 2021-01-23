@@ -158,6 +158,8 @@ namespace Mile
       Mesh* GetCubeMesh() const { return reinterpret_cast<Mesh*>(m_cubeMesh); }
       Mesh* GetQuadMesh() const { return reinterpret_cast<Mesh*>(m_screenQuad); }
 
+      bool IsRenderedFrame() const { return m_bIsRendered; }
+
    private:
       /* Initialization methods **/
       bool CreateDeviceAndSwapChain();
@@ -222,8 +224,6 @@ namespace Mile
 
       void SetDepthStencilEnable(ID3D11DeviceContext& deviceContext, bool bDepthEnabled);
       bool IsDepthStencilEnabled() const { return m_bDepthStencilEnabled; }
-
-      bool IsRenderedFrame() const { return m_bIsRendered; }
 
    private:
       Window* m_window;

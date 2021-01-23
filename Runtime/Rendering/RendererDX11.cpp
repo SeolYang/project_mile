@@ -810,16 +810,9 @@ namespace Mile
             else
             {
 #ifdef MILE_EDITOR
-               if (renderTexture != nullptr)
-               {
-                  ResourceManager* resMng = Engine::GetResourceManager();
-                  renderTexture = resMng->Load<RenderTexture>(EDITOR_GAME_VIEW_RENDER_TEXTURE, true);
-                  m_outputRenderTarget = renderTexture->GetRenderTarget();
-               }
-               else
-               {
-                  m_outputRenderTarget = nullptr;
-               }
+               ResourceManager* resMng = Engine::GetResourceManager();
+               renderTexture = resMng->Load<RenderTexture>(EDITOR_GAME_VIEW_RENDER_TEXTURE, true);
+               m_outputRenderTarget = renderTexture->GetRenderTarget();
 #else
                m_outputRenderTarget = m_backBuffer;
 #endif
