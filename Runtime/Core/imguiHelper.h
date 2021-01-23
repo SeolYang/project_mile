@@ -9,7 +9,7 @@ namespace Mile
    constexpr unsigned int DEFAULT_STR_INPUT_BUFFER_SIZE = 64;
    constexpr unsigned int MAX_FILE_LENGTH = 256;
 
-	static inline void  SetupImGuiStyle(bool bStyleDark_, float alpha_)
+	static inline void SetupImGuiStyle(bool bStyleDark_, float alpha_)
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -95,4 +95,20 @@ namespace Mile
 		}
 	}
 
+	static inline void WindowFocusedEffect(UINT32 r = 255, UINT32 g = 255, UINT32 b = 255, float thickness = 1.0f)
+	{
+		if (ImGui::IsWindowFocused())
+		{
+			ImVec2 vMin;
+			ImVec2 vMax = ImGui::GetWindowSize();
+
+			ImVec2 winPos = ImGui::GetWindowPos();
+			vMin.x += winPos.x;
+			vMin.y += winPos.y;
+			vMax.x += winPos.x;
+			vMax.y += winPos.y;
+
+			ImGui::GetForegroundDrawList()->AddRect(vMin, vMax, IM_COL32(r, g, b, 255), 0.0f, 15, thickness);
+		}
+	}
 }
