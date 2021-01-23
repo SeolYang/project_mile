@@ -75,7 +75,7 @@ namespace Mile
       }
 
       template < typename Ty >
-      Ty* Create(const String& relativePath)
+      Ty* Create(const String& relativePath, bool bSaveResource = true)
       {
          if (!relativePath.empty())
          {
@@ -91,15 +91,24 @@ namespace Mile
             }
 
             auto newResource = new Ty(context, relativePath);
-            if (newResource->Save())
+            if (bSaveResource)
             {
-               MELog(context,
-                  MILE_RESOURCE_MANAGER_LOG_CATEGORY,
-                  ELogType::WARNING,
-                  relativePath + TEXT(" is successfully created."));
+               if (newResource->Save())
+               {
+                  MELog(context,
+                     MILE_RESOURCE_MANAGER_LOG_CATEGORY,
+                     ELogType::WARNING,
+                     relativePath + TEXT(" is successfully created."));
+                  m_cache->Add(static_cast<Resource*>(newResource));
+                  return newResource;
+               }
+            }
+            else
+            {
                m_cache->Add(static_cast<Resource*>(newResource));
                return newResource;
             }
+
 
             MELog(context,
                MILE_RESOURCE_MANAGER_LOG_CATEGORY,
