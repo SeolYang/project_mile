@@ -215,4 +215,18 @@ namespace Mile
    {
       return static_cast<DXGI_FORMAT>(format);
    }
+
+   static inline Vector2 FindResolutionWithAspectRatio(float currentWidth, float currentHeight, float targetAspectRatio)
+   {
+      float width = currentWidth;
+      float height = (width / targetAspectRatio + 0.5f);
+
+      if (height > currentHeight)
+      {
+         height = currentHeight;
+         width = (height * targetAspectRatio + 0.5f);
+      }
+
+      return Vector2(width, height);
+   }
 }
