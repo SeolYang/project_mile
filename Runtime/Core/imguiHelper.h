@@ -112,4 +112,15 @@ namespace Mile
 			ImGui::GetForegroundDrawList()->AddRect(vMin, vMax, IM_COL32(r, g, b, 255), 0.0f, 15, thickness);
 		}
 	}
+
+	/**
+	 * @brief	타이틀바의 크기와 스크롤바를 제외한 윈도우 상의 콘텐츠 영역의 크기를 반환합니다.
+	 */
+	static inline ImVec2 GetActualWindowContentArea()
+	{
+		ImVec2 windowSize = ImGui::GetWindowSize();
+		float titleBarHeight = ImGui::GetCurrentWindow()->TitleBarHeight();
+		ImVec2 actualContentArea = ImVec2{ windowSize.x, windowSize.y - titleBarHeight };
+		return actualContentArea;
+	}
 }
