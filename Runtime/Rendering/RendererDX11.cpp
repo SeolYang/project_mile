@@ -777,6 +777,7 @@ namespace Mile
       Context* context = GetContext();
       auto threadPool = context->GetSubSystem<ThreadPool>();
       Clear( *m_immediateContext );
+      m_bIsRendered = false;
 
       World* world = context->GetSubSystem<World>();
       if (world != nullptr)
@@ -809,10 +810,10 @@ namespace Mile
             else
             {
 #ifdef MILE_EDITOR
-               ResourceManager* resMng = Engine::GetResourceManager();
-               renderTexture = resMng->Load<RenderTexture>(EDITOR_GAME_VIEW_RENDER_TEXTURE, true);
                if (renderTexture != nullptr)
                {
+                  ResourceManager* resMng = Engine::GetResourceManager();
+                  renderTexture = resMng->Load<RenderTexture>(EDITOR_GAME_VIEW_RENDER_TEXTURE, true);
                   m_outputRenderTarget = renderTexture->GetRenderTarget();
                }
                else
@@ -854,6 +855,8 @@ namespace Mile
                SafeRelease(geometryPassCmdList);
                SafeRelease(lightingPassCmdList);
                SafeRelease(postProcessCmdList);
+
+               m_bIsRendered = true;
             }
          }
       }

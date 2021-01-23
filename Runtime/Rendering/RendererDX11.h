@@ -223,6 +223,8 @@ namespace Mile
       void SetDepthStencilEnable(ID3D11DeviceContext& deviceContext, bool bDepthEnabled);
       bool IsDepthStencilEnabled() const { return m_bDepthStencilEnabled; }
 
+      bool IsRenderedFrame() const { return m_bIsRendered; }
+
    private:
       Window* m_window;
       ID3D11Device* m_device;
@@ -334,6 +336,8 @@ namespace Mile
 
       /** Output */
       RenderTargetDX11* m_outputRenderTarget;
+
+      bool m_bIsRendered;
 
    };
 }
