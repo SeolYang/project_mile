@@ -57,6 +57,7 @@ namespace Mile
       {
          MELog(context, TEXT("World"), ELogType::DEBUG, TEXT("World Initialized!"));
          SubSystem::InitSucceed();
+
          return true;
       }
 

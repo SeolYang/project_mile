@@ -18,19 +18,33 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
+		EditorDebug|x64 = EditorDebug|x64
+		EditorRelease|x64 = EditorRelease|x64
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{6742BECA-60F9-4DF9-9B98-4F684457CCE8}.Debug|x64.ActiveCfg = Debug|x64
 		{6742BECA-60F9-4DF9-9B98-4F684457CCE8}.Debug|x64.Build.0 = Debug|x64
+		{6742BECA-60F9-4DF9-9B98-4F684457CCE8}.EditorDebug|x64.ActiveCfg = EditorDebug|x64
+		{6742BECA-60F9-4DF9-9B98-4F684457CCE8}.EditorDebug|x64.Build.0 = EditorDebug|x64
+		{6742BECA-60F9-4DF9-9B98-4F684457CCE8}.EditorRelease|x64.ActiveCfg = EditorRelease|x64
+		{6742BECA-60F9-4DF9-9B98-4F684457CCE8}.EditorRelease|x64.Build.0 = EditorRelease|x64
 		{6742BECA-60F9-4DF9-9B98-4F684457CCE8}.Release|x64.ActiveCfg = Release|x64
 		{6742BECA-60F9-4DF9-9B98-4F684457CCE8}.Release|x64.Build.0 = Release|x64
 		{5862A8D8-525E-4271-A925-E11865B4B705}.Debug|x64.ActiveCfg = Debug|x64
 		{5862A8D8-525E-4271-A925-E11865B4B705}.Debug|x64.Build.0 = Debug|x64
+		{5862A8D8-525E-4271-A925-E11865B4B705}.EditorDebug|x64.ActiveCfg = EditorDebug|x64
+		{5862A8D8-525E-4271-A925-E11865B4B705}.EditorDebug|x64.Build.0 = EditorDebug|x64
+		{5862A8D8-525E-4271-A925-E11865B4B705}.EditorRelease|x64.ActiveCfg = EditorRelease|x64
+		{5862A8D8-525E-4271-A925-E11865B4B705}.EditorRelease|x64.Build.0 = EditorRelease|x64
 		{5862A8D8-525E-4271-A925-E11865B4B705}.Release|x64.ActiveCfg = Release|x64
 		{5862A8D8-525E-4271-A925-E11865B4B705}.Release|x64.Build.0 = Release|x64
 		{30BA7DA7-B85B-4E64-BBD0-42846169F918}.Debug|x64.ActiveCfg = Debug|x64
 		{30BA7DA7-B85B-4E64-BBD0-42846169F918}.Debug|x64.Build.0 = Debug|x64
+		{30BA7DA7-B85B-4E64-BBD0-42846169F918}.EditorDebug|x64.ActiveCfg = EditorDebug|x64
+		{30BA7DA7-B85B-4E64-BBD0-42846169F918}.EditorDebug|x64.Build.0 = EditorDebug|x64
+		{30BA7DA7-B85B-4E64-BBD0-42846169F918}.EditorRelease|x64.ActiveCfg = EditorRelease|x64
+		{30BA7DA7-B85B-4E64-BBD0-42846169F918}.EditorRelease|x64.Build.0 = EditorRelease|x64
 		{30BA7DA7-B85B-4E64-BBD0-42846169F918}.Release|x64.ActiveCfg = Release|x64
 		{30BA7DA7-B85B-4E64-BBD0-42846169F918}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection

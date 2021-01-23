@@ -22,6 +22,9 @@
     <ClInclude Include="..\Editor\Layers\WorldHierarchyLayer.h">
       <Filter>Sources\Layers</Filter>
     </ClInclude>
+    <ClInclude Include="..\Editor\Layers\GameViewLayer.h">
+      <Filter>Sources\Layers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Editor\EditorMain.cpp">
@@ -34,6 +37,9 @@
       <Filter>Sources\Layers</Filter>
     </ClCompile>
     <ClCompile Include="..\Editor\Layers\WorldHierarchyLayer.cpp">
+      <Filter>Sources\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Editor\Layers\GameViewLayer.cpp">
       <Filter>Sources\Layers</Filter>
     </ClCompile>
   </ItemGroup>

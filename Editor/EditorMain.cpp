@@ -42,9 +42,6 @@ int main()
       auto inputMng = Engine::GetInputManager();
 
       inputMng->MapAction(EInputKey::W, TEXT("Forward"));
-
-      Texture2D* iceLakeHDR = resMng->Load<Texture2D>(TEXT("Contents/Textures/Ice_Lake/Ice_Lake_Ref.hdr"));
-      renderer->SetEquirectangularMap(iceLakeHDR);
       /* TEST CODES END*/
 
       execute = engine->Execute();

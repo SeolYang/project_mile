@@ -2,9 +2,14 @@
 #include "Core/Context.h"
 #include "Core/Engine.h"
 #include "Core/Config.h"
+#include "GameFramework/World.h"
 #include "Core/imguiHelper.h"
 #include "Layers/WorldHierarchyLayer.h"
 #include "Layers/MenuBarLayer.h"
+#include "Layers/GameViewLayer.h"
+#include "Resource/ResourceManager.h"
+#include "Resource/RenderTexture.h"
+#include "Component/CameraComponent.h"
 
 namespace Mile
 {
@@ -16,6 +21,7 @@ namespace Mile
          m_menuBarLayer(nullptr),
          m_bIsDarkStyle(true),
          m_guiAlpha(0.8f),
+         m_gameViewLayer(nullptr),
          Application(context, TEXT("MileEditor"))
       {
       }
@@ -25,6 +31,7 @@ namespace Mile
          m_engineInstance = nullptr;
          m_worldHierarchyLayer = nullptr;
          m_menuBarLayer = nullptr;
+         m_gameViewLayer = nullptr;
       }
 
       bool EditorApp::Init()
@@ -39,6 +46,7 @@ namespace Mile
                Window* window = m_engineInstance->GetWindow();
                RendererDX11* renderer = m_engineInstance->GetRenderer();
                ConfigSystem* configSys = m_engineInstance->GetConfigSystem();
+               ResourceManager* resMng = Engine::GetResourceManager();
                m_worldHierarchyLayer = new WorldHierarchyLayer(context);
                m_worldHierarchyLayer->SetTargetWorld(world);
                PushLayer(m_worldHierarchyLayer);
@@ -53,6 +61,13 @@ namespace Mile
                LoadEditorConfig();
                InitGUIStyle();
 
+               m_gameViewLayer = new GameViewLayer(context);
+               if (!m_gameViewLayer->Init())
+               {
+                  return false;
+               }
+
+               PushLayer(m_gameViewLayer);
                return true;
             }
          }
