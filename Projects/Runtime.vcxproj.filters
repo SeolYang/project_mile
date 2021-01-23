@@ -852,7 +852,7 @@
       <Filter>ThirdParty\imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\Runtime\Resource\RenderTexture.cpp">
-      <Filter>Sources\Rendering\Resources\Textures</Filter>
+      <Filter>Sources\Resource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
