@@ -3,6 +3,7 @@
 #include <array>
 #include <vector>
 
+
 namespace Mile
 {
    enum class ERenderContextType : UINT32
@@ -79,6 +80,7 @@ namespace Mile
    class DepthStencilState;
    class CommandListDX11;
    class DynamicCubemap;
+   class RenderTexture;
    /**
     * @brief	Mile 엔진의 렌더러 서브 시스템입니다. 렌더링시 World 에 생성되어있는 Entity로 부터 Mesh Renderer 정보, 빛 정보,
    *			그리고 카메라 정보와 같은 렌더링에 필요한 정보를 매 프레임마다 취득하여 화면을 렌더링 하는 역할을 가지고 있습니다.
@@ -329,6 +331,9 @@ namespace Mile
       /* Rasterizer State **/
       RasterizerState* m_defaultRasterizerState;
       RasterizerState* m_noCulling;
+
+      /** Output */
+      RenderTargetDX11* m_outputRenderTarget;
 
    };
 }

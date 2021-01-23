@@ -38,6 +38,8 @@
 #include "GameFramework/Transform.h"
 #include "Resource/Material.h"
 #include "Resource/Texture2D.h"
+#include "Resource/RenderTexture.h"
+#include "Resource/ResourceManager.h"
 #include "Math/Vector2.h"
 #include "MT/ThreadPool.h"
 #include <random>
@@ -81,13 +83,13 @@ namespace Mile
       m_ssaoBias(DEFAULT_SSAO_BIAS),
       m_ssaoMagnitude(DEFAULT_SSAO_MAGNITUDE),
       m_noiseScale(Vector2(1.0f, 1.0f)),
-      m_bCubemapDirtyFlag(false),
+      m_bCubemapDirtyFlag(true),
       m_bAlwaysComputeIBL(false),
       m_ambientEmissivePass(nullptr),
       m_ambientEmissivePassRenderBuffer(nullptr),
       m_aoFactor(DEFAULT_AO_FACTOR),
       m_hdrBuffer(nullptr), 
-      m_bloomType(EBloomType::Box),
+      m_bloomType(EBloomType::Gaussian),
       m_boxBloomPass(nullptr),
       m_gaussianBloomIntensity(DEFAULT_GAUSSIAN_BLOOM_INTENSITY),
       m_gaussianBloomAmount(DEFAULT_GAUSSIAN_BLOOM_AMOUNT),
@@ -106,7 +108,8 @@ namespace Mile
       m_noCulling(nullptr),
       m_additiveBlendState(nullptr),
       m_defaultBlendState(nullptr),
-      m_depthLessEqual(nullptr)
+      m_depthLessEqual(nullptr),
+      m_outputRenderTarget(nullptr)
    {
    }
 
@@ -795,40 +798,65 @@ namespace Mile
          acquireCamerasTask.get();
 
          // @TODO: Implement Multiple camera rendering
-         if (!m_cameras.empty())
+         for (CameraComponent* camera : m_cameras)
          {
-            m_mainCamera = m_cameras[0];
-            SetClearColor(m_mainCamera->GetClearColor());
+            m_mainCamera = camera;
+            RenderTexture* renderTexture = m_mainCamera->GetRenderTexture();
+            if (renderTexture != nullptr)
+            {
+               m_outputRenderTarget = renderTexture->GetRenderTarget();
+            }
+            else
+            {
+#ifdef MILE_EDITOR
+               ResourceManager* resMng = Engine::GetResourceManager();
+               renderTexture = resMng->Load<RenderTexture>(EDITOR_GAME_VIEW_RENDER_TEXTURE);
+               if (renderTexture != nullptr)
+               {
+                  m_outputRenderTarget = renderTexture->GetRenderTarget();
+               }
+               else
+               {
+                  m_outputRenderTarget = nullptr;
+               }
+#else
+               m_outputRenderTarget = m_backBuffer;
+#endif
+            }
 
-            /* Main Rendering part **/
-            /* PBS Workflow **/
-            auto geometryPassBinder = std::bind(
-               &RendererDX11::RunGeometryPass,
-               this,
-               GetRenderContextByType(ERenderContextType::GeometryPass));
-            auto geometryPassTask = threadPool->AddTask(geometryPassBinder);
+            if (m_outputRenderTarget != nullptr)
+            {
+               m_viewport->SetWidth(m_backBuffer->GetWidth());
+               m_viewport->SetHeight(m_backBuffer->GetHeight());
 
-            auto lightingPassBinder = std::bind(
-               &RendererDX11::RunLightingPass,
-               this,
-               GetRenderContextByType(ERenderContextType::LightingPass));
-            auto lightingPassTask = threadPool->AddTask(lightingPassBinder);
+               /* Main Rendering part **/
+               /* PBS Workflow **/
+               auto geometryPassBinder = std::bind(
+                  &RendererDX11::RunGeometryPass,
+                  this,
+                  GetRenderContextByType(ERenderContextType::GeometryPass));
+               auto geometryPassTask = threadPool->AddTask(geometryPassBinder);
 
-            ID3D11CommandList* geometryPassCmdList = geometryPassTask.get();
-            ID3D11CommandList* lightingPassCmdList = lightingPassTask.get();
-            ID3D11CommandList* postProcessCmdList = RunPostProcessPass(GetRenderContextByType(ERenderContextType::PostProcessPass));
+               auto lightingPassBinder = std::bind(
+                  &RendererDX11::RunLightingPass,
+                  this,
+                  GetRenderContextByType(ERenderContextType::LightingPass));
+               auto lightingPassTask = threadPool->AddTask(lightingPassBinder);
 
-            SAFE_EXECUTE_CMDLIST(m_immediateContext, geometryPassCmdList, false);
-            SAFE_EXECUTE_CMDLIST(m_immediateContext, lightingPassCmdList, false);
-            SAFE_EXECUTE_CMDLIST(m_immediateContext, postProcessCmdList, false);
+               ID3D11CommandList* geometryPassCmdList = geometryPassTask.get();
+               ID3D11CommandList* lightingPassCmdList = lightingPassTask.get();
+               ID3D11CommandList* postProcessCmdList = RunPostProcessPass(GetRenderContextByType(ERenderContextType::PostProcessPass));
 
-            SafeRelease(geometryPassCmdList);
-            SafeRelease(lightingPassCmdList);
-            SafeRelease(postProcessCmdList);
+               SAFE_EXECUTE_CMDLIST(m_immediateContext, geometryPassCmdList, false);
+               SAFE_EXECUTE_CMDLIST(m_immediateContext, lightingPassCmdList, false);
+               SAFE_EXECUTE_CMDLIST(m_immediateContext, postProcessCmdList, false);
+
+               SafeRelease(geometryPassCmdList);
+               SafeRelease(lightingPassCmdList);
+               SafeRelease(postProcessCmdList);
+            }
          }
       }
-
-      //Present();
    }
 
    ID3D11CommandList* RendererDX11::RunGeometryPass(ID3D11DeviceContext* deviceContextPtr)
@@ -978,7 +1006,6 @@ namespace Mile
    {
       if (m_bCubemapDirtyFlag || m_bAlwaysComputeIBL)
       {
-
          static const Matrix captureProj = Matrix::CreatePerspectiveProj(90.0f, 1.0f, 0.1f, 10.0f);
          static const std::array<Matrix, CUBE_FACES> captureMatrix =
          {
@@ -1007,7 +1034,7 @@ namespace Mile
    void RendererDX11::ConvertEquirectToCubemap(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix)
    {
       m_envMap = m_equirectToCubemapPass->GetCubemap();
-      if (m_equirectToCubemapPass->Bind(deviceContext, m_equirectangularMap->GetRawTexture()))
+      if (m_equirectToCubemapPass->Bind(deviceContext, (m_equirectangularMap != nullptr) ? m_equirectangularMap->GetRawTexture() : nullptr))
       {
          m_depthLessEqual->Bind(deviceContext);
          m_noCulling->Bind(deviceContext);
@@ -1444,14 +1471,14 @@ namespace Mile
                m_gammaFactor
             });
 
-         m_backBuffer->BindAsRenderTarget(deviceContext, true, false);
+         m_outputRenderTarget->BindAsRenderTarget(deviceContext, true, false);
          m_depthDisable->Bind(deviceContext);
          m_viewport->Bind(deviceContext);
          m_defaultRasterizerState->Bind(deviceContext);
          m_screenQuad->Bind(deviceContext, 0);
 
          deviceContext.DrawIndexed(m_screenQuad->GetIndexCount(), 0, 0);
-         m_backBuffer->UnbindRenderTarget(deviceContext);
+         m_outputRenderTarget->UnbindRenderTarget(deviceContext);
          m_toneMappingPass->Unbind(deviceContext);
       }
    }
