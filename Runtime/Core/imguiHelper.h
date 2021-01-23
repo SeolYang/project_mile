@@ -95,7 +95,7 @@ namespace Mile
 		}
 	}
 
-	static inline void WindowFocusedEffect(UINT32 r = 255, UINT32 g = 255, UINT32 b = 255, float thickness = 1.0f)
+	static inline void WindowFocusedEffect(UINT32 r = 255, UINT32 g = 255, UINT32 b = 255, float thickness = 0.8f)
 	{
 		if (ImGui::IsWindowFocused())
 		{

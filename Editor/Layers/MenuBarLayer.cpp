@@ -131,6 +131,7 @@ namespace Mile
       void MenuBarLayer::RendererConfig()
       {
          ImGui::Begin("Renderer Configuration");
+         WindowFocusedEffect(0, 255, 0);
          if (m_renderer != nullptr)
          {
             /** Post Process */
