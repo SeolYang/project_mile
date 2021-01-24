@@ -1,13 +1,14 @@
 #include "Layers/WorldHierarchyLayer.h"
 #include "GameFramework/World.h"
 #include "GameFramework/Entity.h"
-#include "Core/Logger.h"
 #include "Core/imguiHelper.h"
 
 namespace Mile
 {
    namespace Editor
    {
+      DEFINE_LOG_CATEGORY(MileWorldHierarchyLayer);
+
       WorldHierarchyLayer::WorldHierarchyLayer(Context* context) :
          m_target(nullptr),
          m_selectedEntity(nullptr),
@@ -36,9 +37,7 @@ namespace Mile
             {
                m_selectedEntity = targetRoot;
                m_tempEulerRotation = Math::QuaternionToEulerAngles(m_selectedEntity->GetTransform()->GetRotation());
-               MELog(GetContext(), TEXT("WorldHierarchyLayer"),
-                  ELogType::DEBUG,
-                  TEXT("Entity has been selected at hierarchy : ") + m_selectedEntity->GetName());
+               ME_LOG(MileWorldHierarchyLayer, Log, TEXT("Entity has been selected at hierarchy : ") + m_selectedEntity->GetName());
             }
 
             bool bIsEntityDeleted = false;

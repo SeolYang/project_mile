@@ -1,9 +1,11 @@
 #pragma once
-#include "Core/SubSystem.h"
+#include "Core/Logger.h"
 #include <functional>
 
 namespace Mile
 {
+   DECLARE_LOG_CATEGORY_EXTERN(MileInputManager, Log);
+
    enum class MEAPI EInputEvent
    {
       Pressed,

@@ -1,34 +1,52 @@
 #pragma once
 #include "Core/SubSystem.h"
-#include "Core/Context.h"
 #include <forward_list>
 
 namespace Mile
 {
-   enum class MEAPI ELogType
+   /**
+    * @brief   로그의 상세정도를 나타냅니다.
+    *  Fatal   Fatal 레벨은 로거가 비활성화 되어있더라도 콘솔과 로그 파일에 무조건 기록 됩니다.
+    *  Error   Error 레벨은 콘솔과 로그 파일에 출력 됩니다.
+    *  Warning Warning 레벨은 콘솔과 로그 파일에 출력 됩니다.
+    *  Display Display 레벨의 로그는 콘솔과 로그 파일에 출력 됩니다.
+    *  Log     로그는 로그 파일에는 기록되지만 인게임 콘솔에는 출력 되지 않습니다.
+    */
+   enum MEAPI ELogVerbosity : UINT32
    {
-      MESSAGE,
-      DEBUG,
-      WARNING,
-      FATAL,
-      None
+      All = 0,
+      Fatal,
+      Error,
+      Warning,
+      Display,
+      Log,
+      EnumSize
    };
 
-   struct MEAPI Log
+   struct MEAPI LogCategoryBase
    {
-      Mile::String Category = TEXT("None");
-      ELogType Type = ELogType::None;
+   public:
+      LogCategoryBase(const Mile::String& name, ELogVerbosity defaultVerbosity) :
+         Name(name),
+         DefaultVerbosity(defaultVerbosity)
+      {
+      }
+
+   public:
+      Mile::String Name = TEXT("Unknown");
+      ELogVerbosity DefaultVerbosity = ELogVerbosity::Log;
+
+   };
+
+   struct MEAPI MLog
+   {
+      LogCategoryBase Category;
+      ELogVerbosity Verbosity = ELogVerbosity::All;
       Mile::String Message = TEXT("");
-      std::chrono::system_clock::time_point  Time = std::chrono::system_clock::time_point();
+      std::chrono::system_clock::time_point Time = std::chrono::system_clock::time_point();
    };
 
-   struct MEAPI LogFilter
-   {
-      Mile::String Category = TEXT("None");
-      ELogType Type = ELogType::None;
-   };
-
-   using LogList = std::forward_list<Log>;
+   using LogList = std::forward_list<MLog>;
    class MEAPI Logger : public SubSystem
    {
    public:
@@ -43,62 +61,68 @@ namespace Mile
 
       void SetLogFolderPath(const Mile::String& folderPath);
 
-      void Logging(const Mile::String& category,
-         ELogType type,
-         const Mile::String& message,
-         bool printConsole = false);
+      void Logging(const LogCategoryBase& category,
+         ELogVerbosity verbosity = ELogVerbosity::All,
+         const Mile::String& message = TEXT(""));
 
-      LogList Filtering(const String& category, ELogType type);
-      LogList Filtering(const LogFilter& filter) { return Filtering(filter.Category, filter.Type); };
+      LogList Filtering(const LogCategoryBase& category, ELogVerbosity verbosity);
 
-      bool Flush(const String& category = TEXT("all"), ELogType type = ELogType::None);
-      bool Flush(const LogFilter& filter);
+      bool Flush();
+      bool Flush(const LogCategoryBase& category, ELogVerbosity verbosity = ELogVerbosity::All);
 
-      static Mile::String LogTypeToStr(ELogType type)
+      static Mile::String VerbosityToString(ELogVerbosity verbosity)
       {
-         switch (type)
+         switch (verbosity)
          {
-         case ELogType::MESSAGE:
-            return TEXT("Message");
-         case ELogType::DEBUG:
-            return TEXT("Debug");
-         case ELogType::WARNING:
-            return TEXT("Warning");
-         case ELogType::FATAL:
+         default:
+         case ELogVerbosity::All:
+            return TEXT("All");
+         case ELogVerbosity::Fatal:
             return TEXT("Fatal");
+         case ELogVerbosity::Error:
+            return TEXT("Error");
+         case ELogVerbosity::Log:
+            return TEXT("Log");
+         case ELogVerbosity::Warning:
+            return TEXT("Warning");
          }
-
-         return TEXT("None");
       }
 
-      static int LogTypeToConsoleColor(ELogType type)
+      static int VerbosityToConsoleColor(ELogVerbosity type)
       {
          switch (type)
          {
          default:
-         case ELogType::MESSAGE:
             return FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY;
-         case ELogType::DEBUG:
+         case ELogVerbosity::Log:
             return FOREGROUND_GREEN | FOREGROUND_INTENSITY;
-         case ELogType::WARNING:
+         case ELogVerbosity::Warning:
             return FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY;
-         case ELogType::FATAL:
+         case ELogVerbosity::Fatal:
+         case ELogVerbosity::Error:
             return FOREGROUND_RED | FOREGROUND_INTENSITY;
          }
       }
 
-      static Mile::String LogToStr(const Log& log)
+      static Mile::String LogToStr(const MLog& log)
       {
          // [Category][Type][Time] Message
-         auto typeStr = Logger::LogTypeToStr(log.Type);
+         auto typeStr = Logger::VerbosityToString(log.Verbosity);
          auto timeStr = TimeToWString(log.Time);
          auto result = Formatting(TEXT("[%s][%s][%s] %s"),
             timeStr.c_str(),
-            log.Category.c_str(),
+            log.Category.Name.c_str(),
             typeStr.c_str(),
             log.Message.c_str());
          return result;
       }
+
+      static void GlobalLogging(const LogCategoryBase& category,
+         ELogVerbosity verbosity = ELogVerbosity::All,
+         const Mile::String& message = TEXT(""));
+
+   private:
+      bool Flush(const LogList& list);
 
    private:
       Mile::String   m_folderPath;
@@ -107,49 +131,20 @@ namespace Mile
 
    };
 
-#ifdef _DEBUG
-   static bool MELog(Context* const context,
-      const Mile::String& category,
-      ELogType type,
-      const Mile::String& message,
-      bool printConsole = true)
-   {
-      if (context == nullptr)
-      {
-         return false;
-      }
+#define DECLARE_LOG_CATEGORY_EXTERN(CategoryName, DefaultVerbosity) \
+   namespace DefinedLogCategoryType { \
+      struct CategoryName##Type : public LogCategoryBase { \
+      public: \
+         CategoryName##Type() : LogCategoryBase(TEXT(#CategoryName), DefaultVerbosity) \
+         { \
+         } \
+      }; \
+   } \
+   extern DefinedLogCategoryType::CategoryName##Type CategoryName \
 
-      auto logger = context->GetSubSystem<Logger>();
-      if (logger == nullptr)
-      {
-         return false;
-      }
+#define DEFINE_LOG_CATEGORY(CategoryName) DefinedLogCategoryType::CategoryName##Type CategoryName
 
-      logger->Logging(category, type, message, printConsole);
+/* Mile Engine Log **/
+#define ME_LOG(CategoryName, Verbosity, Message) Logger::GlobalLogging(CategoryName, Verbosity, Message)
 
-      return true;
-   }
-#elif
-   static bool MELog(Context* const context,
-      const Mile::String& category,
-      ELogType type,
-      const Mile::String& message,
-      bool printConsole = false)
-   {
-      if (context == nullptr)
-      {
-         return false;
-      }
-
-      auto logger = context->GetSubSystem<Logger>();
-      if (logger == nullptr)
-      {
-         return false;
-      }
-
-      logger->Logging(category, type, message, printConsole);
-
-      return true;
-   }
-#endif
 }

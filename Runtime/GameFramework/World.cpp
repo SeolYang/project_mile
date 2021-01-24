@@ -9,6 +9,8 @@
 
 namespace Mile
 {
+   DEFINE_LOG_CATEGORY(MileWorld);
+
    World::World(Context* context) :
       m_name(TEXT("Untitled")),
       m_loadedData(nullptr),
@@ -55,13 +57,13 @@ namespace Mile
       Context* context = GetContext();
       if (SubSystem::Init())
       {
-         MELog(context, TEXT("World"), ELogType::DEBUG, TEXT("World Initialized!"));
+         ME_LOG(MileWorld, Log, TEXT("World Initialized."));
          SubSystem::InitSucceed();
 
          return true;
       }
 
-      MELog(context, TEXT("World"), ELogType::FATAL, TEXT("Failed to initialize world."));
+      ME_LOG(MileWorld, Fatal, TEXT("Failed to initialize world."));
       return false;
    }
 
@@ -71,7 +73,7 @@ namespace Mile
       {
          Clear();
          SubSystem::DeInit();
-         MELog(GetContext(), TEXT("World"), ELogType::DEBUG, TEXT("World deinitialized."));
+         ME_LOG(MileWorld, Log, TEXT("World deinitialized."));
       }
    }
 
@@ -105,9 +107,7 @@ namespace Mile
       {
          if (target == (*itr))
          {
-            MELog(GetContext(),
-               MILE_WORLD_LOG_CATEGORY, 
-               ELogType::MESSAGE, String(TEXT("Destroy entity : ")) + target->GetName());
+            ME_LOG(MileWorld, Log, String(TEXT("Destroy entity : ")) + target->GetName());
             m_entities.erase(itr);
             for (auto child : target->GetChildren())
             {
@@ -182,11 +182,11 @@ namespace Mile
          this->m_loadedData = res;
          this->m_name = m_loadedData->GetName();
          this->DeSerialize(json::parse(res->GetData().empty() ? "{}" : res->GetData()));
-         MELog(context, TEXT("World"), ELogType::MESSAGE, TEXT("World loaded. : ") + filePath);
+         ME_LOG(MileWorld, Log, TEXT("World loaded. : ") + filePath);
          return true;
       }
 
-      MELog(context, TEXT("World"), ELogType::FATAL, TEXT("World load failed. : ") + filePath);
+      ME_LOG(MileWorld, Fatal, TEXT("World load failed. : ") + filePath);
       return false;
    }
 
@@ -208,7 +208,7 @@ namespace Mile
          {
             m_loadedData = res;
             m_name = m_loadedData->GetName();
-            MELog(context, TEXT("World"), ELogType::MESSAGE, TEXT("World data saved. : ") + res->GetPath());
+            ME_LOG(MileWorld, Log, TEXT("World data saved. : ") + res->GetPath());
             return true;
          }
       }
@@ -223,7 +223,7 @@ namespace Mile
          m_loadedData->SetData(this->Serialize().dump());
          if (m_loadedData->Save())
          {
-            MELog(GetContext(), TEXT("World"), ELogType::MESSAGE, TEXT("World data saved. : ") + m_loadedData->GetPath());
+            ME_LOG(MileWorld, Log, TEXT("World data saved. : ") + m_loadedData->GetPath());
             return true;
          }
       }
@@ -243,6 +243,6 @@ namespace Mile
 
       m_name = TEXT("Untitled");
 
-      MELog(GetContext(), TEXT("World"), ELogType::MESSAGE, TEXT("World has been cleared."));
+      ME_LOG(MileWorld, Log, TEXT("World has been cleared."));
    }
 }

@@ -6,19 +6,21 @@
 
 namespace Mile
 {
+   DEFINE_LOG_CATEGORY(MilePlainText);
+
    template<>
    bool PlainText<String>::Init()
    {
       if (m_context == nullptr || m_bIsInitialized)
       {
-         MELog(m_context, TEXT("PlainText"), ELogType::WARNING, MILE_PLAINTEXT_ERROR_INITIALIZED);
+         ME_LOG(MilePlainText, Warning, MILE_PLAINTEXT_ERROR_INITIALIZED);
          return false;
       }
 
       std::wifstream stream(this->m_path);
       if (!stream.is_open())
       {
-         MELog(m_context, TEXT("PlainText"), ELogType::WARNING, MILE_PLAINTEXT_ERROR_FAILED_TO_OPEN_STREAM + m_path);
+         ME_LOG(MilePlainText, Warning, MILE_PLAINTEXT_ERROR_FAILED_TO_OPEN_STREAM + m_path);
          return false;
       }
 
@@ -40,7 +42,7 @@ namespace Mile
    {
       if (m_context == nullptr || m_bIsInitialized)
       {
-         MELog(m_context, TEXT("PlainText"), ELogType::WARNING, MILE_PLAINTEXT_ERROR_INITIALIZED);
+         ME_LOG(MilePlainText, Warning, MILE_PLAINTEXT_ERROR_INITIALIZED);
          return false;
       }
 
@@ -48,7 +50,7 @@ namespace Mile
       std::ifstream stream(this->m_path);
       if (!stream.is_open())
       {
-         MELog(m_context, TEXT("PlainText"), ELogType::WARNING, MILE_PLAINTEXT_ERROR_FAILED_TO_OPEN_STREAM + m_path);
+         ME_LOG(MilePlainText, Warning, MILE_PLAINTEXT_ERROR_FAILED_TO_OPEN_STREAM + m_path);
          return false;
       }
 

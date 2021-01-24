@@ -1,12 +1,13 @@
 #pragma once
-#include "Core/SubSystem.h"
+#include "Core/Logger.h"
 
 namespace Mile
 {
+   DECLARE_LOG_CATEGORY_EXTERN(MileEngine, ELogVerbosity::Log);
+
    constexpr unsigned int LOWER_BOUND_OF_ENGINE_FPS = 1;
    constexpr unsigned int UPPER_BOUND_OF_ENGINE_FPS = 300;
 
-   class Logger;
    class Timer;
    class ThreadPool;
    class ConfigSystem;

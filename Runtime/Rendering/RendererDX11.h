@@ -1,11 +1,14 @@
 #pragma once
 #include "Rendering/RenderingCore.h"
+#include "Core/Logger.h"
 #include <array>
 #include <vector>
 
 
 namespace Mile
 {
+   DECLARE_LOG_CATEGORY_EXTERN(MileRendererDX11, Log);
+
    enum class ERenderContextType : UINT32
    {
       GeometryPass,

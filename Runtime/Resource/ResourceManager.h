@@ -3,10 +3,10 @@
 #include "Resource/ResourceCache.h"
 #include "Core/Logger.h"
 
-#define MILE_RESOURCE_MANAGER_LOG_CATEGORY TEXT("ResourceManager")
-
 namespace Mile
 {
+   DECLARE_LOG_CATEGORY_EXTERN(MileResourceManager, ELogVerbosity::Display);
+
    class MEAPI ResourceManager : public SubSystem
    {
    public:
@@ -26,10 +26,7 @@ namespace Mile
             {
                if (!bDoNotLeaveCachingLog)
                {
-                  MELog(context,
-                     MILE_RESOURCE_MANAGER_LOG_CATEGORY,
-                     ELogType::MESSAGE,
-                     TEXT("Successfully load resource from Cache : ") + relativePath);
+                  ME_LOG(MileResourceManager, ELogVerbosity::Log, TEXT("Successfully load resource from Cache : ") + relativePath);
                }
 
                return GetByPath<Ty>(relativePath);
@@ -39,17 +36,11 @@ namespace Mile
             if (newResource->Init())
             {
                m_cache->Add(static_cast<ResourcePtr>(newResource));
-               MELog(context,
-                  MILE_RESOURCE_MANAGER_LOG_CATEGORY,
-                  ELogType::MESSAGE,
-                  TEXT("Successfully load resource from : ") + relativePath);
+               ME_LOG(MileResourceManager, ELogVerbosity::Log, TEXT("Successfully load resource from : ") + relativePath);
                return newResource;
             }
 
-            MELog(context,
-               MILE_RESOURCE_MANAGER_LOG_CATEGORY,
-               ELogType::WARNING,
-               TEXT("Failed to load resource from : ") + relativePath);
+            ME_LOG(MileResourceManager, ELogVerbosity::Warning, TEXT("Failed to load resource from : ") + relativePath);
             SafeDelete(newResource);
          }
 
@@ -87,10 +78,7 @@ namespace Mile
             auto res = Load<Ty>(relativePath);
             if (res != nullptr)
             {
-               MELog(context,
-                  MILE_RESOURCE_MANAGER_LOG_CATEGORY,
-                  ELogType::WARNING,
-                  relativePath + TEXT(" is already exist."));
+               ME_LOG(MileResourceManager, Log, relativePath + TEXT(" is already exist."));
                return res;
             }
 
@@ -99,10 +87,7 @@ namespace Mile
             {
                if (newResource->Save())
                {
-                  MELog(context,
-                     MILE_RESOURCE_MANAGER_LOG_CATEGORY,
-                     ELogType::WARNING,
-                     relativePath + TEXT(" is successfully created."));
+                  ME_LOG(MileResourceManager, Log, relativePath + TEXT(" is successfully created."));
                   m_cache->Add(static_cast<Resource*>(newResource));
                   return newResource;
                }
@@ -114,10 +99,7 @@ namespace Mile
             }
 
 
-            MELog(context,
-               MILE_RESOURCE_MANAGER_LOG_CATEGORY,
-               ELogType::FATAL,
-               TEXT("Failed to create resource : ") + relativePath);
+            ME_LOG(MileResourceManager, Fatal, TEXT("Failed to create resource! : ") + relativePath);
             SafeDelete(newResource);
          }
 

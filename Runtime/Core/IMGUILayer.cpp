@@ -1,7 +1,5 @@
 #include "Core/IMGUILayer.h"
-#include "Core/Context.h"
-#include "Core/Window.h"
-#include "Core/Logger.h"
+#include "Core/CoreMinimal.h"
 #include "Rendering/RendererDX11.h"
 #include "imgui.h"
 #include "imgui_impl_win32.h"
@@ -9,6 +7,7 @@
 
 namespace Mile
 {
+   DEFINE_LOG_CATEGORY(MileIMGUILayer);
    IMGUILayer::IMGUILayer(Context* context) :
       Layer(context, TEXT("IMGUILayer"))
    {
@@ -40,15 +39,15 @@ namespace Mile
       auto window = context->GetSubSystem<Window>();
       if (window == nullptr)
       {
-         MELog(context, TEXT("IMGUILayer"), ELogType::FATAL, TEXT("Window Subsystem does not exist!"));
+         ME_LOG(MileIMGUILayer, Fatal, TEXT("Window Subsystem does not exist!"));
          return;
       }
       else
       {
-         auto renderer = context->GetSubSystem<RendererDX11>();
+         auto renderer = Engine::GetRenderer();
          if (renderer == nullptr)
          {
-            MELog(context, TEXT("IMGUILayer"), ELogType::FATAL, TEXT("Renderer Subsystem does not exist!"));
+            ME_LOG(MileIMGUILayer, Fatal, TEXT("Renderer Subsystem does not exist!"));
             return;
          }
          else

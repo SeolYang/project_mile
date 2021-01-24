@@ -1,7 +1,6 @@
 #include "Resource/Model.h"
 #include "Resource/ModelLoader.h"
 #include "Rendering/Mesh.h"
-#include "Core/Logger.h"
 #include "GameFramework/Entity.h"
 #include "GameFramework/World.h"
 #include <assimp/scene.h>
@@ -10,6 +9,8 @@
 
 namespace Mile
 {
+   DEFINE_LOG_CATEGORY(MileModel);
+
    Model::Model(Context* context, const String& filePath) :
       m_instance(nullptr),
       Resource(context, filePath, ResourceType::Model)
@@ -34,7 +35,7 @@ namespace Mile
       m_instance = ModelLoader::LoadModel(m_context, this, m_path);
       if (m_instance == nullptr)
       {
-         MELog(m_context, TEXT("Model"), ELogType::WARNING, TEXT("Failed to load model from ") + m_path);
+         ME_LOG(MileModel, Warning, TEXT("Failed to load model from ") + m_path);
          return false;
       }
 

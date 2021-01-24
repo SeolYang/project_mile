@@ -1,5 +1,5 @@
 #include "Core/Logger.h"
-#include "Core/Context.h"
+#include "Core/Engine.h"
 #include <memory>
 #include <iostream>
 #include <string>
@@ -22,7 +22,6 @@ namespace Mile
       if (SubSystem::Init())
       {
          m_loggingBeginTime = std::chrono::system_clock::now();
-         Logging(TEXT("Logger"), ELogType::DEBUG, TEXT("Logger initialized!"), true);
 
          SubSystem::InitSucceed();
          return true;
@@ -35,7 +34,6 @@ namespace Mile
    {
       if (IsInitialized())
       {
-         Logging(TEXT("Logger"), ELogType::DEBUG, TEXT("Logger deinitialized."), true);
          Flush();
 
          SubSystem::DeInit();
@@ -47,52 +45,45 @@ namespace Mile
       m_folderPath = folderPath;
    }
 
-   void Logger::Logging(const Mile::String& category,
-      ELogType type,
-      const Mile::String& message,
-      bool printConsole)
+   void Logger::Logging(const LogCategoryBase& category,
+      ELogVerbosity verbosity,
+      const Mile::String& message)
    {
-      auto log = Log{ category, type, message, std::chrono::system_clock::now() };
+      ELogVerbosity finalVerbosity = verbosity;
+      if (finalVerbosity == ELogVerbosity::All)
+      {
+         finalVerbosity = category.DefaultVerbosity;
+      }
+
+      auto log = MLog{ category, finalVerbosity, message, std::chrono::system_clock::now() };
       m_logs.push_front(log);
 
-#ifdef _DEBUG
-      if (printConsole)
-      {
-         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY);
-         std::wcout << TEXT("[") << TimeToWString(log.Time) << TEXT("]");
-         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), LogTypeToConsoleColor(log.Type));
-         std::wcout << TEXT("[") << log.Category << TEXT("]");
-         if (log.Type != ELogType::MESSAGE)
-         {
-            std::wcout << TEXT("[") << LogTypeToStr(log.Type) << TEXT("]");
-         }
 
-         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), LogTypeToConsoleColor(ELogType::MESSAGE));
-         std::wcout << TEXT(" ") << log.Message << std::endl;
+#ifdef _DEBUG
+      SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY);
+      std::wcout << TEXT("[") << TimeToWString(log.Time) << TEXT("]");
+      SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), VerbosityToConsoleColor(finalVerbosity));
+      std::wcout << TEXT("[") << log.Category.Name << TEXT("]");
+      if (log.Verbosity != ELogVerbosity::Log)
+      {
+         std::wcout << TEXT("[") << VerbosityToString(log.Verbosity) << TEXT("]");
       }
+      std::wcout << TEXT(" ") << log.Message << std::endl;
+      SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), VerbosityToConsoleColor(ELogVerbosity::All));
 #endif
    }
 
-   LogList Logger::Filtering(const String& category, ELogType type = ELogType::None)
+   LogList Logger::Filtering(const LogCategoryBase& category, ELogVerbosity verbosity)
    {
-      auto categoryLow = Mile::ToLower(category);
       LogList tempList{ };
 
       for (auto log : m_logs)
       {
-         bool categoryAgreement = false;
-         if (category == TEXT("all") || category == log.Category)
-         {
-            categoryAgreement = true;
-         }
-
-         bool typeAgreement = false;
-         if (type == ELogType::None || log.Type == type)
-         {
-            typeAgreement = true;
-         }
-
-         if (categoryAgreement && typeAgreement)
+         bool bCheckCategory = category.Name == log.Category.Name;
+         bool bCheckVerbosity = 
+            verbosity == ELogVerbosity::All ||
+            log.Verbosity == verbosity;
+         if (bCheckCategory && bCheckVerbosity)
          {
             tempList.push_front(log);
          }
@@ -101,12 +92,18 @@ namespace Mile
       return tempList;
    }
 
-   bool Logger::Flush(const String& category, ELogType type)
+   void Logger::GlobalLogging(const LogCategoryBase& category, ELogVerbosity verbosity, const Mile::String& message)
    {
-      if (std::filesystem::create_directory(m_folderPath))
+      auto globalLogger = Engine::GetLogger();
+      if (globalLogger != nullptr)
       {
-         Logging(TEXT("Logger"), ELogType::MESSAGE, TEXT("Log directory created."));
+         globalLogger->Logging(category, verbosity, message);
       }
+   }
+
+   bool Logger::Flush(const LogList& list)
+   {
+      std::filesystem::create_directory(m_folderPath);
 
       // Open Stream
       String targetFileName = m_folderPath +
@@ -131,8 +128,7 @@ namespace Mile
          << std::endl;
 
       // Record logs
-      auto logs = this->Filtering(category, type);
-      for (auto log : logs)
+      for (auto log : list)
       {
          auto logStr = Logger::LogToStr(log);
          // Write to stream
@@ -144,11 +140,15 @@ namespace Mile
       // Close Stream
       logStream.flush();
       logStream.close();
-      return true;
    }
 
-   bool Logger::Flush(const LogFilter& filter)
+   bool Logger::Flush(const LogCategoryBase& category, ELogVerbosity verbosity)
    {
-      return Flush(filter.Category, filter.Type);
+      return Flush(Filtering(category, verbosity));
+   }
+
+   bool Logger::Flush()
+   {
+      return Flush(m_logs);
    }
 }

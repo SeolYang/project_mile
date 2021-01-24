@@ -1,11 +1,14 @@
 #pragma once
 #include "Core/Helper.h"
+#include "Core/Logger.h"
 
 class aiNode;
 class aiMesh;
 class aiScene;
 namespace Mile
 {
+   DECLARE_LOG_CATEGORY_EXTERN(MileModelLoader, Log);
+
    class Model;
    class Context;
    class World;

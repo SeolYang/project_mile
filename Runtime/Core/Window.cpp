@@ -11,6 +11,8 @@
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 namespace Mile
 {
+   DEFINE_LOG_CATEGORY(MileWindow);
+
    Window::Window(Context* context) : SubSystem(context),
       m_handle(nullptr),
       m_resWidth(0), m_resHeight(0),
@@ -93,12 +95,12 @@ namespace Mile
 
          ShowWindow(m_handle, SW_SHOW);
 
-         MELog(context, TEXT("Window"), ELogType::DEBUG, TEXT("Window Initialized!"));
+         ME_LOG(MileWindow, Log, TEXT("Window Initialized."));
          SubSystem::InitSucceed();
          return true;
       }
 
-      MELog(context, TEXT("Window"), ELogType::WARNING, TEXT("Window already initialized."));
+      ME_LOG(MileWindow, Warning, TEXT("Window already initialized!"));
       return false;
    }
 
@@ -107,7 +109,7 @@ namespace Mile
       if (IsInitialized())
       {
          SubSystem::DeInit();
-         MELog(GetContext(), TEXT("Window"), ELogType::DEBUG, TEXT("Window deinitialized."));
+         ME_LOG(MileWindow, Log, TEXT("Window deinitialized."));
       }
    }
 

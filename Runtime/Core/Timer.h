@@ -1,9 +1,11 @@
 #pragma once
-#include "Core/SubSystem.h"
+#include "Core/Logger.h"
 #include <chrono>
 
 namespace Mile
 {
+   DECLARE_LOG_CATEGORY_EXTERN(MileTimer, Log);
+
    /**
     * @brief	Timer 서브 시스템은 엔진 내에서 시간과 관련된 정보를 측정하거나 제공해주는 클래스 입니다.
     */

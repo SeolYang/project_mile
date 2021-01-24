@@ -14,6 +14,8 @@
 
 namespace Mile
 {
+   DECLARE_LOG_CATEGORY_EXTERN(MileThreadPool, ELogVerbosity::Log);
+
    // Default ThreadPool size : ( Physical Core + Logical Core ) - 1
    class MEAPI ThreadPool : public SubSystem
    {
@@ -96,12 +98,12 @@ namespace Mile
                }
             }
 
-            MELog(context, TEXT("ThreadPool"), ELogType::DEBUG, TEXT("Thread Pool initialized."));
+            ME_LOG(MileThreadPool, Log, TEXT("Thread Pool initialized."));
             SubSystem::InitSucceed();
             return true;
          }
 
-         MELog(context, TEXT("ThreadPool"), ELogType::FATAL, TEXT("Failed to initialize Thread Pool."));
+         ME_LOG(MileThreadPool, Fatal, TEXT("Failed to initialize Thread Pool."));
          return false;
       }
 
@@ -111,7 +113,8 @@ namespace Mile
          {
             Context* context = GetContext();
             SubSystem::DeInit();
-            MELog(context, TEXT("ThreadPool"), ELogType::DEBUG, TEXT("Thread Pool deinitialized."));
+
+            ME_LOG(MileThreadPool, Log, TEXT("Thread Pool deinitialized."));
          }
       }
 

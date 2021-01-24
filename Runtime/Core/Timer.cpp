@@ -3,6 +3,8 @@
 
 namespace Mile
 {
+   DEFINE_LOG_CATEGORY(MileTimer);
+
    Timer::Timer(Context* context) :
       m_frameCount(0), m_framePerSec(0), m_deltaTime(),
       SubSystem(context)
@@ -24,12 +26,12 @@ namespace Mile
             (m_frameEndTime - m_frameBeginTime);
          m_frameCount = 0;
 
-         MELog(context, TEXT("Timer"), ELogType::DEBUG, TEXT("Timer initialized."));
+         ME_LOG(MileTimer, Log, TEXT("Timer initialized."));
          SubSystem::InitSucceed();
          return true;
       }
 
-      MELog(context, TEXT("Timer"), ELogType::FATAL, TEXT("Failed to initialize Timer."));
+      ME_LOG(MileTimer, Fatal, TEXT("Failed to initialize Timer."));
       return false;
    }
 
@@ -37,8 +39,8 @@ namespace Mile
    {
       if (IsInitialized())
       {
+         ME_LOG(MileTimer, Log, TEXT("Timer deinitialized."));
          SubSystem::DeInit();
-         MELog(GetContext(), TEXT("Timer"), ELogType::DEBUG, TEXT("Timer deinitialized."));
       }
    }
 

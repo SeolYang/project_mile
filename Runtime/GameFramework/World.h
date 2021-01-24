@@ -1,12 +1,12 @@
 #pragma once
-#include "Core/SubSystem.h"
+#include "Core/CoreMinimal.h"
 #include "Component/Component.h"
 #include "GameFramework/Entity.h"
 
-#define MILE_WORLD_LOG_CATEGORY TEXT("World")
-
 namespace Mile
 {
+   DECLARE_LOG_CATEGORY_EXTERN(MileWorld, Log);
+
    template<typename Ty>
    class PlainText;
    class Entity;

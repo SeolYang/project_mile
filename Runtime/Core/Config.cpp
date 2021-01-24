@@ -1,11 +1,12 @@
 #include "Core/Config.h"
 #include "Core/Context.h"
-#include "Core/Logger.h"
 #include "Resource/ResourceManager.h"
 #include "Resource/PlainText.h"
 
 namespace Mile
 {
+   DEFINE_LOG_CATEGORY(MileConfigSystem);
+
    ConfigSystem::ConfigSystem(Context* context) : SubSystem(context),
       m_nullConfig(TEXT("NULL"), json())
    {
@@ -24,17 +25,16 @@ namespace Mile
 
          if (!LoadConfig(TEXT("Engine")))
          {
-            MELog(context, TEXT("ConfigSystem"), ELogType::FATAL, TEXT("Failed to load Engine default config. "));
+            ME_LOG(MileConfigSystem, ELogVerbosity::Fatal, TEXT("Failed to load Engine default config!"));
             return false;
          }
 
-         MELog(context, TEXT("ConfigSystem"), ELogType::DEBUG, TEXT("Config System Initialized!"));
-         
+         ME_LOG(MileConfigSystem, ELogVerbosity::Log, TEXT("Config System Initialized!"));
          SubSystem::InitSucceed();
          return true;
       }
 
-      MELog(context, TEXT("ConfigSystem"), ELogType::WARNING, TEXT("Config System already initialized."));
+      ME_LOG(MileConfigSystem, ELogVerbosity::Warning, TEXT("Config System already initialized."));
       return false;
    }
 
@@ -45,8 +45,8 @@ namespace Mile
          Context* context = GetContext();
          UnloadAllConfigs();
 
+         ME_LOG(MileConfigSystem, ELogVerbosity::Log, TEXT("Config System deintialized."));
          SubSystem::DeInit();
-         MELog(context, TEXT("ConfigSystem"), ELogType::DEBUG, TEXT("Config System deintialized."));
       }
    }
 

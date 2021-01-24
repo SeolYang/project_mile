@@ -1,8 +1,11 @@
 #pragma once
 #include "Resource/Resource.h"
+#include "Core/Logger.h"
 
 namespace Mile
 {
+   DECLARE_LOG_CATEGORY_EXTERN(MileTexture2D, Log);
+
    class Texture2dDX11;
    class MEAPI Texture2D : public Resource
    {

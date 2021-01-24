@@ -19,6 +19,8 @@
 
 namespace Mile
 {
+   DEFINE_LOG_CATEGORY(MileModelLoader);
+
    Context* ModelLoader::contextInst = nullptr;
    RendererDX11* ModelLoader::rendererInst = nullptr;
 
@@ -161,9 +163,7 @@ namespace Mile
       auto resMng = contextInst->GetSubSystem<ResourceManager>();
       if (resMng == nullptr)
       {
-         MELog(contextInst,
-            TEXT("ModelLoader::ReconstructMeshWithAiMesh"),
-            ELogType::FATAL, TEXT("Couldn't load ResourceManager."));
+         ME_LOG(MileModelLoader, Fatal, TEXT("ResourceManager does not exist!"));
       }
 
       auto matPath = target->GetFolder()

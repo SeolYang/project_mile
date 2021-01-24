@@ -1,5 +1,6 @@
 #pragma once
 #include "Core/Layer.h"
+#include "Core/Logger.h"
 
 namespace Mile
 {
@@ -9,6 +10,8 @@ namespace Mile
    class ConfigSystem;
    namespace Editor
    {
+      DECLARE_LOG_CATEGORY_EXTERN(MileMenuBarLayer, Log);
+
       class MenuBarLayer : public Layer
       {
       public:

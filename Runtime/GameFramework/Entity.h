@@ -1,5 +1,5 @@
 #pragma once
-#include "Core/Helper.h"
+#include "Core/CoreMinimal.h"
 #include "Component/Component.h"
 #include "GameFramework/Transform.h"
 
@@ -8,6 +8,8 @@
 
 namespace Mile
 {
+   DECLARE_LOG_CATEGORY_EXTERN(MileEntity, Log);
+
    class Context;
    class World;
    class Component;

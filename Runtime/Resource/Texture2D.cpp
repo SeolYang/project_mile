@@ -3,10 +3,11 @@
 #include "Rendering/Texture2dDX11.h"
 #include "Rendering/RendererDX11.h"
 #include "Core/Context.h"
-#include "Core/Logger.h"
 
 namespace Mile
 {
+   DEFINE_LOG_CATEGORY(MileTexture2D);
+
    Texture2D::Texture2D(Context* context, const String& filePath) :
       m_rawData(nullptr),
       m_rawTexture(nullptr),
@@ -31,7 +32,7 @@ namespace Mile
    {
       if (m_context == nullptr || m_bIsInitialized)
       {
-         MELog(m_context, TEXT("Texture2D"), ELogType::WARNING, TEXT("Is already initialized."));
+         ME_LOG(MileTexture2D, Warning, TEXT("Is already initialized."));
          return false;
       }
 
@@ -45,7 +46,7 @@ namespace Mile
 
       if (m_rawData == nullptr)
       {
-         MELog(m_context, TEXT("Texture2D"), ELogType::WARNING, TEXT("Failed to load Texture2D from ") + m_path);
+         ME_LOG(MileTexture2D, Warning, TEXT("Failed to load Texture2D from ") + m_path);
          return false;
       }
 
@@ -75,7 +76,7 @@ namespace Mile
       m_rawTexture = new Texture2dDX11(renderer);
       if (!m_rawTexture->Init(m_width, m_height, m_channels, m_rawData, m_bIsHDR ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_B8G8R8A8_UNORM))
       {
-         MELog(m_context, TEXT("Texture2D"), ELogType::WARNING, TEXT("Failed to initialize Raw Texture: ") + m_path);
+         ME_LOG(MileTexture2D, Warning, TEXT("Failed to initialize Raw Texture: ") + m_path);
          SafeDelete(m_rawTexture);
          return false;
       }

@@ -7,6 +7,8 @@
 
 namespace Mile
 {
+   DEFINE_LOG_CATEGORY(MileEntity);
+
    Entity::Entity(World* world, const String& name, const String& tag) :
       m_world(world),
       m_context(nullptr),
@@ -75,9 +77,7 @@ namespace Mile
          auto foundedType = component.find("Type");
          if (foundedType == component.end())
          {
-            MELog(this->GetContext(),
-               TEXT("Entity"), ELogType::FATAL,
-               TEXT("Can't findout any type information from serialized data!"));
+            ME_LOG(MileEntity, Fatal, TEXT("Can't findout any type information from serialized data!"));
          }
 
          std::string type = (*foundedType);

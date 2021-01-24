@@ -1,10 +1,13 @@
 #pragma once
 #include "Resource/Resource.h"
+#include "Core/Logger.h"
 #include "Math/Vector2.h"
 #include "Math/Vector4.h"
 
 namespace Mile
 {
+   DECLARE_LOG_CATEGORY_EXTERN(MileMaterial, Log);
+
    enum class MaterialTextureProperty
    {
       BaseColor,

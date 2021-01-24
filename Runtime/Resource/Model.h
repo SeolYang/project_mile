@@ -1,8 +1,11 @@
 #pragma once
 #include "Resource/Resource.h"
+#include "Core/Logger.h"
 
 namespace Mile
 {
+   DECLARE_LOG_CATEGORY_EXTERN(MileModel, Log);
+
    class Entity;
    class Mesh;
    class Material;

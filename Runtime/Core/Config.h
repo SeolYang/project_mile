@@ -1,9 +1,11 @@
 #pragma once
-#include "Core/SubSystem.h"
+#include "Core/Logger.h"
 #include <tuple>
 
 namespace Mile
 {
+   DECLARE_LOG_CATEGORY_EXTERN(MileConfigSystem, ELogVerbosity::Log);
+
    using Config = std::pair<String, json>;
 
    // Engine Config file must be Engine.json

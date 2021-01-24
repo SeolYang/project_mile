@@ -4,6 +4,8 @@
 
 namespace Mile
 {
+   DEFINE_LOG_CATEGORY(MileResourceManager);
+
    ResourceManager::ResourceManager(Context* context) :
       SubSystem(context)
    {
@@ -25,18 +27,13 @@ namespace Mile
             return false;
          }
 
-         MELog(context, 
-            MILE_RESOURCE_MANAGER_LOG_CATEGORY,
-            ELogType::DEBUG,
-            TEXT("Resource Manager Initialized!"));
+         ME_LOG(MileResourceManager, ELogVerbosity::Log, TEXT("Resource Manager Initialized!"));
          SubSystem::InitSucceed();
          return true;
-      }
+      } 
 
-      MELog(context, 
-         MILE_RESOURCE_MANAGER_LOG_CATEGORY,
-         ELogType::FATAL, 
-         TEXT("Failed to initialize Resource Manager."));
+      ME_LOG(MileResourceManager, ELogVerbosity::Fatal,
+         TEXT("Failed to initialize Resource Manager!"));
       return false;
    }
 
@@ -45,10 +42,7 @@ namespace Mile
       if (IsInitialized())
       {
          ClearCache();
-         MELog(GetContext(),
-            MILE_RESOURCE_MANAGER_LOG_CATEGORY,
-            ELogType::DEBUG,
-            TEXT("Resource Manager deinitialized!"));
+         ME_LOG(MileResourceManager, ELogVerbosity::Log, TEXT("Resource Manager deinitialized."));
          SubSystem::DeInit();
       }
    }
@@ -61,9 +55,6 @@ namespace Mile
    void ResourceManager::ClearCache()
    {
       m_cache->Clear();
-      MELog(GetContext(),
-         MILE_RESOURCE_MANAGER_LOG_CATEGORY,
-         ELogType::DEBUG,
-         TEXT("Resource cache has been cleared."));
+      ME_LOG(MileResourceManager, ELogVerbosity::Log, TEXT("Resource cache has been cleared."));
    }
 }

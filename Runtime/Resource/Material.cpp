@@ -2,11 +2,12 @@
 #include "Resource/ResourceManager.h"
 #include "Resource/Texture2D.h"
 #include "Core/Context.h"
-#include "Core/Logger.h"
 #include "json.hpp"
 
 namespace Mile
 {
+   DEFINE_LOG_CATEGORY(MileMaterial);
+
    Material::Material(Context* context, const String& filePath) :
       m_materialType(EMaterialType::Opaque),
       m_baseColor(nullptr),
@@ -35,14 +36,14 @@ namespace Mile
    {
       if (m_context == nullptr || m_bIsInitialized)
       {
-         MELog(m_context, TEXT("Material"), ELogType::WARNING, TEXT("Already Initialized material."));
+         ME_LOG(MileMaterial, Warning, TEXT("Already Initialized material."));
          return false;
       }
 
       std::ifstream stream(this->m_path);
       if (!stream.is_open())
       {
-         MELog(m_context, TEXT("Material"), ELogType::WARNING, TEXT("Failed to load material from ") + m_path);
+         ME_LOG(MileMaterial, Warning, TEXT("Failed to load material from ") + m_path);
          return false;
       }
 
@@ -71,7 +72,7 @@ namespace Mile
          }
          else
          {
-            MELog(m_context, TEXT("Material::SetTexture2D"), ELogType::FATAL, TEXT("Couldn't load ResourceManager."));
+            ME_LOG(MileMaterial, Fatal, TEXT("ResourceManager does not exist!"));
          }
       }
 
@@ -133,7 +134,7 @@ namespace Mile
          m_specularFactor = factor;
          break;
       default:
-         MELog(m_context, TEXT("Material::SetScalarFactor"), ELogType::WARNING, TEXT("Wrong property passed as scalar factor."));
+         ME_LOG(MileMaterial, Warning, TEXT("Wrong property passed as scalar factor."));
          break;
       }
    }
@@ -150,7 +151,7 @@ namespace Mile
          return m_specularFactor;
       }
 
-      MELog(m_context, TEXT("Material::GetScalarFactor"), ELogType::WARNING, TEXT("Couldn't find out property from scalar factors."));
+      ME_LOG(MileMaterial, Warning, TEXT("Couldn't find out property from scalar factors."));
       return 0.0f;
    }
 
@@ -165,7 +166,7 @@ namespace Mile
          m_emissiveFactor = factor;
          break;
       default:
-         MELog(m_context, TEXT("Material::SetVector4Factor"), ELogType::WARNING, TEXT("Wrong property passed as Vector4 factor."));
+         ME_LOG(MileMaterial, Warning, TEXT("Wrong property passed as Vector4 factor."));
          break;
       }
    }
@@ -180,7 +181,7 @@ namespace Mile
          return m_emissiveFactor;
       }
 
-      MELog(m_context, TEXT("Material::GetVector4Factor"), ELogType::WARNING, TEXT("Couldn't find out property from Vector4 factors."));
+      ME_LOG(MileMaterial, Warning, TEXT("Couldn't find out property from Vector4 factors."));
       return Vector4(0.0f, 0.0f, 0.0f, 1.0f);
    }
 
@@ -192,7 +193,7 @@ namespace Mile
          m_uvOffset = factor;
          break;
       default:
-         MELog(m_context, TEXT("Material::SetVector4Factor"), ELogType::WARNING, TEXT("Wrong property passed as Vector4 factor."));
+         ME_LOG(MileMaterial, Warning, TEXT("Wrong property passed as Vector4 factor."));
          break;
       }
    }
@@ -205,7 +206,7 @@ namespace Mile
          return m_uvOffset;
       }
 
-      MELog(m_context, TEXT("Material::GetVector2Factor"), ELogType::WARNING, TEXT("Couldn't find out property from Vector4 factors."));
+      ME_LOG(MileMaterial, Warning, TEXT("Couldn't find out property from Vector4 factors."));
       return Vector2(0.0f, 0.0f);
    }
 
@@ -252,7 +253,7 @@ namespace Mile
       ResourceManager * resMng = m_context->GetSubSystem<ResourceManager>();
       if (resMng == nullptr)
       {
-         MELog(m_context, TEXT("Material"), ELogType::FATAL, TEXT("Couldn't load ResourceManager."));
+         ME_LOG(MileMaterial, Fatal, TEXT("ResourceManager does not exist!"));
          return;
       }
 

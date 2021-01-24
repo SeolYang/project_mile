@@ -9,6 +9,8 @@
 
 namespace Mile
 {
+   DEFINE_LOG_CATEGORY(MileRenderTexture);
+
    RenderTexture::~RenderTexture()
    {
       SafeDelete(m_renderTarget);
@@ -19,14 +21,14 @@ namespace Mile
    {
       if (m_context == nullptr || m_bIsInitialized)
       {
-         MELog(m_context, TEXT("RenderTexture"), ELogType::WARNING, TEXT("Already intiiailized RenderTexture or Context does not exist!"));
+         ME_LOG(MileRenderTexture, Warning, TEXT("Already intiiailized RenderTexture or Context does not exist!"));
          return false;
       }
 
       std::ifstream stream(this->m_path);
       if (!stream.is_open())
       {
-         MELog(m_context, TEXT("RenderTexture"), ELogType::WARNING, TEXT("Failed to load render texture from ") + m_path);
+         ME_LOG(MileRenderTexture, Warning, TEXT("Failed to load render texture from ") + m_path);
          return false;
       }
 
@@ -95,7 +97,7 @@ namespace Mile
          m_depthStencil = new DepthStencilBufferDX11(renderer);
          if (!m_depthStencil->Init(m_width, m_height, m_bEnableStencil))
          {
-            MELog(m_context, TEXT("RenderTexture"), ELogType::FATAL, TEXT("Failed to initialize depth stencil"));
+            ME_LOG(MileRenderTexture, Fatal, TEXT("Failed to initialize depth stencil!"));
             return;
          }
 
@@ -103,7 +105,7 @@ namespace Mile
          m_renderTarget = new RenderTargetDX11(renderer);
          if (!m_renderTarget->Init(m_width, m_height, ColorFormatToDXGIFormat(m_colorFormat), m_depthStencil))
          {
-            MELog(m_context, TEXT("RenderTexture"), ELogType::FATAL, TEXT("Failed to initialize render target"));
+            ME_LOG(MileRenderTexture, Fatal, TEXT("Failed to initialize render target!"));
             return;
          }
 
@@ -111,7 +113,7 @@ namespace Mile
       }
       else
       {
-         MELog(m_context, TEXT("RenderTexture"), ELogType::WARNING, TEXT("Renderer doest not availiable!"));
+         ME_LOG(MileRenderTexture, Warning, TEXT("Renderer doest not availiable!"));
       }
    }
 }

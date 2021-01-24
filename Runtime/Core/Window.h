@@ -1,10 +1,12 @@
 #pragma once
-#include "Core/SubSystem.h"
+#include "Core/Logger.h"
 #include "Math/Vector2.h"
 #include <Windows.h>
 
 namespace Mile
 {
+   DECLARE_LOG_CATEGORY_EXTERN(MileWindow, Log);
+
    enum class EWindowStyle
    {
       FullScreen, // 0

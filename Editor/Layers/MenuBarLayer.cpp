@@ -13,6 +13,8 @@ namespace Mile
 {
    namespace Editor
    {
+      DEFINE_LOG_CATEGORY(MileMenuBarLayer);
+
       MenuBarLayer::MenuBarLayer(Context* context) :
          m_world(nullptr),
          m_window(nullptr),
@@ -81,7 +83,7 @@ namespace Mile
                if (GetOpenFileName(&openFileName) == TRUE)
                {
                   String filePath = String(openFileName.lpstrFile);
-                  MELog(GetContext(), TEXT("MenuBarLayer"), ELogType::MESSAGE, String(TEXT("Open world from ")) + filePath);
+                  ME_LOG(MileMenuBarLayer, Log, String(TEXT("Open world from ")) + filePath);
                   if (m_world != nullptr)
                   {
                      m_world->LoadFrom(filePath);
@@ -118,7 +120,7 @@ namespace Mile
                if (GetSaveFileName(&openFileName) == TRUE)
                {
                   String filePath = String(openFileName.lpstrFile) + String(TEXT(".")) + String(openFileName.lpstrFilter);
-                  MELog(GetContext(), TEXT("MenuBarLayer"), ELogType::MESSAGE, String(TEXT("Save world as ")) + filePath);
+                  ME_LOG(MileMenuBarLayer, Log, String(TEXT("Save world as ")) + filePath);
                   if (m_world != nullptr)
                   {
                      m_world->SaveTo(filePath);
@@ -245,7 +247,7 @@ namespace Mile
                if (GetOpenFileName(&openFileName) == TRUE)
                {
                   String filePath = String(openFileName.lpstrFile);
-                  MELog(GetContext(), TEXT("MenuBarLayer"), ELogType::MESSAGE, String(TEXT("Open irradiance map from ")) + filePath);
+                  ME_LOG(MileMenuBarLayer, Log, String(TEXT("Open irradiance map from ")) + filePath);
                   equirectangularMap = Engine::GetResourceManager()->Load<Texture2D>(filePath);
                   m_renderer->SetEquirectangularMap(equirectangularMap);
                }
@@ -275,11 +277,8 @@ namespace Mile
          }
          else
          {
-            MELog(GetContext(),
-               TEXT("MenuBarLayer"),
-               ELogType::FATAL,
-               TEXT("Renderer doest not exist!"));
             ImGui::Text("Renderer does not exist or outdated.");
+            ME_LOG(MileMenuBarLayer, Fatal, TEXT("Renderer doest not exist!"));
          }
          ImGui::End();
       }

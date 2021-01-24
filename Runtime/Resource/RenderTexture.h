@@ -1,9 +1,12 @@
 #pragma once
 #include "Resource/Resource.h"
 #include "Rendering/RenderingCore.h"
+#include "Core/Logger.h"
 
 namespace Mile
 {
+   DECLARE_LOG_CATEGORY_EXTERN(MileRenderTexture, Log);
+
    class RenderTargetDX11;
    class DepthStencilBufferDX11;
    class MEAPI RenderTexture : public Resource

@@ -15,6 +15,8 @@
 
 namespace Mile
 {
+   DEFINE_LOG_CATEGORY(MileEngine);
+
    Engine* Engine::m_instance = nullptr;
    Engine::Engine(Context* context, Application* app) :
       SubSystem(context), m_bIsRunning(false), m_bShutdownFlag(false),
@@ -75,7 +77,7 @@ namespace Mile
          // Initialize Timer
          if (!context->GetSubSystem<Timer>()->Init())
          {
-            MELog(context, TEXT("Engine"), ELogType::FATAL, TEXT("Failed to initialize Timer!"));
+            ME_LOG(MileEngine, Fatal, TEXT("Failed to initialize Timer!"));
             m_instance = nullptr;
             return false;
          }
@@ -83,7 +85,7 @@ namespace Mile
          // Initialize Thread Pool
          if (!context->GetSubSystem<ThreadPool>()->Init())
          {
-            MELog(context, TEXT("Engine"), ELogType::FATAL, TEXT("Failed to initialize ThreadPool!"));
+            ME_LOG(MileEngine, Fatal, TEXT("Failed to initialize ThreadPool!"));
             m_instance = nullptr;
             return false;
          }
@@ -91,7 +93,7 @@ namespace Mile
          // Initialize Resource manager
          if (!context->GetSubSystem<ResourceManager>()->Init())
          {
-            MELog(context, TEXT("Engine"), ELogType::FATAL, TEXT("Failed to initialize ResourceManager!"));
+            ME_LOG(MileEngine, Fatal, TEXT("Failed to initialize ResourceManager!"));
             m_instance = nullptr;
             return false;
          }
@@ -99,7 +101,7 @@ namespace Mile
          // Initialize ConfigSystem
          if (!context->GetSubSystem<ConfigSystem>()->Init())
          {
-            MELog(context, TEXT("Engine"), ELogType::FATAL, TEXT("Failed to initialize ConfigSystem!"));
+            ME_LOG(MileEngine, Fatal, TEXT("Failed to initialize ConfigSystem!"));
             m_instance = nullptr;
             return false;
          }
@@ -107,7 +109,7 @@ namespace Mile
          // Initialize Input Manager
          if (!context->GetSubSystem<InputManager>()->Init())
          {
-            MELog(context, TEXT("Engine"), ELogType::FATAL, TEXT("Failed to initialize InputManager!"));
+            ME_LOG(MileEngine, Fatal, TEXT("Failed to initialize InputManager!"));
             m_instance = nullptr;
             return false;
          }
@@ -115,14 +117,14 @@ namespace Mile
          // Initialize Window Subsystem
          if (!context->GetSubSystem<Window>()->Init())
          {
-            MELog(context, TEXT("Engine"), ELogType::FATAL, TEXT("Failed to initialize Window Subsystem!"));
+            ME_LOG(MileEngine, Fatal, TEXT("Failed to initialize Window!"));
             m_instance = nullptr;
             return false;
          }
 
          if (!context->GetSubSystem<RendererDX11>()->Init())
          {
-            MELog(context, TEXT("Engine"), ELogType::FATAL, TEXT("Failed to initialize Renderer!"));
+            ME_LOG(MileEngine, Fatal, TEXT("Failed to initialize Renderer!"));
             m_instance = nullptr;
             return false;
          }
@@ -130,7 +132,7 @@ namespace Mile
          // Initialize World
          if (!context->GetSubSystem<World>()->Init())
          {
-            MELog(context, TEXT("Engine"), ELogType::FATAL, TEXT("Failed to initialize World!"));
+            ME_LOG(MileEngine, Fatal, TEXT("Failed to initialize World!"));
             m_instance = nullptr;
             return false;
          }
@@ -138,7 +140,7 @@ namespace Mile
          Application* app = context->GetSubSystem<Application>();
          if (app == nullptr || !app->Init())
          {
-            MELog(context, TEXT("Engine"), ELogType::FATAL, TEXT("Failed to initialize Application!"));
+            ME_LOG(MileEngine, Fatal, TEXT("Failed to initialize Application!"));
             m_instance = nullptr;
             return false;
          }
@@ -148,7 +150,7 @@ namespace Mile
          m_targetTimePerFrame = static_cast<long long>((1.0 / static_cast<double>(m_maxFPS)) * 1000.0);
 
          SubSystem::InitSucceed();
-         MELog(context, TEXT("Engine"), ELogType::DEBUG, TEXT("Engine initialized."));
+         ME_LOG(MileEngine, Log, TEXT("Engine initialized."));
          return true;
       }
 
@@ -198,6 +200,7 @@ namespace Mile
 
    void Engine::ShutDown()
    {
+      ME_LOG(MileEngine, Log, TEXT("Engine shutting down."));
       Context* context = GetContext();
       m_bIsRunning = false;
       m_logger = nullptr;
@@ -210,7 +213,6 @@ namespace Mile
       m_world = nullptr;
       m_app = nullptr;
       SubSystem::DeInit();
-      MELog(context, TEXT("Engine"), ELogType::DEBUG, TEXT("Engine shutting down."));
    }
 
    Engine* Engine::GetInstance()

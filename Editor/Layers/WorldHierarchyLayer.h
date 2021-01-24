@@ -1,5 +1,6 @@
 #pragma once
 #include "Core/Layer.h"
+#include "Core/Logger.h"
 #include "Math/MathHelper.h"
 
 namespace Mile
@@ -8,6 +9,8 @@ namespace Mile
    class Entity;
    namespace Editor
    {
+      DECLARE_LOG_CATEGORY_EXTERN(MileWorldHierarchyLayer, Log);
+
       class WorldHierarchyLayer : public Layer
       {
          public:

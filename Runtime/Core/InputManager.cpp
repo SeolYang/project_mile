@@ -1,9 +1,10 @@
 #include "Core/InputManager.h"
-#include "Core/Logger.h"
 #include <utility>
 
 namespace Mile
 {
+   DEFINE_LOG_CATEGORY(MileInputManager);
+
    InputManager::InputManager(Context* context) :
       SubSystem(context)
    {
@@ -17,7 +18,7 @@ namespace Mile
    {
       if (SubSystem::Init())
       {
-         MELog(GetContext(), TEXT("InputManager"), ELogType::DEBUG, TEXT("InputManager initialized."));
+         ME_LOG(MileInputManager, Log, TEXT("InputManager initialized."));
          return true;
       }
 
