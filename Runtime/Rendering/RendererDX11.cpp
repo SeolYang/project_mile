@@ -520,6 +520,7 @@ namespace Mile
          SafeDelete(m_ambientEmissivePassRenderBuffer);
          SafeDelete(m_skyboxPass);
          SafeDelete(m_toneMappingPass);
+         SafeDelete(m_hdrBuffer);
          SafeDelete(m_boxBloomPass);
          SafeDelete(m_extractBrightnessPass);
          SafeDelete(m_gaussianBlurPass);

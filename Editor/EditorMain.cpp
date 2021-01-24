@@ -24,10 +24,16 @@
 using namespace Mile;
 /**************/
 
+#ifdef _DEBUG
+#include <iostream>
+#include <crtdbg.h>
+#endif
+
 #include "EditorApp.h"
 
 int main()
 {
+   _CrtSetBreakAlloc(1934);
    auto context = new Mile::Context();
    auto app = new Mile::Editor::EditorApp(context);
    auto engine = new Mile::Engine(context, app);
@@ -48,5 +54,10 @@ int main()
    }
 
    SafeDelete(context);
+
+#ifdef _DEBUG
+   _CrtDumpMemoryLeaks();
+#endif
+
    return execute;
 }
