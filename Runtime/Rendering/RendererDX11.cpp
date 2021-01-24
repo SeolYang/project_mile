@@ -500,6 +500,7 @@ namespace Mile
    {
       if (IsInitialized())
       {
+         m_immediateContext->ClearState();
          SafeDelete(m_viewport);
          SafeDelete(m_depthDisable);
          SafeDelete(m_depthLessEqual);
