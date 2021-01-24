@@ -111,6 +111,7 @@ namespace Mile
       {
          if (IsInitialized())
          {
+            m_workers.clear();
             ME_LOG(MileThreadPool, Log, TEXT("Thread Pool deinitialized."));
             SubSystem::DeInit();
          }
@@ -150,7 +151,7 @@ namespace Mile
       std::mutex                     m_mutex;
       std::condition_variable        m_condition;
       std::forward_list<std::thread> m_workers;
-      std::queue< std::function<void()>> m_tasks;
+      std::queue<std::function<void()>> m_tasks;
 
    };
 }
