@@ -19,7 +19,7 @@ namespace Mile
 
    public:
       AmbientEmissivePass(class RendererDX11* renderer);
-      ~AmbientEmissivePass();
+      virtual ~AmbientEmissivePass();
 
       bool Init();
       virtual bool Bind(ID3D11DeviceContext& deviceContext) override;

@@ -24,7 +24,7 @@ namespace Mile
 
    public:
       LightingPass(class RendererDX11* renderer);
-      ~LightingPass();
+      virtual ~LightingPass();
 
       bool Init();
       virtual bool Bind(ID3D11DeviceContext& deviceContext) override;

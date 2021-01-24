@@ -10,7 +10,7 @@ namespace Mile
    {
    public:
       GBuffer(RendererDX11* renderer);
-      ~GBuffer();
+      virtual ~GBuffer();
 
       bool Init(unsigned int width, unsigned int height);
 

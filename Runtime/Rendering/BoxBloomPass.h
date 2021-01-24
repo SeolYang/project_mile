@@ -18,7 +18,7 @@ namespace Mile
 
    public:
       BoxBloomPass(class RendererDX11* renderer);
-      ~BoxBloomPass();
+      virtual ~BoxBloomPass();
 
       bool Init(unsigned int width, unsigned int height, DepthStencilBufferDX11* globalDepthStencilBuffer);
       bool Bind(ID3D11DeviceContext& deviceContext, RenderTargetDX11* hdrBuffer);

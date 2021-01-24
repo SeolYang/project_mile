@@ -17,7 +17,7 @@ namespace Mile
 
    public:
       ExtractBrightnessPass(class RendererDX11* renderer);
-      ~ExtractBrightnessPass();
+      virtual ~ExtractBrightnessPass();
 
       bool Init(unsigned int width, unsigned int height, DepthStencilBufferDX11* globalDepthStencilBuffer);
       bool Bind(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, RenderTargetDX11* hdrBuffer);

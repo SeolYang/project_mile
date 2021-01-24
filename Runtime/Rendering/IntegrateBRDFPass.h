@@ -13,7 +13,7 @@ namespace Mile
    {
    public:
       IntegrateBRDFPass(class RendererDX11* renderer);
-      ~IntegrateBRDFPass();
+      virtual ~IntegrateBRDFPass();
 
       bool Init(unsigned int lutSize = DEFAULT_BRDF_LUT_SIZE);
       bool Bind(ID3D11DeviceContext& deviceContext);

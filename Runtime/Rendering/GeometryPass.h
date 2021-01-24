@@ -36,7 +36,7 @@ namespace Mile
 
    public:
       GeometryPass(RendererDX11* renderer);
-      ~GeometryPass();
+      virtual ~GeometryPass();
 
       bool Init();
       virtual bool Bind(ID3D11DeviceContext& deviceContext) override;

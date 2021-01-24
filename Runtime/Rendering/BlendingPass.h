@@ -22,7 +22,7 @@ namespace Mile
 
    public:
       BlendingPass(class RendererDX11* renderer);
-      ~BlendingPass();
+      virtual ~BlendingPass();
 
       bool Init(unsigned int width, unsigned int height, DepthStencilBufferDX11* globalDepthStencilBuffer);
       bool Bind(ID3D11DeviceContext& deviceContext, RenderTargetDX11* srcBuffer, RenderTargetDX11* destBuffer);

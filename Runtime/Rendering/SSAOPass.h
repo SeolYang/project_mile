@@ -26,7 +26,7 @@ namespace Mile
 
    public:
       SSAOPass(class RendererDX11* renderer);
-      ~SSAOPass();
+      virtual ~SSAOPass();
 
       bool Init(unsigned int width, unsigned int height, DepthStencilBufferDX11* globalDepthStencilBuffer);
       bool Bind(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, Texture2dDX11* noiseTexture);

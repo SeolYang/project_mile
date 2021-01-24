@@ -16,7 +16,7 @@ namespace Mile
 
    public:
       ConvertGBufferToViewPass(class RendererDX11* renderer);
-      ~ConvertGBufferToViewPass();
+      virtual ~ConvertGBufferToViewPass();
 
       bool Init(unsigned int width, unsigned int height, DepthStencilBufferDX11* globalDepthStencilBuffer);
       bool Bind(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer);

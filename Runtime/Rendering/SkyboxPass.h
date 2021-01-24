@@ -15,7 +15,7 @@ namespace Mile
 
    public:
       SkyboxPass(RendererDX11* renderer);
-      ~SkyboxPass();
+      virtual ~SkyboxPass();
 
       bool Init();
       bool Bind(ID3D11DeviceContext& deviceContext, Texture2DBaseDX11* environmentMap);

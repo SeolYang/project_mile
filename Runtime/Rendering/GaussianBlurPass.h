@@ -15,7 +15,7 @@ namespace Mile
 
    public:
       GaussianBlurPass(class RendererDX11* renderer);
-      ~GaussianBlurPass();
+      virtual ~GaussianBlurPass();
 
       bool Init(unsigned int width, unsigned int height, DepthStencilBufferDX11* globalDepthStencilBuffer);
       bool Bind(ID3D11DeviceContext& deviceContext, RenderTargetDX11* hdrBuffer);

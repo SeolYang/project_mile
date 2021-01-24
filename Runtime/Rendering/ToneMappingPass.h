@@ -22,7 +22,7 @@ namespace Mile
 
    public:
       ToneMappingPass(class RendererDX11* renderer);
-      ~ToneMappingPass();
+      virtual ~ToneMappingPass();
 
       bool Init();
       bool Bind(ID3D11DeviceContext& deviceContext, RenderTargetDX11* hdrBuffer);

@@ -11,7 +11,7 @@ namespace Mile
    {
    public:
       SSAOBlurPass(class RendererDX11* renderer);
-      ~SSAOBlurPass();
+      virtual ~SSAOBlurPass();
 
       bool Init(unsigned int width, unsigned int height, DepthStencilBufferDX11* globalDepthStencilBuffer);
       bool Bind(ID3D11DeviceContext& deviceContext, RenderTargetDX11* ssaoInput);
