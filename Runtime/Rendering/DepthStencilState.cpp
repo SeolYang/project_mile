@@ -13,6 +13,7 @@ namespace Mile
 
    DepthStencilState::~DepthStencilState()
    {
+      SafeRelease(m_depthStencilState);
    }
 
    bool DepthStencilState::Init()
