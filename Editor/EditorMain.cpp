@@ -33,7 +33,11 @@ using namespace Mile;
 
 int main()
 {
-   _CrtSetBreakAlloc(1934);
+#ifdef _DEBUG
+   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+   //_CrtSetBreakAlloc(70953);
+#endif
+
    auto context = new Mile::Context();
    auto app = new Mile::Editor::EditorApp(context);
    auto engine = new Mile::Engine(context, app);
@@ -54,10 +58,5 @@ int main()
    }
 
    SafeDelete(context);
-
-#ifdef _DEBUG
-   _CrtDumpMemoryLeaks();
-#endif
-
    return execute;
 }
