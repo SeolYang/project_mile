@@ -25,7 +25,6 @@ namespace Mile
    Texture2D::~Texture2D()
    {
       SafeDelete(m_rawTexture);
-      SafeArrayDelete(m_rawData);
    }
 
    bool Texture2D::Init()
@@ -52,7 +51,6 @@ namespace Mile
 
       if (!InitRawTexture())
       {
-         SafeArrayDelete(m_rawData);
          return false;
       }
 

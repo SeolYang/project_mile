@@ -33,7 +33,6 @@ namespace Mile
             auto height = FreeImage_GetHeight(converted);
             auto channels = FreeImage_GetBPP(converted) / bitPerChannel;
             auto data = FreeImage_GetBits(converted);
-
             FreeImage_Unload(dib);
             dib = nullptr;
 
