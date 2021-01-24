@@ -11,7 +11,7 @@ namespace Mile
    {
    public:
       DepthStencilBufferDX11(RendererDX11* renderer);
-      ~DepthStencilBufferDX11();
+      virtual ~DepthStencilBufferDX11();
 
       /**
        * @brief	깊이-스텐실 버퍼를 초기화 합니다.

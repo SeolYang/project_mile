@@ -8,7 +8,7 @@ namespace Mile
    {
    public:
       DepthStencilState(RendererDX11* renderer);
-      ~DepthStencilState();
+      virtual ~DepthStencilState();
 
       bool Init();
       bool Bind(ID3D11DeviceContext& deviceContext);

@@ -7,7 +7,7 @@ namespace Mile
    {
    public:
       SamplerDX11(RendererDX11* renderer);
-      ~SamplerDX11();
+      virtual ~SamplerDX11();
 
       bool Init(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE AddressModeU, D3D11_TEXTURE_ADDRESS_MODE AddressModeV, D3D11_TEXTURE_ADDRESS_MODE AddressModeW, D3D11_COMPARISON_FUNC compFunc);
       bool Bind(ID3D11DeviceContext& deviceContext, unsigned int startSlot);

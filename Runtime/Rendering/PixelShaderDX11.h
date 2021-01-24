@@ -8,7 +8,7 @@ namespace Mile
    {
    public:
       PixelShaderDX11(RendererDX11* renderer);
-      ~PixelShaderDX11();
+      virtual ~PixelShaderDX11();
 
       virtual bool Init(const String& shaderPath) override;
       virtual bool Bind(ID3D11DeviceContext& deviceContext) override;

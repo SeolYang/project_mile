@@ -10,7 +10,7 @@ namespace Mile
 
    public:
       VertexShaderDX11(RendererDX11* renderer);
-      ~VertexShaderDX11();
+      virtual ~VertexShaderDX11();
 
       virtual bool Init(const String& shaderPath) override;
       virtual bool Bind(ID3D11DeviceContext& deviceContext) override;

@@ -7,7 +7,7 @@ namespace Mile
    {
    public:
       BufferDX11(RendererDX11* renderer);
-      ~BufferDX11();
+      virtual ~BufferDX11();
 
       virtual ID3D11Resource* GetResource() const override { return m_buffer; }
       D3D11_BUFFER_DESC GetDesc() const { return m_desc; }

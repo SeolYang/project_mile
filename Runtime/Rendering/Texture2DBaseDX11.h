@@ -7,7 +7,7 @@ namespace Mile
    {
    public:
       Texture2DBaseDX11(RendererDX11* renderer);
-      ~Texture2DBaseDX11();
+      virtual ~Texture2DBaseDX11();
 
       virtual ID3D11Resource* GetResource() const override { return m_texture; }
       FORCEINLINE ID3D11ShaderResourceView* GetSRV() const { return m_srv; }

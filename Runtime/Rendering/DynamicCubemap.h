@@ -15,7 +15,7 @@ namespace Mile
    {
    public:
       DynamicCubemap(RendererDX11* renderer);
-      ~DynamicCubemap();
+      virtual ~DynamicCubemap();
 
       bool Init(unsigned int size);
       virtual ERenderResourceType GetResourceType() const override { return ERenderResourceType::DynamicCubemap; }

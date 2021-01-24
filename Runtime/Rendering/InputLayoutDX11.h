@@ -9,7 +9,7 @@ namespace Mile
       using InputLayoutElementList = std::vector<D3D11_INPUT_ELEMENT_DESC>;
    public:
       InputLayoutDX11(RendererDX11* renderer);
-      ~InputLayoutDX11();
+      virtual ~InputLayoutDX11();
 
       bool Init(InputLayoutElementList&& intputLayoutDescs, VertexShaderDX11* shader);
       bool Bind(ID3D11DeviceContext& deviceContext);

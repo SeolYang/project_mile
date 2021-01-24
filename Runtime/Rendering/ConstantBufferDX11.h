@@ -8,7 +8,7 @@ namespace Mile
    {
    public:
       ConstantBufferDX11(RendererDX11* renderer);
-      ~ConstantBufferDX11();
+      virtual ~ConstantBufferDX11();
 
       bool Init(unsigned int size);
       template <typename BufferType>

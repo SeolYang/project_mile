@@ -24,7 +24,7 @@ namespace Mile
       {
       }
 
-      ~RenderTexture();
+      virtual ~RenderTexture();
 
       virtual bool Init() override;
       virtual bool SaveTo(const String& filePath) override;

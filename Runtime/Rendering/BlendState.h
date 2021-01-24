@@ -152,7 +152,7 @@ namespace Mile
 
    public:
       BlendState(class RendererDX11* renderer);
-      ~BlendState();
+      virtual ~BlendState();
 
       bool Init();
       bool Bind(ID3D11DeviceContext& deviceContext);

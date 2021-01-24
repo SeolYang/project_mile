@@ -24,7 +24,7 @@ namespace Mile
    {
    public:
       RasterizerState(RendererDX11* renderer);
-      ~RasterizerState();
+      virtual ~RasterizerState();
 
       bool Init();
       bool Bind(ID3D11DeviceContext& deviceContext);
