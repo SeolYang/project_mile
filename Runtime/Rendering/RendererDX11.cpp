@@ -442,7 +442,7 @@ namespace Mile
       }
 
       m_noCulling = new RasterizerState(this);
-      m_noCulling->SetCullMode(CullMode::NONE);
+      m_noCulling->SetCullMode(ECullMode::None);
       if (!m_noCulling->Init())
       {
          ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to create no culling rasterizer state!"));
@@ -466,8 +466,8 @@ namespace Mile
       m_additiveBlendState->SetRenderTargetBlendState(
          {
             true,
-            EBlend::ONE, EBlend::ONE, EBlendOP::ADD,
-            EBlend::ONE, EBlend::ZERO, EBlendOP::ADD,
+            EBlend::One, EBlend::One, EBlendOP::Add,
+            EBlend::One, EBlend::Zero, EBlendOP::Add,
             (UINT8)EColorWriteEnable::ColorWriteEnableAll
          });
 

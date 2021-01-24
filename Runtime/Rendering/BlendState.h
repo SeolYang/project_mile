@@ -4,35 +4,38 @@
 
 namespace Mile
 {
+   /**
+    * @todo Enumerator pascal convention
+    */
    constexpr size_t MAXIMUM_RENDER_TARGETS = 8;
    enum class EBlend : UINT8
    {
-      ZERO = 1,
-      ONE,
-      SRC_COLOR,
-      INV_SRC_COLOR,
-      SRC_ALPHA,
-      INV_SRC_ALPHA,
-      DEST_ALPHA,
-      INV_DEST_ALPHA,
-      DEST_COLOR,
-      INV_DEST_COLOR,
-      SRC_ALPHA_SAT,
-      BLEND_FACTOR = 14,
-      INV_BLEND_FACTOR,
-      SRC1_COLOR,
-      INV_SRC1_COLOR,
-      SRC1_ALPHA,
-      INV_SRC1_ALPHA
+      Zero = 1,
+      One,
+      SrcColor,
+      InvSrcColor,
+      SrcAlpha,
+      InvSrcAlpha,
+      DestAlpha,
+      InvDestAlpha,
+      DestColor,
+      InvDestColor,
+      SrcAlphaSAT,
+      BlendFactor = 14,
+      InvBlendFactor,
+      Src1Color,
+      InvSrc1Color,
+      Src1Alpha,
+      InvSrc1Alpha
    };
 
    enum class EBlendOP : UINT8
    {
-      ADD = 1,
-      SUBTRACT,
-      REV_SUBTRACT,
-      MIN,
-      MAX
+      Add = 1,
+      Subtract,
+      RevSubtract,
+      Min,
+      Max
    };
 
    enum class EColorWriteEnable : UINT8
@@ -49,12 +52,12 @@ namespace Mile
       struct RenderTargetBlendDesc
       {
          bool     BlendEnable = false;
-         EBlend   SrcBlend = EBlend::ONE;
-         EBlend   DestBlend = EBlend::ZERO;
-         EBlendOP BlendOp = EBlendOP::ADD;
-         EBlend   SrcBlendAlpha = EBlend::ONE;
-         EBlend   DestBlendAlpha = EBlend::ZERO;
-         EBlendOP BlendOpAlpha = EBlendOP::ADD;
+         EBlend   SrcBlend = EBlend::One;
+         EBlend   DestBlend = EBlend::Zero;
+         EBlendOP BlendOp = EBlendOP::Add;
+         EBlend   SrcBlendAlpha = EBlend::One;
+         EBlend   DestBlendAlpha = EBlend::Zero;
+         EBlendOP BlendOpAlpha = EBlendOP::Add;
          UINT8    RenderTargetWriteMask = (UINT8)EColorWriteEnable::ColorWriteEnableAll;
 
          static D3D11_BLEND BlendToD3D11(EBlend blend)
@@ -62,39 +65,39 @@ namespace Mile
             switch (blend)
             {
             default:
-            case EBlend::ZERO:
+            case EBlend::Zero:
                return D3D11_BLEND::D3D11_BLEND_ZERO;
-            case EBlend::ONE:
+            case EBlend::One:
                return D3D11_BLEND::D3D11_BLEND_ONE;
-            case EBlend::SRC_COLOR:
+            case EBlend::SrcColor:
                return D3D11_BLEND::D3D11_BLEND_SRC_COLOR;
-            case EBlend::INV_SRC_COLOR:
+            case EBlend::InvSrcColor:
                return D3D11_BLEND::D3D11_BLEND_INV_SRC_COLOR;
-            case EBlend::SRC_ALPHA:
+            case EBlend::SrcAlpha:
                return D3D11_BLEND::D3D11_BLEND_SRC_ALPHA;
-            case EBlend::INV_SRC_ALPHA:
+            case EBlend::InvSrcAlpha:
                return D3D11_BLEND::D3D11_BLEND_INV_SRC_ALPHA;
-            case EBlend::DEST_ALPHA:
+            case EBlend::DestAlpha:
                return D3D11_BLEND::D3D11_BLEND_DEST_ALPHA;
-            case EBlend::INV_DEST_ALPHA:
+            case EBlend::InvDestAlpha:
                return D3D11_BLEND::D3D11_BLEND_INV_DEST_ALPHA;
-            case EBlend::DEST_COLOR:
+            case EBlend::DestColor:
                return D3D11_BLEND::D3D11_BLEND_DEST_COLOR;
-            case EBlend::INV_DEST_COLOR:
+            case EBlend::InvDestColor:
                return D3D11_BLEND::D3D11_BLEND_INV_DEST_COLOR;
-            case EBlend::SRC_ALPHA_SAT:
+            case EBlend::SrcAlphaSAT:
                return D3D11_BLEND::D3D11_BLEND_SRC_ALPHA_SAT;
-            case EBlend::BLEND_FACTOR:
+            case EBlend::BlendFactor:
                return D3D11_BLEND::D3D11_BLEND_BLEND_FACTOR;
-            case EBlend::INV_BLEND_FACTOR:
+            case EBlend::InvBlendFactor:
                return D3D11_BLEND::D3D11_BLEND_BLEND_FACTOR;
-            case EBlend::SRC1_COLOR:
+            case EBlend::Src1Color:
                return D3D11_BLEND::D3D11_BLEND_SRC1_COLOR;
-            case EBlend::INV_SRC1_COLOR:
+            case EBlend::InvSrc1Color:
                return D3D11_BLEND::D3D11_BLEND_INV_SRC1_COLOR;
-            case EBlend::SRC1_ALPHA:
+            case EBlend::Src1Alpha:
                return D3D11_BLEND::D3D11_BLEND_SRC1_ALPHA;
-            case EBlend::INV_SRC1_ALPHA:
+            case EBlend::InvSrc1Alpha:
                return D3D11_BLEND::D3D11_BLEND_INV_SRC1_ALPHA;
             }
          }
@@ -104,15 +107,15 @@ namespace Mile
             switch (blend)
             {
             default:
-            case EBlendOP::ADD:
+            case EBlendOP::Add:
                return D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
-            case EBlendOP::SUBTRACT:
+            case EBlendOP::Subtract:
                return D3D11_BLEND_OP::D3D11_BLEND_OP_SUBTRACT;
-            case EBlendOP::MIN:
+            case EBlendOP::Min:
                return D3D11_BLEND_OP::D3D11_BLEND_OP_MIN;
-            case EBlendOP::MAX:
+            case EBlendOP::Max:
                return D3D11_BLEND_OP::D3D11_BLEND_OP_MAX;
-            case EBlendOP::REV_SUBTRACT:
+            case EBlendOP::RevSubtract:
                return D3D11_BLEND_OP::D3D11_BLEND_OP_REV_SUBTRACT;
             }
          }

@@ -7,8 +7,8 @@ namespace Mile
       m_rasterizerState(nullptr),
       m_bIsDirty(true),
       m_bIsWireframe(false),
-      m_cullMode(CullMode::BACK),
-      m_windingOrder(WindingOrder::CW),
+      m_cullMode(ECullMode::Back),
+      m_windingOrder(EWindingOrder::CW),
       m_depthBias(0),
       m_slopeScaledDepthBias(0.0f),
       m_depthBiasClamp(0.0f),
@@ -32,20 +32,20 @@ namespace Mile
 
          switch (m_cullMode)
          {
-         case CullMode::NONE:
+         case ECullMode::None:
             desc.CullMode = D3D11_CULL_NONE;
             break;
 
-         case CullMode::BACK:
+         case ECullMode::Back:
             desc.CullMode = D3D11_CULL_BACK;
             break;
 
-         case CullMode::FRONT:
+         case ECullMode::Front:
             desc.CullMode = D3D11_CULL_FRONT;
             break;
          }
 
-         desc.FrontCounterClockwise = (m_windingOrder == WindingOrder::CCW);
+         desc.FrontCounterClockwise = (m_windingOrder == EWindingOrder::CCW);
          desc.DepthBias = m_depthBias;
          desc.SlopeScaledDepthBias = m_slopeScaledDepthBias;
          desc.DepthBiasClamp = m_depthBiasClamp;

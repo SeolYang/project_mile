@@ -3,14 +3,14 @@
 
 namespace Mile
 {
-   enum class CullMode
+   enum class ECullMode
    {
-      NONE,
-      FRONT,
-      BACK
+      None,
+      Front,
+      Back
    };
 
-   enum class WindingOrder
+   enum class EWindingOrder
    {
       CCW,
       CW
@@ -49,7 +49,7 @@ namespace Mile
        * @brief 렌더링시 물체의 어떤면을 제외할지 설정합니다.
        * @param	cullMode	제외할 면
        */
-      void SetCullMode(CullMode cullMode)
+      void SetCullMode(ECullMode cullMode)
       {
          if (m_cullMode != cullMode)
          {
@@ -59,13 +59,13 @@ namespace Mile
          m_cullMode = cullMode;
       }
 
-      CullMode GetCullMode() const { return m_cullMode; }
+      ECullMode GetCullMode() const { return m_cullMode; }
 
       /**
        * @brief 시계방향 또는 반시계방향중 어느 방향으로 감긴 정점들을 앞면으로 볼지 설정합니다.
        * @param windingOrder  앞면으로 설정할 정점들의 감김 방향
        */
-      void SetWindingOrder(WindingOrder windingOrder)
+      void SetWindingOrder(EWindingOrder windingOrder)
       {
          if (m_windingOrder != windingOrder)
          {
@@ -75,7 +75,7 @@ namespace Mile
          m_windingOrder = windingOrder;
       }
 
-      WindingOrder GetWindingOrder() const { return m_windingOrder; }
+      EWindingOrder GetWindingOrder() const { return m_windingOrder; }
 
       void SetDepthBias(int depthBias)
       {
@@ -128,8 +128,8 @@ namespace Mile
    private:
       bool           m_bIsDirty;
       bool           m_bIsWireframe;
-      CullMode       m_cullMode;
-      WindingOrder   m_windingOrder;
+      ECullMode      m_cullMode;
+      EWindingOrder  m_windingOrder;
       int            m_depthBias;
       float          m_slopeScaledDepthBias;
       float          m_depthBiasClamp;
