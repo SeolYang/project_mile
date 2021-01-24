@@ -7,4 +7,9 @@ namespace Mile
       m_context(context)
    {
    }
+
+   SubSystem::~SubSystem()
+   {
+      DeInit();
+   }
 }

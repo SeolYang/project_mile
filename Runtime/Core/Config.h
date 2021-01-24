@@ -14,7 +14,7 @@ namespace Mile
    {
    public:
       ConfigSystem(Context* context);
-      ~ConfigSystem();
+      virtual ~ConfigSystem();
 
       virtual bool Init() override;
       virtual void DeInit() override;

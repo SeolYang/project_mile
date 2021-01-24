@@ -11,10 +11,17 @@
 
 namespace Mile
 {
+   DEFINE_LOG_CATEGORY(MileLogger);
+
    Logger::Logger(Context* context) :
       m_folderPath(TEXT("Logs/")),
       SubSystem(context)
    {
+   }
+
+   Logger::~Logger()
+   {
+      DeInit();
    }
 
    bool Logger::Init()
@@ -23,6 +30,7 @@ namespace Mile
       {
          m_loggingBeginTime = std::chrono::system_clock::now();
 
+         this->Logging(MileLogger, Log, TEXT("Logger initialized."));
          SubSystem::InitSucceed();
          return true;
       }
@@ -34,8 +42,8 @@ namespace Mile
    {
       if (IsInitialized())
       {
+         this->Logging(MileLogger, Log, TEXT("Logger deinitialized."));
          Flush();
-
          SubSystem::DeInit();
       }
    }
@@ -140,6 +148,8 @@ namespace Mile
       // Close Stream
       logStream.flush();
       logStream.close();
+
+      return true;
    }
 
    bool Logger::Flush(const LogCategoryBase& category, ELogVerbosity verbosity)

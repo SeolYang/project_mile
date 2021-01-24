@@ -8,7 +8,7 @@ namespace Mile
    {
    public:
       IMGUILayer(Context* context);
-      ~IMGUILayer() = default;
+      virtual ~IMGUILayer() = default;
 
       virtual void OnAttach() override;
       virtual void OnDetach() override;

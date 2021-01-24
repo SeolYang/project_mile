@@ -11,7 +11,7 @@ namespace Mile
    {
    public:
       ResourceManager(Context* context);
-      ~ResourceManager();
+      virtual ~ResourceManager();
 
       virtual bool Init() override;
       virtual void DeInit() override;

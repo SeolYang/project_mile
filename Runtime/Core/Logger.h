@@ -51,10 +51,7 @@ namespace Mile
    {
    public:
       Logger(Context* context);
-      ~Logger()
-      {
-         DeInit();
-      }
+      virtual ~Logger();
 
       virtual bool Init() override;
       virtual void DeInit() override;
@@ -147,4 +144,5 @@ namespace Mile
 /* Mile Engine Log **/
 #define ME_LOG(CategoryName, Verbosity, Message) Logger::GlobalLogging(CategoryName, Verbosity, Message)
 
+   DECLARE_LOG_CATEGORY_EXTERN(MileLogger, Log);
 }

@@ -108,8 +108,8 @@ namespace Mile
    {
       if (IsInitialized())
       {
-         SubSystem::DeInit();
          ME_LOG(MileWindow, Log, TEXT("Window deinitialized."));
+         SubSystem::DeInit();
       }
    }
 

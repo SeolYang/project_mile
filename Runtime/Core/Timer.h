@@ -13,7 +13,7 @@ namespace Mile
    {
    public:
       Timer(Context* context);
-      ~Timer();
+      virtual ~Timer();
 
       virtual bool Init() override;
       virtual void DeInit() override;

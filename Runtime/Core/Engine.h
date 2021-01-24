@@ -24,13 +24,14 @@ namespace Mile
    {
    public:
       Engine(Context* context, Application* app);
-      ~Engine() = default;
+      virtual ~Engine();
 
       /**
       * @brief Engine의 Subsystem 들을 초기화합니다.
       * @return 초기화 성공 여부
       */
       virtual bool Init() override;
+      virtual void DeInit() override;
 
       int Execute();
 

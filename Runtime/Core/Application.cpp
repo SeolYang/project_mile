@@ -6,11 +6,18 @@
 
 namespace Mile
 {
+   DEFINE_LOG_CATEGORY(MileApplication);
+
    Application::Application(Context* context, const String& name) :
       m_name(name),
       m_imguiLayer(nullptr),
       SubSystem(context)
    {
+   }
+
+   Application::~Application()
+   {
+      DeInit();
    }
 
    bool Application::Init()
@@ -27,10 +34,21 @@ namespace Mile
          m_imguiLayer = new IMGUILayer(context);
          PushOverlay(m_imguiLayer);
 
+         ME_LOG(MileApplication, Log, TEXT("Application initialized."));
+         SubSystem::InitSucceed();
          return true;
       }
 
       return false;
+   }
+
+   void Application::DeInit()
+   {
+      if (IsInitialized())
+      {
+         ME_LOG(MileApplication, Log, TEXT("Application deinitialized."));
+         SubSystem::DeInit();
+      }
    }
 
    void Application::Update()
@@ -55,6 +73,7 @@ namespace Mile
    {
       if (layer != nullptr)
       {
+         ME_LOG(MileApplication, Log, TEXT("Layer pushed : ") + layer->GetName());
          m_layers.Push(layer);
          layer->OnAttach();
       }
@@ -64,6 +83,7 @@ namespace Mile
    {
       if (overlay != nullptr)
       {
+         ME_LOG(MileApplication, Log, TEXT("Overlay pushed : ") + overlay->GetName());
          m_layers.PushOverlay(overlay);
          overlay->OnAttach();
       }

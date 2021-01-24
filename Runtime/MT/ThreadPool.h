@@ -111,10 +111,8 @@ namespace Mile
       {
          if (IsInitialized())
          {
-            Context* context = GetContext();
-            SubSystem::DeInit();
-
             ME_LOG(MileThreadPool, Log, TEXT("Thread Pool deinitialized."));
+            SubSystem::DeInit();
          }
       }
 

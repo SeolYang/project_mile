@@ -95,10 +95,10 @@ namespace Mile
 
    public:
       InputManager(Context* context);
-      ~InputManager();
+      virtual ~InputManager();
 
       virtual bool Init() override;
-   //   virtual void DeInit() override;
+      virtual void DeInit() override;
 
       void MapAction(EInputKey key, const String& actionName);
       void BindAction(const String& actionName, EInputEvent inputEvent, ActionCallback callback);

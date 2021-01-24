@@ -58,6 +58,11 @@ namespace Mile
       }
    }
 
+   Engine::~Engine()
+   {
+      DeInit();
+   }
+
    bool Engine::Init()
    {
       if (SubSystem::Init() && m_instance == nullptr)
@@ -149,12 +154,30 @@ namespace Mile
          m_maxFPS = std::clamp(static_cast<unsigned int>(engineConfig.second["MaxFPS"]), LOWER_BOUND_OF_ENGINE_FPS, UPPER_BOUND_OF_ENGINE_FPS);
          m_targetTimePerFrame = static_cast<long long>((1.0 / static_cast<double>(m_maxFPS)) * 1000.0);
 
-         SubSystem::InitSucceed();
          ME_LOG(MileEngine, Log, TEXT("Engine initialized."));
+         SubSystem::InitSucceed();
          return true;
       }
 
       return false;
+   }
+
+   void Engine::DeInit()
+   {
+      if (IsInitialized())
+      {
+         m_bIsRunning = false;
+         m_logger = nullptr;
+         m_timer = nullptr;
+         m_threadPool = nullptr;
+         m_resourceManager = nullptr;
+         m_configSys = nullptr;
+         m_window = nullptr;
+         m_renderer = nullptr;
+         m_world = nullptr;
+         m_app = nullptr;
+         SubSystem::DeInit();
+      }
    }
 
    int Engine::Execute()
@@ -201,18 +224,7 @@ namespace Mile
    void Engine::ShutDown()
    {
       ME_LOG(MileEngine, Log, TEXT("Engine shutting down."));
-      Context* context = GetContext();
       m_bIsRunning = false;
-      m_logger = nullptr;
-      m_timer = nullptr;
-      m_threadPool = nullptr;
-      m_resourceManager = nullptr;
-      m_configSys = nullptr;
-      m_window = nullptr;
-      m_renderer = nullptr;
-      m_world = nullptr;
-      m_app = nullptr;
-      SubSystem::DeInit();
    }
 
    Engine* Engine::GetInstance()

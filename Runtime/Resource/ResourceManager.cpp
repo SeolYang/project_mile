@@ -18,9 +18,9 @@ namespace Mile
 
    bool ResourceManager::Init()
    {
-      Context* context = GetContext();
       if (SubSystem::Init())
       {
+         Context* context = GetContext();
          m_cache = std::make_unique<ResourceCache>(context);
          if (m_cache == nullptr)
          {

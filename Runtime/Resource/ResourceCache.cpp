@@ -24,8 +24,12 @@ namespace Mile
 
    void ResourceCache::Clear()
    {
+      for (auto resource : m_resources)
+      {
+         SafeDelete(resource);
+      }
+
       m_resources.clear();
-      m_resources.shrink_to_fit();
    }
 
    ResourcePtr ResourceCache::GetByPath(const String& path)

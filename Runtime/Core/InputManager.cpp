@@ -12,6 +12,7 @@ namespace Mile
 
    InputManager::~InputManager()
    {
+      DeInit();
    }
 
    bool InputManager::Init()
@@ -19,10 +20,20 @@ namespace Mile
       if (SubSystem::Init())
       {
          ME_LOG(MileInputManager, Log, TEXT("InputManager initialized."));
+         SubSystem::InitSucceed();
          return true;
       }
 
       return false;
+   }
+
+   void InputManager::DeInit()
+   {
+      if (IsInitialized())
+      {
+         ME_LOG(MileInputManager, Log, TEXT("InputManager deinitialized."));
+         SubSystem::DeInit();
+      }
    }
 
    void InputManager::MapAction(EInputKey key, const String& actionName)

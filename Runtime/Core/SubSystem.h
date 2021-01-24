@@ -11,10 +11,7 @@ namespace Mile
    {
    public:
       SubSystem(Context* context);
-      virtual ~SubSystem()
-      {
-         DeInit();
-      }
+      virtual ~SubSystem();
 
       virtual bool Init() { return (m_context != nullptr) && !m_bIsInitialized; }
       virtual void Update() { }

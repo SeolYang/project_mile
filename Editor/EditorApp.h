@@ -19,7 +19,7 @@ namespace Mile
       {
       public:
          EditorApp(Context* context);
-         ~EditorApp();
+         virtual ~EditorApp();
 
          virtual bool Init() override;
 

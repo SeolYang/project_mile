@@ -541,8 +541,8 @@ namespace Mile
          SafeRelease(m_immediateContext);
          SafeRelease(m_device);
 
-         SubSystem::DeInit();
          ME_LOG(MileRendererDX11, Log, TEXT("RendererDX11 deinitialized."));
+         SubSystem::DeInit();
       }
    }
 
