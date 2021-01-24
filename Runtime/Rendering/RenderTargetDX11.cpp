@@ -125,16 +125,16 @@ namespace Mile
    {
       if (RenderObject::IsBindable())
       {
+         if (clearTarget)
+         {
+            const float clearColor[4] = { m_clearColor.x, m_clearColor.y, m_clearColor.z, 1.0f };
+            deviceContext.ClearRenderTargetView(m_rtv, clearColor);
+         }
+
          ID3D11DepthStencilView* dsv = nullptr;
          if (m_depthStencilBuffer != nullptr)
          {
             dsv = m_depthStencilBuffer->GetDSV();
-
-            if (clearTarget)
-            {
-               const float clearColor[4] = { m_clearColor.x, m_clearColor.y, m_clearColor.z, 1.0f };
-               deviceContext.ClearRenderTargetView(m_rtv, clearColor);
-            }
 
             if (clearDepthStencil)
             {
@@ -146,10 +146,10 @@ namespace Mile
                      0);
                }
             }
-
-            deviceContext.OMSetRenderTargets(1, &m_rtv, dsv);
-            return true;
          }
+
+         deviceContext.OMSetRenderTargets(1, &m_rtv, dsv);
+         return true;
       }
 
       return false;

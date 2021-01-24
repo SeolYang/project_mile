@@ -39,7 +39,6 @@ namespace Mile
          {
             return false;
          }
-         m_convertedGBuffer->SetDepthStencilBuffer(globalDepthStencilBuffer);
 
          PixelShaderDX11* pixelShader = GetPixelShader();
          pixelShader->AddSampler(
@@ -61,7 +60,7 @@ namespace Mile
       {
          bool bSuccess =
             gBuffer->BindAsShaderResource(deviceContext, 0, true) &&
-            m_convertedGBuffer->BindAsRenderTarget(deviceContext, true, false) &&
+            m_convertedGBuffer->BindAsRenderTarget(deviceContext, true) &&
             m_params->Bind(deviceContext, 0, EShaderType::PixelShader);
          if (bSuccess)
          {

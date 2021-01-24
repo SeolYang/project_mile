@@ -217,7 +217,6 @@ namespace Mile
          ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to create GBuffer!"));
          return false;
       }
-      m_gBuffer->SetDepthStencilBuffer(m_depthStencilBuffer);
 
       m_equirectToCubemapPass = new Equirect2CubemapPass(this);
       if (!m_equirectToCubemapPass->Init(DYNAMIC_CUBEMAP_SIZE))
@@ -1177,7 +1176,8 @@ namespace Mile
          Transform* camTransform = m_mainCamera->GetTransform();
          if (m_skyboxPass->Bind(deviceContext, m_equirectToCubemapPass->GetCubemap()))
          {
-            renderTarget->BindAsRenderTarget(deviceContext, false, false);
+            m_gBuffer->BindDepthBufferWithExternalTarget(deviceContext, renderTarget, false, false);
+            //renderTarget->BindAsRenderTarget(deviceContext, false, false);
             m_depthLessEqual->Bind(deviceContext);
             m_viewport->Bind(deviceContext);
             m_noCulling->Bind(deviceContext);
@@ -1200,7 +1200,8 @@ namespace Mile
 
             m_cubeMesh->Bind(deviceContext, 0);
             deviceContext.DrawIndexed(m_cubeMesh->GetIndexCount(), 0, 0);
-            renderTarget->UnbindRenderTarget(deviceContext);
+            m_gBuffer->UnbindDepthBuffer(deviceContext);
+            //renderTarget->UnbindRenderTarget(deviceContext);
             m_skyboxPass->Unbind(deviceContext);
          }
 
