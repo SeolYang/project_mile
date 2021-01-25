@@ -49,9 +49,6 @@
     <Filter Include="Sources\Core">
       <UniqueIdentifier>{5cfaab77-c9fe-42bd-aa80-f722eb33613d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\EventSystem">
-      <UniqueIdentifier>{41ebf61a-c65f-4cdf-b618-787f880bcbee}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Math">
       <UniqueIdentifier>{de67a36c-e7a7-4d56-84cb-2ec42365dc82}</UniqueIdentifier>
     </Filter>
@@ -609,6 +606,9 @@
     <ClInclude Include="..\Runtime\Resource\RenderTexture.h">
       <Filter>Sources\Resource</Filter>
     </ClInclude>
+    <ClInclude Include="..\Runtime\Core\Delegate.h">
+      <Filter>Sources\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Runtime\Core\Context.cpp">
@@ -853,6 +853,12 @@
     </ClCompile>
     <ClCompile Include="..\Runtime\Resource\RenderTexture.cpp">
       <Filter>Sources\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\MT\ThreadPool.cpp">
+      <Filter>Sources\MT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Runtime\Core\Delegate.cpp">
+      <Filter>Sources\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -229,6 +229,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\Runtime\Core\Context.h" />
     <ClInclude Include="..\Runtime\Core\CoreMinimal.h" />
     <ClInclude Include="..\Runtime\Core\Engine.h" />
+    <ClInclude Include="..\Runtime\Core\Delegate.h" />
     <ClInclude Include="..\Runtime\Core\Helper.h" />
     <ClInclude Include="..\Runtime\Core\imguiHelper.h" />
     <ClInclude Include="..\Runtime\Core\IMGUILayer.h" />
@@ -402,6 +403,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Core\Application.cpp" />
     <ClCompile Include="..\Runtime\Core\Config.cpp" />
     <ClCompile Include="..\Runtime\Core\Context.cpp" />
+    <ClCompile Include="..\Runtime\Core\Delegate.cpp" />
     <ClCompile Include="..\Runtime\Core\Engine.cpp" />
     <ClCompile Include="..\Runtime\Core\IMGUILayer.cpp" />
     <ClCompile Include="..\Runtime\Core\InputManager.cpp" />
@@ -417,6 +419,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Runtime\Math\Matrix.cpp" />
     <ClCompile Include="..\Runtime\Math\Vector3.cpp" />
     <ClCompile Include="..\Runtime\Math\Vector4.cpp" />
+    <ClCompile Include="..\Runtime\MT\ThreadPool.cpp" />
     <ClCompile Include="..\Runtime\Rendering\AmbientEmissivePass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\BlendingPass.cpp" />
     <ClCompile Include="..\Runtime\Rendering\BlendState.cpp" />
