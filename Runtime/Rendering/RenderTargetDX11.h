@@ -18,6 +18,8 @@ namespace Mile
        */
       bool Init(ID3D11RenderTargetView* rtv, DepthStencilBufferDX11* depthStencilBuffer = nullptr);
 
+      void DeInit();
+
       unsigned int GetWidth() const { return m_width; }
       unsigned int GetHeight() const { return m_height; }
       Texture2dDX11* GetTexture() const { return m_texture; }

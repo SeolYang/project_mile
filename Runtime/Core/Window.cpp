@@ -16,7 +16,7 @@ namespace Mile
    Window::Window(Context* context) : SubSystem(context),
       m_handle(nullptr),
       m_resWidth(0), m_resHeight(0),
-      m_refreshRate(60.0), m_bIsFullScreen(false)
+      m_refreshRate(60.0), m_windowStyle(EWindowStyle::Windowed)
    {
    }
 
@@ -63,7 +63,7 @@ namespace Mile
          switch (windowStyle)
          {
          case EWindowStyle::Windowed:
-            style = WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+            style |= WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
             if (AdjustWindowRectEx(&windowRect, style, false, exStyle) == 0)
             {
                return false;
@@ -114,6 +114,30 @@ namespace Mile
       }
    }
 
+   Vector2 Window::GetWindowResolution() const
+   {
+      RECT windowRect;
+      windowRect.left = 0;
+      windowRect.right = m_resWidth;
+      windowRect.bottom = m_resHeight;
+      windowRect.top = 0;
+
+      if (AdjustWindowRectEx(&windowRect, WindowStyleToFlags(m_windowStyle), false, WS_EX_APPWINDOW) == 0)
+      {
+         return Vector2();
+      }
+
+      return Vector2(
+         windowRect.right - windowRect.left,
+         windowRect.bottom - windowRect.top);
+   }
+
+   float Window::GetWindowAspectRatio() const
+   {
+      Vector2 windowResolution = GetWindowResolution();
+      return windowResolution.x / windowResolution.y;
+   }
+
    void Window::Update()
    {
       Context* context = GetContext();
@@ -137,12 +161,29 @@ namespace Mile
       SetWindowText(m_handle, title.c_str());
    }
 
+   void Window::_OnWindowResize(unsigned int width, unsigned int height)
+   {
+      if (m_handle != nullptr)
+      {
+         RECT clientRect;
+         GetClientRect(m_handle, &clientRect);
+         m_resWidth = width;
+         m_resHeight = height;
+         ME_LOG(MileWindow, Log, TEXT("Window Resized! Window Resolution : %d x %d"), m_resWidth, m_resHeight);
+
+         OnWindowResize.Broadcast(m_resWidth, m_resHeight);
+      }
+   }
+
+   void Window::_OnWindowMinimized()
+   {
+      OnWindowMinimized.Broadcast();
+   }
+
    LRESULT WinProc(HWND Handle, unsigned int Msg, WPARAM wParam, LPARAM lParam)
    {
-      if (ImGui_ImplWin32_WndProcHandler(Handle, Msg, wParam, lParam))
-      {
-         return true;
-      }
+      Window* window = Engine::GetWindow();
+      InputManager* inputManager = Engine::GetInputManager();
 
       switch (Msg)
       {
@@ -150,13 +191,29 @@ namespace Mile
       case WM_CLOSE:
          PostQuitMessage(0);
          return 0;
+      case WM_SIZE:
+         if (window != nullptr)
+         {
+            switch (wParam)
+            {
+            case SIZE_MINIMIZED:
+               window->_OnWindowMinimized();
+               break;
+            default:
+               /* Client Area Size! **/
+               window->_OnWindowResize(LOWORD(lParam), HIWORD(lParam));
+               break;
+            }
+         }
+         break;
       }
 
-      InputManager* inputManager = Engine::GetInputManager();
       if (inputManager != nullptr)
       {
          inputManager->HandleWin32(Msg, wParam, lParam);
       }
+
+      ImGui_ImplWin32_WndProcHandler(Handle, Msg, wParam, lParam);
 
       return DefWindowProc(Handle, Msg, wParam, lParam);
    }

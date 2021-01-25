@@ -40,6 +40,7 @@ namespace Mile
 
    protected:
       FORCEINLINE void ConfirmInit() { m_bIsInitialized = true; }
+      FORCEINLINE void ConfirmDeInit() { m_bIsInitialized = false; }
 
    private:
       RendererDX11* m_renderer;

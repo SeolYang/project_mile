@@ -1,11 +1,16 @@
 #pragma once
 #include "Core/Logger.h"
+#include "Core/Delegate.h"
 #include "Math/Vector2.h"
 #include <Windows.h>
 
 namespace Mile
 {
    DECLARE_LOG_CATEGORY_EXTERN(MileWindow, Log);
+   DECLARE_MULTICAST_DELEGATE_Params(OnWindowResizeMulticastDelegate, unsigned int, unsigned int);
+   DECLARE_MULTICAST_DELEGATE(OnWindowMinimizedMulticastDelegate);
+   DECLARE_DELEGATE_Params(OnWindowResizeDelegate, unsigned int, unsigned int);
+   DECLARE_DELEGATE(OnWindowMinimizedDelegate);
 
    enum class EWindowStyle
    {
@@ -26,6 +31,23 @@ namespace Mile
       default:
          return EWindowStyle::Windowed;
       }
+   }
+
+   static unsigned long WindowStyleToFlags(EWindowStyle style)
+   {
+      auto flags = WS_POPUP;
+      switch (style)
+      {
+      case Mile::EWindowStyle::FullScreen:
+         break;
+      case Mile::EWindowStyle::Borderless:
+         break;
+      case Mile::EWindowStyle::Windowed:
+         flags |= WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+         break;
+      }
+
+      return flags;
    }
 
    static void WinSetVideoMode(int width, int height, int bpp)
@@ -65,27 +87,23 @@ namespace Mile
       void* GetHandle() { return m_handle; }
 
       /**
-       * @brief	설정된 윈도우 창 해상도의 너비를 반환합니다.
-       * @return	 윈도우 창 해상도의 너비
-       */
-      unsigned int GetResWidth() const { return m_resWidth; }
-
-      /**
-       * @brief	설정된 윈도우 창 해상도의 높이를 반환합니다.
-       * @return	 윈도우 창 해상도의 높이
-       */
-      unsigned int GetResHeight() const { return m_resHeight; }
-
-      /**
-       * @brief 설정된 윈도우 창의 해상도를 반환합니다.
-       * @return 윈도우 창의 해상도
+       * @brief 설정된 윈도우의 client 영역의 해상도를 반환합니다.
+       * @return 윈도우의 client 영역의 해상도
        */
       Vector2 GetResolution() const { return Vector2(static_cast<float>(m_resWidth), static_cast<float>(m_resHeight)); }
+
       /**
-       * @brief 설정된 윈도우 창 해상도의 종횡비를 반환합니다.
-       * @return 윈도우 창 해상도의 종횡비
+       * @brief 설정된 윈도우의 client 영역의 해상도 종횡비를 반환합니다.
+       * @return 윈도우의 client 영역의 해상도 종횡비
        */
       float GetAspectRatio() const { return (m_resWidth / static_cast<float>(m_resHeight)); }
+
+      /**
+      * @brief 설정된 윈도우 창의 해상도를 반환합니다.
+      * @return 윈도우의 client 영역의 해상도
+      */
+      Vector2 GetWindowResolution() const;
+      float GetWindowAspectRatio() const;
 
       /**
        * @brief	설정된 윈도우 창의 재생빈도수를 반환합니다.
@@ -97,11 +115,14 @@ namespace Mile
        * @brief 윈도우 창이 풀 스크린 모드인지 확인합니다.
        * @return	풀 스크린 모드 여부
        */
-      bool IsFullScreen() const { return m_bIsFullScreen; }
+      bool IsFullScreen() const { return m_windowStyle == EWindowStyle::FullScreen || m_windowStyle == EWindowStyle::Borderless; }
 
       virtual void Update() override;
 
       void SetTitle(const String& title);
+
+      void _OnWindowResize(unsigned int width, unsigned int height);
+      void _OnWindowMinimized();
 
    private:
       HWND m_handle;
@@ -109,7 +130,12 @@ namespace Mile
       unsigned int m_resHeight;
       Float        m_refreshRate;
 
-      bool         m_bIsFullScreen;
+      EWindowStyle m_windowStyle;
+
+   public:
+      OnWindowResizeMulticastDelegate OnWindowResize;
+      OnWindowMinimizedMulticastDelegate OnWindowMinimized;
+
    };
 
    LRESULT CALLBACK WinProc(HWND Handle, unsigned int Msg, WPARAM wParam, LPARAM lParam);

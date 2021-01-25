@@ -18,8 +18,7 @@ namespace Mile
 
    RenderTargetDX11::~RenderTargetDX11()
    {
-      SafeRelease(m_rtv);
-      SafeDelete(m_texture);
+      DeInit();
    }
 
    bool RenderTargetDX11::Init(unsigned int width, unsigned int height, DXGI_FORMAT format, DepthStencilBufferDX11* depthStencilBuffer)
@@ -119,6 +118,17 @@ namespace Mile
       }
 
       return false;
+   }
+
+   void RenderTargetDX11::DeInit()
+   {
+      if (IsInitialized())
+      {
+         SafeRelease(m_rtv);
+         SafeDelete(m_texture);
+         m_depthStencilBuffer = nullptr;
+         RenderObject::ConfirmDeInit();
+      }
    }
 
    bool RenderTargetDX11::BindAsRenderTarget(ID3D11DeviceContext& deviceContext, bool clearTarget, bool clearDepthStencil)

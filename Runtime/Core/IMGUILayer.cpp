@@ -78,8 +78,9 @@ namespace Mile
       Context* context = GetContext();
       auto renderer = context->GetSubSystem<RendererDX11>();
       auto window = context->GetSubSystem<Window>();
+      Vector2 clientAreaRes = window->GetResolution();
       ImGuiIO& io = ImGui::GetIO();
-      io.DisplaySize = ImVec2((float)window->GetResWidth(), (float)window->GetResHeight());
+      io.DisplaySize = ImVec2(clientAreaRes.x, clientAreaRes.y);
 
       ImGui::Render();
       auto immediateContext = renderer->GetImmediateContext();

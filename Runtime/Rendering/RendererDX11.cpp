@@ -48,14 +48,17 @@ namespace Mile
 
    RendererDX11::RendererDX11(Context* context) :
       SubSystem(context),
+      m_referenceResolution(1920.0f, 1080.0f),
       m_window(nullptr),
+      m_onWindowResize(nullptr),
+      m_onWindowMinimized(nullptr),
       m_device(nullptr),
       m_immediateContext(nullptr),
       m_vsyncEnabled(false),
       m_deferredContexts{ nullptr },
       m_swapChain(nullptr),
-      m_renderTargetView(nullptr),
-      m_depthStencilBuffer(nullptr),
+      m_backBufferRTV(nullptr),
+      m_backBufferDepthStencilBuffer(nullptr),
       m_bDepthStencilEnabled(true),
       m_clearColor{ 0.0f, 0.0f, 0.0f, 1.0f },
       m_gBuffer(nullptr),
@@ -109,7 +112,8 @@ namespace Mile
       m_additiveBlendState(nullptr),
       m_defaultBlendState(nullptr),
       m_depthLessEqual(nullptr),
-      m_outputRenderTarget(nullptr)
+      m_outputRenderTarget(nullptr),
+      m_dummyDepthStencilBuffer(nullptr)
    {
    }
 
@@ -158,7 +162,15 @@ namespace Mile
       Context* context = GetContext();
       /* Initialize low level rendering api **/
       m_window = context->GetSubSystem<Window>();
-      Vector2 screenRes{ m_window->GetResolution() };
+
+      m_onWindowResize = new OnWindowResizeDelegate();
+      m_onWindowResize->Bind(&RendererDX11::OnWindowResize, this);
+      m_onWindowMinimized = new OnWindowMinimizedDelegate();
+      m_onWindowMinimized->Bind(&RendererDX11::OnWindowMinimized, this);
+
+      m_window->OnWindowResize.Add(m_onWindowResize);
+      m_window->OnWindowMinimized.Add(m_onWindowMinimized);
+
       if (m_window == nullptr)
       {
          ME_LOG(MileRendererDX11, Fatal, TEXT("Cannot found Window subsystem from Context!"));
@@ -178,7 +190,7 @@ namespace Mile
       }
 
       m_backBuffer = new RenderTargetDX11(this);
-      if (!m_backBuffer->Init(m_renderTargetView, m_depthStencilBuffer))
+      if (!m_backBuffer->Init(m_backBufferRTV, m_backBufferDepthStencilBuffer))
       {
          return false;
       }
@@ -199,8 +211,8 @@ namespace Mile
 
       // @TODO: Multiple viewports
       m_viewport = new Viewport(this);
-      m_viewport->SetWidth(screenRes.x);
-      m_viewport->SetHeight(screenRes.y);
+      m_viewport->SetWidth(m_referenceResolution.x);
+      m_viewport->SetHeight(m_referenceResolution.y);
 
       return true;
    }
@@ -208,11 +220,18 @@ namespace Mile
    bool RendererDX11::InitPBR()
    {
       Context* context = GetContext();
-      Vector2 screenRes{ m_window->GetResolution() };
+      m_dummyDepthStencilBuffer = new DepthStencilBufferDX11(this);
+      if (!m_dummyDepthStencilBuffer->Init(
+         (unsigned int)m_referenceResolution.x,
+         (unsigned int)m_referenceResolution.y, true))
+      {
+         ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to create Dummy Depth stencil buffer!"));
+      }
+
       m_gBuffer = new GBuffer(this);
       if (!m_gBuffer->Init(
-         static_cast<unsigned int>(screenRes.x),
-         static_cast<unsigned int>(screenRes.y)))
+         static_cast<unsigned int>(m_referenceResolution.x),
+         static_cast<unsigned int>(m_referenceResolution.y)))
       {
          ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to create GBuffer!"));
          return false;
@@ -266,9 +285,8 @@ namespace Mile
    bool RendererDX11::InitSSAO()
    {
       Context* context = GetContext();
-      Vector2 screenRes{ m_window->GetResolution() };
       SSAOPass::SSAOParams ssaoParams;
-      ssaoParams.NoiseScale = Vector2(screenRes.x / SSAO_NOISE_TEXTURE_RES, screenRes.y / SSAO_NOISE_TEXTURE_RES);
+      ssaoParams.NoiseScale = Vector2(m_referenceResolution.x / SSAO_NOISE_TEXTURE_RES, m_referenceResolution.y / SSAO_NOISE_TEXTURE_RES);
 
       std::uniform_real_distribution<float> randomFloats(0.0f, 1.0f);
       std::default_random_engine generator;
@@ -311,9 +329,9 @@ namespace Mile
 
       m_ssaoPass = new SSAOPass(this);
       if (!m_ssaoPass->Init(
-         static_cast<unsigned int>(screenRes.x), 
-         static_cast<unsigned int>(screenRes.y),
-         m_depthStencilBuffer))
+         static_cast<unsigned int>(m_referenceResolution.x),
+         static_cast<unsigned int>(m_referenceResolution.y),
+         m_dummyDepthStencilBuffer))
       {
          ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to initialize SSAO pass!"));
          return false;
@@ -323,9 +341,9 @@ namespace Mile
 
       m_ssaoBlurPass = new SSAOBlurPass(this);
       if (!m_ssaoBlurPass->Init(
-         static_cast<unsigned int>(screenRes.x),
-         static_cast<unsigned int>(screenRes.y),
-         m_depthStencilBuffer))
+         static_cast<unsigned int>(m_referenceResolution.x),
+         static_cast<unsigned int>(m_referenceResolution.y),
+         m_dummyDepthStencilBuffer))
       {
          ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to initialize SSAO Blur pass!"));
          return false;
@@ -337,14 +355,13 @@ namespace Mile
    bool RendererDX11::InitPostProcess()
    {
       Context* context = GetContext();
-      Vector2 screenRes{ m_window->GetResolution() };
 
       m_hdrBuffer = new RenderTargetDX11(this);
       if (!m_hdrBuffer->Init(
-         static_cast<unsigned int>(screenRes.x),
-         static_cast<unsigned int>(screenRes.y),
+         static_cast<unsigned int>(m_referenceResolution.x),
+         static_cast<unsigned int>(m_referenceResolution.y),
          DXGI_FORMAT_R16G16B16A16_FLOAT,
-         m_depthStencilBuffer))
+         m_dummyDepthStencilBuffer))
       {
          ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to create HDR Buffer!"));
          return false;
@@ -352,9 +369,9 @@ namespace Mile
 
       m_convertGBufferToViewPass = new ConvertGBufferToViewPass(this);
       if (!m_convertGBufferToViewPass->Init(
-         static_cast<unsigned int>(screenRes.x),
-         static_cast<unsigned int>(screenRes.y),
-         m_depthStencilBuffer))
+         static_cast<unsigned int>(m_referenceResolution.x),
+         static_cast<unsigned int>(m_referenceResolution.y),
+         m_dummyDepthStencilBuffer))
       {
          ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to create Convert GBuffer to view space pass!"));
          return false;
@@ -377,9 +394,9 @@ namespace Mile
 
       m_boxBloomPass = new BoxBloomPass(this);
       if (!m_boxBloomPass->Init(
-         static_cast<unsigned int>(screenRes.x),
-         static_cast<unsigned int>(screenRes.y),
-         m_depthStencilBuffer))
+         static_cast<unsigned int>(m_referenceResolution.x),
+         static_cast<unsigned int>(m_referenceResolution.y),
+         m_dummyDepthStencilBuffer))
       {
          ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to create Box Bloom pass!"));
          return false;
@@ -387,9 +404,9 @@ namespace Mile
 
       m_extractBrightnessPass = new ExtractBrightnessPass(this);
       if (!m_extractBrightnessPass->Init(
-         static_cast<unsigned int>(screenRes.x),
-         static_cast<unsigned int>(screenRes.y),
-         m_depthStencilBuffer))
+         static_cast<unsigned int>(m_referenceResolution.x),
+         static_cast<unsigned int>(m_referenceResolution.y),
+         m_dummyDepthStencilBuffer))
       {
          ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to create Extract brightness pass!"));
          return false;
@@ -397,9 +414,9 @@ namespace Mile
 
       m_gaussianBlurPass = new GaussianBlurPass(this);
       if (!m_gaussianBlurPass->Init(
-         static_cast<unsigned int>(screenRes.x),
-         static_cast<unsigned int>(screenRes.y),
-         m_depthStencilBuffer))
+         static_cast<unsigned int>(m_referenceResolution.x),
+         static_cast<unsigned int>(m_referenceResolution.y),
+         m_dummyDepthStencilBuffer))
       {
          ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to create Gaussian blur pass!"));
          return false;
@@ -407,9 +424,9 @@ namespace Mile
 
       m_blendingPass = new BlendingPass(this);
       if (!m_blendingPass->Init(
-         static_cast<unsigned int>(screenRes.x),
-         static_cast<unsigned int>(screenRes.y),
-         m_depthStencilBuffer))
+         static_cast<unsigned int>(m_referenceResolution.x),
+         static_cast<unsigned int>(m_referenceResolution.y),
+         m_dummyDepthStencilBuffer))
       {
          ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to create Blending pass!"));
          return false;
@@ -499,6 +516,12 @@ namespace Mile
    {
       if (IsInitialized())
       {
+         m_window->OnWindowResize.Remove(m_onWindowResize);
+         m_window->OnWindowMinimized.Remove(m_onWindowMinimized);
+
+         SafeDelete(m_onWindowResize);
+         SafeDelete(m_onWindowMinimized);
+
          m_immediateContext->ClearState();
          SafeDelete(m_viewport);
          SafeDelete(m_depthDisable);
@@ -530,8 +553,9 @@ namespace Mile
          SafeDelete(m_ssaoNoise);
          SafeDelete(m_ssaoPass);
          SafeDelete(m_ssaoBlurPass);
+         SafeDelete(m_dummyDepthStencilBuffer);
          SafeDelete(m_backBuffer);
-         SafeDelete(m_depthStencilBuffer);
+         SafeDelete(m_dummyDepthStencilBuffer);
          SafeRelease(m_swapChain);
 
          for (auto deferredContext : m_deferredContexts)
@@ -552,14 +576,58 @@ namespace Mile
       m_vsyncEnabled = enabled;
    }
 
+   void RendererDX11::OnWindowResize(unsigned int width, unsigned int height)
+   {
+      if (m_backBuffer != nullptr)
+      {
+         m_backBuffer->DeInit();
+         m_immediateContext->ClearState();
+         //SafeRelease(m_backBufferRTV); m_backBuffer->Deinit ¿¡¼­ Release µÊ.
+         m_backBufferRTV = nullptr;
+         SafeDelete(m_backBufferDepthStencilBuffer);
+
+         m_swapChain->ResizeBuffers(1, 0, 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+         HRESULT hr;
+         ID3D11Texture2D* backBuffer = nullptr;
+         hr = m_swapChain->GetBuffer(
+            0,
+            __uuidof(ID3D11Texture2D),
+            (LPVOID*)&backBuffer);
+
+         if (FAILED(hr))
+         {
+            /* Failed to get back buffer texture resource from swap chain. **/
+            return;
+         }
+
+         hr = m_device->CreateRenderTargetView(
+            backBuffer,
+            nullptr,
+            &m_backBufferRTV);
+         SafeRelease(backBuffer);
+
+         if (!FAILED(hr))
+         {
+            m_backBufferDepthStencilBuffer = new DepthStencilBufferDX11(this);
+            m_backBufferDepthStencilBuffer->Init(width, height, true);
+            m_backBuffer->Init(m_backBufferRTV, m_backBufferDepthStencilBuffer);
+         }
+      }
+   }
+
+   void RendererDX11::OnWindowMinimized()
+   {
+   }
+
    bool RendererDX11::CreateDeviceAndSwapChain()
    {
       DXGI_SWAP_CHAIN_DESC swDesc;
       ZeroMemory(&swDesc, sizeof(swDesc));
 
+      Vector2 clientAreaRes = m_window->GetResolution();
       swDesc.BufferCount = 1;
-      swDesc.BufferDesc.Width = m_window->GetResWidth();
-      swDesc.BufferDesc.Height = m_window->GetResHeight();
+      swDesc.BufferDesc.Width = (unsigned int)clientAreaRes.x;
+      swDesc.BufferDesc.Height = (unsigned int)clientAreaRes.y;
       swDesc.BufferDesc.Format = DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM;
       swDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
       swDesc.OutputWindow = reinterpret_cast<HWND>(m_window->GetHandle());
@@ -612,7 +680,7 @@ namespace Mile
       hr = m_device->CreateRenderTargetView(
          backBuffer,
          nullptr,
-         &m_renderTargetView);
+         &m_backBufferRTV);
       SafeRelease(backBuffer);
 
       if (FAILED(hr))
@@ -642,11 +710,9 @@ namespace Mile
          return false;
       }
 
-      m_depthStencilBuffer = new DepthStencilBufferDX11(this);
-      bool res = m_depthStencilBuffer->Init(m_window->GetResWidth(),
-         m_window->GetResHeight(),
-         true);
-
+      m_backBufferDepthStencilBuffer = new DepthStencilBufferDX11(this);
+      Vector2 clientAreaRes = m_window->GetResolution();
+      bool res = m_backBufferDepthStencilBuffer->Init((unsigned int)clientAreaRes.x, (unsigned int)clientAreaRes.y, true);
       if (!res)
       {
          return false;
@@ -694,10 +760,10 @@ namespace Mile
 
    void RendererDX11::Render()
    {
+      m_bIsRendered = false;
       Context* context = GetContext();
       auto threadPool = context->GetSubSystem<ThreadPool>();
       Clear( *m_immediateContext );
-      m_bIsRendered = false;
 
       World* world = context->GetSubSystem<World>();
       if (world != nullptr)
@@ -740,8 +806,8 @@ namespace Mile
 
             if (m_outputRenderTarget != nullptr)
             {
-               m_viewport->SetWidth(m_backBuffer->GetWidth());
-               m_viewport->SetHeight(m_backBuffer->GetHeight());
+               m_viewport->SetWidth((float)m_outputRenderTarget->GetWidth());
+               m_viewport->SetHeight((float)m_outputRenderTarget->GetHeight());
 
                /* Main Rendering part **/
                /* PBS Workflow **/
@@ -793,7 +859,7 @@ namespace Mile
                camTransform->GetUp(TransformSpace::World));
             Matrix projMatrix = Matrix::CreatePerspectiveProj(
                m_mainCamera->GetFov(),
-               m_window->GetAspectRatio(),
+               GetReferenceAspectRatio(),
                m_mainCamera->GetNearPlane(),
                m_mainCamera->GetFarPlane());
 
@@ -1188,7 +1254,7 @@ namespace Mile
                camTransform->GetUp(TransformSpace::World));
             Matrix projMatrix = Matrix::CreatePerspectiveProj(
                m_mainCamera->GetFov(),
-               m_window->GetAspectRatio(),
+               GetReferenceAspectRatio(),
                0.1f,
                10.0f);
 
@@ -1223,7 +1289,7 @@ namespace Mile
          auto camTransform = m_mainCamera->GetTransform();
          Matrix projMatrix = Matrix::CreatePerspectiveProj(
             m_mainCamera->GetFov(),
-            m_window->GetAspectRatio(),
+            GetReferenceAspectRatio(),
             m_mainCamera->GetNearPlane(),
             m_mainCamera->GetFarPlane());
 
@@ -1404,7 +1470,7 @@ namespace Mile
    void RendererDX11::Clear(ID3D11DeviceContext& deviceContext)
    {
       float clearColor[4] = { m_clearColor.x, m_clearColor.y, m_clearColor.z, m_clearColor.w };
-      deviceContext.ClearRenderTargetView(m_renderTargetView,
+      deviceContext.ClearRenderTargetView(m_backBufferRTV,
          clearColor);
 
       ClearDepthStencil(deviceContext);
@@ -1415,7 +1481,7 @@ namespace Mile
       if (m_bDepthStencilEnabled)
       {
          deviceContext.ClearDepthStencilView(
-            m_depthStencilBuffer->GetDSV(),
+            m_backBufferDepthStencilBuffer->GetDSV(),
             D3D11_CLEAR_DEPTH, 1.0f, 0);
       }
    }
@@ -1467,11 +1533,11 @@ namespace Mile
    {
       if (m_bDepthStencilEnabled)
       {
-         deviceContext.OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilBuffer->GetDSV());
+         deviceContext.OMSetRenderTargets(1, &m_backBufferRTV, m_backBufferDepthStencilBuffer->GetDSV());
       }
       else
       {
-         deviceContext.OMSetRenderTargets(1, &m_renderTargetView, nullptr);
+         deviceContext.OMSetRenderTargets(1, &m_backBufferRTV, nullptr);
       }
    }
 

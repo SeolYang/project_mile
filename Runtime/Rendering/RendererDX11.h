@@ -4,7 +4,6 @@
 #include <array>
 #include <vector>
 
-
 namespace Mile
 {
    DECLARE_LOG_CATEGORY_EXTERN(MileRendererDX11, Log);
@@ -46,6 +45,8 @@ namespace Mile
    constexpr float DEFAULT_SSAO_BIAS = 0.01f;
    constexpr float DEFAULT_SSAO_MAGNITUDE = 1.1f;
 
+   class OnWindowResizeDelegate;
+   class OnWindowMinimizedDelegate;
    class DepthStencilBufferDX11;
    class RenderTargetDX11;
    class Mesh;
@@ -163,6 +164,12 @@ namespace Mile
 
       bool IsRenderedFrame() const { return m_bIsRendered; }
 
+      Vector2 GetReferenceResolution() const { return m_referenceResolution; }
+      float GetReferenceAspectRatio() const { return (m_referenceResolution.x / m_referenceResolution.y); }
+
+      void OnWindowResize(unsigned int width, unsigned int height);
+      void OnWindowMinimized();
+
    private:
       /* Initialization methods **/
       bool CreateDeviceAndSwapChain();
@@ -230,6 +237,11 @@ namespace Mile
 
    private:
       Window* m_window;
+      OnWindowResizeDelegate* m_onWindowResize;
+      OnWindowMinimizedDelegate* m_onWindowMinimized;
+
+      Vector2 m_referenceResolution;
+
       ID3D11Device* m_device;
       ID3D11DeviceContext* m_immediateContext;
 
@@ -241,14 +253,16 @@ namespace Mile
 
       /* Back Buffer Variables **/
       IDXGISwapChain* m_swapChain;
-      ID3D11RenderTargetView* m_renderTargetView;
-      DepthStencilBufferDX11* m_depthStencilBuffer;
+      ID3D11RenderTargetView* m_backBufferRTV;
+      DepthStencilBufferDX11* m_backBufferDepthStencilBuffer;
       RenderTargetDX11* m_backBuffer;
 
+      /* Reference Primitive Meshes **/
       Quad* m_screenQuad;
       Cube* m_cubeMesh;
 
       /* PBS Workflow **/
+      DepthStencilBufferDX11* m_dummyDepthStencilBuffer;
       GBuffer* m_gBuffer;
       GeometryPass* m_geometryPass;
       LightingPass* m_lightingPass;
