@@ -49,6 +49,7 @@ namespace Mile
    RendererDX11::RendererDX11(Context* context) :
       SubSystem(context),
       m_referenceResolution(1920.0f, 1080.0f),
+      m_bReferenceChangedFlag(false),
       m_bStandby(false),
       m_window(nullptr),
       m_onWindowResize(nullptr),
@@ -599,6 +600,15 @@ namespace Mile
       m_vsyncEnabled = enabled;
    }
 
+   void RendererDX11::SetReferenceResolution(const Vector2 newReferenceRes)
+   {
+      if (m_referenceResolution != newReferenceRes)
+      {
+         m_referenceResolution = newReferenceRes;
+         m_bReferenceChangedFlag = true;
+      }
+   }
+
    void RendererDX11::OnWindowResize(unsigned int width, unsigned int height)
    {
       if (m_backBuffer != nullptr)
@@ -785,6 +795,35 @@ namespace Mile
    void RendererDX11::Render()
    {
       m_bIsRendered = false;
+      if (m_bReferenceChangedFlag)
+      {
+         if (IsInitialized())
+         {
+            DeInitPostProcess();
+            DeInitPBR();
+
+            if (!InitPBR())
+            {
+               ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to initialize PBR rendering pass while change reference resolution!"));
+            }
+            else
+            {
+               if (!InitPostProcess())
+               {
+                  ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to initialize PBR rendering pass while change reference resolution!"));
+               }
+               else
+               {
+                  m_bCubemapDirtyFlag = true;
+               }
+            }
+
+            m_bReferenceChangedFlag = false;
+            ME_LOG(MileRendererDX11, Log, TEXT("Reference Resolution Changed to %f x %f"), m_referenceResolution.x, m_referenceResolution.y);
+            OnReferenceResolutionChanged.Broadcast(m_referenceResolution);
+         }
+      }
+
       if (m_bStandby)
       {
          if (m_swapChain != nullptr)
@@ -823,7 +862,6 @@ namespace Mile
             acquireLightTask.get();
             acquireCamerasTask.get();
 
-            // @TODO: Implement Multiple camera rendering
             for (CameraComponent* camera : m_cameras)
             {
                m_mainCamera = camera;

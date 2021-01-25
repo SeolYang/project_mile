@@ -1,12 +1,15 @@
 #pragma once
 #include "Rendering/RenderingCore.h"
 #include "Core/Logger.h"
+#include "Core/Delegate.h"
 #include <array>
 #include <vector>
 
 namespace Mile
 {
    DECLARE_LOG_CATEGORY_EXTERN(MileRendererDX11, Log);
+   DECLARE_DELEGATE_Params(OnRenderReferenceChangedDelegate, Vector2);
+   DECLARE_MULTICAST_DELEGATE_Params(OnRenderReferenceChangedMulticastDelegate, Vector2);
 
    enum class ERenderContextType : UINT32
    {
@@ -167,6 +170,13 @@ namespace Mile
       Vector2 GetReferenceResolution() const { return m_referenceResolution; }
       float GetReferenceAspectRatio() const { return (m_referenceResolution.x / m_referenceResolution.y); }
 
+      /**
+       * @brief   레퍼런스 해상도를 설정합니다.
+       *          만약 렌더 오브젝트들이 모두 생성되어있을때 호출되었을때 변경이 일어나면, OnReferenceResolutionChanged를 통해
+       *          Delegate 들을 호출합니다.
+       */
+      void SetReferenceResolution(const Vector2 newReferenceRes);
+
       void OnWindowResize(unsigned int width, unsigned int height);
       void OnWindowMinimized();
 
@@ -250,7 +260,13 @@ namespace Mile
       OnWindowMinimizedDelegate* m_onWindowMinimized;
       bool m_bStandby;
 
+      /**
+       * @brief   윈도우의 크기와는 독립적으로 렌더링 하기위한 렌더러 전용 해상도입니다. 설정된 reference resolution에 따라 결과물을 렌더링합니다.
+       *          변경시, 오버헤드가 클 수있습니다.
+       */
       Vector2 m_referenceResolution;
+      bool m_bReferenceChangedFlag;
+      OnRenderReferenceChangedMulticastDelegate OnReferenceResolutionChanged;
 
       ID3D11Device* m_device;
       ID3D11DeviceContext* m_immediateContext;
