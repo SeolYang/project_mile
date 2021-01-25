@@ -21,6 +21,7 @@
 #include "Rendering/RendererDX11.h"
 #include "Math/Vector3.h"
 #include "MT/ThreadPool.h"
+#include "Core/Delegate.h"
 using namespace Mile;
 /**************/
 
@@ -37,11 +38,10 @@ int main()
    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
    //_CrtSetBreakAlloc(70953);
 #endif
-
+   int execute = 1;
    auto context = new Mile::Context();
    auto app = new Mile::Editor::EditorApp(context);
    auto engine = new Mile::Engine(context, app);
-   int execute = 1;
 
    if (engine->Init())
    {
