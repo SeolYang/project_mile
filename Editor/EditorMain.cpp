@@ -36,8 +36,8 @@ int main()
 {
 #ifdef _DEBUG
    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-   //_CrtSetBreakAlloc(70953);
 #endif
+
    int execute = 1;
    auto context = new Mile::Context();
    auto app = new Mile::Editor::EditorApp(context);

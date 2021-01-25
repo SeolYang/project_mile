@@ -176,10 +176,19 @@ namespace Mile
       bool CreateDepthStencilBuffer();
 
       bool InitAPI();
+      void DeInitAPI();
+
       bool InitPBR();
+      void DeInitPBR();
+
       bool InitSSAO();
+      void DeInitSSAO();
+
       bool InitPostProcess();
+      void DeInitPostProcess();
+
       bool InitStates();
+      void DeInitStates();
 
       /* Rendering Workflow **/
       ID3D11CommandList* RunGeometryPass(ID3D11DeviceContext* deviceContextPtr);
@@ -267,7 +276,6 @@ namespace Mile
       GBuffer* m_gBuffer;
       GeometryPass* m_geometryPass;
       LightingPass* m_lightingPass;
-      RenderTargetDX11* m_lightingPassRenderBuffer;
 
       /** Cubemap / Environment Map */
       bool  m_bCubemapDirtyFlag; // Diffuse Irradiance 와 Specular IBL 의 계산이 끝난 후에 false로 설정하여야 한다.
@@ -304,7 +312,6 @@ namespace Mile
       /** Ambient Emissive Pass */
       float m_aoFactor;
       AmbientEmissivePass* m_ambientEmissivePass;
-      RenderTargetDX11* m_ambientEmissivePassRenderBuffer;
 
       SkyboxPass* m_skyboxPass;
 

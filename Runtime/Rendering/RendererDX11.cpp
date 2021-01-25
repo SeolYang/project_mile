@@ -65,7 +65,6 @@ namespace Mile
       m_gBuffer(nullptr),
       m_geometryPass(nullptr),
       m_lightingPass(nullptr),
-      m_lightingPassRenderBuffer(nullptr),
       m_skyboxPass(nullptr),
       m_envMap(nullptr),
       m_equirectToCubemapPass(nullptr),
@@ -90,7 +89,6 @@ namespace Mile
       m_bCubemapDirtyFlag(true),
       m_bAlwaysComputeIBL(false),
       m_ambientEmissivePass(nullptr),
-      m_ambientEmissivePassRenderBuffer(nullptr),
       m_aoFactor(DEFAULT_AO_FACTOR),
       m_hdrBuffer(nullptr), 
       m_bloomType(EBloomType::Gaussian),
@@ -218,6 +216,30 @@ namespace Mile
       return true;
    }
 
+   void RendererDX11::DeInitAPI()
+   {
+      m_window->OnWindowResize.Remove(m_onWindowResize);
+      m_window->OnWindowMinimized.Remove(m_onWindowMinimized);
+
+      SafeDelete(m_onWindowResize);
+      SafeDelete(m_onWindowMinimized);
+
+      SafeDelete(m_viewport);
+      SafeDelete(m_cubeMesh);
+      SafeDelete(m_screenQuad);
+      SafeDelete(m_backBuffer);
+      SafeDelete(m_backBufferDepthStencilBuffer);
+      SafeRelease(m_swapChain);
+
+      for (auto deferredContext : m_deferredContexts)
+      {
+         SafeRelease(deferredContext);
+      }
+
+      SafeRelease(m_immediateContext);
+      SafeRelease(m_device);
+   }
+
    bool RendererDX11::InitPBR()
    {
       Context* context = GetContext();
@@ -281,6 +303,18 @@ namespace Mile
       }
 
       return true;
+   }
+
+   void RendererDX11::DeInitPBR()
+   {
+      SafeDelete(m_dummyDepthStencilBuffer);
+      SafeDelete(m_gBuffer);
+      SafeDelete(m_equirectToCubemapPass);
+      SafeDelete(m_irradianceConvPass);
+      SafeDelete(m_prefilteringPass);
+      SafeDelete(m_integrateBRDFPass);
+      SafeDelete(m_geometryPass);
+      SafeDelete(m_lightingPass);
    }
 
    bool RendererDX11::InitSSAO()
@@ -351,6 +385,13 @@ namespace Mile
       }
 
       return true;
+   }
+
+   void RendererDX11::DeInitSSAO()
+   {
+      SafeDelete(m_ssaoNoise);
+      SafeDelete(m_ssaoPass);
+      SafeDelete(m_ssaoBlurPass);
    }
 
    bool RendererDX11::InitPostProcess()
@@ -449,6 +490,21 @@ namespace Mile
       return true;
    }
 
+   void RendererDX11::DeInitPostProcess()
+   {
+      DeInitSSAO();
+      SafeDelete(m_hdrBuffer);
+      SafeDelete(m_ambientEmissivePass);
+      SafeDelete(m_skyboxPass);
+      SafeDelete(m_toneMappingPass);
+      SafeDelete(m_boxBloomPass);
+      SafeDelete(m_extractBrightnessPass);
+      SafeDelete(m_gaussianBlurPass);
+      SafeDelete(m_blendingPass);
+      SafeDelete(m_convertGBufferToViewPass);
+      m_viewSpaceGBuffer = nullptr;
+   }
+
    bool RendererDX11::InitStates()
    {
       Context* context = GetContext();
@@ -513,59 +569,25 @@ namespace Mile
       return true;
    }
 
+   void RendererDX11::DeInitStates()
+   {
+      SafeDelete(m_depthDisable);
+      SafeDelete(m_depthLessEqual);
+      SafeDelete(m_additiveBlendState);
+      SafeDelete(m_defaultBlendState);
+      SafeDelete(m_defaultRasterizerState);
+      SafeDelete(m_noCulling);
+   }
+
    void RendererDX11::DeInit()
    {
       if (IsInitialized())
       {
-         m_window->OnWindowResize.Remove(m_onWindowResize);
-         m_window->OnWindowMinimized.Remove(m_onWindowMinimized);
-
-         SafeDelete(m_onWindowResize);
-         SafeDelete(m_onWindowMinimized);
-
          m_immediateContext->ClearState();
-         SafeDelete(m_viewport);
-         SafeDelete(m_depthDisable);
-         SafeDelete(m_depthLessEqual);
-         SafeDelete(m_additiveBlendState);
-         SafeDelete(m_defaultBlendState);
-         SafeDelete(m_defaultRasterizerState);
-         SafeDelete(m_noCulling);
-         SafeDelete(m_screenQuad);
-         SafeDelete(m_cubeMesh);
-         SafeDelete(m_equirectToCubemapPass);
-         SafeDelete(m_irradianceConvPass);
-         SafeDelete(m_prefilteringPass);
-         SafeDelete(m_integrateBRDFPass);
-         SafeDelete(m_geometryPass);
-         SafeDelete(m_lightingPass);
-         SafeDelete(m_lightingPassRenderBuffer);
-         SafeDelete(m_ambientEmissivePass);
-         SafeDelete(m_ambientEmissivePassRenderBuffer);
-         SafeDelete(m_skyboxPass);
-         SafeDelete(m_toneMappingPass);
-         SafeDelete(m_hdrBuffer);
-         SafeDelete(m_boxBloomPass);
-         SafeDelete(m_extractBrightnessPass);
-         SafeDelete(m_gaussianBlurPass);
-         SafeDelete(m_blendingPass);
-         SafeDelete(m_gBuffer);
-         SafeDelete(m_convertGBufferToViewPass);
-         SafeDelete(m_ssaoNoise);
-         SafeDelete(m_ssaoPass);
-         SafeDelete(m_ssaoBlurPass);
-         SafeDelete(m_dummyDepthStencilBuffer);
-         SafeDelete(m_backBuffer);
-         SafeDelete(m_dummyDepthStencilBuffer);
-         SafeRelease(m_swapChain);
-
-         for (auto deferredContext : m_deferredContexts)
-         {
-            SafeRelease(deferredContext);
-         }
-
-         SafeRelease(m_immediateContext);
-         SafeRelease(m_device);
+         DeInitStates();
+         DeInitPostProcess();
+         DeInitPBR();
+         DeInitAPI();
 
          ME_LOG(MileRendererDX11, Log, TEXT("RendererDX11 deinitialized."));
          SubSystem::DeInit();
