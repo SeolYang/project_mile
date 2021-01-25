@@ -49,6 +49,7 @@ namespace Mile
    RendererDX11::RendererDX11(Context* context) :
       SubSystem(context),
       m_referenceResolution(1920.0f, 1080.0f),
+      m_bStandby(false),
       m_window(nullptr),
       m_onWindowResize(nullptr),
       m_onWindowMinimized(nullptr),
@@ -617,6 +618,7 @@ namespace Mile
 
    void RendererDX11::OnWindowMinimized()
    {
+      m_bStandby = true;
    }
 
    bool RendererDX11::CreateDeviceAndSwapChain()
@@ -761,81 +763,97 @@ namespace Mile
    void RendererDX11::Render()
    {
       m_bIsRendered = false;
-      Context* context = GetContext();
-      auto threadPool = context->GetSubSystem<ThreadPool>();
-      Clear( *m_immediateContext );
-
-      World* world = context->GetSubSystem<World>();
-      if (world != nullptr)
+      if (m_bStandby)
       {
-         /* Pre-process part**/
-         auto acquireMeshRenderersAndMatBinder = std::bind(&RendererDX11::AcquireMeshRenderersAndMaterial,
-            this,
-            world);
-         auto acquireMeshRenderersAndMatTask = threadPool->AddTask(acquireMeshRenderersAndMatBinder);
-
-         auto acquireLightBinder = std::bind(&RendererDX11::AcquireLights, this, world);
-         auto acquireLightTask = threadPool->AddTask(acquireLightBinder);
-
-         auto acquireCamerasBinder = std::bind(&RendererDX11::AcquireCameras, this, world);
-         auto acquireCamerasTask = threadPool->AddTask(acquireCamerasBinder);
-
-         acquireMeshRenderersAndMatTask.get();
-         acquireLightTask.get();
-         acquireCamerasTask.get();
-
-         // @TODO: Implement Multiple camera rendering
-         for (CameraComponent* camera : m_cameras)
+         if (m_swapChain != nullptr)
          {
-            m_mainCamera = camera;
-            RenderTexture* renderTexture = m_mainCamera->GetRenderTexture();
-            if (renderTexture != nullptr)
+            HRESULT hr = m_swapChain->Present(0, DXGI_PRESENT_TEST);
+            if (hr != DXGI_STATUS_OCCLUDED)
             {
-               m_outputRenderTarget = renderTexture->GetRenderTarget();
+               m_bStandby = false;
             }
-            else
+
+            return;
+         }
+      }
+      else
+      {
+         Context* context = GetContext();
+         auto threadPool = context->GetSubSystem<ThreadPool>();
+         Clear(*m_immediateContext);
+
+         World* world = context->GetSubSystem<World>();
+         if (world != nullptr)
+         {
+            /* Pre-process part**/
+            auto acquireMeshRenderersAndMatBinder = std::bind(&RendererDX11::AcquireMeshRenderersAndMaterial,
+               this,
+               world);
+            auto acquireMeshRenderersAndMatTask = threadPool->AddTask(acquireMeshRenderersAndMatBinder);
+
+            auto acquireLightBinder = std::bind(&RendererDX11::AcquireLights, this, world);
+            auto acquireLightTask = threadPool->AddTask(acquireLightBinder);
+
+            auto acquireCamerasBinder = std::bind(&RendererDX11::AcquireCameras, this, world);
+            auto acquireCamerasTask = threadPool->AddTask(acquireCamerasBinder);
+
+            acquireMeshRenderersAndMatTask.get();
+            acquireLightTask.get();
+            acquireCamerasTask.get();
+
+            // @TODO: Implement Multiple camera rendering
+            for (CameraComponent* camera : m_cameras)
             {
+               m_mainCamera = camera;
+               RenderTexture* renderTexture = m_mainCamera->GetRenderTexture();
+               if (renderTexture != nullptr)
+               {
+                  m_outputRenderTarget = renderTexture->GetRenderTarget();
+               }
+               else
+               {
 #ifdef MILE_EDITOR
-               ResourceManager* resMng = Engine::GetResourceManager();
-               renderTexture = resMng->Load<RenderTexture>(EDITOR_GAME_VIEW_RENDER_TEXTURE, true);
-               m_outputRenderTarget = renderTexture->GetRenderTarget();
+                  ResourceManager* resMng = Engine::GetResourceManager();
+                  renderTexture = resMng->Load<RenderTexture>(EDITOR_GAME_VIEW_RENDER_TEXTURE, true);
+                  m_outputRenderTarget = renderTexture->GetRenderTarget();
 #else
-               m_outputRenderTarget = m_backBuffer;
+                  m_outputRenderTarget = m_backBuffer;
 #endif
-            }
+               }
 
-            if (m_outputRenderTarget != nullptr)
-            {
-               m_viewport->SetWidth((float)m_outputRenderTarget->GetWidth());
-               m_viewport->SetHeight((float)m_outputRenderTarget->GetHeight());
+               if (m_outputRenderTarget != nullptr)
+               {
+                  m_viewport->SetWidth((float)m_outputRenderTarget->GetWidth());
+                  m_viewport->SetHeight((float)m_outputRenderTarget->GetHeight());
 
-               /* Main Rendering part **/
-               /* PBS Workflow **/
-               auto geometryPassBinder = std::bind(
-                  &RendererDX11::RunGeometryPass,
-                  this,
-                  GetRenderContextByType(ERenderContextType::GeometryPass));
-               auto geometryPassTask = threadPool->AddTask(geometryPassBinder);
+                  /* Main Rendering part **/
+                  /* PBS Workflow **/
+                  auto geometryPassBinder = std::bind(
+                     &RendererDX11::RunGeometryPass,
+                     this,
+                     GetRenderContextByType(ERenderContextType::GeometryPass));
+                  auto geometryPassTask = threadPool->AddTask(geometryPassBinder);
 
-               auto lightingPassBinder = std::bind(
-                  &RendererDX11::RunLightingPass,
-                  this,
-                  GetRenderContextByType(ERenderContextType::LightingPass));
-               auto lightingPassTask = threadPool->AddTask(lightingPassBinder);
+                  auto lightingPassBinder = std::bind(
+                     &RendererDX11::RunLightingPass,
+                     this,
+                     GetRenderContextByType(ERenderContextType::LightingPass));
+                  auto lightingPassTask = threadPool->AddTask(lightingPassBinder);
 
-               ID3D11CommandList* geometryPassCmdList = geometryPassTask.get();
-               ID3D11CommandList* lightingPassCmdList = lightingPassTask.get();
-               ID3D11CommandList* postProcessCmdList = RunPostProcessPass(GetRenderContextByType(ERenderContextType::PostProcessPass));
+                  ID3D11CommandList* geometryPassCmdList = geometryPassTask.get();
+                  ID3D11CommandList* lightingPassCmdList = lightingPassTask.get();
+                  ID3D11CommandList* postProcessCmdList = RunPostProcessPass(GetRenderContextByType(ERenderContextType::PostProcessPass));
 
-               SAFE_EXECUTE_CMDLIST(m_immediateContext, geometryPassCmdList, false);
-               SAFE_EXECUTE_CMDLIST(m_immediateContext, lightingPassCmdList, false);
-               SAFE_EXECUTE_CMDLIST(m_immediateContext, postProcessCmdList, false);
+                  SAFE_EXECUTE_CMDLIST(m_immediateContext, geometryPassCmdList, false);
+                  SAFE_EXECUTE_CMDLIST(m_immediateContext, lightingPassCmdList, false);
+                  SAFE_EXECUTE_CMDLIST(m_immediateContext, postProcessCmdList, false);
 
-               SafeRelease(geometryPassCmdList);
-               SafeRelease(lightingPassCmdList);
-               SafeRelease(postProcessCmdList);
+                  SafeRelease(geometryPassCmdList);
+                  SafeRelease(lightingPassCmdList);
+                  SafeRelease(postProcessCmdList);
 
-               m_bIsRendered = true;
+                  m_bIsRendered = true;
+               }
             }
          }
       }

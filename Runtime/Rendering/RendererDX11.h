@@ -239,6 +239,7 @@ namespace Mile
       Window* m_window;
       OnWindowResizeDelegate* m_onWindowResize;
       OnWindowMinimizedDelegate* m_onWindowMinimized;
+      bool m_bStandby;
 
       Vector2 m_referenceResolution;
 
