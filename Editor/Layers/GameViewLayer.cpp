@@ -13,9 +13,6 @@ namespace Mile
 {
    namespace Editor
    {
-      constexpr float GameViewDefaultWidth = 1280.0f;
-      constexpr float GameViewDefaultHeight = 720.0f;
-      constexpr float GameViewDefaultFOV = 45.0f;
       GameViewLayer::GameViewLayer(Context* context) :
          m_editorCameraRenderTex(nullptr),
          Layer(context)
@@ -48,7 +45,6 @@ namespace Mile
          auto renderer = Engine::GetRenderer();
          Vector2 referenceRes = renderer->GetReferenceResolution();
 
-         ImGui::SetNextWindowSizeConstraints(ImVec2{ 50.0f, 50.0f }, ImVec2{ referenceRes.x, referenceRes.y });
          ImGui::Begin("Game", nullptr, windowFlag);
          WindowFocusedEffect(0, 255, 0, 1.5f);
          if (renderer->IsRenderedFrame())

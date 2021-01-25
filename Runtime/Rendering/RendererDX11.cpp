@@ -819,7 +819,7 @@ namespace Mile
             }
 
             m_bReferenceChangedFlag = false;
-            ME_LOG(MileRendererDX11, Log, TEXT("Reference Resolution Changed to %f x %f"), m_referenceResolution.x, m_referenceResolution.y);
+            ME_LOG(MileRendererDX11, Log, TEXT("Reference Resolution Changed to %d x %d"), (int)m_referenceResolution.x, (int)m_referenceResolution.y);
             OnReferenceResolutionChanged.Broadcast(m_referenceResolution);
          }
       }
