@@ -28,6 +28,7 @@ namespace Mile
 		static inline void ApplyMint()
 		{
 			ImGuiStyle* style = &ImGui::GetStyle();
+			ImGui::StyleColorsLight(style);
 			ImVec4* colors = style->Colors;
 
 			style->WindowRounding = 2.0f;             // Radius of window corners rounding. Set to 0.0f to have rectangular windows
@@ -95,9 +96,24 @@ namespace Mile
 		static inline void ApplyBlueGrey()
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.WindowRounding = 5.3f;
-			style.FrameRounding = 2.3f;
-			style.ScrollbarRounding = 0;
+			ImGui::StyleColorsDark(&style);
+			style.WindowRounding = 2.0f;             // Radius of window corners rounding. Set to 0.0f to have rectangular windows
+			style.ScrollbarRounding = 3.0f;             // Radius of grab corners rounding for scrollbar
+			style.GrabRounding = 2.0f;             // Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
+			style.AntiAliasedLines = true;
+			style.AntiAliasedFill = true;
+			style.WindowRounding = 2;
+			style.ChildRounding = 2;
+			style.ScrollbarSize = 16;
+			style.ScrollbarRounding = 3;
+			style.GrabRounding = 2;
+			style.ItemSpacing.x = 10;
+			style.ItemSpacing.y = 4;
+			style.IndentSpacing = 22;
+			style.FramePadding.x = 6;
+			style.FramePadding.y = 4;
+			style.Alpha = 1.0f;
+			style.FrameRounding = 3.0f;
 
 			style.Colors[ImGuiCol_Text] = ImVec4(0.90f, 0.90f, 0.90f, 0.90f);
 			style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
@@ -149,6 +165,8 @@ namespace Mile
 #define _TEXT_COL_(v) ImVec4(0.860f, 0.930f, 0.890f, v)
 
 			auto& style = ImGui::GetStyle();
+			ImGui::StyleColorsDark(&style);
+
 			style.Colors[ImGuiCol_Text] = _TEXT_COL_(0.78f);
 			style.Colors[ImGuiCol_TextDisabled] = _TEXT_COL_(0.28f);
 			style.Colors[ImGuiCol_WindowBg] = ImVec4(0.13f, 0.14f, 0.17f, 1.00f);
@@ -213,6 +231,7 @@ namespace Mile
 		static inline void ApplyDarkCharcoal()
 		{
 			ImGuiStyle* style = &ImGui::GetStyle();
+			ImGui::StyleColorsDark(style);
 			ImVec4* colors = style->Colors;
 
 			colors[ImGuiCol_Text] = ImVec4(1.000f, 1.000f, 1.000f, 1.000f);
@@ -280,8 +299,25 @@ namespace Mile
 
 		static inline void ApplyLightBlue()
 		{
-			ImGui::GetStyle().FrameRounding = 4.0f;
-			ImGui::GetStyle().GrabRounding = 4.0f;
+			auto* style = &ImGui::GetStyle();
+			ImGui::StyleColorsClassic(style);
+			style->WindowRounding = 2.0f;             // Radius of window corners rounding. Set to 0.0f to have rectangular windows
+			style->ScrollbarRounding = 3.0f;             // Radius of grab corners rounding for scrollbar
+			style->GrabRounding = 2.0f;             // Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
+			style->AntiAliasedLines = true;
+			style->AntiAliasedFill = true;
+			style->WindowRounding = 2;
+			style->ChildRounding = 2;
+			style->ScrollbarSize = 16;
+			style->ScrollbarRounding = 3;
+			style->GrabRounding = 2;
+			style->ItemSpacing.x = 10;
+			style->ItemSpacing.y = 4;
+			style->IndentSpacing = 22;
+			style->FramePadding.x = 6;
+			style->FramePadding.y = 4;
+			style->Alpha = 1.0f;
+			style->FrameRounding = 3.0f;
 
 			ImVec4* colors = ImGui::GetStyle().Colors;
 			colors[ImGuiCol_Text] = ImVec4(0.95f, 0.96f, 0.98f, 1.00f);
@@ -473,7 +509,27 @@ namespace Mile
 
 		static inline void ApplyUE4Like()
 		{
+			auto* style = &ImGui::GetStyle();
+			ImGui::StyleColorsDark(style);
 			ImVec4* colors = ImGui::GetStyle().Colors;
+			style->WindowRounding = 2.0f;             // Radius of window corners rounding. Set to 0.0f to have rectangular windows
+			style->ScrollbarRounding = 3.0f;             // Radius of grab corners rounding for scrollbar
+			style->GrabRounding = 2.0f;             // Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
+			style->AntiAliasedLines = true;
+			style->AntiAliasedFill = true;
+			style->WindowRounding = 2;
+			style->ChildRounding = 2;
+			style->ScrollbarSize = 16;
+			style->ScrollbarRounding = 3;
+			style->GrabRounding = 2;
+			style->ItemSpacing.x = 10;
+			style->ItemSpacing.y = 4;
+			style->IndentSpacing = 22;
+			style->FramePadding.x = 6;
+			style->FramePadding.y = 4;
+			style->Alpha = 1.0f;
+			style->FrameRounding = 3.0f;
+
 			colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 			colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
 			colors[ImGuiCol_WindowBg] = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
