@@ -29,16 +29,24 @@ namespace Mile
 
       private:
          void FileMenu();
-         void RendererConfig();
-         void SaveRendererConfig();
+
+         void EngineConfig();
+         void SaveEngineConfig();
 
          void EditorConfig();
          void SaveEditorConfig();
+
+         void RendererConfig();
+         void SaveRendererConfig();
 
       private:
          World* m_world;
          Window* m_window;
          ConfigSystem* m_configSys;
+
+         /** Engine Config */
+         bool m_bIsEngineConfigOpend;
+         int m_fps;
 
          /** Editor Config */
          EditorApp* m_editorApp;

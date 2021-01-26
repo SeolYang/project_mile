@@ -22,6 +22,8 @@ namespace Mile
          m_renderer(nullptr),
          m_configSys(nullptr),
          m_editorApp(nullptr),
+         m_fps(0),
+         m_bIsEngineConfigOpend(false),
          m_bIsEditorConfigOpend(false),
          m_bIsRendererConfigOpened(false),
          Layer(context, TEXT("MenuBarLayer"))
@@ -40,6 +42,11 @@ namespace Mile
 
             if (ImGui::BeginMenu("Config"))
             {
+               if (ImGui::MenuItem("Engine", nullptr, &m_bIsEngineConfigOpend))
+               {
+                  m_fps = Engine::GetInstance()->GetMaxFPS();
+               }
+
                if (ImGui::MenuItem("Editor", nullptr, &m_bIsEditorConfigOpend))
                {
                   /* Empty */
@@ -54,6 +61,11 @@ namespace Mile
             }
 
             ImGui::EndMainMenuBar();
+
+            if (m_bIsEngineConfigOpend)
+            {
+               EngineConfig();
+            }
 
             if (m_bIsEditorConfigOpend)
             {
@@ -144,6 +156,38 @@ namespace Mile
                   }
                }
             }
+         }
+      }
+
+      void MenuBarLayer::EngineConfig()
+      {
+         ImGui::Begin("Engine Configuration");
+         Engine* engine = Engine::GetInstance();
+         if (engine != nullptr)
+         {
+            ImGui::Text("Maximum framerate per second");
+            ImGui::InputInt("", &m_fps);
+            ImGui::SameLine();
+            if (ImGui::Button("Apply"))
+            {
+               engine->SetMaxFPS(m_fps);
+            }
+
+            ImGui::NewLine();
+            if (ImGui::Button("Save Configs"))
+            {
+               SaveEngineConfig();
+            }
+         }
+         ImGui::End();
+      }
+
+      void MenuBarLayer::SaveEngineConfig()
+      {
+         Engine* engine = Engine::GetInstance();
+         if (engine != nullptr)
+         {
+            engine->SaveConfig();
          }
       }
 
