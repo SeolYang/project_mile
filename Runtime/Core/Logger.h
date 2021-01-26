@@ -62,9 +62,11 @@ namespace Mile
          ELogVerbosity verbosity = ELogVerbosity::All,
          const Mile::String& message = TEXT(""));
 
-      LogList Filtering(const LogCategoryBase& category, ELogVerbosity verbosity);
+      LogList Filtering(const LogCategoryBase& category, ELogVerbosity verbosity) const;
 
+      /** Flush 함수들은 Thread-safe 하지 않습니다. */
       bool Flush();
+      /** Flush 함수들은 Thread-safe 하지 않습니다. */
       bool Flush(const LogCategoryBase& category, ELogVerbosity verbosity = ELogVerbosity::All);
 
       static Mile::String VerbosityToString(ELogVerbosity verbosity)
@@ -122,7 +124,7 @@ namespace Mile
       bool Flush(const LogList& list);
 
    private:
-      std::mutex m_mutex;
+      mutable std::mutex m_mutex;
       String   m_folderPath;
       LogList  m_logs;
       std::chrono::system_clock::time_point  m_loggingBeginTime;

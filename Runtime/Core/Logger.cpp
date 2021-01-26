@@ -83,8 +83,9 @@ namespace Mile
 #endif
    }
 
-   LogList Logger::Filtering(const LogCategoryBase& category, ELogVerbosity verbosity)
+   LogList Logger::Filtering(const LogCategoryBase& category, ELogVerbosity verbosity) const
    {
+      std::lock_guard<std::mutex> lock(m_mutex);
       LogList tempList{ };
 
       for (auto log : m_logs)
