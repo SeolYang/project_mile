@@ -88,28 +88,28 @@
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
     <IntDir>..\Binaries\IntermediateJ\Editor\$(Configuration)\</IntDir>
     <TargetName>MileEditor</TargetName>
-    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;$(SourcePath);$(VC_SourcePath);..\ThirdParty\imgui\include;..\Editor</SourcePath>
+    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;$(SourcePath);$(VC_SourcePath);..\ThirdParty\imgui\include;..\Editor;..\ThirdParty\optick\src</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
     <IntDir>..\Binaries\IntermediateJ\Editor\$(Configuration)\</IntDir>
     <TargetName>MileEditor</TargetName>
-    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;$(SourcePath);$(VC_SourcePath);..\ThirdParty\imgui\include;..\Editor</SourcePath>
+    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;$(SourcePath);$(VC_SourcePath);..\ThirdParty\imgui\include;..\Editor;..\ThirdParty\optick\src</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
     <IntDir>..\Binaries\IntermediateJ\Editor\$(Configuration)\</IntDir>
     <TargetName>MileEditor</TargetName>
-    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;$(SourcePath);$(VC_SourcePath);..\ThirdParty\imgui\include;..\Editor</SourcePath>
+    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;$(SourcePath);$(VC_SourcePath);..\ThirdParty\imgui\include;..\Editor;..\ThirdParty\optick\src</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EditorRelease|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
     <IntDir>..\Binaries\IntermediateJ\Editor\$(Configuration)\</IntDir>
     <TargetName>MileEditor</TargetName>
-    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;$(SourcePath);$(VC_SourcePath);..\ThirdParty\imgui\include;..\Editor</SourcePath>
+    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;$(SourcePath);$(VC_SourcePath);..\ThirdParty\imgui\include;..\Editor;..\ThirdParty\optick\src</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -118,7 +118,7 @@
       <PreprocessorDefinitions>MILE_EDITOR;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>..\Editor;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Editor;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -134,7 +134,7 @@
       <PreprocessorDefinitions>MILE_EDITOR;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>..\Editor;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Editor;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,7 +152,7 @@
       <PreprocessorDefinitions>MILE_EDITOR;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>..\Editor;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Editor;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -172,7 +172,7 @@
       <PreprocessorDefinitions>MILE_EDITOR;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>..\Editor;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Editor;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

@@ -11,6 +11,7 @@ namespace Mile
       m_radiance(Vector3(1.0f, 1.0f, 1.0f)),
       Component(entity)
    {
+      m_bCanEverUpdate = false;
    }
 
    Vector3 LightComponent::GetLightDirection() const

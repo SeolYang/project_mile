@@ -15,6 +15,7 @@ namespace Mile
          m_material(nullptr),
          Component(entity)
       {
+         m_bCanEverUpdate = false;
       }
 
       //virtual std::string Serialize( ) const override;

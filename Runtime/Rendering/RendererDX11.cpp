@@ -832,6 +832,7 @@ namespace Mile
 
    void RendererDX11::AcquireMeshRenderersAndMaterial(World* world)
    {
+      OPTICK_EVENT();
       if (world != nullptr)
       {
          m_meshRenderComponents.clear();
@@ -851,6 +852,7 @@ namespace Mile
 
    void RendererDX11::AcquireLights(World* world)
    {
+      OPTICK_EVENT();
       if (world != nullptr)
       {
          m_lightComponents.clear();
@@ -860,6 +862,7 @@ namespace Mile
 
    void RendererDX11::AcquireCameras(World* world)
    {
+      OPTICK_EVENT();
       m_cameras.clear();
       if (world != nullptr)
       {
@@ -869,34 +872,11 @@ namespace Mile
 
    void RendererDX11::Render()
    {
+      OPTICK_EVENT();
       m_bIsRendered = false;
       if (m_bReferenceChangedFlag)
       {
-         if (IsInitialized())
-         {
-            DeInitPostProcess();
-            DeInitPBR();
-
-            if (!InitPBR())
-            {
-               ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to initialize PBR rendering pass while change reference resolution!"));
-            }
-            else
-            {
-               if (!InitPostProcess())
-               {
-                  ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to initialize PBR rendering pass while change reference resolution!"));
-               }
-               else
-               {
-                  m_bCubemapDirtyFlag = true;
-               }
-            }
-
-            m_bReferenceChangedFlag = false;
-            ME_LOG(MileRendererDX11, Log, TEXT("Reference Resolution Changed to %d x %d"), (int)m_referenceResolution.x, (int)m_referenceResolution.y);
-            OnReferenceResolutionChanged.Broadcast(m_referenceResolution);
-         }
+         SetupReferenceResolution();
       }
 
       if (m_bStandby)
@@ -996,6 +976,7 @@ namespace Mile
 
    ID3D11CommandList* RendererDX11::RunGeometryPass(ID3D11DeviceContext* deviceContextPtr)
    {
+      OPTICK_EVENT();
       if (deviceContextPtr != nullptr)
       {
          ID3D11DeviceContext& deviceContext = *deviceContextPtr;
@@ -1095,6 +1076,7 @@ namespace Mile
 
    ID3D11CommandList* RendererDX11::RunLightingPass(ID3D11DeviceContext* deviceContextPtr)
    {
+      OPTICK_EVENT();
       if (deviceContextPtr != nullptr)
       {
          ID3D11DeviceContext& deviceContext = *deviceContextPtr;
@@ -1115,6 +1097,7 @@ namespace Mile
 
    ID3D11CommandList* RendererDX11::RunPostProcessPass(ID3D11DeviceContext* deviceContextPtr)
    {
+      OPTICK_EVENT();
       if (deviceContextPtr != nullptr)
       {
          ID3D11DeviceContext& deviceContext = *deviceContextPtr;
@@ -1141,6 +1124,7 @@ namespace Mile
    {
       if (m_bCubemapDirtyFlag || m_bAlwaysComputeIBL)
       {
+         OPTICK_EVENT();
          static const Matrix captureProj = Matrix::CreatePerspectiveProj(90.0f, 1.0f, 0.1f, 10.0f);
          static const std::array<Matrix, CUBE_FACES> captureMatrix =
          {
@@ -1168,6 +1152,7 @@ namespace Mile
 
    void RendererDX11::ConvertEquirectToCubemap(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix)
    {
+      OPTICK_EVENT();
       m_envMap = m_equirectToCubemapPass->GetCubemap();
       if (m_equirectToCubemapPass->Bind(deviceContext, (m_equirectangularMap != nullptr) ? m_equirectangularMap->GetRawTexture() : nullptr))
       {
@@ -1191,6 +1176,7 @@ namespace Mile
 
    void RendererDX11::SolveDiffuseIntegral(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix)
    {
+      OPTICK_EVENT();
       m_irradianceMap = m_irradianceConvPass->GetIrradianceMap();
       if (m_irradianceConvPass->Bind(deviceContext, m_envMap))
       {
@@ -1214,6 +1200,7 @@ namespace Mile
 
    void RendererDX11::ComputePrefilteredEnvMap(ID3D11DeviceContext& deviceContext, const std::array<Matrix, CUBE_FACES>& captureMatrix)
    {
+      OPTICK_EVENT();
       m_prefilterdEnvMap = m_prefilteringPass->GetPrefilteredEnvironmentMap();
       m_prefilterdEnvMap->GenerateMips(deviceContext);
       if (m_prefilteringPass->Bind(deviceContext, m_envMap))
@@ -1250,6 +1237,7 @@ namespace Mile
 
    void RendererDX11::IntegrateBRDF(ID3D11DeviceContext& deviceContext)
    {
+      OPTICK_EVENT();
       m_brdfLUT = m_integrateBRDFPass->GetBrdfLUT();
       if (m_integrateBRDFPass->Bind(deviceContext))
       {
@@ -1264,6 +1252,7 @@ namespace Mile
 
    void RendererDX11::RenderLight(ID3D11DeviceContext& deviceContext)
    {
+      OPTICK_EVENT();
       Transform* camTransform = m_mainCamera->GetTransform();
       m_lightingPass->SetGBuffer(m_gBuffer);
       if (m_lightingPass->Bind(deviceContext))
@@ -1306,6 +1295,7 @@ namespace Mile
    {
       if (gBuffer != nullptr)
       {
+         OPTICK_EVENT();
          auto camTransform = m_mainCamera->GetTransform();
          Matrix viewMatrix = Matrix::CreateView(
             camTransform->GetPosition(TransformSpace::World),
@@ -1338,6 +1328,7 @@ namespace Mile
    {
       if (renderTarget != nullptr)
       {
+         OPTICK_EVENT();
          RenderTargetDX11* aoBuffer = nullptr;
          if (m_bEnableSSAO)
          {
@@ -1392,6 +1383,7 @@ namespace Mile
    {
       if (renderTarget != nullptr)
       {
+         OPTICK_EVENT();
          Transform* camTransform = m_mainCamera->GetTransform();
          if (m_skyboxPass->Bind(deviceContext, m_equirectToCubemapPass->GetCubemap()))
          {
@@ -1432,6 +1424,7 @@ namespace Mile
 
    RenderTargetDX11* RendererDX11::SSAO(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, float radius, float bias)
    {
+      OPTICK_EVENT();
       if (m_ssaoPass->Bind(deviceContext, gBuffer, m_ssaoNoise))
       {
          m_depthDisable->Bind(deviceContext);
@@ -1462,6 +1455,7 @@ namespace Mile
 
    RenderTargetDX11* RendererDX11::SSAOBlur(ID3D11DeviceContext& deviceContext, RenderTargetDX11* ssaoInput)
    {
+      OPTICK_EVENT();
       if (m_ssaoBlurPass->Bind(deviceContext, ssaoInput))
       {
          m_depthDisable->Bind(deviceContext);
@@ -1480,6 +1474,7 @@ namespace Mile
 
    RenderTargetDX11* RendererDX11::ExtractBrightness(ID3D11DeviceContext& deviceContext, GBuffer* gBuffer, RenderTargetDX11* renderBuffer, float depthThreshold, float threshold)
    {
+      OPTICK_EVENT();
       if (m_extractBrightnessPass->Bind(deviceContext, gBuffer, renderBuffer))
       {
          m_depthDisable->Bind(deviceContext);
@@ -1499,6 +1494,7 @@ namespace Mile
 
    RenderTargetDX11* RendererDX11::GaussianBlur(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer, unsigned int gaussianAmount)
    {
+      OPTICK_EVENT();
       if (m_gaussianBlurPass->Bind(deviceContext, renderBuffer))
       {
          m_depthDisable->Bind(deviceContext);
@@ -1529,6 +1525,7 @@ namespace Mile
 
    RenderTargetDX11* RendererDX11::Bloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer)
    {
+      OPTICK_EVENT();
       RenderTargetDX11* output = renderBuffer;
       switch (m_bloomType)
       {
@@ -1547,6 +1544,7 @@ namespace Mile
 
    RenderTargetDX11* RendererDX11::BoxBloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer)
    {
+      OPTICK_EVENT();
       if (m_boxBloomPass->Bind(deviceContext, renderBuffer))
       {
          m_boxBloomPass->UpdateParameters(deviceContext, {});
@@ -1566,6 +1564,7 @@ namespace Mile
 
    RenderTargetDX11* RendererDX11::GaussianBloom(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer)
    {
+      OPTICK_EVENT();
       RenderTargetDX11* extractedBrightness = ExtractBrightness(deviceContext, m_gBuffer, renderBuffer, m_gaussianBloomDepthThreshold, m_gaussianBloomThreshold);
       RenderTargetDX11* blurredExtractedBrightness = GaussianBlur(deviceContext, extractedBrightness, m_gaussianBloomAmount);
       return Blending(deviceContext, blurredExtractedBrightness, renderBuffer, m_gaussianBloomIntensity, 1.0f);
@@ -1573,6 +1572,7 @@ namespace Mile
 
    RenderTargetDX11* RendererDX11::Blending(ID3D11DeviceContext& deviceContext, RenderTargetDX11* srcBuffer, RenderTargetDX11* destBuffer, float srcRatio, float destRatio)
    {
+      OPTICK_EVENT();
       if (srcBuffer != nullptr && destBuffer != nullptr)
       {
          if (m_blendingPass->Bind(deviceContext, srcBuffer, destBuffer))
@@ -1599,6 +1599,7 @@ namespace Mile
 
    void RendererDX11::ToneMappingWithGammaCorrection(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderBuffer)
    {
+      OPTICK_EVENT();
       if (m_toneMappingPass->Bind(deviceContext, renderBuffer))
       {
          m_toneMappingPass->UpdateParameters(
@@ -1622,6 +1623,7 @@ namespace Mile
 
    void RendererDX11::Clear(ID3D11DeviceContext& deviceContext)
    {
+      OPTICK_EVENT();
       float clearColor[4] = { m_clearColor.x, m_clearColor.y, m_clearColor.z, m_clearColor.w };
       deviceContext.ClearRenderTargetView(m_backBufferRTV,
          clearColor);
@@ -1631,6 +1633,7 @@ namespace Mile
 
    void RendererDX11::ClearDepthStencil(ID3D11DeviceContext& deviceContext)
    {
+      OPTICK_EVENT();
       if (m_bDepthStencilEnabled)
       {
          deviceContext.ClearDepthStencilView(
@@ -1641,6 +1644,7 @@ namespace Mile
 
    void RendererDX11::Present()
    {
+      OPTICK_EVENT();
       if (m_swapChain != nullptr)
       {
          /* @TODO: Impl VSYNC **/
@@ -1664,6 +1668,36 @@ namespace Mile
    {
       m_bDepthStencilEnabled = bDepthStencilEnable;
       SetBackbufferAsRenderTarget(deviceContext);
+   }
+
+   void RendererDX11::SetupReferenceResolution()
+   {
+      OPTICK_EVENT();
+      if (IsInitialized())
+      {
+         DeInitPostProcess();
+         DeInitPBR();
+
+         if (!InitPBR())
+         {
+            ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to initialize PBR rendering pass while change reference resolution!"));
+         }
+         else
+         {
+            if (!InitPostProcess())
+            {
+               ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to initialize PBR rendering pass while change reference resolution!"));
+            }
+            else
+            {
+               m_bCubemapDirtyFlag = true;
+            }
+         }
+
+         m_bReferenceChangedFlag = false;
+         ME_LOG(MileRendererDX11, Log, TEXT("Reference Resolution Changed to %d x %d"), (int)m_referenceResolution.x, (int)m_referenceResolution.y);
+         OnReferenceResolutionChanged.Broadcast(m_referenceResolution);
+      }
    }
 
    void RendererDX11::SetEquirectangularMap(Texture2D* texture)

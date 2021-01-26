@@ -6,7 +6,8 @@ namespace Mile
 {
    Component::Component(Entity* entity) :
       m_entity(entity),
-      m_bIsActivated(true)
+      m_bIsActivated(true),
+      m_bCanEverUpdate(true)
    {
    }
 

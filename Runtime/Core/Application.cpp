@@ -61,6 +61,7 @@ namespace Mile
 
    void Application::RenderIMGUI()
    {
+      OPTICK_EVENT();
       m_imguiLayer->Begin();
       for (auto layer : m_layers)
       {

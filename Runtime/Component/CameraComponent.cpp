@@ -15,6 +15,7 @@ namespace Mile
       m_renderTexture(nullptr),
       Component(entity)
    {
+      m_bCanEverUpdate = false;
    }
 
    json CameraComponent::Serialize() const

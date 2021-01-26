@@ -272,6 +272,8 @@ namespace Mile
       void SetDepthStencilEnable(ID3D11DeviceContext& deviceContext, bool bDepthEnabled);
       bool IsDepthStencilEnabled() const { return m_bDepthStencilEnabled; }
 
+      void SetupReferenceResolution();
+
    private:
       Window* m_window;
       OnWindowResizeDelegate* m_onWindowResize;

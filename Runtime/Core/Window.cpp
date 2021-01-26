@@ -136,6 +136,7 @@ namespace Mile
 
    void Window::Update()
    {
+      OPTICK_EVENT();
       Context* context = GetContext();
       MSG msg = { 0 };
       if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))

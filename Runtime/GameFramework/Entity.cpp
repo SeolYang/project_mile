@@ -18,7 +18,8 @@ namespace Mile
       m_transform(new Transform(this)),
       m_parent(nullptr),
       m_bIsVisibleOnHierarchy(true),
-      m_bIsSerializable(true)
+      m_bIsSerializable(true),
+      m_bCanEverUpdate(true)
    {
       if (m_world != nullptr)
       {
@@ -187,11 +188,12 @@ namespace Mile
 
    void Entity::Update()
    {
-      if (m_bIsActivated)
+      if (IsActivated() && IsUpdateEnabled())
       {
+         OPTICK_EVENT();
          for (auto component : m_components)
          {
-            if (component->IsActivated())
+            if (component->IsActivated() && component->IsUpdateEnabled())
             {
                component->Update();
             }

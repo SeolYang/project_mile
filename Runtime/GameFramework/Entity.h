@@ -118,6 +118,8 @@ namespace Mile
       bool IsSerializationDisabled() const { return m_bIsSerializable; }
       void SetSerializable(bool bIsSerializable) { m_bIsSerializable = bIsSerializable; }
 
+      bool IsUpdateEnabled() const { return m_bCanEverUpdate; }
+
       std::vector<Entity*> GetChildren() const { return m_children; }
       std::vector<Entity*> GetChildren() { return m_children; }
 
@@ -132,8 +134,8 @@ namespace Mile
    private:
       bool     m_bIsActivated;
       Context* m_context;
-      World*   m_world;
-      Entity*  m_parent;
+      World* m_world;
+      Entity* m_parent;
       Transform* m_transform;
       std::vector<Component*> m_components;
       std::vector<Entity*>    m_children;
@@ -142,6 +144,9 @@ namespace Mile
 
       bool  m_bIsVisibleOnHierarchy;
       bool  m_bIsSerializable;
+
+   protected:
+      bool     m_bCanEverUpdate;
 
    };
 

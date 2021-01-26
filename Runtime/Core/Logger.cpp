@@ -57,6 +57,7 @@ namespace Mile
       ELogVerbosity verbosity,
       const Mile::String& message)
    {
+      OPTICK_EVENT();
       ELogVerbosity finalVerbosity = verbosity;
       if (finalVerbosity == ELogVerbosity::All)
       {

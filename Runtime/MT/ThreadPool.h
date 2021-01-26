@@ -64,8 +64,11 @@ namespace Mile
                for (size_t idx = 0; idx < m_threadNum; ++idx)
                {
                   // Actual thread initialize.
-                  m_workers.emplace_front([this]
+                  m_workers.emplace_front([this, idx]
                      {
+                        std::string threadName = ("Worker");
+                        threadName.append(std::to_string(idx));
+                        OPTICK_THREAD(threadName.c_str());
                         while (true)
                         {
                            std::function<void()> task;

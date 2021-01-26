@@ -185,17 +185,20 @@ namespace Mile
       m_world->Start();
       while (m_bIsRunning)
       {
+         OPTICK_FRAME("MainThread");
          if (m_bShutdownFlag)
          {
             ShutDown();
          }
          else
          {
+            OPTICK_EVENT();
             m_timer->BeginFrame();
 
             this->Update();
             m_app->Update();
-            m_renderer->Render();
+            auto mainRenderTask = m_threadPool->AddTask([this]() {this->m_renderer->Render(); }); /** @todo 나중에 audio/physics 시스템이 추가되면 서로 다른 스레드에서 처리하도록 하기 */
+            mainRenderTask.get();
             m_app->RenderIMGUI();
             m_renderer->Present();
 
@@ -221,6 +224,7 @@ namespace Mile
 
    void Engine::Update()
    {
+      OPTICK_EVENT();
       // Update subsystems
       m_window->Update();
       m_world->Update();

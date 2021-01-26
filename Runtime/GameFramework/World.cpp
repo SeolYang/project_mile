@@ -87,6 +87,7 @@ namespace Mile
 
    void World::Update()
    {
+      OPTICK_EVENT();
       for (auto entity : m_entities)
       {
          entity->Update();

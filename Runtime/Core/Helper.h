@@ -27,6 +27,8 @@
 #include "json.hpp"
 using json = nlohmann::json;
 
+#include "optick.h"
+
 #define NULL_TEXT TEXT("null")
 #define NULL_TEXT_STD "null"
 

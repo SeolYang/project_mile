@@ -38,7 +38,7 @@ namespace Mile
 
       virtual void Reset() { }
       virtual void Start() { }
-      virtual void Update() { }
+      virtual void Update() { OPTICK_EVENT(); }
       virtual void OnEnable() { }
       virtual void OnDisable() { }
 
@@ -52,6 +52,8 @@ namespace Mile
       Context* GetContext() const;
       Transform* GetTransform() const;
 
+      bool IsUpdateEnabled() const { return m_bCanEverUpdate; }
+
    protected:
       Component() : Component(nullptr)
       {
@@ -60,6 +62,7 @@ namespace Mile
    protected:
       Entity* m_entity;
       bool    m_bIsActivated;
+      bool    m_bCanEverUpdate;
 
    };
 }

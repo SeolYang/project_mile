@@ -58,5 +58,6 @@ int main()
    }
 
    SafeDelete(context);
+   OPTICK_SHUTDOWN();
    return execute;
 }
