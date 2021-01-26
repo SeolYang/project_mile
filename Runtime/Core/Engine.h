@@ -65,6 +65,10 @@ namespace Mile
       virtual void LoadConfig();
       virtual void SaveConfig();
 
+      void SetMaxFPS(unsigned int fps) { m_maxFPS = std::clamp<unsigned int>(fps, LOWER_BOUND_OF_ENGINE_FPS, UPPER_BOUND_OF_ENGINE_FPS); m_targetTimePerFrame = static_cast<long long>((1.0 / static_cast<double>(m_maxFPS)) * 1000.0); }
+      unsigned int GetMaxFPS() const { return m_maxFPS; }
+      long long GetTargetTimePerFrameMS() const { return m_targetTimePerFrame; }
+
    private:
       static Engine*    m_instance;
       bool              m_bIsRunning;

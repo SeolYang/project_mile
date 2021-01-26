@@ -284,8 +284,7 @@ namespace Mile
          {
             auto& engineConfig = m_configSys->GetConfig(ENGINE_CONFIG);
             unsigned int maxFPS = GetValueSafelyFromJson(engineConfig.second, ENGINE_CONFIG_MAX_FPS, UPPER_BOUND_OF_ENGINE_FPS);
-            m_maxFPS = std::clamp(maxFPS, LOWER_BOUND_OF_ENGINE_FPS, UPPER_BOUND_OF_ENGINE_FPS);
-            m_targetTimePerFrame = static_cast<long long>((1.0 / static_cast<double>(m_maxFPS)) * 1000.0);
+            SetMaxFPS(maxFPS);
             ME_LOG(MileEngine, ELogVerbosity::Log, TEXT("Engine configurations loaded."));
             return;
          }
