@@ -45,6 +45,7 @@ namespace Mile
          auto renderer = Engine::GetRenderer();
          Vector2 referenceRes = renderer->GetReferenceResolution();
 
+         ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
          ImGui::Begin("Game", nullptr, windowFlag);
          if (renderer->IsRenderedFrame())
          {
@@ -66,8 +67,8 @@ namespace Mile
                ImGui::Image((void*)m_editorCameraRenderTex->GetRenderTarget()->GetTexture()->GetSRV(), outputRes);
             }
          }
-
          ImGui::End();
+         ImGui::PopStyleColor();
       }
    }
 }
