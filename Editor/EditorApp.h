@@ -34,8 +34,6 @@ namespace Mile
          WorldHierarchyLayer* m_worldHierarchyLayer;
          MenuBarLayer* m_menuBarLayer;
          GameViewLayer* m_gameViewLayer;
-         bool m_bIsDarkStyle;
-         float m_guiAlpha;
 
       };
    }

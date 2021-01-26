@@ -19,8 +19,6 @@ namespace Mile
          m_engineInstance(nullptr),
          m_worldHierarchyLayer(nullptr),
          m_menuBarLayer(nullptr),
-         m_bIsDarkStyle(true),
-         m_guiAlpha(0.8f),
          m_gameViewLayer(nullptr),
          Application(context, TEXT("MileEditor"))
       {
@@ -86,8 +84,6 @@ namespace Mile
 
                /* GUI Config **/
                json guiConfig = GetValueSafelyFromJson(editorConfig.second, "GUI", json());
-               m_bIsDarkStyle = GetValueSafelyFromJson(guiConfig, "IsDarkStyle", true);
-               m_guiAlpha = GetValueSafelyFromJson(guiConfig, "GuiAlpha", 0.75f);
             }
          }
       }
@@ -102,8 +98,6 @@ namespace Mile
 
             /* GUI Config **/
             json guiConfig;
-            guiConfig["IsDarkStyle"] = m_bIsDarkStyle;
-            guiConfig["GuiAlpha"] = m_guiAlpha;
             editorConfigJson["GUI"] = guiConfig;
 
             configSys->SaveConfig(TEXT("Editor"));
@@ -112,7 +106,7 @@ namespace Mile
 
       void EditorApp::InitGUIStyle()
       {
-         SetupImGuiStyle(m_bIsDarkStyle, m_guiAlpha);
+         SetupImGuiStyle(EGUIStyle::Cherry);
       }
    }
 }
