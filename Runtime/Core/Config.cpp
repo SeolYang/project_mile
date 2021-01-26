@@ -80,6 +80,10 @@ namespace Mile
             return true;
          }
       }
+      else
+      {
+         return true; // Already loaded
+      }
 
       // Failed to load engine config!
       return false;
