@@ -1,5 +1,5 @@
 #include "Resource/ResourceCache.h"
-#include "Core/Context.h"
+#include "Resource/Resource.h"
 
 namespace Mile
 {
@@ -14,16 +14,18 @@ namespace Mile
       Clear();
    }
 
-   void ResourceCache::Add(ResourcePtr res)
+   void ResourceCache::Add(Resource* res)
    {
       if (res != nullptr)
       {
+         std::lock_guard<std::mutex> lock(m_mutex);
          m_resources.push_back(res);
       }
    }
 
    void ResourceCache::Clear()
    {
+      std::lock_guard<std::mutex> lock(m_mutex);
       for (auto resource : m_resources)
       {
          SafeDelete(resource);
@@ -32,8 +34,9 @@ namespace Mile
       m_resources.clear();
    }
 
-   ResourcePtr ResourceCache::GetByPath(const String& path)
+   Resource* ResourceCache::GetByPath(const String& path) const
    {
+      std::lock_guard<std::mutex> lock(m_mutex);
       for (auto res : m_resources)
       {
          if (res->GetPath() == path)
@@ -42,11 +45,12 @@ namespace Mile
          }
       }
 
-      return ResourcePtr();
+      return nullptr;
    }
 
-   ResourcePtr ResourceCache::GetByName(const String& name)
+   Resource* ResourceCache::GetByName(const String& name) const
    {
+      std::lock_guard<std::mutex> lock(m_mutex);
       for (auto res : m_resources)
       {
          if (res->GetName() == name)
@@ -55,11 +59,12 @@ namespace Mile
          }
       }
 
-      return ResourcePtr();
+      return nullptr;
    }
 
-   bool ResourceCache::HasByPath(const String& name)
+   bool ResourceCache::HasByPath(const String& name) const
    {
+      std::lock_guard<std::mutex> lock(m_mutex);
       for (auto res : m_resources)
       {
          if (res->GetPath() == name)
@@ -71,8 +76,9 @@ namespace Mile
       return false;
    }
 
-   bool ResourceCache::HasByName(const String& name)
+   bool ResourceCache::HasByName(const String& name) const
    {
+      std::lock_guard<std::mutex> lock(m_mutex);
       for (auto res : m_resources)
       {
          if (res->GetName() == name)
@@ -84,8 +90,9 @@ namespace Mile
       return false;
    }
 
-   bool ResourceCache::IsValid(ResourcePtr target) const
+   bool ResourceCache::IsValid(Resource* target) const
    {
+      std::lock_guard<std::mutex> lock(m_mutex);
       for (auto resource : m_resources)
       {
          if (resource == target)

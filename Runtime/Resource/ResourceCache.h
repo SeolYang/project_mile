@@ -1,27 +1,29 @@
 #pragma once
 #include "Core/Helper.h"
-#include "Resource/Resource.h"
 
 namespace Mile
 {
+   class Context;
+   class Resource;
    class MEAPI ResourceCache
    {
    public:
       ResourceCache(Context* context);
       ~ResourceCache();
 
-      void Add(ResourcePtr res);
+      void Add(Resource* res);
       void Clear();
 
-      ResourcePtr GetByPath(const String& path);
-      ResourcePtr GetByName(const String& name);
-      bool HasByPath(const String& path);
-      bool HasByName(const String& name);
-      bool IsValid(ResourcePtr target) const;
+      Resource* GetByPath(const String& path) const;
+      Resource* GetByName(const String& name) const;
+      bool HasByPath(const String& path) const;
+      bool HasByName(const String& name) const;
+      bool IsValid(Resource* target) const;
 
    private:
       Context* m_context;
-      std::vector<ResourcePtr>      m_resources;
+      mutable std::mutex m_mutex;
+      std::vector<Resource*> m_resources;
 
    };
 
