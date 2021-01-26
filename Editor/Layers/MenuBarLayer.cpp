@@ -166,12 +166,16 @@ namespace Mile
          if (engine != nullptr)
          {
             ImGui::Text("Maximum framerate per second");
-            ImGui::InputInt("", &m_fps);
+            ImGui::InputInt("Target FPS", &m_fps);
             ImGui::SameLine();
             if (ImGui::Button("Apply"))
             {
                engine->SetMaxFPS(m_fps);
+               m_fps = engine->GetMaxFPS();
             }
+
+            ImGui::Text((std::string("Current FPS : ") + std::to_string(engine->GetCurrentFPS())).c_str());
+            ImGui::Text((std::string("Current Deltatime : ") + std::to_string(engine->GetTimer()->GetDeltaTime())).c_str());
 
             ImGui::NewLine();
             if (ImGui::Button("Save Configs"))
