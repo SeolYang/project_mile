@@ -12,7 +12,7 @@ namespace Mile
 
 	enum EGUIStyle : UINT32
 	{
-		LightGreen,
+		Mint,
 		BlueGrey,
 		Cherry,
 		DarkCharcoal,
@@ -25,7 +25,7 @@ namespace Mile
 	/* @reference https://github.com/ocornut/imgui/issues/707 **/
 	namespace IMGUIStyle
 	{
-		static inline void ApplyLightGreen()
+		static inline void ApplyMint()
 		{
 			ImGuiStyle* style = &ImGui::GetStyle();
 			ImVec4* colors = style->Colors;
@@ -523,8 +523,8 @@ namespace Mile
 	{
 		switch (guiStyle)
 		{
-		case LightGreen:
-			IMGUIStyle::ApplyLightGreen();
+		case Mint:
+			IMGUIStyle::ApplyMint();
 			break;
 
 		case BlueGrey:
