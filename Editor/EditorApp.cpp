@@ -14,6 +14,8 @@ namespace Mile
 {
    namespace Editor
    {
+      DEFINE_LOG_CATEGORY(MileEditor);
+
       EditorApp::EditorApp(Context* context) :
          m_engineInstance(nullptr),
          m_worldHierarchyLayer(nullptr),
@@ -62,36 +64,61 @@ namespace Mile
                {
                   return false;
                }
-
                PushLayer(m_gameViewLayer);
 
-               LoadEditorConfig();
+               LoadConfig();
+               ME_LOG(MileEditor, Log, TEXT("Editor application initialized."));
                return true;
             }
          }
 
+         ME_LOG(MileEditor, Fatal, TEXT("Failed to initialize editor application!"));
          return false;
-      }
-
-      void EditorApp::LoadEditorConfig()
-      {
-         if (m_engineInstance != nullptr)
-         {
-            ConfigSystem* configSys = m_engineInstance->GetConfigSystem();
-            if (configSys->LoadConfig(TEXT("Editor")))
-            {
-               auto& editorConfig = configSys->GetConfig(TEXT("Editor"));
-
-               EGUIStyle theme = GetValueSafelyFromJson(editorConfig.second, "Theme", EGUIStyle::LightBlue);
-               SetTheme(theme);
-            }
-         }
       }
 
       void EditorApp::SetTheme(EGUIStyle theme)
       {
          m_theme = theme;
          SetupImGuiStyle(theme);
+      }
+
+      void EditorApp::LoadConfig()
+      {
+         if (m_engineInstance != nullptr)
+         {
+            ConfigSystem* configSys = m_engineInstance->GetConfigSystem();
+            if (configSys->LoadConfig(EDITOR_CONFIG))
+            {
+               auto& editorConfig = configSys->GetConfig(EDITOR_CONFIG);
+               EGUIStyle theme = GetValueSafelyFromJson(editorConfig.second, EDITOR_CONFIG_THEME, EGUIStyle::LightBlue);
+               SetTheme(theme);
+
+               ME_LOG(MileEditor, Log, TEXT("Editor configurations loaded."));
+               return;
+            }
+         }
+
+         ME_LOG(MileEditor, Fatal, TEXT("Failed to load Editor configurations!"));
+      }
+
+      void EditorApp::SaveConfig()
+      {
+         if (m_engineInstance != nullptr)
+         {
+            ConfigSystem* configSys = m_engineInstance->GetConfigSystem();
+            if (configSys->LoadConfig(EDITOR_CONFIG))
+            {
+               auto& editorConfig = configSys->GetConfig(EDITOR_CONFIG);
+               editorConfig.second[EDITOR_CONFIG_THEME] = (UINT32)GetTheme();
+               if (configSys->SaveConfig(TEXT("Editor")))
+               {
+                  ME_LOG(MileEditor, Log, TEXT("Editor configurations saved."));
+                  return;
+               }
+            }
+         }
+
+         ME_LOG(MileEditor, Fatal, TEXT("Failed to save Editor configurations!"));
       }
    }
 }

@@ -22,13 +22,6 @@ namespace Mile
       Context* context = GetContext();
       if (SubSystem::Init())
       {
-
-         if (!LoadConfig(TEXT("Engine")))
-         {
-            ME_LOG(MileConfigSystem, ELogVerbosity::Fatal, TEXT("Failed to load Engine default config!"));
-            return false;
-         }
-
          ME_LOG(MileConfigSystem, ELogVerbosity::Log, TEXT("Config System Initialized!"));
          SubSystem::InitSucceed();
          return true;

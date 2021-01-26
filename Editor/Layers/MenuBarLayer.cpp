@@ -304,7 +304,21 @@ namespace Mile
             ImGui::Text("Renderer does not exist or outdated.");
             ME_LOG(MileMenuBarLayer, Fatal, TEXT("Renderer doest not exist!"));
          }
+
+         if (ImGui::Button("Save Configs"))
+         {
+            SaveRendererConfig();
+         }
+
          ImGui::End();
+      }
+
+      void MenuBarLayer::SaveRendererConfig()
+      {
+         if (m_renderer != nullptr)
+         {
+            m_renderer->SaveConfig();
+         }
       }
 
       void MenuBarLayer::EditorConfig()
@@ -333,7 +347,7 @@ namespace Mile
             ImGui::EndCombo();
          }
 
-         if (ImGui::Button("Save"))
+         if (ImGui::Button("Save Configs"))
          {
             SaveEditorConfig();
          }
@@ -343,11 +357,9 @@ namespace Mile
 
       void MenuBarLayer::SaveEditorConfig()
       {
-         if (m_configSys != nullptr)
+         if (m_editorApp != nullptr)
          {
-            auto& editorConfig = m_configSys->GetConfig(TEXT("Editor"));
-            editorConfig.second["Theme"] = (UINT32)m_editorApp->GetTheme();
-            m_configSys->SaveConfig(TEXT("Editor"));
+            m_editorApp->SaveConfig();
          }
       }
    }

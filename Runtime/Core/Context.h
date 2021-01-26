@@ -29,6 +29,8 @@ namespace Mile
       */
       template <typename T> bool HasSubSystem() const;
 
+      void SaveSubSystemConfigs();
+
    private:
       std::vector<SubSystem*>  m_subSystems;
 

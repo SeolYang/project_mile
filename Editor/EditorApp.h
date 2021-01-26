@@ -2,6 +2,9 @@
 #include "Core/Application.h"
 #include "Core/imguiHelper.h"
 
+#define EDITOR_CONFIG TEXT("Editor")
+#define EDITOR_CONFIG_THEME "Theme"
+
 namespace Mile
 {
    class Engine;
@@ -13,6 +16,8 @@ namespace Mile
    class RenderTexture;
    namespace Editor
    {
+      DECLARE_LOG_CATEGORY_EXTERN(MileEditor, Log);
+
       class WorldHierarchyLayer;
       class MenuBarLayer;
       class GameViewLayer;
@@ -24,10 +29,11 @@ namespace Mile
 
          virtual bool Init() override;
 
-         void LoadEditorConfig();
-
          EGUIStyle GetTheme() const { return m_theme; }
          void SetTheme(EGUIStyle theme);
+
+         virtual void LoadConfig();
+         virtual void SaveConfig();
 
       private:
          Engine* m_engineInstance;

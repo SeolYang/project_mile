@@ -4,6 +4,14 @@
 #include "Math/Vector2.h"
 #include <Windows.h>
 
+#define WINDOW_CONFIG TEXT("Window")
+#define WINDOW_CONFIG_RESOLUTION_WIDTH "ResolutionWidth"
+#define WINDOW_CONFIG_RESOLUTION_HEIGHT "ResolutionHeight"
+#define WINDOW_CONFIG_TITLE "Title"
+#define WINDOW_CONFIG_WINDOW_STYLE "WindowStyle"
+
+#define DEFAULT_WINDOW_TITLE "Mile"
+
 namespace Mile
 {
    DECLARE_LOG_CATEGORY_EXTERN(MileWindow, Log);
@@ -68,6 +76,9 @@ namespace Mile
       ChangeDisplaySettings(NULL, 0);
    }
 
+   constexpr unsigned int DEFAULT_WINDOW_RES_WIDTH = 1600;
+   constexpr unsigned int DEFAULT_WINDOW_RES_HEIGHT = 900;
+
    /**
     * @brief	화면이 보여질 윈도우를 나타내는 서브 시스템 클래스입니다.
     */
@@ -106,12 +117,6 @@ namespace Mile
       float GetWindowAspectRatio() const;
 
       /**
-       * @brief	설정된 윈도우 창의 재생빈도수를 반환합니다.
-       * @return 윈도우 창의 재생빈도수
-       */
-      Float GetRefreshRate() const { return m_refreshRate; }
-
-      /**
        * @brief 윈도우 창이 풀 스크린 모드인지 확인합니다.
        * @return	풀 스크린 모드 여부
        */
@@ -120,15 +125,19 @@ namespace Mile
       virtual void Update() override;
 
       void SetTitle(const String& title);
+      String GetTitle() const { return m_title; }
 
       void _OnWindowResize(unsigned int width, unsigned int height);
       void _OnWindowMinimized();
+
+      virtual void LoadConfig();
+      virtual void SaveConfig();
 
    private:
       HWND m_handle;
       unsigned int m_resWidth;
       unsigned int m_resHeight;
-      Float        m_refreshRate;
+      String m_title;
 
       EWindowStyle m_windowStyle;
 

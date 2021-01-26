@@ -30,4 +30,12 @@ namespace Mile
          m_subSystems.push_back(newSubSystem);
       }
    }
+
+   void Context::SaveSubSystemConfigs()
+   {
+      for (auto* subSystem : m_subSystems)
+      {
+         subSystem->SaveConfig();
+      }
+   }
 }

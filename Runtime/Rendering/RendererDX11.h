@@ -5,6 +5,21 @@
 #include <array>
 #include <vector>
 
+#define RENDERER_CONFIG TEXT("Renderer")
+#define RENDERER_CONFIG_REFERENCE_RESOLUTION "ReferenceResolution"
+#define RENDERER_CONFIG_VSYNC "VSync"
+#define RENDERER_CONFIG_EXPOSURE "Exposure"
+#define RENDERER_CONFIG_GAMMA "Gamma"
+#define RENDERER_CONFIG_AO "AO"
+#define RENDERER_CONFIG_BLOOM_TYPE "BloomType"
+#define RENDERER_CONFIG_GAUSSIAN_BLOOM_AMOUNT "GaussianBloomAmount"
+#define RENDERER_CONFIG_GAUSSIAN_BLOOM_ITENSITY "GaussianBloomIntensity"
+#define RENDERER_CONFIG_GAUSSIAN_BLOOM_THRESHOLD "GaussianBloomThreshold"
+#define RENDERER_CONFIG_SSAO_ENABLED "SSAOEnabled"
+#define RENDERER_CONFIG_SSAO_RADIUS "SSAORadius"
+#define RENDERER_CONFIG_SSAO_BIAS "SSAOBias"
+#define RENDERER_CONFIG_SSAO_MAGNITUDE "SSAOMagnitude"
+
 namespace Mile
 {
    DECLARE_LOG_CATEGORY_EXTERN(MileRendererDX11, Log);
@@ -179,6 +194,9 @@ namespace Mile
 
       void OnWindowResize(unsigned int width, unsigned int height);
       void OnWindowMinimized();
+
+      virtual void SaveConfig() override;
+      virtual void LoadConfig() override;
 
    private:
       /* Initialization methods **/

@@ -151,9 +151,7 @@ namespace Mile
          }
 
          /** Load Engine Config  */
-         auto& engineConfig = m_configSys->GetConfig(TEXT("Engine"));
-         m_maxFPS = std::clamp(static_cast<unsigned int>(engineConfig.second["MaxFPS"]), LOWER_BOUND_OF_ENGINE_FPS, UPPER_BOUND_OF_ENGINE_FPS);
-         m_targetTimePerFrame = static_cast<long long>((1.0 / static_cast<double>(m_maxFPS)) * 1000.0);
+         this->LoadConfig();
 
          ME_LOG(MileEngine, Log, TEXT("Engine initialized."));
          SubSystem::InitSucceed();
@@ -276,5 +274,42 @@ namespace Mile
    World* Engine::GetWorld()
    {
       return (m_instance != nullptr) ? m_instance->m_world : nullptr;
+   }
+
+   void Engine::LoadConfig()
+   {
+      if (m_configSys != nullptr)
+      {
+         if (m_configSys->LoadConfig(ENGINE_CONFIG))
+         {
+            auto& engineConfig = m_configSys->GetConfig(ENGINE_CONFIG);
+            unsigned int maxFPS = GetValueSafelyFromJson(engineConfig.second, ENGINE_CONFIG_MAX_FPS, UPPER_BOUND_OF_ENGINE_FPS);
+            m_maxFPS = std::clamp(maxFPS, LOWER_BOUND_OF_ENGINE_FPS, UPPER_BOUND_OF_ENGINE_FPS);
+            m_targetTimePerFrame = static_cast<long long>((1.0 / static_cast<double>(m_maxFPS)) * 1000.0);
+            ME_LOG(MileEngine, ELogVerbosity::Log, TEXT("Engine configurations loaded."));
+            return;
+         }
+      }
+
+      ME_LOG(MileEngine, ELogVerbosity::Fatal, TEXT("Failed to load Engine default config!"));
+   }
+
+   void Engine::SaveConfig()
+   {
+      if (m_configSys != nullptr)
+      {
+         if (m_configSys->LoadConfig(ENGINE_CONFIG))
+         {
+            auto& engineConfig = m_configSys->GetConfig(ENGINE_CONFIG);
+            engineConfig.second[ENGINE_CONFIG_MAX_FPS] = m_maxFPS;
+            if (m_configSys->SaveConfig(ENGINE_CONFIG))
+            {
+               ME_LOG(MileEngine, ELogVerbosity::Log, TEXT("Engine configurations saved."));
+               return;
+            }
+         }
+      }
+
+      ME_LOG(MileEngine, ELogVerbosity::Fatal, TEXT("Failed to save Engine configurations!"));
    }
 }

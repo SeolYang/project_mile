@@ -27,7 +27,6 @@
 #include "Rendering/GaussianBlurPass.h"
 #include "Rendering/BlendingPass.h"
 #include "Rendering/ToneMappingPass.h"
-#include "Core/CoreMinimal.h"
 #include "Component/MeshRenderComponent.h"
 #include "Component/LightComponent.h"
 #include "Component/CameraComponent.h"
@@ -38,6 +37,9 @@
 #include "Resource/Texture2D.h"
 #include "Resource/RenderTexture.h"
 #include "Resource/ResourceManager.h"
+#include "Core/CoreMinimal.h"
+#include "Core/Config.h"
+#include "Core/Engine.h"
 #include "Math/Vector2.h"
 #include "MT/ThreadPool.h"
 #include <random>
@@ -127,6 +129,7 @@ namespace Mile
       Context* context = GetContext();
       if (SubSystem::Init())
       {
+         LoadConfig();
          if (InitAPI())
          {
             if (!InitPBR())
@@ -580,6 +583,78 @@ namespace Mile
       SafeDelete(m_noCulling);
    }
 
+   void RendererDX11::SaveConfig()
+   {
+      ConfigSystem* configSys = Engine::GetConfigSystem();
+      if (configSys != nullptr)
+      {
+         if (configSys->LoadConfig(RENDERER_CONFIG))
+         {
+            auto& config = configSys->GetConfig(RENDERER_CONFIG);
+            config.second[RENDERER_CONFIG_REFERENCE_RESOLUTION] = m_referenceResolution.Serialize();
+            config.second[RENDERER_CONFIG_VSYNC] = m_vsyncEnabled;
+
+            config.second[RENDERER_CONFIG_EXPOSURE] = m_exposureFactor;
+            config.second[RENDERER_CONFIG_GAMMA] = m_gammaFactor;
+            config.second[RENDERER_CONFIG_AO] = m_aoFactor;
+
+            config.second[RENDERER_CONFIG_BLOOM_TYPE] = static_cast<UINT32>(m_bloomType);
+            config.second[RENDERER_CONFIG_GAUSSIAN_BLOOM_AMOUNT] = m_gaussianBloomAmount;
+            config.second[RENDERER_CONFIG_GAUSSIAN_BLOOM_ITENSITY] = m_gaussianBloomIntensity;
+            config.second[RENDERER_CONFIG_GAUSSIAN_BLOOM_THRESHOLD] = m_gaussianBloomThreshold;
+
+            config.second[RENDERER_CONFIG_SSAO_ENABLED] = m_bEnableSSAO;
+            config.second[RENDERER_CONFIG_SSAO_RADIUS] = m_ssaoRadius;
+            config.second[RENDERER_CONFIG_SSAO_BIAS] = m_ssaoBias;
+            config.second[RENDERER_CONFIG_SSAO_MAGNITUDE] = m_ssaoMagnitude;
+
+            if (configSys->SaveConfig(TEXT("Renderer")))
+            {
+               ME_LOG(MileRendererDX11, Log, TEXT("Renderer configurations saved."));
+               return;
+            }
+         }
+      }
+
+      ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to save Renderer configurations!"));
+   }
+
+   void RendererDX11::LoadConfig()
+   {
+      ConfigSystem* configSys = Engine::GetConfigSystem();
+      if (configSys != nullptr)
+      {
+         if (configSys->LoadConfig(RENDERER_CONFIG))
+         {
+            auto& config = configSys->GetConfig(RENDERER_CONFIG);
+
+            Vector2 referenceResolution;
+            referenceResolution.DeSerialize(GetValueSafelyFromJson(config.second, RENDERER_CONFIG_REFERENCE_RESOLUTION, m_referenceResolution.Serialize()));
+            SetReferenceResolution(referenceResolution);
+            m_vsyncEnabled = GetValueSafelyFromJson(config.second, RENDERER_CONFIG_VSYNC, m_vsyncEnabled);
+
+            m_exposureFactor = GetValueSafelyFromJson(config.second, RENDERER_CONFIG_EXPOSURE, m_exposureFactor);
+            m_gammaFactor = GetValueSafelyFromJson(config.second, RENDERER_CONFIG_GAMMA, m_gammaFactor);
+            m_aoFactor = GetValueSafelyFromJson(config.second, RENDERER_CONFIG_AO, m_aoFactor);
+
+            m_bloomType = static_cast<EBloomType>(GetValueSafelyFromJson(config.second, RENDERER_CONFIG_BLOOM_TYPE, static_cast<UINT32>(m_bloomType)));
+            m_gaussianBloomAmount = GetValueSafelyFromJson(config.second, RENDERER_CONFIG_GAUSSIAN_BLOOM_AMOUNT, m_gaussianBloomAmount);
+            m_gaussianBloomIntensity = GetValueSafelyFromJson(config.second, RENDERER_CONFIG_GAUSSIAN_BLOOM_ITENSITY, m_gaussianBloomIntensity);
+            m_gaussianBloomThreshold = GetValueSafelyFromJson(config.second, RENDERER_CONFIG_GAUSSIAN_BLOOM_THRESHOLD, m_gaussianBloomThreshold);
+
+            m_bEnableSSAO = GetValueSafelyFromJson(config.second, RENDERER_CONFIG_SSAO_ENABLED, m_bEnableSSAO);
+            m_ssaoRadius = GetValueSafelyFromJson(config.second, RENDERER_CONFIG_SSAO_RADIUS, m_ssaoRadius);
+            m_ssaoBias = GetValueSafelyFromJson(config.second, RENDERER_CONFIG_SSAO_BIAS, m_ssaoBias);
+            m_ssaoMagnitude = GetValueSafelyFromJson(config.second, RENDERER_CONFIG_SSAO_MAGNITUDE, m_ssaoMagnitude);
+
+            ME_LOG(MileRendererDX11, Log, TEXT("Renderer configurations loaded and setup."));
+            return;
+         }
+      }
+
+      ME_LOG(MileRendererDX11, Fatal, TEXT("Failed to load Renderer configurations!"));
+   }
+
    void RendererDX11::DeInit()
    {
       if (IsInitialized())
@@ -605,7 +680,7 @@ namespace Mile
       if (m_referenceResolution != newReferenceRes)
       {
          m_referenceResolution = newReferenceRes;
-         m_bReferenceChangedFlag = true;
+         m_bReferenceChangedFlag = IsInitialized();
       }
    }
 

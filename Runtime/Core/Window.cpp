@@ -15,8 +15,9 @@ namespace Mile
 
    Window::Window(Context* context) : SubSystem(context),
       m_handle(nullptr),
-      m_resWidth(0), m_resHeight(0),
-      m_refreshRate(60.0), m_windowStyle(EWindowStyle::Windowed)
+      m_title(TEXT("Mile")),
+      m_resWidth(DEFAULT_WINDOW_RES_WIDTH), m_resHeight(DEFAULT_WINDOW_RES_HEIGHT),
+      m_windowStyle(EWindowStyle::Windowed)
    {
    }
 
@@ -30,20 +31,15 @@ namespace Mile
       Context* context = GetContext();
       if (SubSystem::Init())
       {
+         LoadConfig();
          auto configSys = context->GetSubSystem<ConfigSystem>();
-
-         auto config = configSys->GetConfig(TEXT("Engine"));
-         std::wstring windowTitle = String2WString(config.second["Title"]);
 
          WNDCLASS wndClass = { 0 };
          wndClass.style = CS_OWNDC;
          wndClass.lpfnWndProc = &Mile::WinProc;
          wndClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
-         wndClass.lpszClassName = windowTitle.c_str();
+         wndClass.lpszClassName = m_title.c_str();
          RegisterClass(&wndClass);
-
-         m_resWidth = config.second["ResolutionWidth"];
-         m_resHeight = config.second["ResolutionHeight"];
 
          int systemResX = GetSystemMetrics(SM_CXSCREEN);
          int systemResY = GetSystemMetrics(SM_CYSCREEN);
@@ -51,7 +47,6 @@ namespace Mile
          unsigned int posX = (systemResX - m_resWidth) / 2;
          unsigned int posY = (systemResY - m_resHeight) / 2;
 
-         EWindowStyle windowStyle = IndexToWindowStyle(config.second["WindowStyle"]);
          RECT windowRect;
          windowRect.left = 0;
          windowRect.right = m_resWidth;
@@ -60,7 +55,7 @@ namespace Mile
 
          auto style = WS_POPUP;
          auto exStyle = WS_EX_APPWINDOW;
-         switch (windowStyle)
+         switch (m_windowStyle)
          {
          case EWindowStyle::Windowed:
             style |= WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
@@ -86,7 +81,7 @@ namespace Mile
 
          m_handle = CreateWindowEx(
             exStyle,
-            windowTitle.c_str(), windowTitle.c_str(),
+            m_title.c_str(), m_title.c_str(),
             style,
             posX, posY,
             windowRect.right - windowRect.left,
@@ -108,6 +103,7 @@ namespace Mile
    {
       if (IsInitialized())
       {
+         SaveConfig();
          DestroyWindow(m_handle);
          ME_LOG(MileWindow, Log, TEXT("Window deinitialized."));
          SubSystem::DeInit();
@@ -158,7 +154,12 @@ namespace Mile
 
    void Window::SetTitle(const String& title)
    {
-      SetWindowText(m_handle, title.c_str());
+      m_title = title;
+
+      if (m_handle != nullptr)
+      {
+         SetWindowText(m_handle, title.c_str());
+      }
    }
 
    void Window::_OnWindowResize(unsigned int width, unsigned int height)
@@ -178,6 +179,54 @@ namespace Mile
    void Window::_OnWindowMinimized()
    {
       OnWindowMinimized.Broadcast();
+   }
+
+   void Window::LoadConfig()
+   {
+      ConfigSystem* configSys = Engine::GetConfigSystem();
+      if (configSys != nullptr)
+      {
+         if (configSys->LoadConfig(WINDOW_CONFIG))
+         {
+            auto& config = configSys->GetConfig(WINDOW_CONFIG);
+            m_resWidth = GetValueSafelyFromJson(config.second, WINDOW_CONFIG_RESOLUTION_WIDTH, m_resWidth);
+            m_resHeight = GetValueSafelyFromJson(config.second, WINDOW_CONFIG_RESOLUTION_HEIGHT, m_resHeight);
+
+            std::string title;
+            title = GetValueSafelyFromJson<std::string>(config.second, WINDOW_CONFIG_TITLE, DEFAULT_WINDOW_TITLE);
+            m_title = String2WString(title);
+
+            m_windowStyle = IndexToWindowStyle(GetValueSafelyFromJson(config.second, WINDOW_CONFIG_WINDOW_STYLE, static_cast<unsigned int>(m_windowStyle)));
+            ME_LOG(MileWindow, Log, TEXT("Window configuration loaded!"));
+            return;
+         }
+      }
+
+      ME_LOG(MileWindow, Fatal, TEXT("Failed to load window config!"));
+   }
+
+   void Window::SaveConfig()
+   {
+      ConfigSystem* configSys = Engine::GetConfigSystem();
+      if (configSys != nullptr)
+      {
+         if (configSys->LoadConfig(WINDOW_CONFIG))
+         {
+            auto& config = configSys->GetConfig(WINDOW_CONFIG);
+            config.second[WINDOW_CONFIG_RESOLUTION_WIDTH] = m_resWidth;
+            config.second[WINDOW_CONFIG_RESOLUTION_HEIGHT] = m_resHeight;
+            config.second[WINDOW_CONFIG_TITLE] = WString2String(m_title);
+            config.second[WINDOW_CONFIG_WINDOW_STYLE] = static_cast<UINT32>(m_windowStyle);
+
+            if (configSys->SaveConfig(WINDOW_CONFIG))
+            {
+               ME_LOG(MileWindow, Log, TEXT("Window configuration saved!"));
+               return;
+            }
+         }
+      }
+
+      ME_LOG(MileWindow, Fatal, TEXT("Failed to save window config!"));
    }
 
    LRESULT WinProc(HWND Handle, unsigned int Msg, WPARAM wParam, LPARAM lParam)

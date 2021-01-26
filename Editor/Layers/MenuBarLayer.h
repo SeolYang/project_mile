@@ -30,6 +30,7 @@ namespace Mile
       private:
          void FileMenu();
          void RendererConfig();
+         void SaveRendererConfig();
 
          void EditorConfig();
          void SaveEditorConfig();

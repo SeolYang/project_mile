@@ -1,6 +1,9 @@
 #pragma once
 #include "Core/Logger.h"
 
+#define ENGINE_CONFIG TEXT("Engine")
+#define ENGINE_CONFIG_MAX_FPS "MaxFPS"
+
 namespace Mile
 {
    DECLARE_LOG_CATEGORY_EXTERN(MileEngine, ELogVerbosity::Log);
@@ -58,6 +61,9 @@ namespace Mile
       static Window* GetWindow();
       static RendererDX11* GetRenderer();
       static World* GetWorld();
+
+      virtual void LoadConfig();
+      virtual void SaveConfig();
 
    private:
       static Engine*    m_instance;
