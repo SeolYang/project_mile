@@ -57,6 +57,7 @@ namespace Mile
       ELogVerbosity verbosity,
       const Mile::String& message)
    {
+      std::lock_guard<std::mutex> lock(m_mutex);
       OPTICK_EVENT();
       ELogVerbosity finalVerbosity = verbosity;
       if (finalVerbosity == ELogVerbosity::All)

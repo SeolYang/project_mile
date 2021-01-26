@@ -122,9 +122,10 @@ namespace Mile
       bool Flush(const LogList& list);
 
    private:
-      Mile::String   m_folderPath;
-      LogList        m_logs;
-      std::chrono::system_clock::time_point     m_loggingBeginTime;
+      std::mutex m_mutex;
+      String   m_folderPath;
+      LogList  m_logs;
+      std::chrono::system_clock::time_point  m_loggingBeginTime;
 
    };
 

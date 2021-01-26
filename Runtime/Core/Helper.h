@@ -6,17 +6,22 @@
 #include <array>
 #include <map>
 #include <set>
+#include <forward_list>
+#include <queue>
 
 #include <memory>
 #include <functional>
-
 #include <locale>
 #include <codecvt>
 #include <iostream>
 #include <string>
 #include <algorithm>
 #include <type_traits>
-
+#include <thread>
+#include <future>
+#include <condition_variable>
+#include <mutex>
+#include <stdexcept>
 #include <chrono>
 
 #define WIN32_MEAN_AND_LEAN
