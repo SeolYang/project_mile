@@ -150,7 +150,8 @@ namespace Mile
             return false;
          }
 
-         auto engineConfig = m_configSys->GetConfig(TEXT("Engine"));
+         /** Load Engine Config  */
+         auto& engineConfig = m_configSys->GetConfig(TEXT("Engine"));
          m_maxFPS = std::clamp(static_cast<unsigned int>(engineConfig.second["MaxFPS"]), LOWER_BOUND_OF_ENGINE_FPS, UPPER_BOUND_OF_ENGINE_FPS);
          m_targetTimePerFrame = static_cast<long long>((1.0 / static_cast<double>(m_maxFPS)) * 1000.0);
 

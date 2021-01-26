@@ -37,7 +37,16 @@ namespace Mile
 
             if (ImGui::BeginMenu("Config"))
             {
-               ImGui::MenuItem("Renderer", NULL, &m_bIsRendererConfigOpened);
+               if (ImGui::MenuItem("Save All Configs"))
+               {
+                  m_configSys->SaveAllConfigs();
+               }
+
+               if (ImGui::MenuItem("Renderer", NULL, &m_bIsRendererConfigOpened))
+               {
+                  m_referenceResolution = m_renderer->GetReferenceResolution();
+               }
+
                ImGui::EndMenu();
             }
 
@@ -136,6 +145,22 @@ namespace Mile
          WindowFocusedEffect(0, 255, 0);
          if (m_renderer != nullptr)
          {
+            /** Display */
+            ImGui::Text("Display");
+            ImGui::Spacing();
+            ImGui::Text("Rendering Reference Resolution");
+            ImGui::InputFloat2("", m_referenceResolution.elements, "%.0f");
+            if (ImGui::Button("Apply"))
+            {
+               m_renderer->SetReferenceResolution(m_referenceResolution);
+            }
+
+            bool bIsVsyncEnabled = m_renderer->IsVsyncEnabled();
+            if (ImGui::Checkbox("Vsync", &bIsVsyncEnabled))
+            {
+               m_renderer->SetVsync(bIsVsyncEnabled);
+            }
+
             /** Post Process */
             ImGui::Text("Post-Process");
 
@@ -265,14 +290,6 @@ namespace Mile
             else
             {
                ImGui::Text("Equirectangular Map does not exist!");
-            }
-
-            /** Display */
-            ImGui::Text("Display");
-            bool bIsVsyncEnabled = m_renderer->IsVsyncEnabled();
-            if (ImGui::Checkbox("Vsync", &bIsVsyncEnabled))
-            {
-               m_renderer->SetVsync(bIsVsyncEnabled);
             }
          }
          else

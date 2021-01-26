@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/Layer.h"
 #include "Core/Logger.h"
+#include "Math/Vector2.h"
 
 namespace Mile
 {
@@ -33,6 +34,8 @@ namespace Mile
          RendererDX11* m_renderer;
          ConfigSystem* m_configSys;
          bool m_bIsRendererConfigOpened;
+
+         Vector2 m_referenceResolution;
 
       };
    }

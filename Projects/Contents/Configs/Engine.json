@@ -1,7 +1,1 @@
-{
-  "Title": "Engine",
-  "ResolutionWidth": 1600,
-  "ResolutionHeight": 900,
-  "MaxFPS": 300,
-  "WindowStyle": 2
-}
+{"MaxFPS":300,"ResolutionHeight":900,"ResolutionWidth":1600,"Title":"Engine","WindowStyle":2}
