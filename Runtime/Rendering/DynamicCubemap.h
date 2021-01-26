@@ -1,6 +1,5 @@
 #pragma once
 #include "Rendering/Texture2DBaseDX11.h"
-#include <array>
 
 namespace Mile
 {

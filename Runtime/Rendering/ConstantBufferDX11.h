@@ -1,6 +1,5 @@
 #pragma once
 #include "Rendering/BufferDX11.h"
-#include "Rendering/ShaderDX11.h"
 
 namespace Mile
 {
