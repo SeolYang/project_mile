@@ -46,7 +46,6 @@ namespace Mile
          Vector2 referenceRes = renderer->GetReferenceResolution();
 
          ImGui::Begin("Game", nullptr, windowFlag);
-         WindowFocusedEffect(0, 255, 0, 1.5f);
          if (renderer->IsRenderedFrame())
          {
             if (m_editorCameraRenderTex != nullptr)

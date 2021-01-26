@@ -3,7 +3,6 @@
 #include "Core/Engine.h"
 #include "Core/Config.h"
 #include "GameFramework/World.h"
-#include "Core/imguiHelper.h"
 #include "Layers/WorldHierarchyLayer.h"
 #include "Layers/MenuBarLayer.h"
 #include "Layers/GameViewLayer.h"
@@ -20,6 +19,7 @@ namespace Mile
          m_worldHierarchyLayer(nullptr),
          m_menuBarLayer(nullptr),
          m_gameViewLayer(nullptr),
+         m_theme(EGUIStyle::LightBlue),
          Application(context, TEXT("MileEditor"))
       {
       }
@@ -54,10 +54,8 @@ namespace Mile
                m_menuBarLayer->SetWindow(window);
                m_menuBarLayer->SetRenderer(renderer);
                m_menuBarLayer->SetConfigSystem(configSys);
+               m_menuBarLayer->SetEditorApp(this);
                PushLayer(m_menuBarLayer);
-
-               LoadEditorConfig();
-               InitGUIStyle();
 
                m_gameViewLayer = new GameViewLayer(context);
                if (!m_gameViewLayer->Init())
@@ -66,6 +64,8 @@ namespace Mile
                }
 
                PushLayer(m_gameViewLayer);
+
+               LoadEditorConfig();
                return true;
             }
          }
@@ -82,31 +82,16 @@ namespace Mile
             {
                auto& editorConfig = configSys->GetConfig(TEXT("Editor"));
 
-               /* GUI Config **/
-               json guiConfig = GetValueSafelyFromJson(editorConfig.second, "GUI", json());
+               EGUIStyle theme = GetValueSafelyFromJson(editorConfig.second, "Theme", EGUIStyle::LightBlue);
+               SetTheme(theme);
             }
          }
       }
 
-      void EditorApp::SaveEditorConfig()
+      void EditorApp::SetTheme(EGUIStyle theme)
       {
-         if (m_engineInstance != nullptr)
-         {
-            ConfigSystem* configSys = m_engineInstance->GetConfigSystem();
-            auto& editorConfig = configSys->GetConfig(TEXT("Editor"));
-            json& editorConfigJson = editorConfig.second;
-
-            /* GUI Config **/
-            json guiConfig;
-            editorConfigJson["GUI"] = guiConfig;
-
-            configSys->SaveConfig(TEXT("Editor"));
-         }
-      }
-
-      void EditorApp::InitGUIStyle()
-      {
-         SetupImGuiStyle(EGUIStyle::Cherry);
+         m_theme = theme;
+         SetupImGuiStyle(theme);
       }
    }
 }

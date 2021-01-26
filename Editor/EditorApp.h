@@ -1,5 +1,6 @@
 #pragma once
 #include "Core/Application.h"
+#include "Core/imguiHelper.h"
 
 namespace Mile
 {
@@ -24,16 +25,17 @@ namespace Mile
          virtual bool Init() override;
 
          void LoadEditorConfig();
-         void SaveEditorConfig();
 
-      private:
-         void InitGUIStyle();
+         EGUIStyle GetTheme() const { return m_theme; }
+         void SetTheme(EGUIStyle theme);
 
       private:
          Engine* m_engineInstance;
          WorldHierarchyLayer* m_worldHierarchyLayer;
          MenuBarLayer* m_menuBarLayer;
          GameViewLayer* m_gameViewLayer;
+
+         EGUIStyle m_theme;
 
       };
    }

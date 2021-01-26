@@ -8,6 +8,7 @@
 #include "GameFramework/World.h"
 #include "Rendering/RendererDX11.h"
 #include "Rendering/Texture2dDX11.h"
+#include "EditorApp.h"
 
 namespace Mile
 {
@@ -20,6 +21,8 @@ namespace Mile
          m_window(nullptr),
          m_renderer(nullptr),
          m_configSys(nullptr),
+         m_editorApp(nullptr),
+         m_bIsEditorConfigOpend(false),
          m_bIsRendererConfigOpened(false),
          Layer(context, TEXT("MenuBarLayer"))
       {
@@ -37,9 +40,9 @@ namespace Mile
 
             if (ImGui::BeginMenu("Config"))
             {
-               if (ImGui::MenuItem("Save All Configs"))
+               if (ImGui::MenuItem("Editor", nullptr, &m_bIsEditorConfigOpend))
                {
-                  m_configSys->SaveAllConfigs();
+                  /* Empty */
                }
 
                if (ImGui::MenuItem("Renderer", NULL, &m_bIsRendererConfigOpened))
@@ -51,6 +54,11 @@ namespace Mile
             }
 
             ImGui::EndMainMenuBar();
+
+            if (m_bIsEditorConfigOpend)
+            {
+               EditorConfig();
+            }
 
             if (m_bIsRendererConfigOpened)
             {
@@ -142,7 +150,6 @@ namespace Mile
       void MenuBarLayer::RendererConfig()
       {
          ImGui::Begin("Renderer Configuration");
-         WindowFocusedEffect(0, 255, 0);
          if (m_renderer != nullptr)
          {
             /** Display */
@@ -298,6 +305,50 @@ namespace Mile
             ME_LOG(MileMenuBarLayer, Fatal, TEXT("Renderer doest not exist!"));
          }
          ImGui::End();
+      }
+
+      void MenuBarLayer::EditorConfig()
+      {
+         ImGui::Begin("Editor Configurations");
+
+         const char* items[] = { "Mint", "BlueGrey", "Cherry", "DarkCharcoal", "LightBlue", "ClassicSteam", "GoldBlack", "UE4Like" };
+         static const char* currentItem = items[m_editorApp->GetTheme()];
+
+         if (ImGui::BeginCombo("Theme", currentItem))
+         {
+            for (UINT32 idx = 0; idx < IM_ARRAYSIZE(items); ++idx)
+            {
+               bool bSelected = (currentItem == items[idx]);
+               if (ImGui::Selectable(items[idx], bSelected))
+               {
+                  currentItem = items[idx];
+                  m_editorApp->SetTheme((EGUIStyle)idx);
+               }
+               if (bSelected)
+               {
+                  ImGui::SetItemDefaultFocus();
+               }
+            }
+
+            ImGui::EndCombo();
+         }
+
+         if (ImGui::Button("Save"))
+         {
+            SaveEditorConfig();
+         }
+
+         ImGui::End();
+      }
+
+      void MenuBarLayer::SaveEditorConfig()
+      {
+         if (m_configSys != nullptr)
+         {
+            auto& editorConfig = m_configSys->GetConfig(TEXT("Editor"));
+            editorConfig.second["Theme"] = (UINT32)m_editorApp->GetTheme();
+            m_configSys->SaveConfig(TEXT("Editor"));
+         }
       }
    }
 }

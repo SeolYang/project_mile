@@ -72,7 +72,6 @@ namespace Mile
       void WorldHierarchyLayer::DrawHierarchyPanel()
       {
          ImGui::Begin("World Hierarchy");
-         WindowFocusedEffect(0, 255, 0);
          if (ImGui::TreeNode("Scene"))
          {
             if (m_target != nullptr)
@@ -92,7 +91,6 @@ namespace Mile
       void WorldHierarchyLayer::DrawPropertiesPanel()
       {
          ImGui::Begin("Properties");
-         WindowFocusedEffect(0, 255, 0);
          if (m_selectedEntity != nullptr)
          {
             if (m_target->CheckEntityValidation(m_selectedEntity))
