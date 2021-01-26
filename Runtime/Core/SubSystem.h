@@ -17,6 +17,9 @@ namespace Mile
       virtual void Update() { }
       virtual void DeInit() { m_bIsInitialized = false; }
 
+      virtual void SaveConfig() { }
+      virtual void LoadConfig() { }
+
       Context* GetContext() const { return m_context; }
       bool IsInitialized() const { return m_bIsInitialized; }
 
