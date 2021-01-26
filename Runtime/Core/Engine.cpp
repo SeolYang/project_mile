@@ -201,12 +201,18 @@ namespace Mile
 
             m_timer->PreEndFrame();
 
-            auto deltaTimeMS = m_timer->GetDeltaTimeMS();
-            if (deltaTimeMS < m_targetTimePerFrame)
+            auto deltaTimeNS = m_timer->GetDeltaTimeNS();
+            if (deltaTimeNS < m_targetTimePerFrame)
             {
-               std::this_thread::sleep_for(std::chrono::milliseconds(m_targetTimePerFrame - deltaTimeMS));
-               m_timer->PostEndFrame();
+               auto yieldTime = std::chrono::nanoseconds(m_targetTimePerFrame - deltaTimeNS);
+               auto end = std::chrono::high_resolution_clock::now() + yieldTime;
+               while (std::chrono::high_resolution_clock::now() < end)
+               {
+                  std::this_thread::yield();
+               }
             }
+
+            m_timer->PostEndFrame();
          }
       }
 
@@ -310,5 +316,15 @@ namespace Mile
       }
 
       ME_LOG(MileEngine, ELogVerbosity::Fatal, TEXT("Failed to save Engine configurations!"));
+   }
+
+   long long Engine::GetCurrentFPS() const
+   {
+      if (m_timer != nullptr)
+      {
+         return m_timer->GetFPS();
+      }
+
+      return 0;
    }
 }

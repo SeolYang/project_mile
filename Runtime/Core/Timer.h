@@ -35,7 +35,7 @@ namespace Mile
        */
       float GetDeltaTime() const
       {
-         return GetDeltaTimeMS() * 0.001f;
+         return GetDeltaTimeNS() * 0.000000001f;
       }
 
       /**
@@ -45,6 +45,11 @@ namespace Mile
       long long GetDeltaTimeMS() const
       {
          return (std::chrono::duration_cast<std::chrono::milliseconds>(m_deltaTime).count());
+      }
+
+      long long GetDeltaTimeNS() const
+      {
+         return ((m_deltaTime).count());
       }
 
       /**

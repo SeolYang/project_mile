@@ -22,8 +22,7 @@ namespace Mile
       if (SubSystem::Init())
       {
          m_frameBeginTime = m_frameEndTime = std::chrono::steady_clock::now();
-         m_deltaTime = std::chrono::duration_cast<std::chrono::nanoseconds>
-            (m_frameEndTime - m_frameBeginTime);
+         m_deltaTime = m_frameEndTime - m_frameBeginTime;
          m_frameCount = 0;
 
          ME_LOG(MileTimer, Log, TEXT("Timer initialized."));
@@ -47,37 +46,25 @@ namespace Mile
    void Timer::BeginFrame()
    {
       m_frameBeginTime = std::chrono::steady_clock::now();
-      if (m_frameCount == 0)
-      {
-         m_frameMeasureBeginTime = m_frameBeginTime;
-      }
    }
 
    void Timer::PreEndFrame()
    {
-      ++m_frameCount;
       m_frameEndTime = std::chrono::steady_clock::now();
-      m_deltaTime = std::chrono::duration_cast<std::chrono::nanoseconds>(m_frameEndTime - m_frameBeginTime);
-
-      auto dt = m_frameEndTime - m_frameMeasureBeginTime;
-      auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(dt);
-      if (duration.count() >= 1000)
-      {
-         m_framePerSec = m_frameCount;
-         m_frameCount = 0;
-      }
+      m_deltaTime = m_frameEndTime - m_frameBeginTime;
    }
 
    void Timer::PostEndFrame()
    {
+      ++m_frameCount;
       m_frameEndTime = std::chrono::steady_clock::now();
-      m_deltaTime = std::chrono::duration_cast<std::chrono::nanoseconds>(m_frameEndTime - m_frameBeginTime);
+      m_deltaTime = m_frameEndTime - m_frameBeginTime;
 
       auto dt = m_frameEndTime - m_frameMeasureBeginTime;
-      auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(dt);
-      if (duration.count() >= 1000)
+      if (dt.count() > 1000000000)
       {
          m_framePerSec = m_frameCount;
+         m_frameMeasureBeginTime = m_frameEndTime;
          m_frameCount = 0;
       }
    }
