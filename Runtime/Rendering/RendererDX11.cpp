@@ -1647,7 +1647,6 @@ namespace Mile
       OPTICK_EVENT();
       if (m_swapChain != nullptr)
       {
-         /* @TODO: Impl VSYNC **/
          if (m_vsyncEnabled)
          {
             m_swapChain->Present(1, 0);
