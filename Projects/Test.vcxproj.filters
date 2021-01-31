@@ -6,30 +6,30 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Test\Entry.cpp">
+    <ClCompile Include="..\Sources\Test\ImGuiDemoLayer.cpp">
       <Filter>Application</Filter>
     </ClCompile>
-    <ClCompile Include="..\Test\RotateComponent.cpp">
+    <ClCompile Include="..\Sources\Test\RotateComponent.cpp">
       <Filter>Application</Filter>
     </ClCompile>
-    <ClCompile Include="..\Test\TestApp.cpp">
+    <ClCompile Include="..\Sources\Test\TestApp.cpp">
       <Filter>Application</Filter>
     </ClCompile>
-    <ClCompile Include="..\Test\imGUIDemoLayer.cpp">
+    <ClCompile Include="..\Sources\Test\Entry.cpp">
       <Filter>Application</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Test\RotateComponent.h">
+    <ClInclude Include="..\Sources\Test\ImGuiDemoLayer.h">
       <Filter>Application</Filter>
     </ClInclude>
-    <ClInclude Include="..\Test\InputTestComponent.h">
+    <ClInclude Include="..\Sources\Test\InputTestComponent.h">
       <Filter>Application</Filter>
     </ClInclude>
-    <ClInclude Include="..\Test\TestApp.h">
+    <ClInclude Include="..\Sources\Test\RotateComponent.h">
       <Filter>Application</Filter>
     </ClInclude>
-    <ClInclude Include="..\Test\ImGUIDemoLayer.h">
+    <ClInclude Include="..\Sources\Test\TestApp.h">
       <Filter>Application</Filter>
     </ClInclude>
   </ItemGroup>

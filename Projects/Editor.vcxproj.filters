@@ -10,36 +10,33 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Editor\Editor.h">
+    <ClInclude Include="..\Sources\Editor\EditorApp.h">
       <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="..\Editor\EditorApp.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Editor\Layers\MenuBarLayer.h">
+    <ClInclude Include="..\Sources\Editor\Layers\MenuBarLayer.h">
       <Filter>Sources\Layers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Editor\Layers\WorldHierarchyLayer.h">
+    <ClInclude Include="..\Sources\Editor\Layers\WorldHierarchyLayer.h">
       <Filter>Sources\Layers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Editor\Layers\GameViewLayer.h">
+    <ClInclude Include="..\Sources\Editor\Layers\GameViewLayer.h">
       <Filter>Sources\Layers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Editor\EditorMain.cpp">
+    <ClCompile Include="..\Sources\Editor\EditorApp.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\Editor\EditorApp.cpp">
+    <ClCompile Include="..\Sources\Editor\EditorMain.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\Editor\Layers\MenuBarLayer.cpp">
+    <ClCompile Include="..\Sources\Editor\Layers\MenuBarLayer.cpp">
       <Filter>Sources\Layers</Filter>
     </ClCompile>
-    <ClCompile Include="..\Editor\Layers\WorldHierarchyLayer.cpp">
+    <ClCompile Include="..\Sources\Editor\Layers\WorldHierarchyLayer.cpp">
       <Filter>Sources\Layers</Filter>
     </ClCompile>
-    <ClCompile Include="..\Editor\Layers\GameViewLayer.cpp">
+    <ClCompile Include="..\Sources\Editor\Layers\GameViewLayer.cpp">
       <Filter>Sources\Layers</Filter>
     </ClCompile>
   </ItemGroup>

@@ -74,32 +74,32 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
     <IntDir>..\Binaries\VSOBJ\Runtime\$(Configuration)\</IntDir>
-    <TargetName>Runtime</TargetName>
-    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\ThirdParty\imgui\include;..\ThirdParty\optick\src;$(SourcePath)</SourcePath>
+    <TargetName>MileRuntime</TargetName>
+    <SourcePath>$(SourcePath)</SourcePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
     <IntDir>..\Binaries\VSOBJ\Runtime\$(Configuration)\</IntDir>
-    <TargetName>Runtime</TargetName>
-    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\ThirdParty\imgui\include;..\ThirdParty\optick\src;$(SourcePath)</SourcePath>
+    <TargetName>MileRuntime</TargetName>
+    <SourcePath>$(SourcePath)</SourcePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
     <IntDir>..\Binaries\VSOBJ\Runtime\$(Configuration)\</IntDir>
-    <TargetName>Runtime</TargetName>
-    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\ThirdParty\imgui\include;..\ThirdParty\optick\src;$(SourcePath)</SourcePath>
+    <TargetName>MileRuntime</TargetName>
+    <SourcePath>$(SourcePath)</SourcePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EditorRelease|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\Binaries\$(Configuration)\</OutDir>
     <IntDir>..\Binaries\VSOBJ\Runtime\$(Configuration)\</IntDir>
-    <TargetName>Runtime</TargetName>
-    <SourcePath>..\Runtime;..\ThirdParty\json\src;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\ThirdParty\imgui\include;..\ThirdParty\optick\src;$(SourcePath)</SourcePath>
+    <TargetName>MileRuntime</TargetName>
+    <SourcePath>$(SourcePath)</SourcePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -109,7 +109,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Sources\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -136,7 +136,7 @@ copy "..\ThirdParty\FreeImage\dlls\Debug" "..\Binaries\$(Configuration)\";</Comm
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>MILE_EDITOR;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Sources\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -165,7 +165,7 @@ copy "..\ThirdParty\FreeImage\dlls\Debug" "..\Binaries\$(Configuration)\";</Comm
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Sources\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -196,7 +196,7 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MILE_EDITOR;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Sources\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -219,92 +219,91 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Runtime\Component\CameraComponent.h" />
-    <ClInclude Include="..\Runtime\Component\Component.h" />
-    <ClInclude Include="..\Runtime\Component\ComponentRegister.h" />
-    <ClInclude Include="..\Runtime\Component\LightComponent.h" />
-    <ClInclude Include="..\Runtime\Component\MeshRenderComponent.h" />
-    <ClInclude Include="..\Runtime\Core\Application.h" />
-    <ClInclude Include="..\Runtime\Core\Config.h" />
-    <ClInclude Include="..\Runtime\Core\Context.h" />
-    <ClInclude Include="..\Runtime\Core\CoreMinimal.h" />
-    <ClInclude Include="..\Runtime\Core\Engine.h" />
-    <ClInclude Include="..\Runtime\Core\Delegate.h" />
-    <ClInclude Include="..\Runtime\Core\Helper.h" />
-    <ClInclude Include="..\Runtime\Core\imguiHelper.h" />
-    <ClInclude Include="..\Runtime\Core\IMGUILayer.h" />
-    <ClInclude Include="..\Runtime\Core\InputManager.h" />
-    <ClInclude Include="..\Runtime\Core\Layer.h" />
-    <ClInclude Include="..\Runtime\Core\LayerStack.h" />
-    <ClInclude Include="..\Runtime\Core\Logger.h" />
-    <ClInclude Include="..\Runtime\Core\SubSystem.h" />
-    <ClInclude Include="..\Runtime\Core\Timer.h" />
-    <ClInclude Include="..\Runtime\Core\Window.h" />
-    <ClInclude Include="..\Runtime\GameFramework\Entity.h" />
-    <ClInclude Include="..\Runtime\GameFramework\Transform.h" />
-    <ClInclude Include="..\Runtime\GameFramework\World.h" />
-    <ClInclude Include="..\Runtime\Math\MathCore.h" />
-    <ClInclude Include="..\Runtime\Math\MathHelper.h" />
-    <ClInclude Include="..\Runtime\Math\Matrix.h" />
-    <ClInclude Include="..\Runtime\Math\Quaternion.h" />
-    <ClInclude Include="..\Runtime\Math\Vector2.h" />
-    <ClInclude Include="..\Runtime\Math\Vector3.h" />
-    <ClInclude Include="..\Runtime\Math\Vector4.h" />
-    <ClInclude Include="..\Runtime\Math\Vertex.h" />
-    <ClInclude Include="..\Runtime\MT\ThreadPool.h" />
-    <ClInclude Include="..\Runtime\Rendering\AmbientEmissivePass.h" />
-    <ClInclude Include="..\Runtime\Rendering\BlendingPass.h" />
-    <ClInclude Include="..\Runtime\Rendering\BlendState.h" />
-    <ClInclude Include="..\Runtime\Rendering\BoxBloomPass.h" />
-    <ClInclude Include="..\Runtime\Rendering\BufferDX11.h" />
-    <ClInclude Include="..\Runtime\Rendering\ConstantBufferDX11.h" />
-    <ClInclude Include="..\Runtime\Rendering\ConvertGBufferToViewPass.h" />
-    <ClInclude Include="..\Runtime\Rendering\Cube.h" />
-    <ClInclude Include="..\Runtime\Rendering\DepthStencilState.h" />
-    <ClInclude Include="..\Runtime\Rendering\Equirect2CubemapPass.h" />
-    <ClInclude Include="..\Runtime\Rendering\ExtractBrightnessPass.h" />
-    <ClInclude Include="..\Runtime\Rendering\GaussianBlurPass.h" />
-    <ClInclude Include="..\Runtime\Rendering\IntegrateBRDFPass.h" />
-    <ClInclude Include="..\Runtime\Rendering\IrradianceConvPass.h" />
-    <ClInclude Include="..\Runtime\Rendering\PrefilteringPass.h" />
-    <ClInclude Include="..\Runtime\Rendering\RenderObject.h" />
-    <ClInclude Include="..\Runtime\Rendering\SkyboxPass.h" />
-    <ClInclude Include="..\Runtime\Rendering\SSAOBlurPass.h" />
-    <ClInclude Include="..\Runtime\Rendering\SSAOPass.h" />
-    <ClInclude Include="..\Runtime\Rendering\Texture2DBaseDX11.h" />
-    <ClInclude Include="..\Runtime\Rendering\DepthStencilBufferDX11.h" />
-    <ClInclude Include="..\Runtime\Rendering\DynamicCubemap.h" />
-    <ClInclude Include="..\Runtime\Rendering\GBuffer.h" />
-    <ClInclude Include="..\Runtime\Rendering\GeometryPass.h" />
-    <ClInclude Include="..\Runtime\Rendering\IndexBufferDX11.h" />
-    <ClInclude Include="..\Runtime\Rendering\InputLayoutDX11.h" />
-    <ClInclude Include="..\Runtime\Rendering\LightingPass.h" />
-    <ClInclude Include="..\Runtime\Rendering\Mesh.h" />
-    <ClInclude Include="..\Runtime\Rendering\PixelShaderDX11.h" />
-    <ClInclude Include="..\Runtime\Rendering\Quad.h" />
-    <ClInclude Include="..\Runtime\Rendering\RasterizerState.h" />
-    <ClInclude Include="..\Runtime\Rendering\RenderingPass.h" />
-    <ClInclude Include="..\Runtime\Rendering\RendererDX11.h" />
-    <ClInclude Include="..\Runtime\Rendering\RenderingCore.h" />
-    <ClInclude Include="..\Runtime\Rendering\RenderTargetDX11.h" />
-    <ClInclude Include="..\Runtime\Rendering\ResourceDX11.h" />
-    <ClInclude Include="..\Runtime\Rendering\ShaderDX11.h" />
-    <ClInclude Include="..\Runtime\Rendering\Texture2dDX11.h" />
-    <ClInclude Include="..\Runtime\Rendering\ToneMappingPass.h" />
-    <ClInclude Include="..\Runtime\Rendering\VertexBufferDX11.h" />
-    <ClInclude Include="..\Runtime\Rendering\VertexShaderDX11.h" />
-    <ClInclude Include="..\Runtime\Rendering\SamplerDX11.h" />
-    <ClInclude Include="..\Runtime\Rendering\Viewport.h" />
-    <ClInclude Include="..\Runtime\Resource\Material.h" />
-    <ClInclude Include="..\Runtime\Resource\Model.h" />
-    <ClInclude Include="..\Runtime\Resource\ModelLoader.h" />
-    <ClInclude Include="..\Runtime\Resource\PlainText.h" />
-    <ClInclude Include="..\Runtime\Resource\RenderTexture.h" />
-    <ClInclude Include="..\Runtime\Resource\Resource.h" />
-    <ClInclude Include="..\Runtime\Resource\ResourceCache.h" />
-    <ClInclude Include="..\Runtime\Resource\ResourceManager.h" />
-    <ClInclude Include="..\Runtime\Resource\Texture2D.h" />
-    <ClInclude Include="..\Runtime\Resource\TextureLoader.h" />
+    <ClInclude Include="..\Sources\Runtime\Component\CameraComponent.h" />
+    <ClInclude Include="..\Sources\Runtime\Component\Component.h" />
+    <ClInclude Include="..\Sources\Runtime\Component\ComponentRegister.h" />
+    <ClInclude Include="..\Sources\Runtime\Component\LightComponent.h" />
+    <ClInclude Include="..\Sources\Runtime\Component\MeshRenderComponent.h" />
+    <ClInclude Include="..\Sources\Runtime\Core\Application.h" />
+    <ClInclude Include="..\Sources\Runtime\Core\Config.h" />
+    <ClInclude Include="..\Sources\Runtime\Core\Context.h" />
+    <ClInclude Include="..\Sources\Runtime\Core\CoreMinimal.h" />
+    <ClInclude Include="..\Sources\Runtime\Core\Delegate.h" />
+    <ClInclude Include="..\Sources\Runtime\Core\Engine.h" />
+    <ClInclude Include="..\Sources\Runtime\Core\ImGuiHelper.h" />
+    <ClInclude Include="..\Sources\Runtime\Core\ImGuiLayer.h" />
+    <ClInclude Include="..\Sources\Runtime\Core\InputManager.h" />
+    <ClInclude Include="..\Sources\Runtime\Core\Layer.h" />
+    <ClInclude Include="..\Sources\Runtime\Core\LayerStack.h" />
+    <ClInclude Include="..\Sources\Runtime\Core\Logger.h" />
+    <ClInclude Include="..\Sources\Runtime\Core\SubSystem.h" />
+    <ClInclude Include="..\Sources\Runtime\Core\Timer.h" />
+    <ClInclude Include="..\Sources\Runtime\Core\Window.h" />
+    <ClInclude Include="..\Sources\Runtime\GameFramework\Entity.h" />
+    <ClInclude Include="..\Sources\Runtime\GameFramework\Transform.h" />
+    <ClInclude Include="..\Sources\Runtime\GameFramework\World.h" />
+    <ClInclude Include="..\Sources\Runtime\Math\MathCore.h" />
+    <ClInclude Include="..\Sources\Runtime\Math\MathMinimal.h" />
+    <ClInclude Include="..\Sources\Runtime\Math\Matrix.h" />
+    <ClInclude Include="..\Sources\Runtime\Math\Quaternion.h" />
+    <ClInclude Include="..\Sources\Runtime\Math\Vector2.h" />
+    <ClInclude Include="..\Sources\Runtime\Math\Vector3.h" />
+    <ClInclude Include="..\Sources\Runtime\Math\Vector4.h" />
+    <ClInclude Include="..\Sources\Runtime\Math\Vertex.h" />
+    <ClInclude Include="..\Sources\Runtime\MT\ThreadPool.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\AmbientEmissivePass.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\BlendingPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\BlendState.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\BoxBloomPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\BufferDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\ConstantBufferDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\ConvertGBufferToViewPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\Cube.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\DepthStencilBufferDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\DepthStencilState.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\DynamicCubemap.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\Equirect2CubemapPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\ExtractBrightnessPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\GaussianBlurPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\GBuffer.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\GeometryPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\IndexBufferDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\InputLayoutDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\IntegrateBRDFPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\IrradianceConvPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\LightingPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\Mesh.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\PixelShaderDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\PrefilteringPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\Quad.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\RasterizerState.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\RendererDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\RenderingCore.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\RenderingPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\RenderObject.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\RenderTargetDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\ResourceDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\SamplerDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\ShaderDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\SkyboxPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\SSAOBlurPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\SSAOPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\Texture2DBaseDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\Texture2dDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\ToneMappingPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\VertexBufferDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\VertexShaderDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\Viewport.h" />
+    <ClInclude Include="..\Sources\Runtime\Resource\Material.h" />
+    <ClInclude Include="..\Sources\Runtime\Resource\Model.h" />
+    <ClInclude Include="..\Sources\Runtime\Resource\ModelLoader.h" />
+    <ClInclude Include="..\Sources\Runtime\Resource\PlainText.h" />
+    <ClInclude Include="..\Sources\Runtime\Resource\RenderTexture.h" />
+    <ClInclude Include="..\Sources\Runtime\Resource\Resource.h" />
+    <ClInclude Include="..\Sources\Runtime\Resource\ResourceCache.h" />
+    <ClInclude Include="..\Sources\Runtime\Resource\ResourceManager.h" />
+    <ClInclude Include="..\Sources\Runtime\Resource\Texture2D.h" />
+    <ClInclude Include="..\Sources\Runtime\Resource\TextureLoader.h" />
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\aabb.h" />
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\ai_assert.h" />
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\anim.h" />
@@ -411,82 +410,82 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\ThirdParty\optick\src\optick_server.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Runtime\Component\CameraComponent.cpp" />
-    <ClCompile Include="..\Runtime\Component\Component.cpp" />
-    <ClCompile Include="..\Runtime\Component\ComponentRegister.cpp" />
-    <ClCompile Include="..\Runtime\Component\LightComponent.cpp" />
-    <ClCompile Include="..\Runtime\Component\MeshRenderComponent.cpp" />
-    <ClCompile Include="..\Runtime\Core\Application.cpp" />
-    <ClCompile Include="..\Runtime\Core\Config.cpp" />
-    <ClCompile Include="..\Runtime\Core\Context.cpp" />
-    <ClCompile Include="..\Runtime\Core\Delegate.cpp" />
-    <ClCompile Include="..\Runtime\Core\Engine.cpp" />
-    <ClCompile Include="..\Runtime\Core\IMGUILayer.cpp" />
-    <ClCompile Include="..\Runtime\Core\InputManager.cpp" />
-    <ClCompile Include="..\Runtime\Core\Layer.cpp" />
-    <ClCompile Include="..\Runtime\Core\LayerStack.cpp" />
-    <ClCompile Include="..\Runtime\Core\Logger.cpp" />
-    <ClCompile Include="..\Runtime\Core\SubSystem.cpp" />
-    <ClCompile Include="..\Runtime\Core\Timer.cpp" />
-    <ClCompile Include="..\Runtime\Core\Window.cpp" />
-    <ClCompile Include="..\Runtime\GameFramework\Entity.cpp" />
-    <ClCompile Include="..\Runtime\GameFramework\Transform.cpp" />
-    <ClCompile Include="..\Runtime\GameFramework\World.cpp" />
-    <ClCompile Include="..\Runtime\Math\Matrix.cpp" />
-    <ClCompile Include="..\Runtime\Math\Vector3.cpp" />
-    <ClCompile Include="..\Runtime\Math\Vector4.cpp" />
-    <ClCompile Include="..\Runtime\MT\ThreadPool.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\AmbientEmissivePass.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\BlendingPass.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\BlendState.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\BoxBloomPass.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\BufferDX11.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\ConstantBufferDX11.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\ConvertGBufferToViewPass.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\Cube.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\DepthStencilState.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\Equirect2CubemapPass.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\ExtractBrightnessPass.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\GaussianBlurPass.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\IntegrateBRDFPass.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\IrradianceConvPass.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\PrefilteringPass.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\RenderObject.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\ShaderDX11.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\SkyboxPass.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\SSAOBlurPass.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\SSAOPass.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\Texture2DBaseDX11.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\DepthStencilBufferDX11.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\GBuffer.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\GeometryPass.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\IndexBufferDX11.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\InputLayoutDX11.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\LightingPass.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\Mesh.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\PixelShaderDX11.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\Quad.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\RasterizerState.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\RendererDX11.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\RenderingPass.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\RenderTargetDX11.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\SamplerDX11.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\Texture2dDX11.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\ToneMappingPass.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\VertexBufferDX11.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\VertexShaderDX11.cpp" />
-    <ClCompile Include="..\Runtime\Rendering\Viewport.cpp" />
-    <ClCompile Include="..\Runtime\Resource\DynamicCubemap.cpp" />
-    <ClCompile Include="..\Runtime\Resource\Material.cpp" />
-    <ClCompile Include="..\Runtime\Resource\Model.cpp" />
-    <ClCompile Include="..\Runtime\Resource\ModelLoader.cpp" />
-    <ClCompile Include="..\Runtime\Resource\PlainText.cpp" />
-    <ClCompile Include="..\Runtime\Resource\RenderTexture.cpp" />
-    <ClCompile Include="..\Runtime\Resource\Resource.cpp" />
-    <ClCompile Include="..\Runtime\Resource\ResourceCache.cpp" />
-    <ClCompile Include="..\Runtime\Resource\ResourceManager.cpp" />
-    <ClCompile Include="..\Runtime\Resource\Texture2D.cpp" />
-    <ClCompile Include="..\Runtime\Resource\TextureLoader.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Component\CameraComponent.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Component\Component.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Component\ComponentRegister.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Component\LightComponent.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Component\MeshRenderComponent.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Core\Application.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Core\Config.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Core\Context.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Core\Delegate.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Core\Engine.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Core\ImGuiLayer.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Core\InputManager.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Core\Layer.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Core\LayerStack.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Core\Logger.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Core\SubSystem.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Core\Timer.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Core\Window.cpp" />
+    <ClCompile Include="..\Sources\Runtime\GameFramework\Entity.cpp" />
+    <ClCompile Include="..\Sources\Runtime\GameFramework\Transform.cpp" />
+    <ClCompile Include="..\Sources\Runtime\GameFramework\World.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Math\Matrix.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Math\Vector3.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Math\Vector4.cpp" />
+    <ClCompile Include="..\Sources\Runtime\MT\ThreadPool.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\AmbientEmissivePass.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\BlendingPass.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\BlendState.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\BoxBloomPass.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\BufferDX11.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\ConstantBufferDX11.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\ConvertGBufferToViewPass.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\Cube.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\DepthStencilBufferDX11.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\DepthStencilState.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\DynamicCubemap.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\Equirect2CubemapPass.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\ExtractBrightnessPass.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\GaussianBlurPass.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\GBuffer.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\GeometryPass.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\IndexBufferDX11.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\InputLayoutDX11.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\IntegrateBRDFPass.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\IrradianceConvPass.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\LightingPass.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\Mesh.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\PixelShaderDX11.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\PrefilteringPass.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\Quad.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\RasterizerState.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\RendererDX11.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\RenderingPass.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\RenderObject.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\RenderTargetDX11.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\SamplerDX11.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\ShaderDX11.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\SkyboxPass.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\SSAOBlurPass.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\SSAOPass.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\Texture2DBaseDX11.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\Texture2dDX11.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\ToneMappingPass.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\VertexBufferDX11.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\VertexShaderDX11.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\Viewport.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Resource\Material.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Resource\Model.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Resource\ModelLoader.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Resource\PlainText.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Resource\RenderTexture.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Resource\Resource.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Resource\ResourceCache.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Resource\ResourceManager.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Resource\Texture2D.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Resource\TextureLoader.cpp" />
     <ClCompile Include="..\ThirdParty\imgui\include\imgui.cpp" />
     <ClCompile Include="..\ThirdParty\imgui\include\imgui_demo.cpp" />
     <ClCompile Include="..\ThirdParty\imgui\include\imgui_draw.cpp" />
