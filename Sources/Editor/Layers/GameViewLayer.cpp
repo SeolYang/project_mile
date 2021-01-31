@@ -27,8 +27,8 @@ namespace Mile
          auto renderer = Engine::GetRenderer();
          Vector2 referenceRes = renderer->GetReferenceResolution();
          m_editorCameraRenderTex = resMng->Create<RenderTexture>(EDITOR_GAME_VIEW_RENDER_TEXTURE, false);
-         m_editorCameraRenderTex->SetWidth(referenceRes.x);
-         m_editorCameraRenderTex->SetHeight(referenceRes.y);
+         m_editorCameraRenderTex->SetWidth((UINT32)referenceRes.x);
+         m_editorCameraRenderTex->SetHeight((UINT32)referenceRes.y);
          //m_editorCamera = world->CreateEntity(TEXT("GameViewCamera"));
          //m_editorCamera->SetVisibleOnHierarchy(true);
          //m_editorCamera->SetSerializable(false);
@@ -60,8 +60,8 @@ namespace Mile
 
                Vector2 relativeOutputRes = FindResolutionWithAspectRatio(actualContentArea.x, actualContentArea.y, (referenceRes.x / referenceRes.y));
                ImVec2 outputRes{ relativeOutputRes.x, relativeOutputRes.y };
-               m_editorCameraRenderTex->SetWidth(referenceRes.x);
-               m_editorCameraRenderTex->SetHeight(referenceRes.y);
+               m_editorCameraRenderTex->SetWidth((UINT32)referenceRes.x);
+               m_editorCameraRenderTex->SetHeight((UINT32)referenceRes.y);
                //m_editorCameraComponent->SetFov(GameViewDefaultFOV * ((outputRes.x + outputRes.y) / (GameViewDefaultWidth + GameViewDefaultHeight)));
                ImGui::SetCursorPosX((actualContentArea.x - outputRes.x) * 0.5f);
                ImGui::SetCursorPosY((actualContentArea.y - outputRes.y) * 0.5f + titleBarHeight);

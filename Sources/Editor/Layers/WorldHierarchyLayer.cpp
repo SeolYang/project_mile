@@ -33,7 +33,7 @@ namespace Mile
                ((m_selectedEntity == targetRoot) ? ImGuiTreeNodeFlags_Selected : 0)
                | ImGuiTreeNodeFlags_OpenOnArrow 
                | ImGuiTreeNodeFlags_SpanAvailWidth;
-            bool bIsOpened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)targetRoot, flags, entityName.c_str());
+            bool bIsOpened = ImGui::TreeNodeEx((void*)targetRoot, flags, entityName.c_str());
             if (ImGui::IsItemClicked())
             {
                m_selectedEntity = targetRoot;

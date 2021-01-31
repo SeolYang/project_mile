@@ -124,14 +124,14 @@ namespace Mile
       }
 
       return Vector2(
-         windowRect.right - windowRect.left,
-         windowRect.bottom - windowRect.top);
+         static_cast<float>(windowRect.right - windowRect.left),
+         static_cast<float>(windowRect.bottom - windowRect.top));
    }
 
    float Window::GetWindowAspectRatio() const
    {
       Vector2 windowResolution = GetWindowResolution();
-      return windowResolution.x / windowResolution.y;
+      return (windowResolution.y == 0) ? 0.0f : windowResolution.x / windowResolution.y;
    }
 
    void Window::Update()
