@@ -1,17 +1,34 @@
 # project_mile
 -------------------------------------
-- Mile Engine: High performance 3D Game Engine.
-# Mile Engine Workload
--------------------------------------
+- Mile Engine: Basic Game Engine Project
+
+## Mile Engine Features
+------------------------------------
 - Deferred Rendering
 - Physically Based Shading
-- Anime Style Shading
 - Multi-Thread Rendering
-- Exclusive Physics Engine
-- Engine Editor(Terrain editing.. etc)
-- Support Basic network library and framework for multiplay.
-- Deep Learning based map generating.
-- Reinforcement-learning agent
+- Entity-Component based Game Framework
+- Profile Performance
+- Logging
+- Frame Graph based Rendering pipeline construction (WIP)
+- Editor (WIP)
+
+## Mile Engine Workload
+-------------------------------------
+- Skeletal Animations
+- Audio System
+- Terrain
+- Scripting
+- Hot-reloading
+- Project build
+- Serializable Rendering Pipeline
+- Anime Style Shading
+- 2D Rendering Engine
+- 2D/3D Physics Simulation
+- Networking Framework
+- Deep Learning based environment generator
+- Reinforcement Learning based AI agent
+
 # License
 -------------------------------------
 This software is provided under the **MIT License**.
