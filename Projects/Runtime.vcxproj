@@ -114,13 +114,12 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>OptickCoreD.lib;imguid.lib;FreeImage.lib;assimp_d.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\ThirdParty\optick\libs;..\ThirdParty\imgui_lib\libs;..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\zlib\libs;..\ThirdParty\libpng\libs;..\ThirdParty\assimp\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OptickCoreD.lib;FreeImage.lib;assimp_d.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ThirdParty\optick\libs;..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\zlib\libs;..\ThirdParty\libpng\libs;..\ThirdParty\assimp\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy "..\ThirdParty\assimp\dlls\Debug" "..\Binaries\$(Configuration)\";
 copy "..\ThirdParty\FreeImage\dlls\Debug" "..\Binaries\$(Configuration)\";
-copy "..\ThirdParty\imgui_lib\dlls\Debug" "..\Binaries\$(Configuration)\";
 copy "..\ThirdParty\optick\dlls\Debug" "..\Binaries\$(Configuration)\";</Command>
     </PostBuildEvent>
     <PostBuildEvent>
@@ -143,13 +142,12 @@ copy "..\ThirdParty\optick\dlls\Debug" "..\Binaries\$(Configuration)\";</Command
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>OptickCoreD.lib;imguid.lib;FreeImage.lib;assimp_d.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\ThirdParty\optick\libs;..\ThirdParty\imgui_lib\libs;..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\zlib\libs;..\ThirdParty\libpng\libs;..\ThirdParty\assimp\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OptickCoreD.lib;FreeImage.lib;assimp_d.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ThirdParty\optick\libs;..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\zlib\libs;..\ThirdParty\libpng\libs;..\ThirdParty\assimp\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy "..\ThirdParty\assimp\dlls\Debug" "..\Binaries\$(Configuration)\";
 copy "..\ThirdParty\FreeImage\dlls\Debug" "..\Binaries\$(Configuration)\";
-copy "..\ThirdParty\imgui_lib\dlls\Debug" "..\Binaries\$(Configuration)\";
 copy "..\ThirdParty\optick\dlls\Debug" "..\Binaries\$(Configuration)\";</Command>
     </PostBuildEvent>
     <PostBuildEvent>
@@ -176,13 +174,12 @@ copy "..\ThirdParty\optick\dlls\Debug" "..\Binaries\$(Configuration)\";</Command
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>OptickCore.lib;imgui.lib;FreeImage.lib;assimp.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\ThirdParty\optick\libs;..\ThirdParty\imgui_lib\libs;..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\assimp\lib;..\ThirdParty\FreeImage\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OptickCore.lib;FreeImage.lib;assimp.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ThirdParty\optick\libs;..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\assimp\lib;..\ThirdParty\FreeImage\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy "..\ThirdParty\assimp\dlls\Release" "..\Binaries\$(Configuration)\";
 copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";
-copy "..\ThirdParty\imgui_lib\dlls\Release" "..\Binaries\$(Configuration)\";
 copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Command>
     </PostBuildEvent>
     <PostBuildEvent>
@@ -209,13 +206,12 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>OptickCore.lib;imgui.lib;FreeImage.lib;assimp.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\ThirdParty\optick\libs;..\ThirdParty\imgui_lib\libs;..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\assimp\lib;..\ThirdParty\FreeImage\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OptickCore.lib;FreeImage.lib;assimp.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ThirdParty\optick\libs;..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\assimp\lib;..\ThirdParty\FreeImage\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy "..\ThirdParty\assimp\dlls\Release" "..\Binaries\$(Configuration)\";
 copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";
-copy "..\ThirdParty\imgui_lib\dlls\Release" "..\Binaries\$(Configuration)\";
 copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Command>
     </PostBuildEvent>
     <PostBuildEvent>
@@ -480,6 +476,13 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
     <ClCompile Include="..\Sources\Runtime\Resource\ResourceManager.cpp" />
     <ClCompile Include="..\Sources\Runtime\Resource\Texture2D.cpp" />
     <ClCompile Include="..\Sources\Runtime\Resource\TextureLoader.cpp" />
+    <ClCompile Include="..\ThirdParty\imgui_lib\include\imgui.cpp" />
+    <ClCompile Include="..\ThirdParty\imgui_lib\include\imgui_demo.cpp" />
+    <ClCompile Include="..\ThirdParty\imgui_lib\include\imgui_draw.cpp" />
+    <ClCompile Include="..\ThirdParty\imgui_lib\include\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\ThirdParty\imgui_lib\include\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\ThirdParty\imgui_lib\include\imgui_tables.cpp" />
+    <ClCompile Include="..\ThirdParty\imgui_lib\include\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Contents\Shaders\AmbientEmissivePass.hlsl">

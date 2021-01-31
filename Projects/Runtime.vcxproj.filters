@@ -573,6 +573,15 @@
     <ClInclude Include="..\Sources\Runtime\Math\MathCore.h">
       <Filter>Sources\Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\imgui_lib\include\imgui_impl_dx11.h">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\imgui_lib\include\imgui_impl_win32.h">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\imgui_lib\include\imgui_internal.h">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClInclude>
     <ClInclude Include="..\ThirdParty\imgui_lib\include\imstb_rectpack.h">
       <Filter>ThirdParty\imgui</Filter>
     </ClInclude>
@@ -586,15 +595,6 @@
       <Filter>ThirdParty\imgui</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\imgui_lib\include\imgui.h">
-      <Filter>ThirdParty\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\imgui_lib\include\imgui_internal.h">
-      <Filter>ThirdParty\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\imgui_lib\include\imgui_impl_dx11.h">
-      <Filter>ThirdParty\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\imgui_lib\include\imgui_impl_win32.h">
       <Filter>ThirdParty\imgui</Filter>
     </ClInclude>
   </ItemGroup>
@@ -826,6 +826,27 @@
     </ClCompile>
     <ClCompile Include="..\Sources\Runtime\Resource\Texture2D.cpp">
       <Filter>Sources\Resource\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imgui_lib\include\imgui_impl_win32.cpp">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imgui_lib\include\imgui_tables.cpp">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imgui_lib\include\imgui_widgets.cpp">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imgui_lib\include\imgui.cpp">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imgui_lib\include\imgui_demo.cpp">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imgui_lib\include\imgui_draw.cpp">
+      <Filter>ThirdParty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imgui_lib\include\imgui_impl_dx11.cpp">
+      <Filter>ThirdParty\imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -122,8 +122,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>OptickCoreD.lib;imguid.lib;MileRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Binaries\$(Configuration)\;..\ThirdParty\optick\libs;..\ThirdParty\imgui_lib\libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OptickCoreD.lib;MileRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Binaries\$(Configuration)\;..\ThirdParty\optick\libs</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'">
@@ -138,8 +138,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>OptickCoreD.lib;imguid.lib;MileRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Binaries\$(Configuration)\;..\ThirdParty\optick\libs;..\ThirdParty\imgui_lib\libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OptickCoreD.lib;MileRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Binaries\$(Configuration)\;..\ThirdParty\optick\libs</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -158,8 +158,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>OptickCore.lib;imgui.lib;MileRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Binaries\$(Configuration)\;..\ThirdParty\optick\libs;..\ThirdParty\imgui_lib\libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OptickCore.lib;MileRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Binaries\$(Configuration)\;..\ThirdParty\optick\libs</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='EditorRelease|x64'">
@@ -178,8 +178,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>OptickCore.lib;imgui.lib;MileRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Binaries\$(Configuration)\;..\ThirdParty\optick\libs;..\ThirdParty\imgui_lib\libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OptickCore.lib;MileRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Binaries\$(Configuration)\;..\ThirdParty\optick\libs</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
