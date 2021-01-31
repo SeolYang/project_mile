@@ -8,7 +8,6 @@
 #include "Layers/GameViewLayer.h"
 #include "Resource/ResourceManager.h"
 #include "Resource/RenderTexture.h"
-#include "Component/CameraComponent.h"
 
 namespace Mile
 {

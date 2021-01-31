@@ -7,7 +7,7 @@ namespace Mile
    class Mesh;
    class MEAPI MeshRenderComponent : public Component
    {
-      ComponentBegin(MeshRenderComponent)
+      DeclareComponent(MeshRenderComponent);
 
    public:
       MeshRenderComponent(Entity* entity) :

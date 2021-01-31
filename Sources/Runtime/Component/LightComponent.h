@@ -6,7 +6,7 @@
 
 namespace Mile
 {
-   enum class ELightType : UINT32
+   enum class MEAPI ELightType : UINT32
    {
       Directional,
       Point,
@@ -14,7 +14,7 @@ namespace Mile
 
    class MEAPI LightComponent : public Component
    {
-      ComponentBegin(LightComponent)
+      DeclareComponent(LightComponent);
 
    public:
       LightComponent(Entity* entity);
@@ -28,7 +28,6 @@ namespace Mile
       Vector3 GetLightDirection() const;
       Vector3 GetLightPosition() const;
 
-      //virtual std::string Serialize( ) const override;
       virtual json Serialize() const override;
       virtual void DeSerialize(const json& jsonData) override;
 

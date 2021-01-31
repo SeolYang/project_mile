@@ -27,26 +27,26 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EditorRelease|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -108,18 +108,20 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Sources\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>EXPORT_DLL;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Sources\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui_lib\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>FreeImage.lib;assimp_d.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\zlib\libs;..\ThirdParty\libpng\libs;..\ThirdParty\assimp\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OptickCoreD.lib;imguid.lib;FreeImage.lib;assimp_d.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ThirdParty\optick\libs;..\ThirdParty\imgui_lib\libs;..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\zlib\libs;..\ThirdParty\libpng\libs;..\ThirdParty\assimp\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy "..\ThirdParty\assimp\dlls\Debug" "..\Binaries\$(Configuration)\";
-copy "..\ThirdParty\FreeImage\dlls\Debug" "..\Binaries\$(Configuration)\";</Command>
+copy "..\ThirdParty\FreeImage\dlls\Debug" "..\Binaries\$(Configuration)\";
+copy "..\ThirdParty\imgui_lib\dlls\Debug" "..\Binaries\$(Configuration)\";
+copy "..\ThirdParty\optick\dlls\Debug" "..\Binaries\$(Configuration)\";</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy Third Party dlls</Message>
@@ -135,18 +137,20 @@ copy "..\ThirdParty\FreeImage\dlls\Debug" "..\Binaries\$(Configuration)\";</Comm
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>MILE_EDITOR;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Sources\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>EXPORT_DLL;MILE_EDITOR;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Sources\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui_lib\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>FreeImage.lib;assimp_d.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\zlib\libs;..\ThirdParty\libpng\libs;..\ThirdParty\assimp\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OptickCoreD.lib;imguid.lib;FreeImage.lib;assimp_d.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ThirdParty\optick\libs;..\ThirdParty\imgui_lib\libs;..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\zlib\libs;..\ThirdParty\libpng\libs;..\ThirdParty\assimp\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy "..\ThirdParty\assimp\dlls\Debug" "..\Binaries\$(Configuration)\";
-copy "..\ThirdParty\FreeImage\dlls\Debug" "..\Binaries\$(Configuration)\";</Command>
+copy "..\ThirdParty\FreeImage\dlls\Debug" "..\Binaries\$(Configuration)\";
+copy "..\ThirdParty\imgui_lib\dlls\Debug" "..\Binaries\$(Configuration)\";
+copy "..\ThirdParty\optick\dlls\Debug" "..\Binaries\$(Configuration)\";</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy Third Party dlls</Message>
@@ -164,20 +168,22 @@ copy "..\ThirdParty\FreeImage\dlls\Debug" "..\Binaries\$(Configuration)\";</Comm
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Sources\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>EXPORT_DLL;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Sources\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui_lib\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>FreeImage.lib;assimp.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\assimp\lib;..\ThirdParty\FreeImage\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OptickCore.lib;imgui.lib;FreeImage.lib;assimp.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ThirdParty\optick\libs;..\ThirdParty\imgui_lib\libs;..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\assimp\lib;..\ThirdParty\FreeImage\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy "..\ThirdParty\assimp\dlls\Release" "..\Binaries\$(Configuration)\";
-copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Command>
+copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";
+copy "..\ThirdParty\imgui_lib\dlls\Release" "..\Binaries\$(Configuration)\";
+copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy Third Party dlls</Message>
@@ -195,20 +201,22 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>MILE_EDITOR;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Sources\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>EXPORT_DLL;MILE_EDITOR;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Sources\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui_lib\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>FreeImage.lib;assimp.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\assimp\lib;..\ThirdParty\FreeImage\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OptickCore.lib;imgui.lib;FreeImage.lib;assimp.lib;dxguid.lib;dxgi.lib;d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ThirdParty\optick\libs;..\ThirdParty\imgui_lib\libs;..\ThirdParty\FreeImage\lib;..\Binaries\$(Configuration)\;..\ThirdParty\assimp\lib;..\ThirdParty\FreeImage\lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy "..\ThirdParty\assimp\dlls\Release" "..\Binaries\$(Configuration)\";
-copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Command>
+copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";
+copy "..\ThirdParty\imgui_lib\dlls\Release" "..\Binaries\$(Configuration)\";
+copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy Third Party dlls</Message>
@@ -383,31 +391,17 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClInclude Include="..\ThirdParty\assimp\include\assimp\ZipArchiveIOSystem.h" />
     <ClInclude Include="..\ThirdParty\FreeImage\include\FreeImage.h" />
     <ClInclude Include="..\ThirdParty\FreeImage\include\Utilities.h" />
-    <ClInclude Include="..\ThirdParty\imgui\include\imconfig.h" />
-    <ClInclude Include="..\ThirdParty\imgui\include\imgui.h" />
-    <ClInclude Include="..\ThirdParty\imgui\include\imgui_impl_dx11.h" />
-    <ClInclude Include="..\ThirdParty\imgui\include\imgui_impl_win32.h" />
-    <ClInclude Include="..\ThirdParty\imgui\include\imgui_internal.h" />
-    <ClInclude Include="..\ThirdParty\imgui\include\imstb_rectpack.h" />
-    <ClInclude Include="..\ThirdParty\imgui\include\imstb_textedit.h" />
-    <ClInclude Include="..\ThirdParty\imgui\include\imstb_truetype.h" />
+    <ClInclude Include="..\ThirdParty\imgui_lib\include\imconfig.h" />
+    <ClInclude Include="..\ThirdParty\imgui_lib\include\imgui.h" />
+    <ClInclude Include="..\ThirdParty\imgui_lib\include\imgui_impl_dx11.h" />
+    <ClInclude Include="..\ThirdParty\imgui_lib\include\imgui_impl_win32.h" />
+    <ClInclude Include="..\ThirdParty\imgui_lib\include\imgui_internal.h" />
+    <ClInclude Include="..\ThirdParty\imgui_lib\include\imstb_rectpack.h" />
+    <ClInclude Include="..\ThirdParty\imgui_lib\include\imstb_textedit.h" />
+    <ClInclude Include="..\ThirdParty\imgui_lib\include\imstb_truetype.h" />
     <ClInclude Include="..\ThirdParty\json\src\json.hpp" />
     <ClInclude Include="..\ThirdParty\optick\src\optick.config.h" />
     <ClInclude Include="..\ThirdParty\optick\src\optick.h" />
-    <ClInclude Include="..\ThirdParty\optick\src\optick_capi.h" />
-    <ClInclude Include="..\ThirdParty\optick\src\optick_common.h" />
-    <ClInclude Include="..\ThirdParty\optick\src\optick_core.freebsd.h" />
-    <ClInclude Include="..\ThirdParty\optick\src\optick_core.h" />
-    <ClInclude Include="..\ThirdParty\optick\src\optick_core.linux.h" />
-    <ClInclude Include="..\ThirdParty\optick\src\optick_core.macos.h" />
-    <ClInclude Include="..\ThirdParty\optick\src\optick_core.platform.h" />
-    <ClInclude Include="..\ThirdParty\optick\src\optick_core.win.h" />
-    <ClInclude Include="..\ThirdParty\optick\src\optick_gpu.h" />
-    <ClInclude Include="..\ThirdParty\optick\src\optick_memory.h" />
-    <ClInclude Include="..\ThirdParty\optick\src\optick_message.h" />
-    <ClInclude Include="..\ThirdParty\optick\src\optick_miniz.h" />
-    <ClInclude Include="..\ThirdParty\optick\src\optick_serialization.h" />
-    <ClInclude Include="..\ThirdParty\optick\src\optick_server.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Sources\Runtime\Component\CameraComponent.cpp" />
@@ -486,21 +480,6 @@ copy "..\ThirdParty\FreeImage\dlls\Release" "..\Binaries\$(Configuration)\";</Co
     <ClCompile Include="..\Sources\Runtime\Resource\ResourceManager.cpp" />
     <ClCompile Include="..\Sources\Runtime\Resource\Texture2D.cpp" />
     <ClCompile Include="..\Sources\Runtime\Resource\TextureLoader.cpp" />
-    <ClCompile Include="..\ThirdParty\imgui\include\imgui.cpp" />
-    <ClCompile Include="..\ThirdParty\imgui\include\imgui_demo.cpp" />
-    <ClCompile Include="..\ThirdParty\imgui\include\imgui_draw.cpp" />
-    <ClCompile Include="..\ThirdParty\imgui\include\imgui_impl_dx11.cpp" />
-    <ClCompile Include="..\ThirdParty\imgui\include\imgui_impl_win32.cpp" />
-    <ClCompile Include="..\ThirdParty\imgui\include\imgui_tables.cpp" />
-    <ClCompile Include="..\ThirdParty\imgui\include\imgui_widgets.cpp" />
-    <ClCompile Include="..\ThirdParty\optick\src\optick_capi.cpp" />
-    <ClCompile Include="..\ThirdParty\optick\src\optick_core.cpp" />
-    <ClCompile Include="..\ThirdParty\optick\src\optick_gpu.cpp" />
-    <ClCompile Include="..\ThirdParty\optick\src\optick_gpu.d3d12.cpp" />
-    <ClCompile Include="..\ThirdParty\optick\src\optick_message.cpp" />
-    <ClCompile Include="..\ThirdParty\optick\src\optick_miniz.cpp" />
-    <ClCompile Include="..\ThirdParty\optick\src\optick_serialization.cpp" />
-    <ClCompile Include="..\ThirdParty\optick\src\optick_server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Contents\Shaders\AmbientEmissivePass.hlsl">

@@ -5,7 +5,7 @@
 
 namespace Mile
 {
-   DECLARE_LOG_CATEGORY_EXTERN(MileResourceManager, ELogVerbosity::Log);
+   DECLARE_LOG_CATEGORY_STATIC(MileResourceManager, ELogVerbosity::Log);
 
    class MEAPI ResourceManager : public SubSystem
    {

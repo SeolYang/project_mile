@@ -4,7 +4,7 @@
 
 namespace Mile
 {
-   RegisterComponent(LightComponent);
+   DefineComponent(LightComponent);
 
    LightComponent::LightComponent(Entity* entity) :
       m_type(ELightType::Directional),

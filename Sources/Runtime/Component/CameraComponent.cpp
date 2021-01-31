@@ -5,7 +5,7 @@
 
 namespace Mile
 {
-   RegisterComponent(CameraComponent);
+   DefineComponent(CameraComponent);
 
    CameraComponent::CameraComponent(Entity* entity) :
       m_fov(45.0f),

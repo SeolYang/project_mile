@@ -4,8 +4,6 @@
 
 namespace Mile
 {
-   DEFINE_LOG_CATEGORY(MileResourceManager);
-
    ResourceManager::ResourceManager(Context* context) :
       SubSystem(context)
    {

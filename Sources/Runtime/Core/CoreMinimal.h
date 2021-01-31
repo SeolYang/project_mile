@@ -26,15 +26,11 @@
 #define WIN32_MEAN_AND_LEAN
 #include <Windows.h>
 
-#ifdef EXPORT_DLL
 #ifdef RUNTIME_EXPORTS
 #define MEAPI __declspec(dllexport)
 #else
 #define MEAPI __declspec(dllimport) 
 #endif 
-#else
-#define MEAPI __declspec(dllexport)
-#endif
 
 #include "json.hpp"
 using json = nlohmann::json;

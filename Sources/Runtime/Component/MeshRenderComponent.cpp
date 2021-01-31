@@ -10,7 +10,7 @@
 
 namespace Mile
 {
-   RegisterComponent(MeshRenderComponent);
+   DefineComponent(MeshRenderComponent);
 
    json MeshRenderComponent::Serialize() const
    {

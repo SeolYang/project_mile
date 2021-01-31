@@ -131,7 +131,7 @@ namespace Mile
 
    };
 
-#define DECLARE_LOG_CATEGORY_EXTERN(CategoryName, DefaultVerbosity) \
+#define DECLARE_LOG_CATEGORY_BASE(CategoryName, DefaultVerbosity) \
    namespace DefinedLogCategoryType { \
       struct CategoryName##Type : public LogCategoryBase { \
       public: \
@@ -139,8 +139,14 @@ namespace Mile
          { \
          } \
       }; \
-   } \
+   }
+#define DECLARE_LOG_CATEGORY_EXTERN(CategoryName, DefaultVerbosity) \
+   DECLARE_LOG_CATEGORY_BASE(CategoryName, DefaultVerbosity) \
    extern DefinedLogCategoryType::CategoryName##Type CategoryName
+
+#define DECLARE_LOG_CATEGORY_STATIC(CategoryName, DefaultVerbosity) \
+   DECLARE_LOG_CATEGORY_BASE(CategoryName, DefaultVerbosity) \
+   static DefinedLogCategoryType::CategoryName##Type CategoryName
 
 #define DEFINE_LOG_CATEGORY(CategoryName) DefinedLogCategoryType::CategoryName##Type CategoryName
 
