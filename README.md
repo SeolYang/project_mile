@@ -2,7 +2,7 @@
 -------------------------------------
 - Mile Engine: Basic Game Engine Project
 
-![sample](Figures/sample.png)
+![sample](https://github.com/SeolYang/project_mile/blob/master/Figures/sample.PNG)
 
 ## Mile Engine Features
 ------------------------------------
