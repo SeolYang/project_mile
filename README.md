@@ -2,6 +2,8 @@
 -------------------------------------
 - Mile Engine: Basic Game Engine Project
 
+![sample](Figures/sample.png)
+
 ## Mile Engine Features
 ------------------------------------
 - Deferred Rendering
