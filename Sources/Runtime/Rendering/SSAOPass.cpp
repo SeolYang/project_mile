@@ -45,7 +45,7 @@ namespace Mile
          }
 
          m_outputBuffer = new RenderTargetDX11(renderer);
-         if (!m_outputBuffer->Init(width, height, DXGI_FORMAT_R32_FLOAT, globalDepthStencilBuffer))
+         if (!m_outputBuffer->Init(width, height, EColorFormat::R32_FLOAT, globalDepthStencilBuffer))
          {
             return false;
          }

@@ -1,4 +1,5 @@
 #include "Rendering/RendererPBR.h"
+#include "Rendering/RenderTargetDX11.h"
 #include "GameFramework/World.h"
 #include "Component/CameraComponent.h"
 #include "Component/LightComponent.h"
@@ -8,19 +9,13 @@ namespace Elaina
 {
    using namespace Mile;
    template<>
-   std::vector<CameraComponent*>* Realize(const WorldDescriptor& descriptor)
+   CameraComponent** Realize(const CameraDescriptor& descriptor)
    {
-      std::vector<CameraComponent*>* cameras = new std::vector<CameraComponent*>();
-      if (descriptor.TargetWorld != nullptr)
-      {
-         (*cameras) = std::move(descriptor.TargetWorld->GetComponentsFromEntities<CameraComponent>());
-      }
-
-      return cameras;
+      return new CameraComponent*(descriptor.TargetCamera);
    }
 
    template<>
-   std::vector<LightComponent*>* Realize(const WorldDescriptor& descriptor)
+   Lights* Realize(const WorldDescriptor& descriptor)
    {
       std::vector<LightComponent*>* lights = new std::vector<LightComponent*>();
       if (descriptor.TargetWorld != nullptr)
@@ -32,7 +27,7 @@ namespace Elaina
    }
 
    template<>
-   std::vector<MeshRenderComponent*>* Realize(const WorldDescriptor& descriptor)
+   Meshes* Realize(const WorldDescriptor& descriptor)
    {
       std::vector<MeshRenderComponent*>* meshes = new std::vector<MeshRenderComponent*>();
       if (descriptor.TargetWorld != nullptr)
@@ -42,6 +37,28 @@ namespace Elaina
 
       return meshes;
    }
+
+   template<>
+   RenderTargetDX11* Realize(const RenderTargetDescriptor& descriptor)
+   {
+      auto renderTarget = new RenderTargetDX11(descriptor.Renderer);
+      bool bInitialized = false;
+      if (descriptor.RenderTargetView != nullptr)
+      {
+         bInitialized = renderTarget->Init(descriptor.RenderTargetView, descriptor.DepthStencilBuffer);
+      }
+      else
+      {
+         bInitialized = renderTarget->Init(descriptor.Width, descriptor.Height, descriptor.Format, descriptor.DepthStencilBuffer);
+      }
+
+      if (!bInitialized)
+      {
+         Mile::SafeDelete(renderTarget);
+      }
+
+      return renderTarget;
+   }
 }
 
 namespace Mile
@@ -49,7 +66,8 @@ namespace Mile
    DEFINE_LOG_CATEGORY(MileRendererPBR);
 
    RendererPBR::RendererPBR(Context* context, size_t maximumThreads) :
-      RendererDX11(context, maximumThreads)
+      RendererDX11(context, maximumThreads),
+      m_targetCamera(nullptr)
    {
    }
 
@@ -78,9 +96,9 @@ namespace Mile
 
    bool RendererPBR::ConstructFrameGraph()
    {
-      auto cameraInfoRes = m_frameGraph.AddExternalPermanentResource("Cameras", WorldDescriptor(), &m_cameras);
-      auto lightInfoRes = m_frameGraph.AddExternalPermanentResource("Lights", WorldDescriptor(), &m_lights);
-      auto meshInfoRes = m_frameGraph.AddExternalPermanentResource("Meshes", WorldDescriptor(), &m_meshes);
+      auto cameraInfoRes = m_frameGraph.AddExternalPermanentResource("Camera", CameraDescriptor(), &m_targetCamera);
+      auto lightsInfoRes = m_frameGraph.AddExternalPermanentResource("Lights", WorldDescriptor(), &m_lights);
+      auto meshesInfoRes = m_frameGraph.AddExternalPermanentResource("Meshes", WorldDescriptor(), &m_meshes);
 
       return true;
    }

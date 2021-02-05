@@ -21,17 +21,7 @@ namespace Mile
       DeInit();
    }
 
-   bool RenderTargetDX11::Init(const Descriptor& descriptor)
-   {
-      if (descriptor.RenderTargetView != nullptr)
-      {
-         return this->Init(descriptor.RenderTargetView, descriptor.DepthStencilBuffer);
-      }
-
-      return this->Init(descriptor.Width, descriptor.Height, static_cast<DXGI_FORMAT>(descriptor.Format), descriptor.DepthStencilBuffer);
-   }
-
-   bool RenderTargetDX11::Init(unsigned int width, unsigned int height, DXGI_FORMAT format, DepthStencilBufferDX11* depthStencilBuffer)
+   bool RenderTargetDX11::Init(unsigned int width, unsigned int height, EColorFormat format, DepthStencilBufferDX11* depthStencilBuffer)
    {
       bool bIsValidParams = (width > 0 && height > 0);
       if (RenderObject::IsInitializable() && bIsValidParams)
@@ -45,7 +35,7 @@ namespace Mile
          texDesc.Height = height;
          texDesc.MipLevels = 1;
          texDesc.ArraySize = 1;
-         texDesc.Format = format;
+         texDesc.Format = static_cast<DXGI_FORMAT>(format);
          texDesc.SampleDesc.Count = 1;
          texDesc.SampleDesc.Quality = 0;
          texDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -64,7 +54,7 @@ namespace Mile
          {
             D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
             ZeroMemory(&rtvDesc, sizeof(rtvDesc));
-            rtvDesc.Format = format;
+            rtvDesc.Format = static_cast<DXGI_FORMAT>(format);
             rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
             rtvDesc.Texture2D.MipSlice = 0;
 

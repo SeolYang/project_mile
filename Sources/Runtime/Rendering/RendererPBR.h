@@ -12,11 +12,32 @@ namespace Mile
    };
 
    class CameraComponent;
-   using CameraInfoResource = Elaina::FrameResource<WorldDescriptor, std::vector<CameraComponent*>>;
+   struct CameraDescriptor
+   {
+      CameraComponent* TargetCamera = nullptr;
+   };
+
    class LightComponent;
-   using LightInfoResource = Elaina::FrameResource<WorldDescriptor, std::vector<LightComponent*>>;
    class MeshRenderComponent;
-   using MeshInfoResource = Elaina::FrameResource<WorldDescriptor, std::vector<MeshRenderComponent*>>;
+   using Lights = std::vector<LightComponent*>;
+   using Meshes = std::vector<MeshRenderComponent*>;
+
+   using CameraInfoResource = Elaina::FrameResource<CameraDescriptor, CameraComponent*>;
+   using LightsInfoResource = Elaina::FrameResource<WorldDescriptor, Lights>;
+   using MeshesInfoResource = Elaina::FrameResource<WorldDescriptor, Meshes>;
+
+   class RenderTargetDX11;
+   struct RenderTargetDescriptor
+   {
+      RendererDX11* Renderer = nullptr;
+      unsigned int Width = 1920;
+      unsigned int Height = 1080;
+      EColorFormat Format = EColorFormat::R8G8B8A8_UNORM;
+      ID3D11RenderTargetView* RenderTargetView = nullptr;
+      DepthStencilBufferDX11* DepthStencilBuffer = nullptr;
+   };
+
+   using RenderTargetResource = Elaina::FrameResource<RenderTargetDescriptor, RenderTargetDX11>;
 
    class MEAPI RendererPBR : public RendererDX11
    {
@@ -35,8 +56,9 @@ namespace Mile
    private:
       Elaina::FrameGraph m_frameGraph;
       std::vector<CameraComponent*> m_cameras;
-      std::vector<LightComponent*> m_lights;
-      std::vector<MeshRenderComponent*> m_meshes;
+      CameraComponent* m_targetCamera;
+      Lights m_lights;
+      Meshes m_meshes;
 
    };
 }

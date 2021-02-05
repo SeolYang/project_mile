@@ -134,12 +134,8 @@ namespace Mile
          return false;
       }
 
-      RenderTargetDX11::Descriptor renderTargetDesc;
-      renderTargetDesc.RenderTargetView = backBufferRenderTargetView;
-      renderTargetDesc.DepthStencilBuffer = m_backBufferDepthStencil;
-
       m_backBuffer = new RenderTargetDX11(this);
-      if (!m_backBuffer->Init(renderTargetDesc))
+      if (!m_backBuffer->Init(backBufferRenderTargetView, m_backBufferDepthStencil))
       {
          ME_LOG(MileRenderer, Fatal, TEXT("Failed to create back buffer render target!"));
          return false;
@@ -224,11 +220,8 @@ namespace Mile
          return;
       }
 
-      RenderTargetDX11::Descriptor renderTargetDesc;
-      renderTargetDesc.RenderTargetView = backBufferRenderTargetView;
-      renderTargetDesc.DepthStencilBuffer = m_backBufferDepthStencil;
       m_backBuffer = new RenderTargetDX11(this);
-      if (!m_backBuffer->Init(renderTargetDesc))
+      if (!m_backBuffer->Init(backBufferRenderTargetView, m_backBufferDepthStencil))
       {
          ME_LOG(MileRenderer, Fatal, TEXT("Failed to create resized back buffer render target!"));
       }
