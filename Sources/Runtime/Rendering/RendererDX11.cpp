@@ -128,7 +128,7 @@ namespace Mile
 
       /** Create Depth-stencil buffer for Backbuffer. */
       m_backBufferDepthStencil = new DepthStencilBufferDX11(this);
-      if (!m_backBufferDepthStencil->Init(clientAreaRes.x, clientAreaRes.y, true))
+      if (!m_backBufferDepthStencil->Init((unsigned int)clientAreaRes.x, (unsigned int)clientAreaRes.y, true))
       {
          ME_LOG(MileRenderer, Fatal, TEXT("Failed to create back buffer depth-stencil buffer!"));
          return false;
