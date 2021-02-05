@@ -9,9 +9,9 @@ namespace Elaina
 {
    using namespace Mile;
    template<>
-   CameraComponent** Realize(const CameraDescriptor& descriptor)
+   CameraRef* Realize(const CameraRefDescriptor& descriptor)
    {
-      return new CameraComponent*(descriptor.TargetCamera);
+      return new CameraRef(descriptor.Reference);
    }
 
    template<>
@@ -67,7 +67,10 @@ namespace Mile
 
    RendererPBR::RendererPBR(Context* context, size_t maximumThreads) :
       RendererDX11(context, maximumThreads),
-      m_targetCamera(nullptr)
+      m_targetCamera(nullptr),
+      m_targetCameraRef(nullptr),
+      m_outputRenderTarget(nullptr),
+      m_outputRenderTargetRef(nullptr)
    {
    }
 
@@ -96,9 +99,14 @@ namespace Mile
 
    bool RendererPBR::ConstructFrameGraph()
    {
-      auto cameraInfoRes = m_frameGraph.AddExternalPermanentResource("Camera", CameraDescriptor(), &m_targetCamera);
+      m_targetCameraRef = &m_targetCamera;
+      auto targetCameraRefRes = m_frameGraph.AddExternalPermanentResource("CameraRef", CameraRefDescriptor(), &m_targetCameraRef);
+
       auto lightsInfoRes = m_frameGraph.AddExternalPermanentResource("Lights", WorldDescriptor(), &m_lights);
       auto meshesInfoRes = m_frameGraph.AddExternalPermanentResource("Meshes", WorldDescriptor(), &m_meshes);
+
+      m_outputRenderTargetRef = &m_outputRenderTarget;
+      auto outputRenderTargetRefRes = m_frameGraph.AddExternalPermanentResource("OutputRef", RenderTargetRefDescriptor(), &m_outputRenderTargetRef);
 
       return true;
    }
