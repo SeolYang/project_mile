@@ -199,7 +199,7 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>EXPORT_DLL;MILE_EDITOR;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;_USRDLL;RUNTIME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Sources\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui_lib\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Sources\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui_lib\include;..\ThirdParty\optick\src;..\Sources\Elaina</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -243,6 +243,14 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
     <ClInclude Include="..\Sources\Runtime\Core\SubSystem.h" />
     <ClInclude Include="..\Sources\Runtime\Core\Timer.h" />
     <ClInclude Include="..\Sources\Runtime\Core\Window.h" />
+    <ClInclude Include="..\Sources\Runtime\Elaina\CallbackRenderPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Elaina\Elaina.config.h" />
+    <ClInclude Include="..\Sources\Runtime\Elaina\FrameGraph.h" />
+    <ClInclude Include="..\Sources\Runtime\Elaina\FrameResource.h" />
+    <ClInclude Include="..\Sources\Runtime\Elaina\Realize.h" />
+    <ClInclude Include="..\Sources\Runtime\Elaina\RenderPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Elaina\RenderPassBuilder.h" />
+    <ClInclude Include="..\Sources\Runtime\Experimental\Renderer.h" />
     <ClInclude Include="..\Sources\Runtime\GameFramework\Entity.h" />
     <ClInclude Include="..\Sources\Runtime\GameFramework\Transform.h" />
     <ClInclude Include="..\Sources\Runtime\GameFramework\World.h" />
@@ -418,6 +426,7 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
     <ClCompile Include="..\Sources\Runtime\Core\SubSystem.cpp" />
     <ClCompile Include="..\Sources\Runtime\Core\Timer.cpp" />
     <ClCompile Include="..\Sources\Runtime\Core\Window.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Experimental\Renderer.cpp" />
     <ClCompile Include="..\Sources\Runtime\GameFramework\Entity.cpp" />
     <ClCompile Include="..\Sources\Runtime\GameFramework\Transform.cpp" />
     <ClCompile Include="..\Sources\Runtime\GameFramework\World.cpp" />

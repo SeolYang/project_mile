@@ -70,6 +70,12 @@
     <Filter Include="Sources\Resource\Resources">
       <UniqueIdentifier>{32b12185-7784-4505-9a19-d94411444ae9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Elaina">
+      <UniqueIdentifier>{3e853850-08bd-477f-995f-4786d3dd63f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Experimental">
+      <UniqueIdentifier>{09560966-83c4-4633-9153-25cae0eb73ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ThirdParty\json\src\json.hpp">
@@ -597,6 +603,30 @@
     <ClInclude Include="..\ThirdParty\imgui_lib\include\imgui.h">
       <Filter>ThirdParty\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Elaina\RenderPassBuilder.h">
+      <Filter>Sources\Elaina</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Elaina\CallbackRenderPass.h">
+      <Filter>Sources\Elaina</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Elaina\Elaina.config.h">
+      <Filter>Sources\Elaina</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Elaina\FrameGraph.h">
+      <Filter>Sources\Elaina</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Elaina\FrameResource.h">
+      <Filter>Sources\Elaina</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Elaina\Realize.h">
+      <Filter>Sources\Elaina</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Elaina\RenderPass.h">
+      <Filter>Sources\Elaina</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Experimental\Renderer.h">
+      <Filter>Sources\Experimental</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Sources\Runtime\Component\CameraComponent.cpp">
@@ -847,6 +877,9 @@
     </ClCompile>
     <ClCompile Include="..\ThirdParty\imgui_lib\include\imgui_impl_dx11.cpp">
       <Filter>ThirdParty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Experimental\Renderer.cpp">
+      <Filter>Sources\Experimental</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

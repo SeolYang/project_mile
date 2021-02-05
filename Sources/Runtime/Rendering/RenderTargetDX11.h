@@ -8,16 +8,20 @@ namespace Mile
    class MEAPI RenderTargetDX11 : public RenderObject
    {
    public:
+      struct Descriptor
+      {
+         unsigned int Width = 1920;
+         unsigned int Height = 1080;
+         EColorFormat Format = EColorFormat::R8G8B8A8_UNORM;
+         ID3D11RenderTargetView* RenderTargetView = nullptr;
+         DepthStencilBufferDX11* DepthStencilBuffer = nullptr;
+      };
+
+   public:
       RenderTargetDX11(RendererDX11* renderer);
       virtual ~RenderTargetDX11();
 
-      bool Init(unsigned int width, unsigned int height, DXGI_FORMAT format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM, DepthStencilBufferDX11* depthStencilBuffer = nullptr);
-
-      /**
-       * @remark  이 함수를 통해 객체를 초기화 할 경우, 셰이더 리소스로는 바운드 시킬 수 없습니다. (항상 렌더 타겟으로만 Output Merge Stage 에 바인드 되어야 합니다.)
-       */
-      bool Init(ID3D11RenderTargetView* rtv, DepthStencilBufferDX11* depthStencilBuffer = nullptr);
-
+      bool Init(const Descriptor& descriptor);
       void DeInit();
 
       unsigned int GetWidth() const { return m_width; }
@@ -35,9 +39,17 @@ namespace Mile
       void ClearDepthStencil(ID3D11DeviceContext& deviceContext);
 
    private:
+      bool Init(unsigned int width, unsigned int height, DXGI_FORMAT format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM, DepthStencilBufferDX11* depthStencilBuffer = nullptr);
+
+      /**
+       * @remark  이 함수를 통해 객체를 초기화 할 경우, 셰이더 리소스로는 바운드 시킬 수 없습니다. (항상 렌더 타겟으로만 Output Merge Stage 에 바인드 되어야 합니다.)
+       */
+      bool Init(ID3D11RenderTargetView* rtv, DepthStencilBufferDX11* depthStencilBuffer = nullptr);
+
+   private:
       ID3D11RenderTargetView* m_rtv;
       Texture2dDX11* m_texture;
-      DepthStencilBufferDX11* m_depthStencilBuffer;
+      DepthStencilBufferDX11* m_depthStencilBuffer; /** Does not delete in render target! */
 
       unsigned int               m_width;
       unsigned int               m_height;

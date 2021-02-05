@@ -21,6 +21,16 @@ namespace Mile
       DeInit();
    }
 
+   bool RenderTargetDX11::Init(const Descriptor& descriptor)
+   {
+      if (descriptor.RenderTargetView != nullptr)
+      {
+         return this->Init(descriptor.RenderTargetView, descriptor.DepthStencilBuffer);
+      }
+
+      return this->Init(descriptor.Width, descriptor.Height, static_cast<DXGI_FORMAT>(descriptor.Format), descriptor.DepthStencilBuffer);
+   }
+
    bool RenderTargetDX11::Init(unsigned int width, unsigned int height, DXGI_FORMAT format, DepthStencilBufferDX11* depthStencilBuffer)
    {
       bool bIsValidParams = (width > 0 && height > 0);
@@ -46,7 +56,7 @@ namespace Mile
          RendererDX11* renderer = GetRenderer();
          ID3D11Texture2D* texture = nullptr;
          auto device = renderer->GetDevice();
-         auto result = device->CreateTexture2D(
+         auto result = device.CreateTexture2D(
             &texDesc,
             nullptr,
             &texture);
@@ -58,7 +68,7 @@ namespace Mile
             rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
             rtvDesc.Texture2D.MipSlice = 0;
 
-            result = device->CreateRenderTargetView(
+            result = device.CreateRenderTargetView(
                texture,
                &rtvDesc,
                &m_rtv);
