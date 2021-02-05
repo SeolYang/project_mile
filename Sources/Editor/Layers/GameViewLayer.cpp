@@ -25,7 +25,7 @@ namespace Mile
          auto resMng = Engine::GetResourceManager();
          auto world = Engine::GetWorld();
          auto renderer = Engine::GetRenderer();
-         Vector2 referenceRes = renderer->GetReferenceResolution();
+         Vector2 referenceRes = renderer->GetRenderResolution();
          m_editorCameraRenderTex = resMng->Create<RenderTexture>(EDITOR_GAME_VIEW_RENDER_TEXTURE, false);
          m_editorCameraRenderTex->SetWidth((UINT32)referenceRes.x);
          m_editorCameraRenderTex->SetHeight((UINT32)referenceRes.y);
@@ -44,11 +44,11 @@ namespace Mile
          auto world = Engine::GetWorld();
          auto window = Engine::GetWindow();
          auto renderer = Engine::GetRenderer();
-         Vector2 referenceRes = renderer->GetReferenceResolution();
+         Vector2 referenceRes = renderer->GetRenderResolution();
 
          ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
          ImGui::Begin("Game", nullptr, windowFlag);
-         if (renderer->IsRenderedFrame())
+         if (true)//(renderer->IsRenderedFrame())
          {
             if (m_editorCameraRenderTex != nullptr)
             {

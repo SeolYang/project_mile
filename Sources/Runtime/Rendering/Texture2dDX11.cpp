@@ -17,7 +17,7 @@ namespace Mile
       if (RenderObject::IsInitializable())
       {
          RendererDX11* renderer = GetRenderer();
-         auto device = renderer->GetDevice();
+         auto& device = renderer->GetDevice();
 
          D3D11_TEXTURE2D_DESC desc;
          ZeroMemory(&desc, sizeof(desc));
@@ -48,7 +48,7 @@ namespace Mile
          resource.SysMemPitch = (width * channels) * bytePerChannel;
          resource.SysMemSlicePitch = (width * height * channels) * bytePerChannel;
 
-         auto result = device->CreateTexture2D(&desc, &resource, &m_texture);
+         auto result = device.CreateTexture2D(&desc, &resource, &m_texture);
          if (!FAILED(result))
          {
             if (InitSRV(desc))

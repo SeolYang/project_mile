@@ -45,11 +45,11 @@ namespace Mile
          break;
 
       case EStaticMeshType::Cube:
-         m_mesh = Engine::GetRenderer()->GetCubeMesh();
+         //m_mesh = Engine::GetRenderer()->GetCubeMesh();
          break;
 
       case EStaticMeshType::Quad:
-         m_mesh = Engine::GetRenderer()->GetQuadMesh();
+         //m_mesh = Engine::GetRenderer()->GetQuadMesh();
          break;
       }
 

@@ -73,8 +73,8 @@
     <Filter Include="Sources\Elaina">
       <UniqueIdentifier>{3e853850-08bd-477f-995f-4786d3dd63f3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Experimental">
-      <UniqueIdentifier>{09560966-83c4-4633-9153-25cae0eb73ed}</UniqueIdentifier>
+    <Filter Include="Sources\Rendering\Renderer">
+      <UniqueIdentifier>{e2cc0e98-4a04-455b-89c2-1f9c0a7a85da}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -414,9 +414,6 @@
     <ClInclude Include="..\Sources\Runtime\MT\ThreadPool.h">
       <Filter>Sources\MT</Filter>
     </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\RendererDX11.h">
-      <Filter>Sources\Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="..\Sources\Runtime\Rendering\RenderingCore.h">
       <Filter>Sources\Rendering</Filter>
     </ClInclude>
@@ -624,8 +621,11 @@
     <ClInclude Include="..\Sources\Runtime\Elaina\RenderPass.h">
       <Filter>Sources\Elaina</Filter>
     </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Experimental\Renderer.h">
-      <Filter>Sources\Experimental</Filter>
+    <ClInclude Include="..\Sources\Runtime\Rendering\RendererDX11.h">
+      <Filter>Sources\Rendering\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\RendererPBR.h">
+      <Filter>Sources\Rendering\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -703,9 +703,6 @@
     </ClCompile>
     <ClCompile Include="..\Sources\Runtime\MT\ThreadPool.cpp">
       <Filter>Sources\MT</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\RendererDX11.cpp">
-      <Filter>Sources\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="..\Sources\Runtime\Rendering\RenderingPass.cpp">
       <Filter>Sources\Rendering</Filter>
@@ -878,8 +875,11 @@
     <ClCompile Include="..\ThirdParty\imgui_lib\include\imgui_impl_dx11.cpp">
       <Filter>ThirdParty\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Experimental\Renderer.cpp">
-      <Filter>Sources\Experimental</Filter>
+    <ClCompile Include="..\Sources\Runtime\Rendering\RendererDX11.cpp">
+      <Filter>Sources\Rendering\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\RendererPBR.cpp">
+      <Filter>Sources\Rendering\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

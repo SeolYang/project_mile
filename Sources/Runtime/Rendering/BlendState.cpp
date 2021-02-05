@@ -34,8 +34,8 @@ namespace Mile
          }
 
          RendererDX11* renderer = GetRenderer();
-         ID3D11Device* device = renderer->GetDevice();
-         auto result = device->CreateBlendState(&desc, &m_blendState);
+         auto& device = renderer->GetDevice();
+         auto result = device.CreateBlendState(&desc, &m_blendState);
          if (FAILED(result))
          {
             m_bIsDirty = true;

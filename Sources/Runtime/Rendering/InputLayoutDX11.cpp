@@ -21,8 +21,8 @@ namespace Mile
       {
          auto blob = shader->GetBlob();
          RendererDX11* renderer = GetRenderer();
-         auto device = renderer->GetDevice();
-         auto result = device->CreateInputLayout(
+         auto& device = renderer->GetDevice();
+         auto result = device.CreateInputLayout(
             inputLayoutDescs.data(),
             (unsigned int)inputLayoutDescs.size(),
             blob->GetBufferPointer(),

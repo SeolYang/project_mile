@@ -55,7 +55,7 @@ namespace Mile
 
          RendererDX11* renderer = GetRenderer();
          ID3D11Texture2D* texture = nullptr;
-         auto device = renderer->GetDevice();
+         auto& device = renderer->GetDevice();
          auto result = device.CreateTexture2D(
             &texDesc,
             nullptr,

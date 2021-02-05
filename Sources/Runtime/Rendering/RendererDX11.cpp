@@ -5,6 +5,8 @@
 
 namespace Mile
 {
+   DEFINE_LOG_CATEGORY(MileRenderer);
+
    RendererDX11::RendererDX11(Context* context, size_t maximumThreads) :
       SubSystem(context),
       m_maximumThreads(maximumThreads),
@@ -14,7 +16,8 @@ namespace Mile
       m_backBuffer(nullptr),
       m_backBufferDepthStencil(nullptr),
       m_renderResolution(Vector2(1920.0f, 1080.0f)),
-      m_onWindowResize(nullptr)
+      m_onWindowResize(nullptr),
+      m_bVsyncEnabled(false)
    {
    }
 
@@ -167,7 +170,24 @@ namespace Mile
 
    void RendererDX11::Render(const World& world)
    {
+      OPTICK_EVENT();
       RenderImpl(world);
+   }
+
+   void RendererDX11::Present()
+   {
+      OPTICK_EVENT();
+      if (m_swapChain != nullptr)
+      {
+         if (m_bVsyncEnabled)
+         {
+            m_swapChain->Present(1, 0);
+         }
+         else
+         {
+            m_swapChain->Present(0, 0);
+         }
+      }
    }
 
    void RendererDX11::OnWindowReisze(unsigned int width, unsigned int height)
@@ -212,5 +232,12 @@ namespace Mile
       {
          ME_LOG(MileRenderer, Fatal, TEXT("Failed to create resized back buffer render target!"));
       }
+
+      ME_LOG(MileRenderer, Log, TEXT("Back buffer successfully resized to (%d x %d)"), width, height);
+   }
+
+   void RendererDX11::SetBackBufferAsRenderTarget(ID3D11DeviceContext& deviceContext)
+   {
+      m_backBuffer->BindAsRenderTarget(deviceContext, true, true);
    }
 }

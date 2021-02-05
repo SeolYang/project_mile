@@ -55,8 +55,8 @@ namespace Mile
          desc.AntialiasedLineEnable = false;
 
          RendererDX11* renderer = GetRenderer();
-         auto device = renderer->GetDevice();
-         auto result = device->CreateRasterizerState(&desc, &m_rasterizerState);
+         auto& device = renderer->GetDevice();
+         auto result = device.CreateRasterizerState(&desc, &m_rasterizerState);
          if (FAILED(result))
          {
             m_bIsDirty = true;

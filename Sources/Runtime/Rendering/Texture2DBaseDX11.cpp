@@ -100,7 +100,7 @@ namespace Mile
       if (RenderObject::IsInitializable())
       {
          RendererDX11* renderer = GetRenderer();
-         auto device = renderer->GetDevice();
+         auto& device = renderer->GetDevice();
          D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
          ZeroMemory(&srvDesc, sizeof(srvDesc));
          srvDesc.Format = desc.Format;
@@ -117,7 +117,7 @@ namespace Mile
             srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
          }
 
-         auto result = device->CreateShaderResourceView(m_texture, &srvDesc, &m_srv);
+         auto result = device.CreateShaderResourceView(m_texture, &srvDesc, &m_srv);
          if (!FAILED(result))
          {
             return true;

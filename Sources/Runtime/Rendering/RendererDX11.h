@@ -24,8 +24,7 @@ namespace Mile
       RendererDX11(Context* context, size_t maximumThreads);
       virtual ~RendererDX11();
 
-      bool Init(Window& window);
-      void DeInit() override;
+      virtual bool Init(Window& window);
 
       ID3D11Device& GetDevice() const 
       { 
@@ -71,12 +70,25 @@ namespace Mile
          return m_renderResolution;
       }
 
+      void SetVsync(bool enable)
+      {
+         m_bVsyncEnabled = enable;
+      }
+
+      bool IsVsyncEnabled() const
+      {
+         return m_bVsyncEnabled;
+      }
+
       void Render(const World& world);
+      void Present();
 
       void OnWindowReisze(unsigned int width, unsigned int height);
 
+      void SetBackBufferAsRenderTarget(ID3D11DeviceContext& deviceContext);
+
    protected:
-      virtual void RenderImpl(const World& world) = 0;
+      virtual void RenderImpl(const World& world) { }
       virtual void OnRenderResolutionChanged() { };
 
    private:
@@ -96,6 +108,7 @@ namespace Mile
       /** Application level */
       Vector2 m_renderResolution;
       OnWindowResizeDelegate* m_onWindowResize;
+      bool m_bVsyncEnabled;
 
    };
 }

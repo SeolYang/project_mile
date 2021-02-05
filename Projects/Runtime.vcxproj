@@ -250,7 +250,6 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
     <ClInclude Include="..\Sources\Runtime\Elaina\Realize.h" />
     <ClInclude Include="..\Sources\Runtime\Elaina\RenderPass.h" />
     <ClInclude Include="..\Sources\Runtime\Elaina\RenderPassBuilder.h" />
-    <ClInclude Include="..\Sources\Runtime\Experimental\Renderer.h" />
     <ClInclude Include="..\Sources\Runtime\GameFramework\Entity.h" />
     <ClInclude Include="..\Sources\Runtime\GameFramework\Transform.h" />
     <ClInclude Include="..\Sources\Runtime\GameFramework\World.h" />
@@ -290,6 +289,7 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
     <ClInclude Include="..\Sources\Runtime\Rendering\Quad.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\RasterizerState.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\RendererDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\RendererPBR.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\RenderingCore.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\RenderingPass.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\RenderObject.h" />
@@ -426,7 +426,6 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
     <ClCompile Include="..\Sources\Runtime\Core\SubSystem.cpp" />
     <ClCompile Include="..\Sources\Runtime\Core\Timer.cpp" />
     <ClCompile Include="..\Sources\Runtime\Core\Window.cpp" />
-    <ClCompile Include="..\Sources\Runtime\Experimental\Renderer.cpp" />
     <ClCompile Include="..\Sources\Runtime\GameFramework\Entity.cpp" />
     <ClCompile Include="..\Sources\Runtime\GameFramework\Transform.cpp" />
     <ClCompile Include="..\Sources\Runtime\GameFramework\World.cpp" />
@@ -461,6 +460,7 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
     <ClCompile Include="..\Sources\Runtime\Rendering\Quad.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\RasterizerState.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\RendererDX11.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\RendererPBR.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\RenderingPass.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\RenderObject.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\RenderTargetDX11.cpp" />

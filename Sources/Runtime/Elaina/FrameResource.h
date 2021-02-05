@@ -110,7 +110,7 @@ namespace Elaina
       {
          if (IsTransient() && IsRealized())
          {
-            SafeDelete(Actual);
+            Elaina::SafeDelete(Actual);
          }
       }
 

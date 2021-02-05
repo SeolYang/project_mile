@@ -26,8 +26,8 @@ namespace Mile
          if (Compile(shaderPath, EShaderType::PixelShader))
          {
             RendererDX11* renderer = GetRenderer();
-            auto device = renderer->GetDevice();
-            auto result = device->CreatePixelShader(
+            auto& device = renderer->GetDevice();
+            auto result = device.CreatePixelShader(
                m_blob->GetBufferPointer(),
                m_blob->GetBufferSize(),
                nullptr,
