@@ -1,0 +1,80 @@
+digraph FrameGraph 
+{
+splines=false
+graph [pad="0.1", nodestep="0.6", ranksep="1.5"]
+rankdir = LR
+bgcolor = black
+node [shape=rectangle, fontname="arial", fontsize=12, fontcolor=black]
+edge [fontname="arial", fontsize=12, fontcolor=white]
+"Geometry Pass" [label="Geometry Pass
+\nDistribution Group : 0
+\nRefs : 0", style=filled, fillcolor=darkorange];
+"CameraRef" [label="CameraRef
+\nID : 0
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"Lights" [label="Lights
+\nID : 1
+\nRefs : 0
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"Meshes" [label="Meshes
+\nID : 2
+\nRefs : 0
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"MaterialMap" [label="MaterialMap
+\nID : 3
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"OutputRef" [label="OutputRef
+\nID : 4
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"GeometryPassVS" [label="GeometryPassVS
+\nID : 5
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"GeometryPassPS" [label="GeometryPassPS
+\nID : 6
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"AnisoWrapAlwaysSampler" [label="AnisoWrapAlwaysSampler
+\nID : 7
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
+"GeometryPassTransform" [label="GeometryPassTransform
+\nID : 8
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
+"GeometryPassPackedMaterialParams" [label="GeometryPassPackedMaterialParams
+\nID : 9
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
+"GBuffer" [label="GBuffer
+\nID : 10
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
+"Viewport" [label="Viewport
+\nID : 11
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
+"DefaultRasterizerState" [label="DefaultRasterizerState
+\nID : 12
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
+"Geometry Pass" -> { "AnisoWrapAlwaysSampler" "GeometryPassTransform" "GeometryPassPackedMaterialParams" "GBuffer" "Viewport" "DefaultRasterizerState" } [color=aquamarine]
+"Geometry Pass" -> { } [color=firebrick1]
+
+"CameraRef" -> { "Geometry Pass" } [color=yellow]
+"Lights" -> { } [color=yellow]
+"Meshes" -> { } [color=yellow]
+"MaterialMap" -> { "Geometry Pass" } [color=yellow]
+"OutputRef" -> { "Geometry Pass" } [color=yellow]
+"GeometryPassVS" -> { "Geometry Pass" } [color=yellow]
+"GeometryPassPS" -> { "Geometry Pass" } [color=yellow]
+"AnisoWrapAlwaysSampler" -> { } [color=yellow]
+"GeometryPassTransform" -> { } [color=yellow]
+"GeometryPassPackedMaterialParams" -> { } [color=yellow]
+"GBuffer" -> { } [color=yellow]
+"Viewport" -> { } [color=yellow]
+"DefaultRasterizerState" -> { } [color=yellow]
+}

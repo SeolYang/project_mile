@@ -74,7 +74,6 @@ namespace Mile
       {
          m_bVsyncEnabled = enable;
       }
-
       bool IsVsyncEnabled() const
       {
          return m_bVsyncEnabled;

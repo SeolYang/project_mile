@@ -14,10 +14,23 @@
 #define SAFE_EXECUTE_CMDLIST(DEVICE_CONTEXT_PTR, CMD_LIST, RESTORE_CONTEXT_STATE) if(DEVICE_CONTEXT_PTR != nullptr && CMD_LIST != nullptr) { DEVICE_CONTEXT_PTR->ExecuteCommandList(CMD_LIST, RESTORE_CONTEXT_STATE); }
 
 #define EDITOR_GAME_VIEW_RENDER_TEXTURE TEXT("Editor/GameViewRenderTexture")
-
+#define DEFINE_CONSTANT_BUFFER(BUFFER_NAME) struct MEAPI alignas(16) BUFFER_NAME
 namespace Mile
 {
    constexpr unsigned int CUBE_FACES = 6;
+
+   enum class ECullMode
+   {
+      None,
+      Front,
+      Back
+   };
+
+   enum class EWindingOrder
+   {
+      CCW,
+      CW
+   };
 
    enum class EShaderType
    {

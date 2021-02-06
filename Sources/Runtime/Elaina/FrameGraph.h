@@ -32,25 +32,24 @@ namespace Elaina
    */
    struct VisualizeParams
    {
-      const std::string& FilePath = "output.dot";
-      const std::string& FontName = "arial";
+      std::string FontName = "arial";
       double FontSize = 12.0;
-      const std::string& FontColor = "black";
-      const std::string& EdgeFontColor = "white";
+      std::string FontColor = "black";
+      std::string EdgeFontColor = "white";
       double EdgeFontSize = 12.0;
-      const std::string& BgColor = "black";
-      const std::string& SubgraphBorderColor = "white";
+      std::string BgColor = "black";
+      std::string SubgraphBorderColor = "white";
       bool bLeftToRight = true;
       bool bSplines = false;
       double Pad = 0.1;
       double NodeSep = 0.6;
       double RankSep = 1.5;
-      const std::string& RenderPassNodeColor = "darkorange";
-      const std::string& TransientResNodeColor = "peachpuff";
-      const std::string& ExternalResNodeColor = "palegreen";
-      const std::string& CreateRefEdgeColor = "aquamarine";
-      const std::string& WriteRefEdgeColor = "firebrick1";
-      const std::string& ReadRefEdgeColor = "yellow";
+      std::string RenderPassNodeColor = "darkorange";
+      std::string TransientResNodeColor = "peachpuff";
+      std::string ExternalResNodeColor = "palegreen";
+      std::string CreateRefEdgeColor = "aquamarine";
+      std::string WriteRefEdgeColor = "firebrick1";
+      std::string ReadRefEdgeColor = "yellow";
    };
 
    class FrameGraph
@@ -325,9 +324,9 @@ namespace Elaina
       }
 
 
-      void ExportVisualization(const VisualizeParams& params)
+      void ExportVisualization(const StringType& FilePath, const VisualizeParams& params = VisualizeParams())
       {
-         std::ofstream stream(params.FilePath);
+         std::ofstream stream(FilePath);
 
          stream << "digraph FrameGraph \n{\n";
 
@@ -352,28 +351,12 @@ namespace Elaina
          int latestDistributionGroup = -1;
          for (auto renderPass : RenderPasses)
          {
-            if (latestDistributionGroup < (int)renderPass->GetDistributionGroup())
-            {
-               if (latestDistributionGroup != -1)
-               {
-                  stream << "}" << std::endl;
-               }
-
-               latestDistributionGroup = renderPass->GetDistributionGroup();
-               stream << "subgraph cluster_distribution_group" << latestDistributionGroup << std::endl;
-               stream << "{" << std::endl << "label=\"Distribution Group " << latestDistributionGroup << "\";" << std::endl;
-               stream << "fontname=\"" << params.FontName << "\";" << std::endl;
-               stream << "fontcolor=" << params.EdgeFontColor << ";" << std::endl;
-               stream << "color=" << params.SubgraphBorderColor << ";" << std::endl;
-            }
-
             stream << "\"" << renderPass->GetName() <<
                "\" [label=\"" << renderPass->GetName() << std::endl
                << "\\nDistribution Group : " << renderPass->GetDistributionGroup() << std::endl
                << "\\nRefs : " << renderPass->GetRefCount() <<
                "\", style=filled, fillcolor=" << params.RenderPassNodeColor << "];" << std::endl;
          }
-         stream << "}" << std::endl;
 
          /** Export Resources as graph nodes */
          for (auto resource : Resources)

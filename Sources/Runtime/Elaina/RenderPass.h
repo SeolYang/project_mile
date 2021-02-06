@@ -15,6 +15,7 @@ namespace Elaina
       RenderPass(const StringType& name, size_t distributionGroup = 0) :
          Name(name),
          RefCount(0),
+         bIsCullImmune(false),
          DistributionGroup(distributionGroup)
       {
       }
@@ -24,7 +25,14 @@ namespace Elaina
       StringType GetName() const { return Name; }
 
       size_t GetRefCount() const { return RefCount; }
-      bool IsNeedToCull() const { return (RefCount == 0); }
+      bool IsNeedToCull() const { return (RefCount == 0) && !bIsCullImmune; }
+
+      void SetCullImmune(bool bImmue)
+      {
+         bIsCullImmune = bImmue;
+      }
+
+      bool IsCullImmune() const { return bIsCullImmune; }
 
       size_t GetDistributionGroup() const { return DistributionGroup; }
 
@@ -54,6 +62,7 @@ namespace Elaina
       std::vector<FrameResourceBase*> Reads;
       std::vector<FrameResourceBase*> Writes;
       size_t RefCount;
+      bool bIsCullImmune;
 
       size_t DistributionGroup;
 
