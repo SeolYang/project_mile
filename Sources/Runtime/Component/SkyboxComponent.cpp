@@ -12,7 +12,6 @@ namespace Mile
       Component(entity),
       m_skybox(nullptr)
    {
-      SetTexture(nullptr);
    }
 
    json SkyboxComponent::Serialize() const
@@ -42,7 +41,7 @@ namespace Mile
 
    void SkyboxComponent::SetTexture(const String& resourcePath)
    {
-      auto texture = Engine::GetResourceManager()->GetByPath<Texture2D>(resourcePath);
+      auto texture = Engine::GetResourceManager()->Load<Texture2D>(resourcePath);
       if (texture == nullptr)
       {
          ME_LOG(MileSkyboxComponent, Warning, (TEXT("Failed to load skybox texture from : ") + resourcePath));

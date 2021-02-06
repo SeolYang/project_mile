@@ -7,6 +7,8 @@
 #include "Resource/Model.h"
 #include "Resource/Material.h"
 #include "Rendering/Mesh.h"
+#include "Rendering/Quad.h"
+#include "Rendering/Cube.h"
 
 namespace Mile
 {
@@ -45,11 +47,11 @@ namespace Mile
          break;
 
       case EStaticMeshType::Cube:
-         //m_mesh = Engine::GetRenderer()->GetCubeMesh();
+         m_mesh = Engine::GetRenderer()->GetPrimitiveCube();
          break;
 
       case EStaticMeshType::Quad:
-         //m_mesh = Engine::GetRenderer()->GetQuadMesh();
+         m_mesh = Engine::GetRenderer()->GetPrimitiveQuad();
          break;
       }
 

@@ -7,8 +7,13 @@
 #include "Rendering/GBuffer.h"
 #include "Rendering/Viewport.h"
 #include "Rendering/RasterizerState.h"
+#include "Rendering/DepthStencilState.h"
 #include "Rendering/Texture2dDX11.h"
 #include "Rendering/Mesh.h"
+#include "Rendering/Cube.h"
+#include "Rendering/Quad.h"
+#include "Rendering/DynamicCubemap.h"
+#include "Rendering/FrameResourceRealizeImpl.hpp"
 #include "Core/Context.h"
 #include "Core/Engine.h"
 #include "GameFramework/World.h"
@@ -16,211 +21,12 @@
 #include "Component/CameraComponent.h"
 #include "Component/LightComponent.h"
 #include "Component/MeshRenderComponent.h"
+#include "Component/SkyboxComponent.h"
 #include "Resource/ResourceManager.h"
 #include "Resource/RenderTexture.h"
 #include "Resource/Material.h"
 #include "Resource/Texture2D.h"
 #include "MT/ThreadPool.h"
-
-namespace Elaina
-{
-   using namespace Mile;
-   template<>
-   CameraRef* Realize(const CameraRefDescriptor& descriptor)
-   {
-      return new CameraRef(descriptor.Reference);
-   }
-
-   template<>
-   Lights* Realize(const WorldDescriptor& descriptor)
-   {
-      std::vector<LightComponent*>* lights = new std::vector<LightComponent*>();
-      if (descriptor.TargetWorld != nullptr)
-      {
-         (*lights) = std::move(descriptor.TargetWorld->GetComponentsFromEntities<LightComponent>());
-      }
-
-      return lights;
-   }
-
-   template<>
-   Meshes* Realize(const WorldDescriptor& descriptor)
-   {
-      std::vector<MeshRenderComponent*>* meshes = new std::vector<MeshRenderComponent*>();
-      if (descriptor.TargetWorld != nullptr)
-      {
-         (*meshes) = std::move(descriptor.TargetWorld->GetComponentsFromEntities<MeshRenderComponent>());
-      }
-
-      return meshes;
-   }
-
-   template<>
-   MaterialMap* Realize(const WorldDescriptor& descriptor)
-   {
-      auto materialMap = new MaterialMap();
-      auto meshes = std::move(descriptor.TargetWorld->GetComponentsFromEntities<MeshRenderComponent>());
-      for (auto renderComponent : meshes)
-      {
-         auto material = renderComponent->GetMaterial();
-         if (material != nullptr)
-         {
-            (*materialMap)[material].push_back(renderComponent);
-         }
-      }
-
-      return materialMap;
-   }
-
-   template<>
-   RenderTargetDX11* Realize(const RenderTargetDescriptor& descriptor)
-   {
-      auto renderTarget = new RenderTargetDX11(descriptor.Renderer);
-      bool bInitialized = false;
-      if (descriptor.RenderTargetView != nullptr)
-      {
-         bInitialized = renderTarget->Init(descriptor.RenderTargetView, descriptor.DepthStencilBuffer);
-      }
-      else
-      {
-         bInitialized = renderTarget->Init(descriptor.Width, descriptor.Height, descriptor.Format, descriptor.DepthStencilBuffer);
-      }
-
-      if (!bInitialized)
-      {
-         Elaina::SafeDelete(renderTarget);
-      }
-
-      return renderTarget;
-   }
-
-   template<>
-   RenderTargetRef* Realize(const RenderTargetRefDescriptor& desciptor)
-   {
-      return new RenderTargetRef(desciptor.Reference);
-   }
-
-   template<>
-   VertexShaderDX11* Realize(const ShaderDescriptor& desc)
-   {
-      VertexShaderDX11* shader = new VertexShaderDX11(desc.Renderer);
-      if (!shader->Init(desc.FilePath))
-      {
-         Elaina::SafeDelete(shader);
-      }
-
-      return shader;
-   }
-
-   template<>
-   PixelShaderDX11* Realize(const ShaderDescriptor& desc)
-   {
-      PixelShaderDX11* shader = new PixelShaderDX11(desc.Renderer);
-      if (!shader->Init(desc.FilePath))
-      {
-         Elaina::SafeDelete(shader);
-      }
-
-      return shader;
-   }
-
-   template<>
-   SamplerDX11* Realize(const SamplerDescriptor& desc)
-   {
-      SamplerDX11* sampler = new SamplerDX11(desc.Renderer);
-      if (!sampler->Init(desc.Filter, desc.AddressModeU, desc.AddressModeV, desc.AddressModeW, desc.CompFunc))
-      {
-         Elaina::SafeDelete(sampler);
-      }
-
-      return sampler;
-   }
-
-   template<>
-   ConstantBufferDX11* Realize(const ConstantBufferDescriptor& desc)
-   {
-      ConstantBufferDX11* buffer = new ConstantBufferDX11(desc.Renderer);
-      if (!buffer->Init(desc.Size))
-      {
-         Elaina::SafeDelete(buffer);
-      }
-
-      return buffer;
-   }
-
-   template<>
-   GBuffer* Realize(const GBufferDescriptor& desc)
-   {
-      bool bInitialized = false;
-      GBuffer* gBuffer = new GBuffer(desc.Renderer);
-      if (desc.OutputRenderTargetReference == nullptr)
-      {
-         if (gBuffer->Init(desc.Width, desc.Height))
-         {
-            bInitialized = true;
-         }
-      }
-      else if ((*desc.OutputRenderTargetReference) != nullptr)
-      {
-         if (gBuffer->Init(
-            (*desc.OutputRenderTargetReference)->GetWidth(),
-            (*desc.OutputRenderTargetReference)->GetHeight()))
-         {
-            bInitialized = true;
-         }
-      }
-
-      if (!bInitialized)
-      {
-         Elaina::SafeDelete(gBuffer);
-      }
-
-      return gBuffer;
-   }
-
-   template<>
-   Viewport* Realize(const ViewportDescriptor& desc)
-   {
-      Viewport* viewport = new Viewport(desc.Renderer);
-      if (desc.OutputRenderTargetReference != nullptr)
-      {
-         if ((*desc.OutputRenderTargetReference) != nullptr)
-         {
-            viewport->SetWidth((*desc.OutputRenderTargetReference)->GetWidth());
-            viewport->SetHeight((*desc.OutputRenderTargetReference)->GetHeight());
-         }
-      }
-      else
-      {
-         viewport->SetWidth(desc.Width);
-         viewport->SetHeight(desc.Height);
-      }
-      viewport->SetMinDepth(desc.MinDepth);
-      viewport->SetMaxDepth(desc.MaxDepth);
-      viewport->SetTopLeftX(desc.TopLeftX);
-      viewport->SetTopLeftY(desc.TopLeftY);
-      return viewport;
-   }
-
-   template<>
-   RasterizerState* Realize(const RasterizerStateDescriptor& desc)
-   {
-      RasterizerState* state = new RasterizerState(desc.Renderer);
-      state->SetWireframeRender(desc.bIsWireframe);
-      state->SetCullMode(desc.CullMode);
-      state->SetWindingOrder(desc.WindingOrder);
-      state->SetDepthBias(desc.DepthBias);
-      state->SetSlopeScaledDepthBias(desc.SlopeScaledDepthBias);
-      state->SetDepthBias(desc.DepthBias);
-      state->SetDepthClipEnable(desc.bIsDepthClipEnable);
-      if (!state->Init())
-      {
-         Elaina::SafeDelete(state);
-      }
-
-      return state;
-   }
-}
 
 namespace Mile
 {
@@ -241,17 +47,31 @@ namespace Mile
       float SpecularFactor;
    };
 
+   DEFINE_CONSTANT_BUFFER(ConvertSkyboxPassTransformBuffer)
+   {
+      Matrix ViewProj;
+   };
+
    RendererPBR::RendererPBR(Context* context, size_t maximumThreads) :
       RendererDX11(context, maximumThreads),
       m_targetCamera(nullptr),
       m_outputRenderTarget(nullptr),
       m_geometryPassVS(nullptr),
-      m_geometryPassPS(nullptr)
+      m_geometryPassPS(nullptr),
+      m_convertSkyboxPassVS(nullptr),
+      m_convertSkyboxPassPS(nullptr),
+      m_skyboxTexture(nullptr),
+      m_oldSkyboxTexture(nullptr),
+      m_bPrecomputeIBL(true),
+      m_quadMesh(nullptr),
+      m_cubeMesh(nullptr)
    {
    }
 
    RendererPBR::~RendererPBR()
    {
+      SafeDelete(m_convertSkyboxPassPS);
+      SafeDelete(m_convertSkyboxPassVS);
       SafeDelete(m_geometryPassPS);
       SafeDelete(m_geometryPassVS);
       m_frameGraph.Clear();
@@ -261,13 +81,22 @@ namespace Mile
    {
       if (RendererDX11::Init(window))
       {
+         m_quadMesh = GetPrimitiveQuad();
+         m_cubeMesh = GetPrimitiveCube();
          if (InitShader())
          {
             if (InitFrameGraph())
             {
+               ME_LOG(MileRendererPBR, Log, TEXT("PBR Renderer Initialized"));
                return true;
             }
+
+            ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to initialize FrameGraph!"));
+            return false;
          }
+
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to initialize Shaders!"));
+         return false;
       }
 
       ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to initialize PBR Renderer!"));
@@ -306,10 +135,25 @@ namespace Mile
             m_cameras.clear();
             m_cameras = std::move(world.GetComponentsFromEntities<CameraComponent>());
          });
+      auto acquireSkyboxTask = threadPool->AddTask([&]()
+         {
+            m_skyboxTexture = nullptr;
+            auto skyboxComponents = world.GetComponentsFromEntities<SkyboxComponent>();
+            if (skyboxComponents.size() > 0)
+            {
+               m_skyboxTexture = skyboxComponents[0]->GetTexture();
+               if (m_skyboxTexture != m_oldSkyboxTexture)
+               {
+                  m_oldSkyboxTexture = m_skyboxTexture;
+                  m_bPrecomputeIBL = true;
+               }
+            }
+         });
 
       acquireMeshRenderersAndMatTask.get();
       acquireLightsTask.get();
       acquireCamerasTask.get();
+      acquireSkyboxTask.get();
 
       for (auto camera : m_cameras)
       {
@@ -341,12 +185,29 @@ namespace Mile
       if (!m_geometryPassVS->Init(TEXT("Contents/Shaders/GeometryPass.hlsl")))
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load geometry pass vertex shader!"));
+         return false;
       }
 
       m_geometryPassPS = new PixelShaderDX11(this);
       if (!m_geometryPassPS->Init(TEXT("Contents/Shaders/GeometryPass.hlsl")))
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load geometry pass pixel shader!"));
+         return false;
+      }
+
+      /** Convert Skybox Pass Shaders */
+      m_convertSkyboxPassVS = new VertexShaderDX11(this);
+      if (!m_convertSkyboxPassVS->Init(TEXT("Contents/Shaders/Equirectangular2Cube.hlsl")))
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load convert skybox pass vertex shader!"));
+         return false;
+      }
+
+      m_convertSkyboxPassPS = new PixelShaderDX11(this);
+      if (!m_convertSkyboxPassPS->Init(TEXT("Contents/Shaders/Equirectangular2Cube.hlsl")))
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load convert skybox pass vertex shader!"));
+         return false;
       }
 
       return true;
@@ -360,16 +221,15 @@ namespace Mile
       auto materialMapRes = m_frameGraph.AddExternalPermanentResource("MaterialMap", WorldDescriptor(), &m_materialMap);
       auto outputRenderTargetRefRes = m_frameGraph.AddExternalPermanentResource("OutputRef", RenderTargetRefDescriptor(), &m_outputRenderTarget);
 
+      /** Geometry Pass */
       auto geometryPassVS = m_frameGraph.AddExternalPermanentResource("GeometryPassVS", ShaderDescriptor(), m_geometryPassVS);
       auto geometryPassPS = m_frameGraph.AddExternalPermanentResource("GeometryPassPS", ShaderDescriptor(), m_geometryPassPS);
 
-      struct GeometryPassData
+      struct GeometryPassData : public RenderPassDataBase
       {
          CameraRefResource* TargetCameraRef = nullptr;
          RenderTargetRefResource* OutputRenderTargetRef = nullptr;
          MaterialMapResource* MateralMap = nullptr;
-         VertexShaderResource* VertexShader = nullptr;
-         PixelShaderResource* PixelShader = nullptr;
          SamplerResource* Sampler = nullptr;
          ConstantBufferResource* TransformBuffer = nullptr;
          ConstantBufferResource* MaterialBuffer = nullptr;
@@ -382,6 +242,7 @@ namespace Mile
          "Geometry Pass",
          [&](Elaina::RenderPassBuilder& builder, GeometryPassData& data)
          {
+            data.Renderer = this;
             data.TargetCameraRef = builder.Read(targetCameraRefRes);
             data.OutputRenderTargetRef = builder.Read(outputRenderTargetRefRes);
             data.MateralMap = builder.Read(materialMapRes);
@@ -419,7 +280,7 @@ namespace Mile
          [&](const GeometryPassData& data)
          {
             /** @todo   Multi-threaded objects rendering */
-            ID3D11DeviceContext& deviceContext = GetImmediateContext();
+            ID3D11DeviceContext& deviceContext = data.Renderer->GetImmediateContext();
             deviceContext.ClearState();
 
             deviceContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -527,6 +388,201 @@ namespace Mile
          });
 
       geometryPass->SetCullImmune(true);
+
+      /** Lighting Pass; IBL */
+      static const Matrix captureProj = Matrix::CreatePerspectiveProj(90.0f, 1.0f, 0.1f, 10.0f);
+      const std::array<Matrix, CUBE_FACES> captureViews =
+      {
+         // +x
+         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f)) * captureProj,
+         // -x
+         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f)) * captureProj,
+         // +y
+         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f)) * captureProj,
+         // -y
+         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f)) * captureProj,
+         // +z
+         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f)) * captureProj,
+         // -z
+         Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f)) * captureProj
+      };
+      const std::array<std::string, CUBE_FACES> cubeFaces =
+      {
+         "+x",
+         "-x",
+         "+y",
+         "-y",
+         "+z",
+         "-z"
+      };
+
+      /** Calculate Diffuse Irradiance */
+
+      /** Convert Equirect To Cubemap */
+      struct ConvertSkyboxPassData : public RenderPassDataBase
+      {
+         SamplerResource* Sampler = nullptr;
+         BoolRefResource* IBLPrecomputeEnabled = nullptr;
+         Texture2DRefResource* SkyboxTextureRef = nullptr;
+         std::array<MatrixResource*, CUBE_FACES> CaptureViews{ nullptr, };
+         ViewportResource* CaptureViewport = nullptr;
+         ConstantBufferResource* CaptureTransformBuffer = nullptr;
+         RasterizerStateResource* NoCullingState = nullptr;
+         DepthStencilStateResource* DepthLessEqualState = nullptr;
+         MeshRefResource* CubeMeshRef = nullptr;
+         DynamicCubemapResource* OutputEnvMap = nullptr;
+      };
+
+      auto skyboxTextureRefRes = m_frameGraph.AddExternalPermanentResource(
+         "SkyboxTextureRef",
+         Texture2DRefDescriptor(),
+         &m_skyboxTexture);
+
+      auto cubeMeshRefRes = m_frameGraph.AddExternalPermanentResource(
+         "CubeMeshRef",
+         MeshRefDescriptor(),
+         &m_cubeMesh);
+
+      auto convertSkyboxPassVSRes = m_frameGraph.AddExternalPermanentResource(
+         "ConvertSkyboxPassVS",
+         ShaderDescriptor(),
+         m_convertSkyboxPassVS);
+
+      auto convertSkyboxPassPSRes = m_frameGraph.AddExternalPermanentResource(
+         "ConvertSkyboxPassPS",
+         ShaderDescriptor(),
+         m_convertSkyboxPassPS);
+
+      auto convertSkyboxToCubemapPass = m_frameGraph.AddCallbackPass<ConvertSkyboxPassData>(
+         "ConvertTextureToCubemap",
+         [&](Elaina::RenderPassBuilder& builder, ConvertSkyboxPassData& data)
+         {
+            data.Renderer = this;
+            data.VertexShader = builder.Read(convertSkyboxPassVSRes);
+            data.PixelShader = builder.Read(convertSkyboxPassPSRes);
+
+            SamplerDescriptor samplerDesc;
+            samplerDesc.Renderer = this;
+            samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+            samplerDesc.AddressModeU = samplerDesc.AddressModeV = samplerDesc.AddressModeW = D3D11_TEXTURE_ADDRESS_CLAMP;
+            samplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
+            data.Sampler = builder.Create<SamplerResource>("LinearClampAlwaysSampler", samplerDesc);
+
+            data.IBLPrecomputeEnabled = builder.Create<BoolRefResource>("IBLPrecomputeEnabled", BoolRefDescriptor{&m_bPrecomputeIBL});
+            data.SkyboxTextureRef = builder.Read(skyboxTextureRefRes);
+            for (size_t idx = 0; idx < CUBE_FACES; ++idx)
+            {
+               data.CaptureViews[idx] = builder.Create<MatrixResource>("IBLCaptureView" + cubeFaces[idx], MatrixDescriptor{ captureViews[idx] });
+            }
+
+            ViewportDescriptor viewportDesc;
+            viewportDesc.Renderer = this;
+            viewportDesc.Width = RendererPBRConstants::ConvertedEnvMapSize;
+            viewportDesc.Height = RendererPBRConstants::ConvertedEnvMapSize;
+            data.CaptureViewport = builder.Create<ViewportResource>("CaptureViewport", viewportDesc);
+
+            ConstantBufferDescriptor captureTransformDesc;
+            captureTransformDesc.Renderer = this;
+            captureTransformDesc.Size = sizeof(ConvertSkyboxPassTransformBuffer);
+            data.CaptureTransformBuffer = builder.Create<ConstantBufferResource>("CaptureTransformBuffer", captureTransformDesc);
+
+            RasterizerStateDescriptor noCullingDesc;
+            noCullingDesc.Renderer = this;
+            noCullingDesc.CullMode = ECullMode::None;
+            data.NoCullingState = builder.Create<RasterizerStateResource>("NoCullingState", noCullingDesc);
+
+            DepthStencilStateDescriptor depthLessEqualDesc;
+            depthLessEqualDesc.Renderer = this;
+            depthLessEqualDesc.bDepthEnable = true;
+            depthLessEqualDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+            data.DepthLessEqualState = builder.Create<DepthStencilStateResource>("DepthLessEqualState", depthLessEqualDesc);
+
+            data.CubeMeshRef = builder.Read(cubeMeshRefRes);
+
+            DynamicCubemapDescriptor envMapDesc;
+            envMapDesc.Renderer = this;
+            envMapDesc.Size = RendererPBRConstants::ConvertedEnvMapSize;
+            data.OutputEnvMap = builder.Create<DynamicCubemapResource>("EnvMap", envMapDesc);
+         },
+         [](const ConvertSkyboxPassData& data)
+         {
+            BoolRef bIBLPrecomputeEnabled = (*data.IBLPrecomputeEnabled->GetActual());
+            if (bIBLPrecomputeEnabled != nullptr && (*bIBLPrecomputeEnabled))
+            {
+               ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
+               immediateContext.ClearState();
+
+               immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+               auto vertexShader = data.VertexShader->GetActual();
+               auto pixelShader = data.PixelShader->GetActual();
+               auto sampler = data.Sampler->GetActual();
+               auto viewport = data.CaptureViewport->GetActual();
+               auto skyboxTexture = (*data.SkyboxTextureRef->GetActual());
+               auto transformBuffer = data.CaptureTransformBuffer->GetActual();
+
+               /** Binds */
+               vertexShader->Bind(immediateContext);
+               transformBuffer->Bind(immediateContext, 0, EShaderType::VertexShader);
+               pixelShader->Bind(immediateContext);
+               sampler->Bind(immediateContext, 0);
+               viewport->Bind(immediateContext);
+               Texture2dDX11* skyboxTextureDX11 = nullptr;
+               if (skyboxTexture != nullptr)
+               {
+                  skyboxTextureDX11 = skyboxTexture->GetRawTexture();
+                  if (skyboxTextureDX11 != nullptr)
+                  {
+                     skyboxTextureDX11->Bind(immediateContext, 0, EShaderType::PixelShader);
+                  }
+               }
+
+               auto depthLessEqualState = data.DepthLessEqualState->GetActual();
+               depthLessEqualState->Bind(immediateContext);
+               auto noCullingState = data.NoCullingState->GetActual();
+               noCullingState->Bind(immediateContext);
+               auto cubeMesh = *data.CubeMeshRef->GetActual();
+               cubeMesh->Bind(immediateContext, 0);
+
+               auto outputEnvMap = data.OutputEnvMap->GetActual();
+               auto captureViews = data.CaptureViews;
+               for (unsigned int faceIdx = 0; faceIdx < CUBE_FACES; ++faceIdx)
+               {
+                  outputEnvMap->BindAsRenderTarget(immediateContext, faceIdx);
+                  auto mappedTrasnformBuffer = transformBuffer->Map<ConvertSkyboxPassTransformBuffer>(immediateContext);
+                  (*mappedTrasnformBuffer) = ConvertSkyboxPassTransformBuffer{ *captureViews[faceIdx]->GetActual() };
+                  transformBuffer->UnMap(immediateContext);
+                  immediateContext.DrawIndexed(cubeMesh->GetIndexCount(), 0, 0);
+                  outputEnvMap->UnbindAsRenderTarget(immediateContext);
+               }
+
+               /** Unbinds */
+               if (skyboxTextureDX11 != nullptr)
+               {
+                  skyboxTextureDX11->Unbind(immediateContext);
+               }
+               sampler->Unbind(immediateContext);
+               pixelShader->Unbind(immediateContext);
+               transformBuffer->Unbind(immediateContext);
+               vertexShader->Unbind(immediateContext);
+            }
+         });
+
+      convertSkyboxToCubemapPass->SetCullImmune(true);
+
+      /** Solve Diffuse Integral */
+      /** ComputePrefilteredEnvMap */
+      /** Integrate BRDF */
+
+      /** 
+      * BRDF 랑 Prefiltered Environment Map은 봐꼇을때 한번만 계산되고
+      * 미리 계산된 결과를 사용하여야 하니까, 결과물들은 external로?
+      */
+
+      /** Lighting Pass; Deferred Shading - Lighting */
+
+      /** Post-process Pass */
+
       m_frameGraph.Compile();
       m_frameGraph.ExportVisualization("RendererPBR.dot");
       return true;

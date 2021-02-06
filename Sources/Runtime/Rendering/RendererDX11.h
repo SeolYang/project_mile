@@ -9,6 +9,8 @@ namespace Mile
 
    class Window;
    class World;
+   class Quad;
+   class Cube;
    class RenderTargetDX11;
    class DepthStencilBufferDX11;
    class OnWindowResizeDelegate;
@@ -86,12 +88,16 @@ namespace Mile
 
       void SetBackBufferAsRenderTarget(ID3D11DeviceContext& deviceContext);
 
+      Quad* GetPrimitiveQuad() const { return m_quad; }
+      Cube* GetPrimitiveCube() const { return m_cube; }
+
    protected:
       virtual void RenderImpl(const World& world) { }
       virtual void OnRenderResolutionChanged() { };
 
    private:
       bool InitLowLevelAPI(Window& window);
+      bool InitPrimitives();
 
    private:
       size_t m_maximumThreads;
@@ -108,6 +114,10 @@ namespace Mile
       Vector2 m_renderResolution;
       OnWindowResizeDelegate* m_onWindowResize;
       bool m_bVsyncEnabled;
+
+      /** Primitive */
+      Quad* m_quad;
+      Cube* m_cube;
 
    };
 }

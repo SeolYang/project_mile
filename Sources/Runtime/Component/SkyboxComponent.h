@@ -13,6 +13,8 @@ namespace Mile
       DeclareComponent(SkyboxComponent);
       SkyboxComponent(Entity* entity);
 
+      void OnCreate() override { SetTexture(nullptr); }
+
       json Serialize() const override;
       void DeSerialize(const json& jsonData) override;
 

@@ -42,6 +42,13 @@ namespace Mile
       EnumSize
    };
 
+   enum class EStaticMeshType
+   {
+      External = 0,
+      Cube = 1,
+      Quad = 2,
+   };
+
    /**
     * Equivalent to D3D11_PRIMITIVE_TOPOLOGY
     */
@@ -222,6 +229,10 @@ namespace Mile
       V408 = 132,
       FORCE_UINT = 0xffffffff
    };
+
+   class Material;
+   class MeshRenderComponent;
+   using MaterialMap = std::map<Material*, std::vector<MeshRenderComponent*>>;
 
    static inline DXGI_FORMAT ColorFormatToDXGIFormat(EColorFormat format)
    {

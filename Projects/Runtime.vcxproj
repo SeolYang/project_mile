@@ -228,6 +228,7 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
     <ClInclude Include="..\Sources\Runtime\Component\ComponentRegister.h" />
     <ClInclude Include="..\Sources\Runtime\Component\LightComponent.h" />
     <ClInclude Include="..\Sources\Runtime\Component\MeshRenderComponent.h" />
+    <ClInclude Include="..\Sources\Runtime\Component\SkyboxComponent.h" />
     <ClInclude Include="..\Sources\Runtime\Core\Application.h" />
     <ClInclude Include="..\Sources\Runtime\Core\Config.h" />
     <ClInclude Include="..\Sources\Runtime\Core\Context.h" />
@@ -275,6 +276,7 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
     <ClInclude Include="..\Sources\Runtime\Rendering\DynamicCubemap.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\Equirect2CubemapPass.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\ExtractBrightnessPass.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\FrameResources.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\GaussianBlurPass.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\GBuffer.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\GeometryPass.h" />
@@ -413,6 +415,7 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
     <ClCompile Include="..\Sources\Runtime\Component\ComponentRegister.cpp" />
     <ClCompile Include="..\Sources\Runtime\Component\LightComponent.cpp" />
     <ClCompile Include="..\Sources\Runtime\Component\MeshRenderComponent.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Component\SkyboxComponent.cpp" />
     <ClCompile Include="..\Sources\Runtime\Core\Application.cpp" />
     <ClCompile Include="..\Sources\Runtime\Core\Config.cpp" />
     <ClCompile Include="..\Sources\Runtime\Core\Context.cpp" />
@@ -446,6 +449,12 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
     <ClCompile Include="..\Sources\Runtime\Rendering\DynamicCubemap.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\Equirect2CubemapPass.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\ExtractBrightnessPass.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\FrameResourceRealizeImpl.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorRelease|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\Sources\Runtime\Rendering\GaussianBlurPass.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\GBuffer.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\GeometryPass.cpp" />

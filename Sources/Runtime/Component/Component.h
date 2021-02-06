@@ -16,7 +16,9 @@ namespace Mile
          std::enable_if_t<std::is_base_of_v<Component, Ty>, bool> = true>
       static Ty* Create(Entity* entity)
       {
-         return new Ty(entity);
+         Ty* newComp = new Ty(entity);
+         newComp->OnCreate();
+         return newComp;
       }
 
       //virtual std::string Serialize( ) const { return ( "\"IsActivated\": " + Mile::BoolSerialize( m_bIsActive )); }
@@ -37,6 +39,7 @@ namespace Mile
       void SetActive(bool bIsActive);
 
       virtual void Reset() { }
+      virtual void OnCreate() { }
       virtual void Start() { }
       virtual void Update() { OPTICK_EVENT(); }
       virtual void OnEnable() { }

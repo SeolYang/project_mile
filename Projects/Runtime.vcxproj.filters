@@ -627,6 +627,12 @@
     <ClInclude Include="..\Sources\Runtime\Rendering\RendererPBR.h">
       <Filter>Sources\Rendering\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Component\SkyboxComponent.h">
+      <Filter>Sources\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\FrameResources.h">
+      <Filter>Sources\Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Sources\Runtime\Component\CameraComponent.cpp">
@@ -880,6 +886,12 @@
     </ClCompile>
     <ClCompile Include="..\Sources\Runtime\Rendering\RendererPBR.cpp">
       <Filter>Sources\Rendering\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Component\SkyboxComponent.cpp">
+      <Filter>Sources\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\FrameResourceRealizeImpl.hpp">
+      <Filter>Sources\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

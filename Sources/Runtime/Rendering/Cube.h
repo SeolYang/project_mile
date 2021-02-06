@@ -11,7 +11,7 @@ namespace Mile
       {
       }
 
-      bool Init(const Vector3& min, const Vector3& max);
+      bool Init(const Vector3& min = Vector3(-1.f, -1.f, -1.f), const Vector3& max = Vector3(1.f, 1.f, 1.f));
 
    };
 }

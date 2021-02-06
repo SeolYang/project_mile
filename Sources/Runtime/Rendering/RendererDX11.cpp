@@ -1,6 +1,8 @@
 #include "Rendering/RendererDX11.h"
 #include "Rendering/RenderTargetDX11.h"
 #include "Rendering/DepthStencilBufferDX11.h"
+#include "Rendering/Quad.h"
+#include "Rendering/Cube.h"
 #include "Core/Window.h"
 
 namespace Mile
@@ -17,12 +19,17 @@ namespace Mile
       m_backBufferDepthStencil(nullptr),
       m_renderResolution(Vector2(1920.0f, 1080.0f)),
       m_onWindowResize(nullptr),
-      m_bVsyncEnabled(false)
+      m_bVsyncEnabled(false),
+      m_quad(nullptr),
+      m_cube(nullptr)
    {
    }
 
    RendererDX11::~RendererDX11()
    {
+      SafeDelete(m_quad);
+      SafeDelete(m_cube);
+
       SafeDelete(m_onWindowResize);
       SafeDelete(m_backBufferDepthStencil);
       SafeDelete(m_backBuffer);
@@ -41,7 +48,7 @@ namespace Mile
    {
       if (SubSystem::Init())
       {
-         if (InitLowLevelAPI(window))
+         if (InitLowLevelAPI(window) && InitPrimitives())
          {
             return true;
          }
@@ -162,6 +169,22 @@ namespace Mile
       window.OnWindowResize.Add(m_onWindowResize);
 
       return true;
+   }
+
+   bool RendererDX11::InitPrimitives()
+   {
+      auto quadMesh = new Quad(this);
+      auto cubeMesh = new Cube(this);
+      if (cubeMesh->Init() && quadMesh->Init())
+      {
+         m_quad = quadMesh;
+         m_cube = cubeMesh;
+         return true;
+      }
+
+      SafeDelete(cubeMesh);
+      SafeDelete(quadMesh);
+      return false;
    }
 
    void RendererDX11::Render(const World& world)
