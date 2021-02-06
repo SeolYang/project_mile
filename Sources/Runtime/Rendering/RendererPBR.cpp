@@ -584,7 +584,10 @@ namespace Mile
       /** Post-process Pass */
 
       m_frameGraph.Compile();
-      m_frameGraph.ExportVisualization("RendererPBR.dot");
+
+      Elaina::VisualizeParams visualizeParams;
+      visualizeParams.bSplines = true;
+      m_frameGraph.ExportVisualization("RendererPBR.dot", visualizeParams);
       return true;
    }
 }

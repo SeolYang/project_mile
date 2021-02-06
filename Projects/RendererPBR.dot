@@ -1,6 +1,6 @@
 digraph FrameGraph 
 {
-splines=false
+splines=true
 graph [pad="0.1", nodestep="0.6", ranksep="1.5"]
 rankdir = LR
 bgcolor = black
