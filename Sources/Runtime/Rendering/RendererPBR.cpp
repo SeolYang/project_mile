@@ -66,13 +66,17 @@ namespace Mile
       m_quadMesh(nullptr),
       m_cubeMesh(nullptr),
       m_environmentMap(nullptr),
-      m_irradianceMap(nullptr)
+      m_irradianceMap(nullptr),
+      m_diffuseIntegralPassVS(nullptr),
+      m_diffuseIntegralPassPS(nullptr)
    {
    }
 
    RendererPBR::~RendererPBR()
    {
       SafeDelete(m_irradianceMap);
+      SafeDelete(m_diffuseIntegralPassPS);
+      SafeDelete(m_diffuseIntegralPassVS);
       SafeDelete(m_environmentMap);
       SafeDelete(m_convertSkyboxPassPS);
       SafeDelete(m_convertSkyboxPassVS);
@@ -107,110 +111,59 @@ namespace Mile
       return false;
    }
 
-   void RendererPBR::RenderImpl(const World& world)
-   {
-      auto threadPool = Engine::GetThreadPool();
-
-      m_targetCamera = nullptr;
-      m_outputRenderTarget = nullptr;
-
-      auto acquireMeshRenderersAndMatTask = threadPool->AddTask([&]()
-         {
-            m_meshes.clear();
-            m_materialMap.clear();
-
-            m_meshes = std::move(world.GetComponentsFromEntities<MeshRenderComponent>());
-            for (auto renderComponent : m_meshes)
-            {
-               auto material = renderComponent->GetMaterial();
-               if (material != nullptr)
-               {
-                  m_materialMap[material].push_back(renderComponent);
-               }
-            }
-         });
-      auto acquireLightsTask = threadPool->AddTask([&]()
-         {
-            m_lights.clear();
-            m_lights = std::move(world.GetComponentsFromEntities<LightComponent>());
-         });
-      auto acquireCamerasTask = threadPool->AddTask([&]()
-         {
-            m_cameras.clear();
-            m_cameras = std::move(world.GetComponentsFromEntities<CameraComponent>());
-         });
-      auto acquireSkyboxTask = threadPool->AddTask([&]()
-         {
-            m_skyboxTexture = nullptr;
-            auto skyboxComponents = world.GetComponentsFromEntities<SkyboxComponent>();
-            if (skyboxComponents.size() > 0)
-            {
-               m_skyboxTexture = skyboxComponents[0]->GetTexture();
-               if (m_skyboxTexture != m_oldSkyboxTexture)
-               {
-                  m_oldSkyboxTexture = m_skyboxTexture;
-                  m_bPrecomputeIBL = true;
-               }
-            }
-         });
-
-      acquireMeshRenderersAndMatTask.get();
-      acquireLightsTask.get();
-      acquireCamerasTask.get();
-      acquireSkyboxTask.get();
-
-      for (auto camera : m_cameras)
-      {
-         m_targetCamera = camera;
-         RenderTexture* renderTexture = m_targetCamera->GetRenderTexture();
-         if (renderTexture != nullptr)
-         {
-            m_outputRenderTarget = renderTexture->GetRenderTarget();
-         }
-         else
-         {
-#ifdef MILE_EDITOR
-            ResourceManager* resManager = Engine::GetResourceManager();
-            renderTexture = resManager->Load<RenderTexture>(EDITOR_GAME_VIEW_RENDER_TEXTURE, true);
-            m_outputRenderTarget = renderTexture->GetRenderTarget();
-#else
-            m_outputRenderTarget = &GetBackBuffer();
-#endif
-         }
-
-         m_frameGraph.Execute();
-      }
-   }
-
    bool RendererPBR::InitShader()
    {
       /** Geometry Pass Shaders */
-      m_geometryPassVS = new VertexShaderDX11(this);
-      if (!m_geometryPassVS->Init(TEXT("Contents/Shaders/GeometryPass.hlsl")))
+      ShaderDescriptor geometryPassDesc;
+      geometryPassDesc.Renderer = this;
+      geometryPassDesc.FilePath = TEXT("Contents/Shaders/GeometryPass.hlsl");
+      m_geometryPassVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(geometryPassDesc);
+      if (m_geometryPassVS == nullptr)
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load geometry pass vertex shader!"));
          return false;
       }
 
-      m_geometryPassPS = new PixelShaderDX11(this);
-      if (!m_geometryPassPS->Init(TEXT("Contents/Shaders/GeometryPass.hlsl")))
+      m_geometryPassPS = Elaina::Realize<ShaderDescriptor, PixelShaderDX11>(geometryPassDesc);
+      if (m_geometryPassPS == nullptr)
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load geometry pass pixel shader!"));
          return false;
       }
 
       /** Convert Skybox Pass Shaders */
-      m_convertSkyboxPassVS = new VertexShaderDX11(this);
-      if (!m_convertSkyboxPassVS->Init(TEXT("Contents/Shaders/Equirectangular2Cube.hlsl")))
+      ShaderDescriptor convertSkyboxPassDesc;
+      convertSkyboxPassDesc.Renderer = this;
+      convertSkyboxPassDesc.FilePath = TEXT("Contents/Shaders/Equirectangular2Cube.hlsl");
+      m_convertSkyboxPassVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(convertSkyboxPassDesc);
+      if (m_convertSkyboxPassVS == nullptr)
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load convert skybox pass vertex shader!"));
          return false;
       }
 
-      m_convertSkyboxPassPS = new PixelShaderDX11(this);
-      if (!m_convertSkyboxPassPS->Init(TEXT("Contents/Shaders/Equirectangular2Cube.hlsl")))
+      m_convertSkyboxPassPS = Elaina::Realize<ShaderDescriptor, PixelShaderDX11>(convertSkyboxPassDesc);
+      if (m_convertSkyboxPassPS == nullptr)
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load convert skybox pass vertex shader!"));
+         return false;
+      }
+
+      /** Diffuse Integral */
+      ShaderDescriptor diffuseIntegralPassDesc;
+      diffuseIntegralPassDesc.Renderer = this;
+      diffuseIntegralPassDesc.FilePath = TEXT("Contents/Shaders/IrradianceConvolution.hlsl");
+      m_diffuseIntegralPassVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(diffuseIntegralPassDesc);
+      if (m_diffuseIntegralPassVS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load diffuse integral pass vertex shader!"));
+         return false;
+      }
+
+      m_diffuseIntegralPassPS = Elaina::Realize<ShaderDescriptor, PixelShaderDX11>(diffuseIntegralPassDesc);
+      if (m_diffuseIntegralPassPS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load diffuse integral pass pixel shader!"));
          return false;
       }
 
@@ -426,7 +379,7 @@ namespace Mile
       struct ConvertSkyboxPassData : public RenderPassDataBase
       {
          SamplerResource* Sampler = nullptr;
-         BoolRefResource* IBLPrecomputeEnabled = nullptr;
+         BoolRefResource* IBLPrecomputeEnabledRef = nullptr;
          Texture2DRefResource* SkyboxTextureRef = nullptr;
          std::array<MatrixResource*, CUBE_FACES> CaptureViews{ nullptr, };
          ViewportResource* CaptureViewport = nullptr;
@@ -434,7 +387,7 @@ namespace Mile
          RasterizerStateResource* NoCullingState = nullptr;
          DepthStencilStateResource* DepthLessEqualState = nullptr;
          MeshRefResource* CubeMeshRef = nullptr;
-         DynamicCubemapResource* OutputEnvMap = nullptr;
+         DynamicCubemapRefResource* OutputEnvMapRef = nullptr;
       };
 
       auto skyboxTextureRefRes = m_frameGraph.AddExternalPermanentResource(
@@ -448,12 +401,12 @@ namespace Mile
          &m_cubeMesh);
 
       auto convertSkyboxPassVSRes = m_frameGraph.AddExternalPermanentResource(
-         "ConvertSkyboxPassVS",
+         "ConvertSkyboxPassVertexShader",
          ShaderDescriptor(),
          m_convertSkyboxPassVS);
 
       auto convertSkyboxPassPSRes = m_frameGraph.AddExternalPermanentResource(
-         "ConvertSkyboxPassPS",
+         "ConvertSkyboxPassPixelShader",
          ShaderDescriptor(),
          m_convertSkyboxPassPS);
 
@@ -462,10 +415,10 @@ namespace Mile
       envMapDesc.Size = RendererPBRConstants::ConvertedEnvMapSize;
       m_environmentMap = Elaina::Realize<DynamicCubemapDescriptor, DynamicCubemap>(envMapDesc);
 
-      auto environmentMapResource = m_frameGraph.AddExternalPermanentResource(
-         "EnvironmentMap",
-         envMapDesc,
-         m_environmentMap);
+      auto envMapRefRes = m_frameGraph.AddExternalPermanentResource(
+         "EnvironmentMapRef",
+         DynamicCubemapRefDescriptor(),
+         &m_environmentMap);
 
       auto convertSkyboxToCubemapPass = m_frameGraph.AddCallbackPass<ConvertSkyboxPassData>(
          "ConvertTextureToCubemap",
@@ -482,7 +435,7 @@ namespace Mile
             samplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
             data.Sampler = builder.Create<SamplerResource>("LinearClampAlwaysSampler", samplerDesc);
 
-            data.IBLPrecomputeEnabled = builder.Create<BoolRefResource>("IBLPrecomputeEnabled", BoolRefDescriptor{&m_bPrecomputeIBL});
+            data.IBLPrecomputeEnabledRef = builder.Create<BoolRefResource>("IBLPrecomputeEnabledRef", BoolRefDescriptor{&m_bPrecomputeIBL});
             data.SkyboxTextureRef = builder.Read(skyboxTextureRefRes);
             for (size_t idx = 0; idx < CUBE_FACES; ++idx)
             {
@@ -512,12 +465,12 @@ namespace Mile
             data.DepthLessEqualState = builder.Create<DepthStencilStateResource>("DepthLessEqualState", depthLessEqualDesc);
 
             data.CubeMeshRef = builder.Read(cubeMeshRefRes);
-            data.OutputEnvMap = builder.Write(environmentMapResource);
+            data.OutputEnvMapRef = builder.Write(envMapRefRes);
          },
          [](const ConvertSkyboxPassData& data)
          {
-            BoolRef bIBLPrecomputeEnabled = (*data.IBLPrecomputeEnabled->GetActual());
-            if (bIBLPrecomputeEnabled != nullptr && (*bIBLPrecomputeEnabled))
+            BoolRef bIBLPrecomputeEnabledRef = (*data.IBLPrecomputeEnabledRef->GetActual());
+            if (bIBLPrecomputeEnabledRef != nullptr && (*bIBLPrecomputeEnabledRef))
             {
                ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
                immediateContext.ClearState();
@@ -554,7 +507,7 @@ namespace Mile
                auto cubeMesh = *data.CubeMeshRef->GetActual();
                cubeMesh->Bind(immediateContext, 0);
 
-               auto outputEnvMap = data.OutputEnvMap->GetActual();
+               auto outputEnvMap = *(data.OutputEnvMapRef->GetActual());
                auto captureViews = data.CaptureViews;
                for (unsigned int faceIdx = 0; faceIdx < CUBE_FACES; ++faceIdx)
                {
@@ -580,12 +533,124 @@ namespace Mile
          });
 
       convertSkyboxToCubemapPass->SetCullImmune(true);
+      auto convertSkyboxToCubemapPassData = convertSkyboxToCubemapPass->GetData();
 
       /** Solve Diffuse Integral */
       struct DiffuseIntegralPassData : public RenderPassDataBase
       {
+         BoolRefResource* IBLPrecomputeEnabledRef = nullptr;
 
+         SamplerResource* Sampler = nullptr;
+         ViewportResource* Viewport = nullptr;
+         DepthStencilStateResource* DepthLessEqualState = nullptr;
+         RasterizerStateResource* NoCullingState = nullptr;
+
+         std::array<MatrixResource*, CUBE_FACES> CaptureViews{ nullptr, };
+         ConstantBufferResource* TransformBuffer = nullptr;
+         DynamicCubemapRefResource* EnvironmentMapRef = nullptr;
+
+         MeshRefResource* CubeMeshRef = nullptr;
+         DynamicCubemapRefResource* OutputIrradianceMapRef = nullptr;
       };
+
+      auto diffuseIntegralPassVSRes = m_frameGraph.AddExternalPermanentResource(
+         "DiffuseIntegralPassVertexShader",
+         ShaderDescriptor(),
+         m_diffuseIntegralPassVS);
+
+      auto diffuseIntegralPassPSRes = m_frameGraph.AddExternalPermanentResource(
+         "DiffuseIntegralPassPixelShader",
+         ShaderDescriptor(),
+         m_diffuseIntegralPassPS);
+
+      auto irradianceMapRefRes = m_frameGraph.AddExternalPermanentResource(
+         "IrradianceMapRef",
+         DynamicCubemapRefDescriptor(),
+         &m_irradianceMap);
+
+      DynamicCubemapDescriptor irradianceMapDesc;
+      irradianceMapDesc.Renderer = this;
+      irradianceMapDesc.Size = RendererPBRConstants::IrradianceMapSize;
+      m_irradianceMap = Elaina::Realize<DynamicCubemapDescriptor, DynamicCubemap>(irradianceMapDesc);
+
+      auto diffuseIntegralPass = m_frameGraph.AddCallbackPass<DiffuseIntegralPassData>(
+         "DiffuseConvolutionPass",
+         [&](Elaina::RenderPassBuilder& builder, DiffuseIntegralPassData& data)
+         {
+            data.Renderer = this;
+            data.VertexShader = builder.Read(diffuseIntegralPassVSRes);
+            data.PixelShader = builder.Read(diffuseIntegralPassPSRes);
+
+            data.IBLPrecomputeEnabledRef = builder.Read(convertSkyboxToCubemapPassData.IBLPrecomputeEnabledRef);
+
+            data.Sampler = builder.Read(convertSkyboxToCubemapPassData.Sampler);
+            data.Viewport = builder.Read(convertSkyboxToCubemapPassData.CaptureViewport);
+            data.DepthLessEqualState = builder.Read(convertSkyboxToCubemapPassData.DepthLessEqualState);
+            data.NoCullingState = builder.Read(convertSkyboxToCubemapPassData.NoCullingState);
+
+            for (size_t faceIdx = 0; faceIdx < CUBE_FACES; ++faceIdx)
+            {
+               data.CaptureViews[faceIdx] = builder.Read(convertSkyboxToCubemapPassData.CaptureViews[faceIdx]);
+            }
+
+            data.TransformBuffer = builder.Write(convertSkyboxToCubemapPassData.CaptureTransformBuffer);
+            data.EnvironmentMapRef = builder.Read(convertSkyboxToCubemapPassData.OutputEnvMapRef);
+
+            data.CubeMeshRef = builder.Read(convertSkyboxToCubemapPassData.CubeMeshRef);
+            data.OutputIrradianceMapRef = builder.Write(irradianceMapRefRes);
+         },
+         [](const DiffuseIntegralPassData& data)
+         {
+            BoolRef bIBLPrecomputeEnabledRef = (*data.IBLPrecomputeEnabledRef->GetActual());
+            if (bIBLPrecomputeEnabledRef != nullptr && (*bIBLPrecomputeEnabledRef))
+            {
+               ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
+               immediateContext.ClearState();
+
+               immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+               auto vertexShader = data.VertexShader->GetActual();
+               auto pixelShader = data.PixelShader->GetActual();
+               auto sampler = data.Sampler->GetActual();
+               auto viewport = data.Viewport->GetActual();
+               auto depthLessEqualState = data.DepthLessEqualState->GetActual();
+               auto noCullingState = data.NoCullingState->GetActual();
+               auto transformBuffer = data.TransformBuffer->GetActual();
+               auto envMap = *data.EnvironmentMapRef->GetActual();
+               auto cubeMesh = *data.CubeMeshRef->GetActual();
+               auto outputIrradianceMap = *data.OutputIrradianceMapRef->GetActual();
+
+               /** Binds */
+               vertexShader->Bind(immediateContext);
+               pixelShader->Bind(immediateContext);
+               sampler->Bind(immediateContext, 0);
+               viewport->Bind(immediateContext);
+               depthLessEqualState->Bind(immediateContext);
+               noCullingState->Bind(immediateContext);
+               transformBuffer->Bind(immediateContext, 0, EShaderType::VertexShader);
+               envMap->Bind(immediateContext, 0, EShaderType::PixelShader);
+               cubeMesh->Bind(immediateContext, 0);
+
+               /** Render */
+               for (unsigned int faceIdx = 0; faceIdx < CUBE_FACES; ++faceIdx)
+               {
+                  outputIrradianceMap->BindAsRenderTarget(immediateContext, faceIdx);
+                  auto mappedTrasnformBuffer = transformBuffer->Map<ConvertSkyboxPassTransformBuffer>(immediateContext);
+                  (*mappedTrasnformBuffer) = ConvertSkyboxPassTransformBuffer{ *data.CaptureViews[faceIdx]->GetActual() };
+                  transformBuffer->UnMap(immediateContext);
+                  immediateContext.DrawIndexed(cubeMesh->GetIndexCount(), 0, 0);
+                  outputIrradianceMap->UnbindAsRenderTarget(immediateContext);
+               }
+               outputIrradianceMap->GenerateMips(immediateContext);
+
+               /** Unbinds */
+               envMap->Unbind(immediateContext);
+               transformBuffer->Unbind(immediateContext);
+               sampler->Unbind(immediateContext);
+               pixelShader->Unbind(immediateContext);
+               vertexShader->Unbind(immediateContext);
+            }
+         });
 
       /** ComputePrefilteredEnvMap */
 
@@ -601,5 +666,80 @@ namespace Mile
       visualizeParams.bSplines = true;
       m_frameGraph.ExportVisualization("RendererPBR.dot", visualizeParams);
       return true;
+   }
+
+   void RendererPBR::RenderImpl(const World& world)
+   {
+      auto threadPool = Engine::GetThreadPool();
+
+      m_targetCamera = nullptr;
+      m_outputRenderTarget = nullptr;
+
+      auto acquireMeshRenderersAndMatTask = threadPool->AddTask([&]()
+         {
+            m_meshes.clear();
+            m_materialMap.clear();
+
+            m_meshes = std::move(world.GetComponentsFromEntities<MeshRenderComponent>());
+            for (auto renderComponent : m_meshes)
+            {
+               auto material = renderComponent->GetMaterial();
+               if (material != nullptr)
+               {
+                  m_materialMap[material].push_back(renderComponent);
+               }
+            }
+         });
+      auto acquireLightsTask = threadPool->AddTask([&]()
+         {
+            m_lights.clear();
+            m_lights = std::move(world.GetComponentsFromEntities<LightComponent>());
+         });
+      auto acquireCamerasTask = threadPool->AddTask([&]()
+         {
+            m_cameras.clear();
+            m_cameras = std::move(world.GetComponentsFromEntities<CameraComponent>());
+         });
+      auto acquireSkyboxTask = threadPool->AddTask([&]()
+         {
+            m_skyboxTexture = nullptr;
+            auto skyboxComponents = world.GetComponentsFromEntities<SkyboxComponent>();
+            if (skyboxComponents.size() > 0)
+            {
+               m_skyboxTexture = skyboxComponents[0]->GetTexture();
+               if (m_skyboxTexture != m_oldSkyboxTexture)
+               {
+                  m_oldSkyboxTexture = m_skyboxTexture;
+                  m_bPrecomputeIBL = true;
+               }
+            }
+         });
+
+      acquireMeshRenderersAndMatTask.get();
+      acquireLightsTask.get();
+      acquireCamerasTask.get();
+      acquireSkyboxTask.get();
+
+      for (auto camera : m_cameras)
+      {
+         m_targetCamera = camera;
+         RenderTexture* renderTexture = m_targetCamera->GetRenderTexture();
+         if (renderTexture != nullptr)
+         {
+            m_outputRenderTarget = renderTexture->GetRenderTarget();
+         }
+         else
+         {
+#ifdef MILE_EDITOR
+            ResourceManager* resManager = Engine::GetResourceManager();
+            renderTexture = resManager->Load<RenderTexture>(EDITOR_GAME_VIEW_RENDER_TEXTURE, true);
+            m_outputRenderTarget = renderTexture->GetRenderTarget();
+#else
+            m_outputRenderTarget = &GetBackBuffer();
+#endif
+         }
+
+         m_frameGraph.Execute();
+      }
    }
 }

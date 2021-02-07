@@ -51,6 +51,9 @@ namespace Mile
       VertexShaderDX11* m_convertSkyboxPassVS;
       PixelShaderDX11* m_convertSkyboxPassPS;
 
+      VertexShaderDX11* m_diffuseIntegralPassVS;
+      PixelShaderDX11* m_diffuseIntegralPassPS;
+
       /** External Resources; Don't delete in renderer! */
       /** Per Frame Datas */
       std::vector<CameraComponent*> m_cameras;
