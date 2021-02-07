@@ -11,10 +11,10 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nRefs : 0", style=filled, fillcolor=darkorange];
 "ConvertTextureToCubemap" [label="ConvertTextureToCubemap
 \nDistribution Group : 0
-\nRefs : 13", style=filled, fillcolor=darkorange];
+\nRefs : 12", style=filled, fillcolor=darkorange];
 "DiffuseConvolutionPass" [label="DiffuseConvolutionPass
 \nDistribution Group : 0
-\nRefs : 2", style=filled, fillcolor=darkorange];
+\nRefs : 1", style=filled, fillcolor=darkorange];
 "PrefilterEnvironmentMapPass" [label="PrefilterEnvironmentMapPass
 \nDistribution Group : 0
 \nRefs : 1", style=filled, fillcolor=darkorange];
@@ -128,7 +128,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nTransient", style=filled, fillcolor=peachpuff]
 "CaptureTransformBuffer" [label="CaptureTransformBuffer
 \nID : 27
-\nRefs : 1
+\nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
 "NoCullingState" [label="NoCullingState
 \nID : 28
@@ -190,8 +190,16 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nID : 42
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"PrefilterParamsConstantBuffer" [label="PrefilterParamsConstantBuffer
+"Viewport_Mip7" [label="Viewport_Mip7
 \nID : 43
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
+"Viewport_Mip8" [label="Viewport_Mip8
+\nID : 44
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
+"PrefilterParamsConstantBuffer" [label="PrefilterParamsConstantBuffer
+\nID : 45
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
 "Geometry Pass" -> { "AnisoWrapAlwaysSampler" "GeometryPassTransform" "GeometryPassPackedMaterialParams" "GBuffer" "Viewport" "DefaultRasterizerState" } [color=aquamarine]
@@ -200,8 +208,8 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "ConvertTextureToCubemap" -> { "EnvironmentMapRef" } [color=firebrick1]
 "DiffuseConvolutionPass" -> { } [color=aquamarine]
 "DiffuseConvolutionPass" -> { "CaptureTransformBuffer" "IrradianceMapRef" } [color=firebrick1]
-"PrefilterEnvironmentMapPass" -> { "Viewport_Mip0" "Viewport_Mip1" "Viewport_Mip2" "Viewport_Mip3" "Viewport_Mip4" "Viewport_Mip5" "Viewport_Mip6" "PrefilterParamsConstantBuffer" } [color=aquamarine]
-"PrefilterEnvironmentMapPass" -> { "PrefilteredEnvironmentMapRef" } [color=firebrick1]
+"PrefilterEnvironmentMapPass" -> { "Viewport_Mip0" "Viewport_Mip1" "Viewport_Mip2" "Viewport_Mip3" "Viewport_Mip4" "Viewport_Mip5" "Viewport_Mip6" "Viewport_Mip7" "Viewport_Mip8" "PrefilterParamsConstantBuffer" } [color=aquamarine]
+"PrefilterEnvironmentMapPass" -> { "CaptureTransformBuffer" "PrefilteredEnvironmentMapRef" } [color=firebrick1]
 
 "CameraRef" -> { "Geometry Pass" } [color=yellow]
 "Lights" -> { } [color=yellow]
@@ -230,7 +238,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "CubeCaptureView+z" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
 "CubeCaptureView-z" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
 "CaptureViewport" -> { "DiffuseConvolutionPass" } [color=yellow]
-"CaptureTransformBuffer" -> { "PrefilterEnvironmentMapPass" } [color=yellow]
+"CaptureTransformBuffer" -> { } [color=yellow]
 "NoCullingState" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
 "DepthLessEqualState" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
 "DiffuseIntegralPassVertexShader" -> { "DiffuseConvolutionPass" } [color=yellow]
@@ -246,5 +254,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "Viewport_Mip4" -> { } [color=yellow]
 "Viewport_Mip5" -> { } [color=yellow]
 "Viewport_Mip6" -> { } [color=yellow]
+"Viewport_Mip7" -> { } [color=yellow]
+"Viewport_Mip8" -> { } [color=yellow]
 "PrefilterParamsConstantBuffer" -> { } [color=yellow]
 }

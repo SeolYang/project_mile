@@ -750,7 +750,7 @@ namespace Mile
                data.CaptureViews[faceIdx] = builder.Read(diffuseIntegralPassData.CaptureViews[faceIdx]);
             }
 
-            data.TransformBuffer = builder.Read(diffuseIntegralPassData.TransformBuffer);
+            data.TransformBuffer = builder.Write(diffuseIntegralPassData.TransformBuffer);
             ConstantBufferDescriptor paramsBufferDesc;
             paramsBufferDesc.Renderer = this;
             paramsBufferDesc.Size = sizeof(PrefilterParamsBuffer);
