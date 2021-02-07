@@ -89,6 +89,12 @@ namespace Mile
    };
    using GBufferResource = Elaina::FrameResource<GBufferDescriptor, GBuffer>;
 
+   using GBufferRef = GBuffer*;
+   struct GBufferRefDescriptor
+   {
+      GBufferRef Reference;
+   };
+   using GBufferRefResource = Elaina::FrameResource<GBufferRefDescriptor, GBufferRef>;
 
    class Viewport;
    struct ViewportDescriptor
@@ -177,4 +183,11 @@ namespace Mile
       unsigned int Size;
    };
    using DynamicCubemapResource = Elaina::FrameResource<DynamicCubemapDescriptor, DynamicCubemap>;
+
+   using DynamicCubemapRef = DynamicCubemap*;
+   struct DynamicCubemapRefDescriptor
+   {
+      DynamicCubemapRef Reference;
+   };
+   using DynamicCubemapRefResource = Elaina::FrameResource<DynamicCubemapRefDescriptor, DynamicCubemapRef>;
 }

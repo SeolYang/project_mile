@@ -184,6 +184,12 @@ namespace Elaina
    }
 
    template<>
+   GBufferRef* Realize(const GBufferRefDescriptor& desc)
+   {
+      return new GBufferRef(desc.Reference);
+   }
+
+   template<>
    Viewport* Realize(const ViewportDescriptor& desc)
    {
       Viewport* viewport = new Viewport(desc.Renderer);
@@ -294,5 +300,11 @@ namespace Elaina
       }
 
       return map;
+   }
+
+   template<>
+   DynamicCubemapRef* Realize(const DynamicCubemapRefDescriptor& desc)
+   {
+      return new DynamicCubemapRef(desc.Reference);
    }
 }
