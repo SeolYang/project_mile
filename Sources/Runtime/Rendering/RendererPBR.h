@@ -54,6 +54,9 @@ namespace Mile
       VertexShaderDX11* m_diffuseIntegralPassVS;
       PixelShaderDX11* m_diffuseIntegralPassPS;
 
+      VertexShaderDX11* m_prefilterEnvPassVS;
+      PixelShaderDX11* m_prefilterEnvPassPS;
+
       /** External Resources; Don't delete in renderer! */
       /** Per Frame Datas */
       std::vector<CameraComponent*> m_cameras;
@@ -70,6 +73,8 @@ namespace Mile
 
       DynamicCubemapRef m_environmentMap;
       DynamicCubemapRef m_irradianceMap;
+      DynamicCubemapRef m_prefilteredEnvMap;
+      RenderTargetRef   m_brdfLUT;
 
    };
 }

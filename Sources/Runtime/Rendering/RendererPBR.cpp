@@ -47,9 +47,14 @@ namespace Mile
       float SpecularFactor;
    };
 
-   DEFINE_CONSTANT_BUFFER(ConvertSkyboxPassTransformBuffer)
+   DEFINE_CONSTANT_BUFFER(CubemapTransformBuffer)
    {
       Matrix ViewProj;
+   };
+
+   DEFINE_CONSTANT_BUFFER(PrefilterParamsBuffer)
+   {
+      float Roughness;
    };
 
    RendererPBR::RendererPBR(Context* context, size_t maximumThreads) :
@@ -68,12 +73,16 @@ namespace Mile
       m_environmentMap(nullptr),
       m_irradianceMap(nullptr),
       m_diffuseIntegralPassVS(nullptr),
-      m_diffuseIntegralPassPS(nullptr)
+      m_diffuseIntegralPassPS(nullptr),
+      m_prefilteredEnvMap(nullptr),
+      m_brdfLUT(nullptr)
    {
    }
 
    RendererPBR::~RendererPBR()
    {
+      SafeDelete(m_brdfLUT);
+      SafeDelete(m_prefilteredEnvMap);
       SafeDelete(m_irradianceMap);
       SafeDelete(m_diffuseIntegralPassPS);
       SafeDelete(m_diffuseIntegralPassVS);
@@ -149,7 +158,7 @@ namespace Mile
          return false;
       }
 
-      /** Diffuse Integral */
+      /** Diffuse Integral Pass Shaders */
       ShaderDescriptor diffuseIntegralPassDesc;
       diffuseIntegralPassDesc.Renderer = this;
       diffuseIntegralPassDesc.FilePath = TEXT("Contents/Shaders/IrradianceConvolution.hlsl");
@@ -164,6 +173,24 @@ namespace Mile
       if (m_diffuseIntegralPassPS == nullptr)
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load diffuse integral pass pixel shader!"));
+         return false;
+      }
+
+      /** Prefiltering Environment Map Pass Shaders */
+      ShaderDescriptor prefilterEnvPassDesc;
+      prefilterEnvPassDesc.Renderer = this;
+      prefilterEnvPassDesc.FilePath = TEXT("Contents/Shaders/Prefiltering.hlsl");
+      m_prefilterEnvPassVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(prefilterEnvPassDesc);
+      if (m_prefilterEnvPassVS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load prefilter environment map pass vertex shader!"));
+         return false;
+      }
+
+      m_prefilterEnvPassPS = Elaina::Realize<ShaderDescriptor, PixelShaderDX11>(prefilterEnvPassDesc);
+      if (m_prefilterEnvPassPS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load prefilter environment map pass pixel shader!"));
          return false;
       }
 
@@ -439,7 +466,7 @@ namespace Mile
             data.SkyboxTextureRef = builder.Read(skyboxTextureRefRes);
             for (size_t idx = 0; idx < CUBE_FACES; ++idx)
             {
-               data.CaptureViews[idx] = builder.Create<MatrixResource>("IBLCaptureView" + cubeFaces[idx], MatrixDescriptor{ captureViews[idx] });
+               data.CaptureViews[idx] = builder.Create<MatrixResource>("CubeCaptureView" + cubeFaces[idx], MatrixDescriptor{ captureViews[idx] });
             }
 
             ViewportDescriptor viewportDesc;
@@ -450,7 +477,7 @@ namespace Mile
 
             ConstantBufferDescriptor captureTransformDesc;
             captureTransformDesc.Renderer = this;
-            captureTransformDesc.Size = sizeof(ConvertSkyboxPassTransformBuffer);
+            captureTransformDesc.Size = sizeof(CubemapTransformBuffer);
             data.CaptureTransformBuffer = builder.Create<ConstantBufferResource>("CaptureTransformBuffer", captureTransformDesc);
 
             RasterizerStateDescriptor noCullingDesc;
@@ -512,8 +539,8 @@ namespace Mile
                for (unsigned int faceIdx = 0; faceIdx < CUBE_FACES; ++faceIdx)
                {
                   outputEnvMap->BindAsRenderTarget(immediateContext, faceIdx);
-                  auto mappedTrasnformBuffer = transformBuffer->Map<ConvertSkyboxPassTransformBuffer>(immediateContext);
-                  (*mappedTrasnformBuffer) = ConvertSkyboxPassTransformBuffer{ *captureViews[faceIdx]->GetActual() };
+                  auto mappedTrasnformBuffer = transformBuffer->Map<CubemapTransformBuffer>(immediateContext);
+                  (*mappedTrasnformBuffer) = CubemapTransformBuffer{ *captureViews[faceIdx]->GetActual() };
                   transformBuffer->UnMap(immediateContext);
                   immediateContext.DrawIndexed(cubeMesh->GetIndexCount(), 0, 0);
                   outputEnvMap->UnbindAsRenderTarget(immediateContext);
@@ -635,8 +662,8 @@ namespace Mile
                for (unsigned int faceIdx = 0; faceIdx < CUBE_FACES; ++faceIdx)
                {
                   outputIrradianceMap->BindAsRenderTarget(immediateContext, faceIdx);
-                  auto mappedTrasnformBuffer = transformBuffer->Map<ConvertSkyboxPassTransformBuffer>(immediateContext);
-                  (*mappedTrasnformBuffer) = ConvertSkyboxPassTransformBuffer{ *data.CaptureViews[faceIdx]->GetActual() };
+                  auto mappedTrasnformBuffer = transformBuffer->Map<CubemapTransformBuffer>(immediateContext);
+                  (*mappedTrasnformBuffer) = CubemapTransformBuffer{ *data.CaptureViews[faceIdx]->GetActual() };
                   transformBuffer->UnMap(immediateContext);
                   immediateContext.DrawIndexed(cubeMesh->GetIndexCount(), 0, 0);
                   outputIrradianceMap->UnbindAsRenderTarget(immediateContext);
@@ -652,7 +679,155 @@ namespace Mile
             }
          });
 
+      auto diffuseIntegralPassData = diffuseIntegralPass->GetData();
+
       /** ComputePrefilteredEnvMap */
+      struct PrefilterEnvPassData : public RenderPassDataBase
+      {
+         BoolRefResource* IBLPrecomputeEnabledRef = nullptr;
+
+         SamplerResource* Sampler = nullptr;
+         std::vector<ViewportResource*> MipViewports;
+         DepthStencilStateResource* DepthLessEqualState = nullptr;
+         RasterizerStateResource* NoCullingState = nullptr;
+
+         std::array<MatrixResource*, CUBE_FACES> CaptureViews{ nullptr, };
+         ConstantBufferResource* TransformBuffer = nullptr;
+         ConstantBufferResource* PrefilterParamsBuffer = nullptr;
+         DynamicCubemapRefResource* EnvironmentMapRef = nullptr;
+
+         MeshRefResource* CubeMeshRef = nullptr;
+         DynamicCubemapRefResource* OutputPrefilteredEnvMapRef = nullptr;
+      };
+
+      auto prefilterPassVSRes = m_frameGraph.AddExternalPermanentResource(
+         "PrefilterEnvironmentMapPassVertexShader",
+         ShaderDescriptor(),
+         m_prefilterEnvPassVS);
+
+      auto prefilterPassPSRes = m_frameGraph.AddExternalPermanentResource(
+         "PrefilterEnvironmentMapPassPixelShader",
+         ShaderDescriptor(),
+         m_prefilterEnvPassPS);
+
+      DynamicCubemapDescriptor prefilteredEnvMapDesc;
+      prefilteredEnvMapDesc.Renderer = this;
+      prefilteredEnvMapDesc.Size = RendererPBRConstants::PrefilteredEnvMapSize;
+      m_prefilteredEnvMap = Elaina::Realize<DynamicCubemapDescriptor, DynamicCubemap>(prefilteredEnvMapDesc);
+
+      auto prefilteredEnvMapRefRes = m_frameGraph.AddExternalPermanentResource(
+         "PrefilteredEnvironmentMapRef",
+         DynamicCubemapRefDescriptor(),
+         &m_prefilteredEnvMap);
+
+      auto prefilterEnvMapPass = m_frameGraph.AddCallbackPass<PrefilterEnvPassData>(
+         "PrefilterEnvironmentMapPass",
+         [&](Elaina::RenderPassBuilder& builder, PrefilterEnvPassData& data)
+         {
+            data.Renderer = this;
+            data.VertexShader = builder.Read(prefilterPassVSRes);
+            data.PixelShader = builder.Read(prefilterPassPSRes);
+
+            data.IBLPrecomputeEnabledRef = builder.Read(diffuseIntegralPassData.IBLPrecomputeEnabledRef);
+
+            data.Sampler = builder.Read(diffuseIntegralPassData.Sampler);
+            unsigned int maxMipLevels = m_prefilteredEnvMap->GetMaxMipLevels();
+            data.MipViewports.resize(maxMipLevels);
+            for (unsigned int mipLevel = 0; mipLevel < maxMipLevels; ++mipLevel)
+            {
+               float viewportSize = std::exp2(static_cast<float>(maxMipLevels - mipLevel));
+               ViewportDescriptor viewportDesc;
+               viewportDesc.Renderer = this;
+               viewportDesc.Width = viewportSize;
+               viewportDesc.Height = viewportSize;
+               data.MipViewports[mipLevel] = builder.Create<ViewportResource>("Viewport_Mip" + std::to_string(mipLevel), viewportDesc);
+            }
+            data.DepthLessEqualState = builder.Read(diffuseIntegralPassData.DepthLessEqualState);
+            data.NoCullingState = builder.Read(diffuseIntegralPassData.NoCullingState);
+
+            for (size_t faceIdx = 0; faceIdx < CUBE_FACES; ++faceIdx)
+            {
+               data.CaptureViews[faceIdx] = builder.Read(diffuseIntegralPassData.CaptureViews[faceIdx]);
+            }
+
+            data.TransformBuffer = builder.Read(diffuseIntegralPassData.TransformBuffer);
+            ConstantBufferDescriptor paramsBufferDesc;
+            paramsBufferDesc.Renderer = this;
+            paramsBufferDesc.Size = sizeof(PrefilterParamsBuffer);
+            data.PrefilterParamsBuffer = builder.Create<ConstantBufferResource>("PrefilterParamsConstantBuffer", paramsBufferDesc);
+
+            data.EnvironmentMapRef = builder.Read(diffuseIntegralPassData.EnvironmentMapRef);
+
+            data.CubeMeshRef = builder.Read(diffuseIntegralPassData.CubeMeshRef);
+            data.OutputPrefilteredEnvMapRef = builder.Write(prefilteredEnvMapRefRes);
+         },
+         [](const PrefilterEnvPassData& data)
+         {
+            BoolRef bIBLPrecomputeEnabledRef = (*data.IBLPrecomputeEnabledRef->GetActual());
+            if (bIBLPrecomputeEnabledRef != nullptr && (*bIBLPrecomputeEnabledRef))
+            {
+               ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
+               immediateContext.ClearState();
+
+               immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+               auto vertexShader = data.VertexShader->GetActual();
+               auto pixelShader = data.PixelShader->GetActual();
+               auto sampler = data.Sampler->GetActual();
+               auto depthLessEqualState = data.DepthLessEqualState->GetActual();
+               auto noCullingState = data.NoCullingState->GetActual();
+               auto transformBuffer = data.TransformBuffer->GetActual();
+               auto paramsBuffer = data.PrefilterParamsBuffer->GetActual();
+               auto envMap = *data.EnvironmentMapRef->GetActual();
+               auto cubeMesh = *data.CubeMeshRef->GetActual();
+               auto outputPrefilteredEnvMap = *data.OutputPrefilteredEnvMapRef->GetActual();
+
+               /** Binds */
+               vertexShader->Bind(immediateContext);
+               pixelShader->Bind(immediateContext);
+               sampler->Bind(immediateContext, 0);
+               depthLessEqualState->Bind(immediateContext);
+               noCullingState->Bind(immediateContext);
+               transformBuffer->Bind(immediateContext, 0, EShaderType::VertexShader);
+               paramsBuffer->Bind(immediateContext, 0, EShaderType::PixelShader);
+               envMap->Bind(immediateContext, 0, EShaderType::PixelShader);
+               cubeMesh->Bind(immediateContext, 0);
+
+               outputPrefilteredEnvMap->GenerateMips(immediateContext);
+               /** Render */
+               auto prefilteredEnvMapMaxMips = outputPrefilteredEnvMap->GetMaxMipLevels();
+               for (unsigned int mipLevel = 0; mipLevel < prefilteredEnvMapMaxMips; ++mipLevel)
+               {
+                  float roughness = (mipLevel / static_cast<float>(prefilteredEnvMapMaxMips - 1));
+                  auto viewport = data.MipViewports[mipLevel]->GetActual();
+                  viewport->Bind(immediateContext);
+                  auto mappedParamsBuffer = paramsBuffer->Map<PrefilterParamsBuffer>(immediateContext);
+                  (*mappedParamsBuffer) = PrefilterParamsBuffer{roughness};
+                  paramsBuffer->UnMap(immediateContext);
+
+                  for (unsigned int faceIdx = 0; faceIdx < CUBE_FACES; ++faceIdx)
+                  {
+                     auto mappedTrasnformBuffer = transformBuffer->Map<CubemapTransformBuffer>(immediateContext);
+                     (*mappedTrasnformBuffer) = CubemapTransformBuffer{ *data.CaptureViews[faceIdx]->GetActual() };
+                     transformBuffer->UnMap(immediateContext);
+
+                     outputPrefilteredEnvMap->BindAsRenderTarget(immediateContext, faceIdx, mipLevel);
+                     immediateContext.DrawIndexed(cubeMesh->GetIndexCount(), 0, 0);
+                     outputPrefilteredEnvMap->UnbindAsRenderTarget(immediateContext);
+                  }
+               }
+
+               /** Unbinds */
+               envMap->Unbind(immediateContext);
+               paramsBuffer->Unbind(immediateContext);
+               transformBuffer->Unbind(immediateContext);
+               sampler->Unbind(immediateContext);
+               pixelShader->Unbind(immediateContext);
+               vertexShader->Unbind(immediateContext);
+            }
+         });
+
+      auto prefilterEnvMapPassData = prefilterEnvMapPass->GetData();
 
       /** Integrate BRDF */
 
