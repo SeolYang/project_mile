@@ -555,6 +555,7 @@ namespace Mile
                   immediateContext.DrawIndexed(cubeMesh->GetIndexCount(), 0, 0);
                   outputEnvMap->UnbindAsRenderTarget(immediateContext);
                }
+               outputEnvMap->GenerateMips(immediateContext);
 
                /** Unbinds */
                if (skyboxTextureDX11 != nullptr)
