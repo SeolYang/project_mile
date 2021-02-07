@@ -64,12 +64,16 @@ namespace Mile
       m_oldSkyboxTexture(nullptr),
       m_bPrecomputeIBL(true),
       m_quadMesh(nullptr),
-      m_cubeMesh(nullptr)
+      m_cubeMesh(nullptr),
+      m_environmentMap(nullptr),
+      m_irradianceMap(nullptr)
    {
    }
 
    RendererPBR::~RendererPBR()
    {
+      SafeDelete(m_irradianceMap);
+      SafeDelete(m_environmentMap);
       SafeDelete(m_convertSkyboxPassPS);
       SafeDelete(m_convertSkyboxPassVS);
       SafeDelete(m_geometryPassPS);
@@ -453,6 +457,16 @@ namespace Mile
          ShaderDescriptor(),
          m_convertSkyboxPassPS);
 
+      DynamicCubemapDescriptor envMapDesc;
+      envMapDesc.Renderer = this;
+      envMapDesc.Size = RendererPBRConstants::ConvertedEnvMapSize;
+      m_environmentMap = Elaina::Realize<DynamicCubemapDescriptor, DynamicCubemap>(envMapDesc);
+
+      auto environmentMapResource = m_frameGraph.AddExternalPermanentResource(
+         "EnvironmentMap",
+         envMapDesc,
+         m_environmentMap);
+
       auto convertSkyboxToCubemapPass = m_frameGraph.AddCallbackPass<ConvertSkyboxPassData>(
          "ConvertTextureToCubemap",
          [&](Elaina::RenderPassBuilder& builder, ConvertSkyboxPassData& data)
@@ -498,11 +512,7 @@ namespace Mile
             data.DepthLessEqualState = builder.Create<DepthStencilStateResource>("DepthLessEqualState", depthLessEqualDesc);
 
             data.CubeMeshRef = builder.Read(cubeMeshRefRes);
-
-            DynamicCubemapDescriptor envMapDesc;
-            envMapDesc.Renderer = this;
-            envMapDesc.Size = RendererPBRConstants::ConvertedEnvMapSize;
-            data.OutputEnvMap = builder.Create<DynamicCubemapResource>("EnvMap", envMapDesc);
+            data.OutputEnvMap = builder.Write(environmentMapResource);
          },
          [](const ConvertSkyboxPassData& data)
          {
@@ -572,13 +582,14 @@ namespace Mile
       convertSkyboxToCubemapPass->SetCullImmune(true);
 
       /** Solve Diffuse Integral */
-      /** ComputePrefilteredEnvMap */
-      /** Integrate BRDF */
+      struct DiffuseIntegralPassData : public RenderPassDataBase
+      {
 
-      /** 
-      * BRDF 랑 Prefiltered Environment Map은 봐꼇을때 한번만 계산되고
-      * 미리 계산된 결과를 사용하여야 하니까, 결과물들은 external로?
-      */
+      };
+
+      /** ComputePrefilteredEnvMap */
+
+      /** Integrate BRDF */
 
       /** Lighting Pass; Deferred Shading - Lighting */
 

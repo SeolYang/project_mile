@@ -11,7 +11,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nRefs : 0", style=filled, fillcolor=darkorange];
 "ConvertTextureToCubemap" [label="ConvertTextureToCubemap
 \nDistribution Group : 0
-\nRefs : 0", style=filled, fillcolor=darkorange];
+\nRefs : 1", style=filled, fillcolor=darkorange];
 "CameraRef" [label="CameraRef
 \nID : 0
 \nRefs : 1
@@ -80,62 +80,62 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nID : 16
 \nRefs : 1
 \nExternal Permanent", style=filled, fillcolor=palegreen]
-"LinearClampAlwaysSampler" [label="LinearClampAlwaysSampler
+"EnvironmentMap" [label="EnvironmentMap
 \nID : 17
 \nRefs : 0
-\nTransient", style=filled, fillcolor=peachpuff]
-"IBLPrecomputeEnabled" [label="IBLPrecomputeEnabled
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"LinearClampAlwaysSampler" [label="LinearClampAlwaysSampler
 \nID : 18
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"IBLCaptureView+x" [label="IBLCaptureView+x
+"IBLPrecomputeEnabled" [label="IBLPrecomputeEnabled
 \nID : 19
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"IBLCaptureView-x" [label="IBLCaptureView-x
+"IBLCaptureView+x" [label="IBLCaptureView+x
 \nID : 20
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"IBLCaptureView+y" [label="IBLCaptureView+y
+"IBLCaptureView-x" [label="IBLCaptureView-x
 \nID : 21
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"IBLCaptureView-y" [label="IBLCaptureView-y
+"IBLCaptureView+y" [label="IBLCaptureView+y
 \nID : 22
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"IBLCaptureView+z" [label="IBLCaptureView+z
+"IBLCaptureView-y" [label="IBLCaptureView-y
 \nID : 23
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"IBLCaptureView-z" [label="IBLCaptureView-z
+"IBLCaptureView+z" [label="IBLCaptureView+z
 \nID : 24
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"CaptureViewport" [label="CaptureViewport
+"IBLCaptureView-z" [label="IBLCaptureView-z
 \nID : 25
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"CaptureTransformBuffer" [label="CaptureTransformBuffer
+"CaptureViewport" [label="CaptureViewport
 \nID : 26
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"NoCullingState" [label="NoCullingState
+"CaptureTransformBuffer" [label="CaptureTransformBuffer
 \nID : 27
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"DepthLessEqualState" [label="DepthLessEqualState
+"NoCullingState" [label="NoCullingState
 \nID : 28
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"EnvMap" [label="EnvMap
+"DepthLessEqualState" [label="DepthLessEqualState
 \nID : 29
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
 "Geometry Pass" -> { "AnisoWrapAlwaysSampler" "GeometryPassTransform" "GeometryPassPackedMaterialParams" "GBuffer" "Viewport" "DefaultRasterizerState" } [color=aquamarine]
 "Geometry Pass" -> { } [color=firebrick1]
-"ConvertTextureToCubemap" -> { "LinearClampAlwaysSampler" "IBLPrecomputeEnabled" "IBLCaptureView+x" "IBLCaptureView-x" "IBLCaptureView+y" "IBLCaptureView-y" "IBLCaptureView+z" "IBLCaptureView-z" "CaptureViewport" "CaptureTransformBuffer" "NoCullingState" "DepthLessEqualState" "EnvMap" } [color=aquamarine]
-"ConvertTextureToCubemap" -> { } [color=firebrick1]
+"ConvertTextureToCubemap" -> { "LinearClampAlwaysSampler" "IBLPrecomputeEnabled" "IBLCaptureView+x" "IBLCaptureView-x" "IBLCaptureView+y" "IBLCaptureView-y" "IBLCaptureView+z" "IBLCaptureView-z" "CaptureViewport" "CaptureTransformBuffer" "NoCullingState" "DepthLessEqualState" } [color=aquamarine]
+"ConvertTextureToCubemap" -> { "EnvironmentMap" } [color=firebrick1]
 
 "CameraRef" -> { "Geometry Pass" } [color=yellow]
 "Lights" -> { } [color=yellow]
@@ -154,6 +154,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "CubeMeshRef" -> { "ConvertTextureToCubemap" } [color=yellow]
 "ConvertSkyboxPassVS" -> { "ConvertTextureToCubemap" } [color=yellow]
 "ConvertSkyboxPassPS" -> { "ConvertTextureToCubemap" } [color=yellow]
+"EnvironmentMap" -> { } [color=yellow]
 "LinearClampAlwaysSampler" -> { } [color=yellow]
 "IBLPrecomputeEnabled" -> { } [color=yellow]
 "IBLCaptureView+x" -> { } [color=yellow]
@@ -166,5 +167,4 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "CaptureTransformBuffer" -> { } [color=yellow]
 "NoCullingState" -> { } [color=yellow]
 "DepthLessEqualState" -> { } [color=yellow]
-"EnvMap" -> { } [color=yellow]
 }

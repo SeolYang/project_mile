@@ -65,5 +65,8 @@ namespace Mile
       Texture2D* m_oldSkyboxTexture;
       bool m_bPrecomputeIBL;
 
+      DynamicCubemapRef m_environmentMap;
+      DynamicCubemapRef m_irradianceMap;
+
    };
 }
