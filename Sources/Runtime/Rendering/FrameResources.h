@@ -20,29 +20,31 @@ namespace Mile
 
    class LightComponent;
    using Lights = std::vector<LightComponent*>;
-   using LightsInfoResource = Elaina::FrameResource<WorldDescriptor, Lights>;
+   using LightsDataResource = Elaina::FrameResource<WorldDescriptor, Lights>;
 
    class MeshRenderComponent;
    using Meshes = std::vector<MeshRenderComponent*>;
-   using MeshesInfoResource = Elaina::FrameResource<WorldDescriptor, Meshes>;
+   using MeshesDataResource = Elaina::FrameResource<WorldDescriptor, Meshes>;
 
    using MaterialMapResource = Elaina::FrameResource<WorldDescriptor, MaterialMap>;
 
    class RenderTargetDX11;
    class RendererDX11;
    class DepthStencilBufferDX11;
+   using RenderTargetRef = RenderTargetDX11*;
    struct RenderTargetDescriptor
    {
       RendererDX11* Renderer = nullptr;
+      RenderTargetRef* ResolutionReference = nullptr;
       unsigned int Width = 1920;
       unsigned int Height = 1080;
+      RenderTargetRef* FormatReference = nullptr;
       EColorFormat Format = EColorFormat::R8G8B8A8_UNORM;
       ID3D11RenderTargetView* RenderTargetView = nullptr;
       DepthStencilBufferDX11* DepthStencilBuffer = nullptr;
    };
    using RenderTargetResource = Elaina::FrameResource<RenderTargetDescriptor, RenderTargetDX11>;
 
-   using RenderTargetRef = RenderTargetDX11*;
    struct RenderTargetRefDescriptor
    {
       RenderTargetRef Reference;
@@ -154,6 +156,18 @@ namespace Mile
       D3D11_DEPTH_STENCILOP_DESC BackFace{ D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS };
    };
    using DepthStencilStateResource = Elaina::FrameResource<DepthStencilStateDescriptor, DepthStencilState>;
+
+   class BlendState;
+   struct BlendStateDescriptor
+   {
+      RendererDX11* Renderer = nullptr;
+      bool bAlphaToConverageEnable = false;
+      bool bIndependentBlendEnable = false;
+      RenderTargetBlendDesc BlendDescs[MAXIMUM_RENDER_TARGETS];
+      Vector4 BlendFactor = Vector4(1.f, 1.f, 1.f, 1.f);
+      UINT32 SampleMask = 0xffffffff;
+   };
+   using BlendStateResource = Elaina::FrameResource<BlendStateDescriptor, BlendState>;
 
    class Texture2D;
    using Texture2DRef = Texture2D*;

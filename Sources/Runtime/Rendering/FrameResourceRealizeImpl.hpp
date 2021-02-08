@@ -10,6 +10,7 @@
 #include "Rendering/Viewport.h"
 #include "Rendering/RasterizerState.h"
 #include "Rendering/DepthStencilState.h"
+#include "Rendering/BlendState.h"
 #include "Rendering/Texture2dDX11.h"
 #include "Rendering/Mesh.h"
 #include "Rendering/Cube.h"
@@ -89,7 +90,28 @@ namespace Elaina
       }
       else
       {
-         bInitialized = renderTarget->Init(descriptor.Width, descriptor.Height, descriptor.Format, descriptor.DepthStencilBuffer);
+         unsigned int targetWidth = descriptor.Width;
+         unsigned int targetHeight = descriptor.Height;
+         EColorFormat targetFormat = descriptor.Format;
+
+         if (descriptor.ResolutionReference != nullptr)
+         {
+            if ((*descriptor.ResolutionReference != nullptr))
+            {
+               targetWidth = (*descriptor.ResolutionReference)->GetWidth();
+               targetHeight = (*descriptor.ResolutionReference)->GetHeight();
+            }
+         }
+
+         if (descriptor.FormatReference != nullptr)
+         {
+            if ((*descriptor.FormatReference != nullptr))
+            {
+               targetFormat = (*descriptor.FormatReference)->GetFormat();
+            }
+         }
+
+         bInitialized = renderTarget->Init(targetWidth, targetHeight, targetFormat, descriptor.DepthStencilBuffer);
       }
 
       if (!bInitialized)
@@ -295,6 +317,23 @@ namespace Elaina
       d3dDesc.FrontFace = desc.FrontFace;
       d3dDesc.BackFace = desc.BackFace;
       state->SetDesc(d3dDesc);
+      if (!state->Init())
+      {
+         Elaina::SafeDelete(state);
+      }
+
+      return state;
+   }
+
+   template<>
+   BlendState* Realize(const BlendStateDescriptor& desc)
+   {
+      auto* state = new BlendState(desc.Renderer);
+      state->SetAlphaToCoverageEnable(desc.bAlphaToConverageEnable);
+      state->SetIndependentBlendEnable(desc.bIndependentBlendEnable);
+      state->SetRenderTargetBlendStates(desc.BlendDescs);
+      state->SetBlendFactor(desc.BlendFactor);
+      state->SetSampleMask(desc.SampleMask);
       if (!state->Init())
       {
          Elaina::SafeDelete(state);

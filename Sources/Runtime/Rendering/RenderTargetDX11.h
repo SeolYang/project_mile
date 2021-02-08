@@ -21,6 +21,7 @@ namespace Mile
 
       unsigned int GetWidth() const { return m_width; }
       unsigned int GetHeight() const { return m_height; }
+      EColorFormat GetFormat() const { return m_format; }
       Texture2dDX11* GetTexture() const { return m_texture; }
       ID3D11RenderTargetView* GetRTV() const { return m_rtv; }
 
@@ -38,9 +39,10 @@ namespace Mile
       Texture2dDX11* m_texture;
       DepthStencilBufferDX11* m_depthStencilBuffer; /** Does not delete in render target! */
 
-      unsigned int               m_width;
-      unsigned int               m_height;
-      Vector4                    m_clearColor;
+      unsigned int   m_width;
+      unsigned int   m_height;
+      EColorFormat   m_format;
+      Vector4        m_clearColor;
 
    };
 }

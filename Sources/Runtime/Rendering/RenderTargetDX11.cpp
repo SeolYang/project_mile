@@ -12,6 +12,7 @@ namespace Mile
       m_width(0),
       m_height(0),
       m_clearColor{ 0.0f, 0.0f, 0.0f, 1.0f },
+      m_format(EColorFormat::R8G8B8A8_UNORM),
       RenderObject(renderer)
    {
    }
@@ -28,6 +29,7 @@ namespace Mile
       {
          m_width = width;
          m_height = height;
+         m_format = format;
 
          D3D11_TEXTURE2D_DESC texDesc;
          ZeroMemory(&texDesc, sizeof(texDesc));
@@ -104,6 +106,7 @@ namespace Mile
             texture->GetDesc(&desc);
             m_width = desc.Width;
             m_height = desc.Height;
+            m_format = static_cast<EColorFormat>(desc.Format);
 
             m_depthStencilBuffer = depthStencilBuffer;
 

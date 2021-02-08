@@ -57,6 +57,19 @@ namespace Mile
       float Roughness;
    };
 
+   DEFINE_CONSTANT_BUFFER(CameraParamsConstantBuffer)
+   {
+      Vector3 CameraPos;
+   };
+
+   DEFINE_CONSTANT_BUFFER(LightParamsConstantBuffer)
+   {
+      Vector4 LightPos;
+      Vector4 LightDirection;
+      Vector4 LightRadiance;
+      UINT32 LightType;
+   };
+
    RendererPBR::RendererPBR(Context* context, size_t maximumThreads) :
       RendererDX11(context, maximumThreads),
       m_targetCamera(nullptr),
@@ -79,12 +92,16 @@ namespace Mile
       m_prefilterEnvPassPS(nullptr),
       m_brdfLUT(nullptr),
       m_integrateBRDFPassVS(nullptr),
-      m_integrateBRDFPassPS(nullptr)
+      m_integrateBRDFPassPS(nullptr),
+      m_lightingPassVS(nullptr),
+      m_lightingPassPS(nullptr)
    {
    }
 
    RendererPBR::~RendererPBR()
    {
+      SafeDelete(m_lightingPassPS);
+      SafeDelete(m_lightingPassVS);
       SafeDelete(m_integrateBRDFPassPS);
       SafeDelete(m_integrateBRDFPassVS);
       SafeDelete(m_brdfLUT);
@@ -215,6 +232,24 @@ namespace Mile
       if (m_integrateBRDFPassPS == nullptr)
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load integrate brdfs pass pixel shader!"));
+         return false;
+      }
+
+      /** Lighting Pass Shaders */
+      ShaderDescriptor lightingPassDesc;
+      lightingPassDesc.Renderer = this;
+      lightingPassDesc.FilePath = TEXT("Contents/Shaders/LightingPass.hlsl");
+      m_lightingPassVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(lightingPassDesc);
+      if (m_lightingPassVS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load lighting pass vertex shader!"));
+         return false;
+      }
+
+      m_lightingPassPS = Elaina::Realize<ShaderDescriptor, PixelShaderDX11>(lightingPassDesc);
+      if (m_lightingPassPS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load lighting pass pixel shader!"));
          return false;
       }
 
@@ -350,7 +385,6 @@ namespace Mile
                      float specularFactor = material->GetScalarFactor(MaterialFactorProperty::Specular);
                      Vector2 uvOffset = material->GetVector2Factor(MaterialFactorProperty::UVOffset);
 
-
                      auto materialParams = materialBuffer->Map<PackedMaterialParams>(deviceContext);
                      materialParams->BaseColorFactor = baseColorFactor;
                      materialParams->EmissiveColorFactor = emissiveFactor;
@@ -382,6 +416,13 @@ namespace Mile
                            deviceContext.DrawIndexed(mesh->GetIndexCount(), 0, 0);
                         }
                      }
+
+                     SAFE_TEX_UNBIND(baseColorTex, deviceContext);
+                     SAFE_TEX_UNBIND(emissiveTex, deviceContext);
+                     SAFE_TEX_UNBIND(metallicRoughnessTex, deviceContext);
+                     SAFE_TEX_UNBIND(specularMapTex, deviceContext);
+                     SAFE_TEX_UNBIND(aoTex, deviceContext);
+                     SAFE_TEX_UNBIND(normalTex, deviceContext);
                   }
                }
             }
@@ -395,7 +436,7 @@ namespace Mile
             sampler->Unbind(deviceContext);
          });
 
-      geometryPass->SetCullImmune(true);
+      auto geometryPassData = geometryPass->GetData();
 
       /** Lighting Pass; IBL */
       static const Matrix captureProj = Matrix::CreatePerspectiveProj(90.0f, 1.0f, 0.1f, 10.0f);
@@ -910,8 +951,7 @@ namespace Mile
 
             ViewportDescriptor viewportDesc;
             viewportDesc.Renderer = this;
-            viewportDesc.Width = RendererPBRConstants::BRDFLUTSize;
-            viewportDesc.Height = RendererPBRConstants::BRDFLUTSize;
+            viewportDesc.OutputRenderTargetReference = &m_brdfLUT;
             data.Viewport = builder.Create<ViewportResource>("LUTViewport", viewportDesc);
             data.QuadMeshRef = builder.Read(quadMeshRefRes);
 
@@ -960,7 +1000,169 @@ namespace Mile
             }
          });
 
+      auto integrateBRDFPassData = integrateBRDFPass->GetData();
+
       /** Lighting Pass; Deferred Shading - Lighting */
+      struct LightingPassData : public RenderPassDataBase
+      {
+         SamplerResource* Sampler = nullptr;
+
+         CameraRefResource* CamRef = nullptr;
+         LightsDataResource* LightsData = nullptr;
+         GBufferResource* GBuffer = nullptr;
+         ViewportResource* Viewport = nullptr;
+         ConstantBufferResource* CameraParamsBuffer = nullptr;
+         ConstantBufferResource* LightParamsBuffer = nullptr;
+         DepthStencilStateResource* DepthDisableState = nullptr;
+         BlendStateResource* AdditiveBlendState = nullptr;
+
+         MeshRefResource* QuadMeshRef = nullptr;
+         RenderTargetResource* OutputHDRBuffer = nullptr;
+      };
+
+      auto lightingPassVSRes = m_frameGraph.AddExternalPermanentResource(
+         "LightingPassVertexShader",
+         ShaderDescriptor(),
+         m_lightingPassVS);
+
+      auto lightingPassPSRes = m_frameGraph.AddExternalPermanentResource(
+         "LightingPassPixelShader",
+         ShaderDescriptor(),
+         m_lightingPassPS);
+
+      auto lightsDataRes = m_frameGraph.AddExternalPermanentResource(
+         "LightsData",
+         WorldDescriptor(),
+         &m_lights);
+
+      auto lightingPass = m_frameGraph.AddCallbackPass< LightingPassData>(
+         "LightingPass",
+         [&](Elaina::RenderPassBuilder& builder, LightingPassData& data)
+         {
+            data.Renderer = this;
+            data.VertexShader = builder.Read(lightingPassVSRes);
+            data.PixelShader = builder.Read(lightingPassPSRes);
+
+            data.CamRef = builder.Read(geometryPassData.TargetCameraRef);
+            data.LightsData = builder.Read(lightsDataRes);
+
+            SamplerDescriptor samplerDesc;
+            samplerDesc.Renderer = this;
+            samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+            samplerDesc.AddressModeU = samplerDesc.AddressModeV = samplerDesc.AddressModeW = D3D11_TEXTURE_ADDRESS_BORDER;
+            samplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
+            data.Sampler = builder.Create<SamplerResource>("AnistropicBorderSampler", samplerDesc);
+
+            data.GBuffer = builder.Read(geometryPassData.OutputGBuffer);
+            data.Viewport = builder.Read(geometryPassData.OutputViewport);
+
+            ConstantBufferDescriptor cameraParamsDesc;
+            cameraParamsDesc.Renderer = this;
+            cameraParamsDesc.Size = sizeof(CameraParamsConstantBuffer);
+            data.CameraParamsBuffer = builder.Create<ConstantBufferResource>(
+               "CameraParamsConstantBuffer",
+               cameraParamsDesc);
+
+            ConstantBufferDescriptor lightParamsDesc;
+            lightParamsDesc.Renderer = this;
+            lightParamsDesc.Size = sizeof(LightParamsConstantBuffer);
+            data.LightParamsBuffer = builder.Create<ConstantBufferResource>(
+               "LightParamsConstantBuffer",
+               lightParamsDesc);
+
+            data.DepthDisableState = builder.Read(integrateBRDFPassData.DepthDisableState);
+
+            BlendStateDescriptor blendStateDesc;
+            blendStateDesc.Renderer = this;
+            blendStateDesc.BlendDescs[0] = RenderTargetBlendDesc{ 
+               true, 
+               EBlend::One, EBlend::One, EBlendOP::Add,EBlend::One, EBlend::Zero, EBlendOP::Add,
+               (UINT8)EColorWriteEnable::ColorWriteEnableAll };
+            data.AdditiveBlendState = builder.Create<BlendStateResource>(
+               "AdditiveBlendState",
+               blendStateDesc);
+
+            data.QuadMeshRef = builder.Read(integrateBRDFPassData.QuadMeshRef);
+            RenderTargetDescriptor outputHDRBufferDesc;
+            outputHDRBufferDesc.Renderer = this;
+            outputHDRBufferDesc.ResolutionReference = &m_outputRenderTarget;
+            outputHDRBufferDesc.Format = EColorFormat::R16G16B16A16_FLOAT;
+            data.OutputHDRBuffer = builder.Create<RenderTargetResource>(
+               "SourceHDRBuffer",
+               outputHDRBufferDesc);
+         },
+         [](const LightingPassData& data)
+         {
+            /** @TODO Multi-threaded rendering */
+            ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
+
+            immediateContext.ClearState();
+            immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            auto vertexShader = data.VertexShader->GetActual();
+            auto pixelShader = data.PixelShader->GetActual();
+            auto sampler = data.Sampler->GetActual();
+            auto camera = *data.CamRef->GetActual();
+            const auto& lightsData = *data.LightsData->GetActual();
+            auto depthDisableState = data.DepthDisableState->GetActual();
+            auto additiveBlendState = data.AdditiveBlendState->GetActual();
+            auto camParamsBuffer = data.CameraParamsBuffer->GetActual();
+            auto lightParamsBuffer = data.LightParamsBuffer->GetActual();
+            auto gBuffer = data.GBuffer->GetActual();
+            auto viewport = data.Viewport->GetActual();
+            auto quadMesh = *data.QuadMeshRef->GetActual();
+            auto outputHDRBuffer = data.OutputHDRBuffer->GetActual();
+
+            /** Binds */
+            vertexShader->Bind(immediateContext);
+            pixelShader->Bind(immediateContext);
+            sampler->Bind(immediateContext, 0);
+            depthDisableState->Bind(immediateContext);
+            additiveBlendState->Bind(immediateContext);
+            camParamsBuffer->Bind(immediateContext, 0, EShaderType::PixelShader);
+            lightParamsBuffer->Bind(immediateContext, 1, EShaderType::PixelShader);
+            gBuffer->BindAsShaderResource(immediateContext, 0);
+            viewport->Bind(immediateContext);
+            quadMesh->Bind(immediateContext, 0);
+            outputHDRBuffer->BindAsRenderTarget(immediateContext);
+
+            /** Render */
+            Transform* camTransform = camera->GetTransform();
+            for (const auto lightComponent : lightsData)
+            {
+               auto mappedCamParamsBuffer = camParamsBuffer->Map<CameraParamsConstantBuffer>(immediateContext);
+               (*mappedCamParamsBuffer) = CameraParamsConstantBuffer{ camTransform->GetPosition(TransformSpace::World) };
+               camParamsBuffer->UnMap(immediateContext);
+
+               Transform* lightTransform = lightComponent->GetTransform();
+               Vector3 lightPosition = lightTransform->GetPosition(TransformSpace::World);
+               Vector3 lightDirection = lightTransform->GetForward(TransformSpace::World);
+               Vector3 lightRadiance = lightComponent->GetRadiance();
+               auto mappedLightParamsBuffer = lightParamsBuffer->Map<LightParamsConstantBuffer>(immediateContext);
+               (*mappedLightParamsBuffer) = LightParamsConstantBuffer
+               { 
+                  Vector4(lightPosition.x, lightPosition.y, lightPosition.z, 1.0f),
+                  Vector4(lightDirection.x, lightDirection.y, lightDirection.z, 0.0f),
+                  Vector4(lightRadiance.x, lightRadiance.y, lightRadiance.z, 1.0f),
+                  static_cast<UINT32>(lightComponent->GetLightType()) 
+               };
+               lightParamsBuffer->UnMap(immediateContext);
+
+               immediateContext.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+            }
+
+            /** Unbinds */
+            outputHDRBuffer->UnbindRenderTarget(immediateContext);
+            gBuffer->UnbindShaderResource(immediateContext);
+            lightParamsBuffer->Unbind(immediateContext);
+            camParamsBuffer->Unbind(immediateContext);
+            sampler->Unbind(immediateContext);
+            pixelShader->Unbind(immediateContext);
+            vertexShader->Unbind(immediateContext);
+         });
+
+         auto lightingPassData = lightingPass->GetData();
+         lightingPass->SetCullImmune(true);
 
       /** Post-process Pass */
 
