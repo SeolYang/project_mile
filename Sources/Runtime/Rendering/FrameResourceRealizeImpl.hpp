@@ -365,4 +365,32 @@ namespace Elaina
    {
       return new DynamicCubemapRef(desc.Reference);
    }
+
+   template<>
+   Texture2dDX11* Realize(const Texture2dDX11Descriptor& desc)
+   {
+      Texture2dDX11* texture = new Texture2dDX11(desc.Renderer);
+      if (desc.Source != nullptr)
+      {
+         if (!texture->Init(desc.Source))
+         {
+            Elaina::SafeDelete(texture);
+         }
+      }
+      else
+      {
+         if (!texture->Init(desc.Width, desc.Height, desc.Channels, desc.Data, desc.Format))
+         {
+            Elaina::SafeDelete(texture);
+         }
+      }
+
+      return texture;
+   }
+
+   template<>
+   Texture2dDX11Ref* Realize(const Texture2dDX11RefDescriptor& desc)
+   {
+      return new Texture2dDX11Ref(desc.Reference);
+   }
 }

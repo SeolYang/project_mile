@@ -170,6 +170,7 @@ namespace Mile
    using BlendStateResource = Elaina::FrameResource<BlendStateDescriptor, BlendState>;
 
    class Texture2D;
+   /** Resource Texture */
    using Texture2DRef = Texture2D*;
    struct Texture2DRefDescriptor
    {
@@ -220,4 +221,24 @@ namespace Mile
       DynamicCubemapRef Reference;
    };
    using DynamicCubemapRefResource = Elaina::FrameResource<DynamicCubemapRefDescriptor, DynamicCubemapRef>;
+
+   class Texture2dDX11;
+   using Texture2dDX11Ref = Texture2dDX11*;
+   struct Texture2dDX11Descriptor
+   {
+      RendererDX11* Renderer = nullptr;
+      ID3D11Texture2D* Source = nullptr; /** Source가 nullptr면 아래의 정보를 이용하여 realize 합니다 */
+      unsigned int Width = 1;
+      unsigned int Height = 1;
+      unsigned int Channels = 4;
+      unsigned char* Data = nullptr;
+      DXGI_FORMAT Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+   };
+   using Texture2dDX11Resource = Elaina::FrameResource<Texture2dDX11Descriptor, Texture2dDX11>;
+
+   struct Texture2dDX11RefDescriptor
+   {
+      Texture2dDX11Ref Reference;
+   };
+   using Texture2dDX11RefResource = Elaina::FrameResource<Texture2dDX11RefDescriptor, Texture2dDX11Ref>;
 }
