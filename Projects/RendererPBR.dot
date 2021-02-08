@@ -1,7 +1,7 @@
 digraph FrameGraph 
 {
 splines=true
-graph [pad="0.1", nodestep="0.6", ranksep="1.5"]
+graph [pad="0.1", nodestep="0.6", ranksep="2"]
 rankdir = LR
 bgcolor = black
 node [shape=rectangle, fontname="arial", fontsize=12, fontcolor=black]
@@ -16,6 +16,9 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nDistribution Group : 0
 \nRefs : 1", style=filled, fillcolor=darkorange];
 "PrefilterEnvironmentMapPass" [label="PrefilterEnvironmentMapPass
+\nDistribution Group : 0
+\nRefs : 1", style=filled, fillcolor=darkorange];
+"IntegrateBRDFsPass" [label="IntegrateBRDFsPass
 \nDistribution Group : 0
 \nRefs : 1", style=filled, fillcolor=darkorange];
 "CameraRef" [label="CameraRef
@@ -92,11 +95,11 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "LinearClampAlwaysSampler" [label="LinearClampAlwaysSampler
 \nID : 18
-\nRefs : 2
+\nRefs : 3
 \nTransient", style=filled, fillcolor=peachpuff]
 "IBLPrecomputeEnabledRef" [label="IBLPrecomputeEnabledRef
 \nID : 19
-\nRefs : 2
+\nRefs : 3
 \nTransient", style=filled, fillcolor=peachpuff]
 "CubeCaptureView+x" [label="CubeCaptureView+x
 \nID : 20
@@ -202,6 +205,30 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nID : 45
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
+"IntegrateBRDFsPassVertexShader" [label="IntegrateBRDFsPassVertexShader
+\nID : 46
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"IntegrateBRDFsPassPixelShader" [label="IntegrateBRDFsPassPixelShader
+\nID : 47
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"BrdfLUTRef" [label="BrdfLUTRef
+\nID : 48
+\nRefs : 0
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"QuadMeshRef" [label="QuadMeshRef
+\nID : 49
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"DepthDisableState" [label="DepthDisableState
+\nID : 50
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
+"LUTViewport" [label="LUTViewport
+\nID : 51
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
 "Geometry Pass" -> { "AnisoWrapAlwaysSampler" "GeometryPassTransform" "GeometryPassPackedMaterialParams" "GBuffer" "Viewport" "DefaultRasterizerState" } [color=aquamarine]
 "Geometry Pass" -> { } [color=firebrick1]
 "ConvertTextureToCubemap" -> { "LinearClampAlwaysSampler" "IBLPrecomputeEnabledRef" "CubeCaptureView+x" "CubeCaptureView-x" "CubeCaptureView+y" "CubeCaptureView-y" "CubeCaptureView+z" "CubeCaptureView-z" "CaptureViewport" "CaptureTransformBuffer" "NoCullingState" "DepthLessEqualState" } [color=aquamarine]
@@ -210,6 +237,8 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "DiffuseConvolutionPass" -> { "CaptureTransformBuffer" "IrradianceMapRef" } [color=firebrick1]
 "PrefilterEnvironmentMapPass" -> { "Viewport_Mip0" "Viewport_Mip1" "Viewport_Mip2" "Viewport_Mip3" "Viewport_Mip4" "Viewport_Mip5" "Viewport_Mip6" "Viewport_Mip7" "Viewport_Mip8" "PrefilterParamsConstantBuffer" } [color=aquamarine]
 "PrefilterEnvironmentMapPass" -> { "CaptureTransformBuffer" "PrefilteredEnvironmentMapRef" } [color=firebrick1]
+"IntegrateBRDFsPass" -> { "DepthDisableState" "LUTViewport" } [color=aquamarine]
+"IntegrateBRDFsPass" -> { "BrdfLUTRef" } [color=firebrick1]
 
 "CameraRef" -> { "Geometry Pass" } [color=yellow]
 "Lights" -> { } [color=yellow]
@@ -229,8 +258,8 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "ConvertSkyboxPassVertexShader" -> { "ConvertTextureToCubemap" } [color=yellow]
 "ConvertSkyboxPassPixelShader" -> { "ConvertTextureToCubemap" } [color=yellow]
 "EnvironmentMapRef" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
-"LinearClampAlwaysSampler" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
-"IBLPrecomputeEnabledRef" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
+"LinearClampAlwaysSampler" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" "IntegrateBRDFsPass" } [color=yellow]
+"IBLPrecomputeEnabledRef" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" "IntegrateBRDFsPass" } [color=yellow]
 "CubeCaptureView+x" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
 "CubeCaptureView-x" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
 "CubeCaptureView+y" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
@@ -257,4 +286,10 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "Viewport_Mip7" -> { } [color=yellow]
 "Viewport_Mip8" -> { } [color=yellow]
 "PrefilterParamsConstantBuffer" -> { } [color=yellow]
+"IntegrateBRDFsPassVertexShader" -> { "IntegrateBRDFsPass" } [color=yellow]
+"IntegrateBRDFsPassPixelShader" -> { "IntegrateBRDFsPass" } [color=yellow]
+"BrdfLUTRef" -> { } [color=yellow]
+"QuadMeshRef" -> { "IntegrateBRDFsPass" } [color=yellow]
+"DepthDisableState" -> { } [color=yellow]
+"LUTViewport" -> { } [color=yellow]
 }

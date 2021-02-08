@@ -75,12 +75,18 @@ namespace Mile
       m_diffuseIntegralPassVS(nullptr),
       m_diffuseIntegralPassPS(nullptr),
       m_prefilteredEnvMap(nullptr),
-      m_brdfLUT(nullptr)
+      m_prefilterEnvPassVS(nullptr),
+      m_prefilterEnvPassPS(nullptr),
+      m_brdfLUT(nullptr),
+      m_integrateBRDFPassVS(nullptr),
+      m_integrateBRDFPassPS(nullptr)
    {
    }
 
    RendererPBR::~RendererPBR()
    {
+      SafeDelete(m_integrateBRDFPassPS);
+      SafeDelete(m_integrateBRDFPassVS);
       SafeDelete(m_brdfLUT);
       SafeDelete(m_prefilteredEnvMap);
       SafeDelete(m_irradianceMap);
@@ -191,6 +197,24 @@ namespace Mile
       if (m_prefilterEnvPassPS == nullptr)
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load prefilter environment map pass pixel shader!"));
+         return false;
+      }
+
+      /** Integrate BRDF Pass Shaders */
+      ShaderDescriptor integrateBRDFPassDesc;
+      integrateBRDFPassDesc.Renderer = this;
+      integrateBRDFPassDesc.FilePath = TEXT("Contents/Shaders/IntegrateBRDF.hlsl");
+      m_integrateBRDFPassVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(integrateBRDFPassDesc);
+      if (m_integrateBRDFPassVS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load integrate brdfs pass vertex shader!"));
+         return false;
+      }
+
+      m_integrateBRDFPassPS = Elaina::Realize<ShaderDescriptor, PixelShaderDX11>(integrateBRDFPassDesc);
+      if (m_integrateBRDFPassPS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load integrate brdfs pass pixel shader!"));
          return false;
       }
 
@@ -559,7 +583,6 @@ namespace Mile
             }
          });
 
-      convertSkyboxToCubemapPass->SetCullImmune(true);
       auto convertSkyboxToCubemapPassData = convertSkyboxToCubemapPass->GetData();
 
       /** Solve Diffuse Integral */
@@ -830,6 +853,112 @@ namespace Mile
       auto prefilterEnvMapPassData = prefilterEnvMapPass->GetData();
 
       /** Integrate BRDF */
+      struct IntegrateBRDFPassData : public RenderPassDataBase
+      {
+         BoolRefResource* IBLPrecomputeEnabledRef = nullptr;
+
+         SamplerResource* Sampler = nullptr;
+
+         DepthStencilStateResource* DepthDisableState = nullptr;
+         ViewportResource* Viewport = nullptr;
+         MeshRefResource* QuadMeshRef = nullptr;
+         RenderTargetRefResource* OutputBrdfLUTRef = nullptr;
+      };
+
+      auto intergrateBRDFPassVSRes = m_frameGraph.AddExternalPermanentResource(
+         "IntegrateBRDFsPassVertexShader",
+         ShaderDescriptor(),
+         m_integrateBRDFPassVS);
+
+      auto integrateBRDFPassPSRes = m_frameGraph.AddExternalPermanentResource(
+         "IntegrateBRDFsPassPixelShader",
+         ShaderDescriptor(),
+         m_integrateBRDFPassPS);
+
+      RenderTargetDescriptor brdfLUTDesc;
+      brdfLUTDesc.Renderer = this;
+      brdfLUTDesc.Width = RendererPBRConstants::BRDFLUTSize;
+      brdfLUTDesc.Height = RendererPBRConstants::BRDFLUTSize;
+      brdfLUTDesc.Format = EColorFormat::R16G16_FLOAT;
+      m_brdfLUT = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(brdfLUTDesc);
+
+      auto brdfLUTReftRes = m_frameGraph.AddExternalPermanentResource(
+         "BrdfLUTRef",
+         RenderTargetRefDescriptor(),
+         &m_brdfLUT);
+
+      auto quadMeshRefRes = m_frameGraph.AddExternalPermanentResource(
+         "QuadMeshRef",
+         MeshRefDescriptor(),
+         &m_quadMesh);
+
+      auto integrateBRDFPass = m_frameGraph.AddCallbackPass<IntegrateBRDFPassData>(
+         "IntegrateBRDFsPass",
+         [&](Elaina::RenderPassBuilder& builder, IntegrateBRDFPassData& data)
+         {
+            data.Renderer = this;
+            data.VertexShader = builder.Read(intergrateBRDFPassVSRes);
+            data.PixelShader = builder.Read(integrateBRDFPassPSRes);
+            data.Sampler = builder.Read(prefilterEnvMapPassData.Sampler);
+
+            data.IBLPrecomputeEnabledRef = builder.Read(prefilterEnvMapPassData.IBLPrecomputeEnabledRef);
+
+            DepthStencilStateDescriptor dsStateDesc;
+            dsStateDesc.Renderer = this;
+            dsStateDesc.bDepthEnable = false;
+            data.DepthDisableState = builder.Create<DepthStencilStateResource>("DepthDisableState", dsStateDesc);
+
+            ViewportDescriptor viewportDesc;
+            viewportDesc.Renderer = this;
+            viewportDesc.Width = RendererPBRConstants::BRDFLUTSize;
+            viewportDesc.Height = RendererPBRConstants::BRDFLUTSize;
+            data.Viewport = builder.Create<ViewportResource>("LUTViewport", viewportDesc);
+            data.QuadMeshRef = builder.Read(quadMeshRefRes);
+
+            data.OutputBrdfLUTRef = builder.Write(brdfLUTReftRes);
+         },
+         [](const IntegrateBRDFPassData& data)
+         {
+            BoolRef bIBLPrecomputeEnabledRef = (*data.IBLPrecomputeEnabledRef->GetActual());
+            if (bIBLPrecomputeEnabledRef != nullptr && (*bIBLPrecomputeEnabledRef))
+            {
+               ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
+               immediateContext.ClearState();
+
+               immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+               auto vertexShader = data.VertexShader->GetActual();
+               auto pixelShader = data.PixelShader->GetActual();
+               auto sampler = data.Sampler->GetActual();
+               auto depthDisableState = data.DepthDisableState->GetActual();
+               auto viewport = data.Viewport->GetActual();
+               auto quadMesh = *data.QuadMeshRef->GetActual();
+               auto outputBrdfLUT = *data.OutputBrdfLUTRef->GetActual();
+
+               viewport->SetWidth(outputBrdfLUT->GetWidth());
+               viewport->SetHeight(outputBrdfLUT->GetHeight());
+
+               /** Binds */
+               vertexShader->Bind(immediateContext);
+               pixelShader->Bind(immediateContext);
+               sampler->Bind(immediateContext, 0);
+               depthDisableState->Bind(immediateContext);
+               viewport->Bind(immediateContext);
+               quadMesh->Bind(immediateContext, 0);
+               outputBrdfLUT->BindAsRenderTarget(immediateContext);
+
+               /** Render */
+               immediateContext.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+
+               /** Unbinds */
+               outputBrdfLUT->UnbindRenderTarget(immediateContext);
+               sampler->Unbind(immediateContext);
+               pixelShader->Unbind(immediateContext);
+               vertexShader->Unbind(immediateContext);
+
+               (*bIBLPrecomputeEnabledRef) = false;
+            }
+         });
 
       /** Lighting Pass; Deferred Shading - Lighting */
 
@@ -839,6 +968,7 @@ namespace Mile
 
       Elaina::VisualizeParams visualizeParams;
       visualizeParams.bSplines = true;
+      visualizeParams.RankSep = 2.0;
       m_frameGraph.ExportVisualization("RendererPBR.dot", visualizeParams);
       return true;
    }

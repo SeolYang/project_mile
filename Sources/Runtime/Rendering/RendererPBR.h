@@ -13,6 +13,7 @@ namespace Mile
       constexpr unsigned int IrradianceMapSize = 32;
       constexpr unsigned int PrefilteredEnvMapSize = 512;
       constexpr unsigned int PrefilteredEnvMapMaxMipLevels = 6 + 1;
+      constexpr unsigned int BRDFLUTSize = 512;
    }
 
    struct RenderPassDataBase
@@ -57,6 +58,9 @@ namespace Mile
       VertexShaderDX11* m_prefilterEnvPassVS;
       PixelShaderDX11* m_prefilterEnvPassPS;
 
+      VertexShaderDX11* m_integrateBRDFPassVS;
+      PixelShaderDX11* m_integrateBRDFPassPS;
+
       /** External Resources; Don't delete in renderer! */
       /** Per Frame Datas */
       std::vector<CameraComponent*> m_cameras;
@@ -66,7 +70,7 @@ namespace Mile
       MaterialMap m_materialMap;
       RenderTargetDX11* m_outputRenderTarget;
 
-      /** Skybox */
+      /** Skybox/IBL */
       Texture2D* m_skyboxTexture;
       Texture2D* m_oldSkyboxTexture;
       bool m_bPrecomputeIBL;
