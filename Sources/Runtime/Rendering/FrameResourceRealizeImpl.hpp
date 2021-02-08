@@ -4,6 +4,7 @@
 #include "Rendering/VertexShaderDX11.h"
 #include "Rendering/PixelShaderDX11.h"
 #include "Rendering/SamplerDX11.h"
+#include "Rendering/DepthStencilBufferDX11.h"
 #include "Rendering/ConstantBufferDX11.h"
 #include "Rendering/GBuffer.h"
 #include "Rendering/Viewport.h"
@@ -103,6 +104,24 @@ namespace Elaina
    RenderTargetRef* Realize(const RenderTargetRefDescriptor& desciptor)
    {
       return new RenderTargetRef(desciptor.Reference);
+   }
+
+   template<>
+   DepthStencilBufferDX11* Realize(const DepthStencilBufferDescriptor& descriptor)
+   {
+      auto depthStencilBuffer = new DepthStencilBufferDX11(descriptor.Renderer);
+      if (!depthStencilBuffer->Init(descriptor.Width, descriptor.Height, descriptor.bStencilEnable))
+      {
+         Elaina::SafeDelete(depthStencilBuffer);
+      }
+
+      return depthStencilBuffer;
+   }
+
+   template<>
+   DepthStencilBufferRef* Realize(const DepthStencilBufferRefDescriptor& desc)
+   {
+      return new DepthStencilBufferRef(desc.Reference);
    }
 
    template<>

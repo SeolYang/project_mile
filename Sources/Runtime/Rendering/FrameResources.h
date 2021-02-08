@@ -49,6 +49,22 @@ namespace Mile
    };
    using RenderTargetRefResource = Elaina::FrameResource<RenderTargetRefDescriptor, RenderTargetRef>;
 
+   struct DepthStencilBufferDescriptor
+   {
+      RendererDX11* Renderer;
+      unsigned int Width = 1920;
+      unsigned int Height = 1080;
+      bool bStencilEnable = false;
+   };
+   using DepthStencilBufferResource = Elaina::FrameResource<DepthStencilBufferDescriptor, DepthStencilBufferDX11>;
+
+   using DepthStencilBufferRef = DepthStencilBufferDX11*;
+   struct DepthStencilBufferRefDescriptor
+   {
+      DepthStencilBufferRef Reference;
+   };
+   using DepthStencilBufferRefResource = Elaina::FrameResource<DepthStencilBufferRefDescriptor, DepthStencilBufferRef>;
+
    class VertexShaderDX11;
    class PixelShaderDX11;
    struct ShaderDescriptor
