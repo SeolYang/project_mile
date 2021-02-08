@@ -24,9 +24,12 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "LightingPass" [label="LightingPass
 \nDistribution Group : 0
 \nRefs : 0", style=filled, fillcolor=darkorange];
+"ConvertGBufferToViewSpacePass" [label="ConvertGBufferToViewSpacePass
+\nDistribution Group : 0
+\nRefs : 0", style=filled, fillcolor=darkorange];
 "CameraRef" [label="CameraRef
 \nID : 0
-\nRefs : 2
+\nRefs : 3
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "Lights" [label="Lights
 \nID : 1
@@ -66,11 +69,11 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nTransient", style=filled, fillcolor=peachpuff]
 "GBuffer" [label="GBuffer
 \nID : 10
-\nRefs : 1
+\nRefs : 2
 \nTransient", style=filled, fillcolor=peachpuff]
 "Viewport" [label="Viewport
 \nID : 11
-\nRefs : 1
+\nRefs : 2
 \nTransient", style=filled, fillcolor=peachpuff]
 "DefaultRasterizerState" [label="DefaultRasterizerState
 \nID : 12
@@ -222,11 +225,11 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "QuadMeshRef" [label="QuadMeshRef
 \nID : 49
-\nRefs : 2
+\nRefs : 3
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "DepthDisableState" [label="DepthDisableState
 \nID : 50
-\nRefs : 1
+\nRefs : 2
 \nTransient", style=filled, fillcolor=peachpuff]
 "LUTViewport" [label="LUTViewport
 \nID : 51
@@ -264,6 +267,26 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nID : 59
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
+"ConvertGBufferToViewSpaceVertexShader" [label="ConvertGBufferToViewSpaceVertexShader
+\nID : 60
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"ConvertGBufferToViewSpacePixelShader" [label="ConvertGBufferToViewSpacePixelShader
+\nID : 61
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"PointClampSampler" [label="PointClampSampler
+\nID : 62
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
+"ConvertParamsConstantBuffer" [label="ConvertParamsConstantBuffer
+\nID : 63
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
+"ViewSpaceGBuffer" [label="ViewSpaceGBuffer
+\nID : 64
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
 "Geometry Pass" -> { "AnisoWrapAlwaysSampler" "GeometryPassTransform" "GeometryPassPackedMaterialParams" "GBuffer" "Viewport" "DefaultRasterizerState" } [color=aquamarine]
 "Geometry Pass" -> { } [color=firebrick1]
 "ConvertTextureToCubemap" -> { "LinearClampAlwaysSampler" "IBLPrecomputeEnabledRef" "CubeCaptureView+x" "CubeCaptureView-x" "CubeCaptureView+y" "CubeCaptureView-y" "CubeCaptureView+z" "CubeCaptureView-z" "CaptureViewport" "CaptureTransformBuffer" "NoCullingState" "DepthLessEqualState" } [color=aquamarine]
@@ -276,8 +299,10 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "IntegrateBRDFsPass" -> { "BrdfLUTRef" } [color=firebrick1]
 "LightingPass" -> { "AnistropicBorderSampler" "CameraParamsConstantBuffer" "LightParamsConstantBuffer" "AdditiveBlendState" "SourceHDRBuffer" } [color=aquamarine]
 "LightingPass" -> { } [color=firebrick1]
+"ConvertGBufferToViewSpacePass" -> { "PointClampSampler" "ConvertParamsConstantBuffer" "ViewSpaceGBuffer" } [color=aquamarine]
+"ConvertGBufferToViewSpacePass" -> { } [color=firebrick1]
 
-"CameraRef" -> { "Geometry Pass" "LightingPass" } [color=yellow]
+"CameraRef" -> { "Geometry Pass" "LightingPass" "ConvertGBufferToViewSpacePass" } [color=yellow]
 "Lights" -> { } [color=yellow]
 "Meshes" -> { } [color=yellow]
 "MaterialMap" -> { "Geometry Pass" } [color=yellow]
@@ -287,8 +312,8 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "AnisoWrapAlwaysSampler" -> { } [color=yellow]
 "GeometryPassTransform" -> { } [color=yellow]
 "GeometryPassPackedMaterialParams" -> { } [color=yellow]
-"GBuffer" -> { "LightingPass" } [color=yellow]
-"Viewport" -> { "LightingPass" } [color=yellow]
+"GBuffer" -> { "LightingPass" "ConvertGBufferToViewSpacePass" } [color=yellow]
+"Viewport" -> { "LightingPass" "ConvertGBufferToViewSpacePass" } [color=yellow]
 "DefaultRasterizerState" -> { } [color=yellow]
 "SkyboxTextureRef" -> { "ConvertTextureToCubemap" } [color=yellow]
 "CubeMeshRef" -> { "ConvertTextureToCubemap" "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
@@ -326,8 +351,8 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "IntegrateBRDFsPassVertexShader" -> { "IntegrateBRDFsPass" } [color=yellow]
 "IntegrateBRDFsPassPixelShader" -> { "IntegrateBRDFsPass" } [color=yellow]
 "BrdfLUTRef" -> { } [color=yellow]
-"QuadMeshRef" -> { "IntegrateBRDFsPass" "LightingPass" } [color=yellow]
-"DepthDisableState" -> { "LightingPass" } [color=yellow]
+"QuadMeshRef" -> { "IntegrateBRDFsPass" "LightingPass" "ConvertGBufferToViewSpacePass" } [color=yellow]
+"DepthDisableState" -> { "LightingPass" "ConvertGBufferToViewSpacePass" } [color=yellow]
 "LUTViewport" -> { } [color=yellow]
 "LightingPassVertexShader" -> { "LightingPass" } [color=yellow]
 "LightingPassPixelShader" -> { "LightingPass" } [color=yellow]
@@ -337,4 +362,9 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "LightParamsConstantBuffer" -> { } [color=yellow]
 "AdditiveBlendState" -> { } [color=yellow]
 "SourceHDRBuffer" -> { } [color=yellow]
+"ConvertGBufferToViewSpaceVertexShader" -> { "ConvertGBufferToViewSpacePass" } [color=yellow]
+"ConvertGBufferToViewSpacePixelShader" -> { "ConvertGBufferToViewSpacePass" } [color=yellow]
+"PointClampSampler" -> { } [color=yellow]
+"ConvertParamsConstantBuffer" -> { } [color=yellow]
+"ViewSpaceGBuffer" -> { } [color=yellow]
 }

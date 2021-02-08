@@ -64,6 +64,9 @@ namespace Mile
       VertexShaderDX11* m_lightingPassVS;
       PixelShaderDX11* m_lightingPassPS;
 
+      VertexShaderDX11* m_gBufferToViewSpacePassVS;
+      PixelShaderDX11* m_gBufferToViewSpacePassPS;
+
       /** External Resources; Don't delete in renderer! */
       /** Per Frame Datas */
       std::vector<CameraComponent*> m_cameras;

@@ -70,6 +70,11 @@ namespace Mile
       UINT32 LightType;
    };
 
+   DEFINE_CONSTANT_BUFFER(ConvertParams)
+   {
+      Matrix View;
+   };
+
    RendererPBR::RendererPBR(Context* context, size_t maximumThreads) :
       RendererDX11(context, maximumThreads),
       m_targetCamera(nullptr),
@@ -94,12 +99,16 @@ namespace Mile
       m_integrateBRDFPassVS(nullptr),
       m_integrateBRDFPassPS(nullptr),
       m_lightingPassVS(nullptr),
-      m_lightingPassPS(nullptr)
+      m_lightingPassPS(nullptr),
+      m_gBufferToViewSpacePassVS(nullptr),
+      m_gBufferToViewSpacePassPS(nullptr)
    {
    }
 
    RendererPBR::~RendererPBR()
    {
+      SafeDelete(m_gBufferToViewSpacePassPS);
+      SafeDelete(m_gBufferToViewSpacePassVS);
       SafeDelete(m_lightingPassPS);
       SafeDelete(m_lightingPassVS);
       SafeDelete(m_integrateBRDFPassPS);
@@ -250,6 +259,24 @@ namespace Mile
       if (m_lightingPassPS == nullptr)
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load lighting pass pixel shader!"));
+         return false;
+      }
+
+      /** GBuffer Convert Pass Shader(to view space) */
+      ShaderDescriptor gBufferConvertPassDesc;
+      gBufferConvertPassDesc.Renderer = this;
+      gBufferConvertPassDesc.FilePath = TEXT("Contents/Shaders/ViewSpaceGBuffer.hlsl");
+      m_gBufferToViewSpacePassVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(gBufferConvertPassDesc);
+      if (m_gBufferToViewSpacePassVS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load GBuffer convert pass vertex shader!"));
+         return false;
+      }
+
+      m_gBufferToViewSpacePassPS = Elaina::Realize<ShaderDescriptor, PixelShaderDX11>(gBufferConvertPassDesc);
+      if (m_gBufferToViewSpacePassPS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load GBuffer convert pass pixel shader!"));
          return false;
       }
 
@@ -1161,10 +1188,123 @@ namespace Mile
             vertexShader->Unbind(immediateContext);
          });
 
-         auto lightingPassData = lightingPass->GetData();
-         lightingPass->SetCullImmune(true);
+      auto lightingPassData = lightingPass->GetData();
+      lightingPass->SetCullImmune(true);
 
       /** Post-process Pass */
+      struct ConvertGBufferPassData : public RenderPassDataBase
+      {
+         SamplerResource* Sampler = nullptr;
+         CameraRefResource* CamRef = nullptr;
+         ConstantBufferResource* ConvertParamsBuffer = nullptr;
+
+         ViewportResource* Viewport = nullptr;
+         MeshRefResource* QuadMeshRef = nullptr;
+         DepthStencilStateResource* DepthDisableState = nullptr;
+
+         GBufferResource* SourceGBuffer = nullptr;
+         GBufferResource* ConvertedGBuffer = nullptr;
+      };
+
+      auto gBufferConvertPassVSRes = m_frameGraph.AddExternalPermanentResource(
+         "ConvertGBufferToViewSpaceVertexShader",
+         ShaderDescriptor(),
+         m_gBufferToViewSpacePassVS);
+
+      auto gBufferConvertPassPSRes = m_frameGraph.AddExternalPermanentResource(
+         "ConvertGBufferToViewSpacePixelShader",
+         ShaderDescriptor(),
+         m_gBufferToViewSpacePassPS);
+
+      auto gBufferConvertPass = m_frameGraph.AddCallbackPass<ConvertGBufferPassData>(
+         "ConvertGBufferToViewSpacePass",
+         [&](Elaina::RenderPassBuilder& builder, ConvertGBufferPassData& data)
+         {
+            data.Renderer = this;
+            data.VertexShader = builder.Read(gBufferConvertPassVSRes);
+            data.PixelShader = builder.Read(gBufferConvertPassPSRes);
+
+            SamplerDescriptor samplerDesc;
+            samplerDesc.Renderer = this;
+            samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+            samplerDesc.AddressModeU = samplerDesc.AddressModeV = samplerDesc.AddressModeW = D3D11_TEXTURE_ADDRESS_CLAMP;
+            samplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
+            data.Sampler = builder.Create<SamplerResource>(
+               "PointClampSampler",
+               samplerDesc);
+
+            data.CamRef = builder.Read(lightingPassData.CamRef);
+
+            ConstantBufferDescriptor paramsDesc;
+            paramsDesc.Renderer = this;
+            paramsDesc.Size = sizeof(ConvertParams);
+            data.ConvertParamsBuffer = builder.Create<ConstantBufferResource>(
+               "ConvertParamsConstantBuffer",
+               paramsDesc);
+
+            data.Viewport = builder.Read(geometryPassData.OutputViewport);
+            data.QuadMeshRef = builder.Read(integrateBRDFPassData.QuadMeshRef);
+            data.DepthDisableState = builder.Read(integrateBRDFPassData.DepthDisableState);
+
+            data.SourceGBuffer = builder.Read(geometryPassData.OutputGBuffer);
+
+            GBufferDescriptor convertedGBufferDesc;
+            convertedGBufferDesc.Renderer = this;
+            convertedGBufferDesc.OutputRenderTargetReference = &m_outputRenderTarget;
+            data.ConvertedGBuffer = builder.Create<GBufferResource>("ViewSpaceGBuffer", convertedGBufferDesc);
+         },
+         [](const ConvertGBufferPassData& data)
+         {
+            ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
+            
+            immediateContext.ClearState();
+            immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            auto vertexShader = data.VertexShader->GetActual();
+            auto pixelShader = data.PixelShader->GetActual();
+            auto sampler = data.Sampler->GetActual();
+            auto convertParamsBuffer = data.ConvertParamsBuffer->GetActual();
+            auto sourceGBuffer = data.SourceGBuffer->GetActual();
+            auto convertedGBuffer = data.ConvertedGBuffer->GetActual();
+            auto camera = *data.CamRef->GetActual();
+            auto viewport = data.Viewport->GetActual();
+            auto quadMesh = *data.QuadMeshRef->GetActual();
+            auto depthDisableState = data.DepthDisableState->GetActual();
+
+            /** Binds */
+            vertexShader->Bind(immediateContext);
+            pixelShader->Bind(immediateContext);
+            sampler->Bind(immediateContext, 0);
+            convertParamsBuffer->Bind(immediateContext, 0, EShaderType::PixelShader);
+            viewport->Bind(immediateContext);
+            quadMesh->Bind(immediateContext, 0);
+            depthDisableState->Bind(immediateContext);
+            sourceGBuffer->BindAsShaderResource(immediateContext, 0, true);
+            convertedGBuffer->BindAsRenderTarget(immediateContext);
+
+            /** Render */
+            auto camTransform = camera->GetTransform();
+            Matrix viewMatrix = Matrix::CreateView(
+               camTransform->GetPosition(TransformSpace::World),
+               camTransform->GetForward(TransformSpace::World),
+               camTransform->GetUp(TransformSpace::World));
+
+            auto mappedConvertParams = convertParamsBuffer->Map<ConvertParams>(immediateContext);
+            (*mappedConvertParams) = ConvertParams{ viewMatrix };
+            convertParamsBuffer->UnMap(immediateContext);
+            immediateContext.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+
+            /** Unbinds */
+            convertedGBuffer->UnbindRenderTarget(immediateContext);
+            sourceGBuffer->UnbindShaderResource(immediateContext);
+            convertParamsBuffer->Unbind(immediateContext);
+            sampler->Unbind(immediateContext);
+            pixelShader->Unbind(immediateContext);
+            vertexShader->Unbind(immediateContext);
+         });
+
+      auto convertGBufferPassData = gBufferConvertPass->GetData();
+      gBufferConvertPass->SetCullImmune(true);
 
       m_frameGraph.Compile();
 
