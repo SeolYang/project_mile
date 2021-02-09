@@ -90,6 +90,9 @@ namespace Mile
       VertexShaderDX11* m_ssaoPassVS;
       PixelShaderDX11* m_ssaoPassPS;
 
+      VertexShaderDX11* m_ssaoBlurPassVS;
+      PixelShaderDX11* m_ssaoBlurPassPS;
+
       /** External Resources; Don't delete in renderer! */
       /** Per Frame Datas */
       std::vector<CameraComponent*> m_cameras;

@@ -115,12 +115,16 @@ namespace Mile
       m_gBufferToViewSpacePassVS(nullptr),
       m_gBufferToViewSpacePassPS(nullptr),
       m_ssaoPassVS(nullptr),
-      m_ssaoPassPS(nullptr)
+      m_ssaoPassPS(nullptr),
+      m_ssaoBlurPassVS(nullptr),
+      m_ssaoBlurPassPS(nullptr)
    {
    }
 
    RendererPBR::~RendererPBR()
    {
+      SafeDelete(m_ssaoBlurPassPS);
+      SafeDelete(m_ssaoBlurPassVS);
       SafeDelete(m_ssaoPassPS);
       SafeDelete(m_ssaoPassVS);
       SafeDelete(m_gBufferToViewSpacePassPS);
@@ -311,6 +315,24 @@ namespace Mile
       if (m_ssaoPassPS == nullptr)
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load ssao pass pixel shader!"));
+         return false;
+      }
+
+      /** SSAO Blur Pass Shaders  */
+      ShaderDescriptor ssaoBlurPassDesc;
+      ssaoBlurPassDesc.Renderer = this;
+      ssaoBlurPassDesc.FilePath = TEXT("Contents/Shaders/SSAOBlur.hlsl");
+      m_ssaoBlurPassVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(ssaoBlurPassDesc);
+      if (m_ssaoBlurPassVS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load ssao blur pass vertex shader!"));
+         return false;
+      }
+
+      m_ssaoBlurPassPS = Elaina::Realize<ShaderDescriptor, PixelShaderDX11>(ssaoBlurPassDesc);
+      if (m_ssaoBlurPassPS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load ssao blur pass pixel shader!"));
          return false;
       }
 
@@ -1496,13 +1518,92 @@ namespace Mile
             vertexShader->Unbind(immeidiateContext);
          });
 
-      ssaoPass->SetCullImmune(true);
+      auto ssaoPassData = ssaoPass->GetData();
+
+      /** SSAO Blur */
+      struct SSAOBlurPassData : public RenderPassDataBase
+      {
+         SamplerResource* Sampler = nullptr;
+
+         RenderTargetResource* Source = nullptr;
+         ViewportResource* Viewport = nullptr;
+         DepthStencilStateResource* DepthDisableState = nullptr;
+
+         MeshRefResource* QuadMeshRef = nullptr;
+         RenderTargetResource* Output = nullptr;
+      };
+
+      auto ssaoBlurPassVSRes = m_frameGraph.AddExternalPermanentResource("SSAOBlurPassVertexShader", ShaderDescriptor(), m_ssaoBlurPassVS);
+      auto ssaoBlurPassPSRes = m_frameGraph.AddExternalPermanentResource("SSAOBlurPassPixelShader", ShaderDescriptor(), m_ssaoBlurPassPS);
+
+      auto ssaoBlurPass = m_frameGraph.AddCallbackPass<SSAOBlurPassData>(
+         "SSAOBlurPass",
+         [&](Elaina::RenderPassBuilder& builder, SSAOBlurPassData& data)
+         {
+            data.Renderer = this;
+            data.VertexShader = builder.Read(ssaoBlurPassVSRes);
+            data.PixelShader = builder.Read(ssaoBlurPassPSRes);
+
+            data.Sampler = builder.Read(ssaoPassData.Sampler);
+
+            data.Source = builder.Read(ssaoPassData.Output);
+            data.Viewport = builder.Read(ssaoPassData.Viewport);
+            data.DepthDisableState = builder.Read(ssaoPassData.DepthDisableState);
+
+            data.QuadMeshRef = builder.Read(ssaoPassData.QuadMeshRef);
+
+            RenderTargetDescriptor outputDesc;
+            outputDesc.Renderer = this;
+            outputDesc.ResolutionReference = &m_outputRenderTarget;
+            outputDesc.Format = EColorFormat::R32_FLOAT;
+            data.Output = builder.Create<RenderTargetResource>("BlurredSSAO", outputDesc);
+         },
+         [](const SSAOBlurPassData& data)
+         {
+            ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
+            context.ClearState();
+            context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            auto vertexShader = data.VertexShader->GetActual();
+            auto pixelShader = data.PixelShader->GetActual();
+            auto sampler = data.Sampler->GetActual();
+            auto source = data.Source->GetActual();
+            auto viewport = data.Viewport->GetActual();
+            auto depthDisableState = data.DepthDisableState->GetActual();
+            auto quadMesh = *data.QuadMeshRef->GetActual();
+            auto output = data.Output->GetActual();
+
+            /** Binds */
+            vertexShader->Bind(context);
+            pixelShader->Bind(context);
+            sampler->Bind(context, 0);
+            source->BindAsShaderResource(context, 0, EShaderType::PixelShader);
+            viewport->Bind(context);
+            depthDisableState->Bind(context);
+            output->BindAsRenderTarget(context);
+
+            quadMesh->Bind(context, 0);
+
+            /** Render */
+            context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+
+            /** Unbinds */
+            output->UnbindRenderTarget(context);
+            source->UnbindShaderResource(context);
+            sampler->Unbind(context);
+            pixelShader->Unbind(context);
+            vertexShader->Unbind(context);
+         });
+
+      ssaoBlurPass->SetCullImmune(true);
+
+      auto ssaoBlurPassData = ssaoBlurPass->GetData();
 
       m_frameGraph.Compile();
 
       Elaina::VisualizeParams visualizeParams;
       visualizeParams.bSplines = true;
-      visualizeParams.RankSep = 2.0;
+      visualizeParams.RankSep = 3.5;
       m_frameGraph.ExportVisualization("RendererPBR.dot", visualizeParams);
       return true;
    }
