@@ -14,13 +14,25 @@ namespace Mile
       constexpr unsigned int PrefilteredEnvMapSize = 512;
       constexpr unsigned int PrefilteredEnvMapMaxMipLevels = 6 + 1;
       constexpr unsigned int BRDFLUTSize = 512;
+      constexpr unsigned int SSAOKernelSize = 64;
+      constexpr unsigned int SSAONoiseTextureSize = 4;
    }
 
-   struct RenderPassDataBase
+   struct MEAPI RenderPassDataBase
    {
       RendererDX11* Renderer = nullptr;
       VertexShaderResource* VertexShader = nullptr;
       PixelShaderResource* PixelShader = nullptr;
+   };
+
+   struct MEAPI SSAOParams
+   {
+      Vector4 Samples[RendererPBRConstants::SSAOKernelSize];
+      Vector2 NoiseScale;
+      std::vector<Vector4> Noise = std::vector<Vector4>(RendererPBRConstants::SSAONoiseTextureSize * RendererPBRConstants::SSAONoiseTextureSize);
+      float Radius = 2.0f;
+      float Bias = 0.01f;
+      float Magnitude = 1.1f;
    };
 
    class MEAPI RendererPBR : public RendererDX11
@@ -30,6 +42,14 @@ namespace Mile
       virtual ~RendererPBR();
 
       bool Init(Window& window) override;
+      bool SetupSSAOParams();
+
+      SSAOParams& GetSSAOParams() { return m_ssaoParams; }
+      SSAOParams GetSSAOParams() const { return m_ssaoParams; }
+      void SetSSAOParams(const SSAOParams& ssaoParams)
+      {
+         m_ssaoParams = ssaoParams;
+      }
 
    protected:
       void RenderImpl(const World& world) override;
@@ -67,6 +87,9 @@ namespace Mile
       VertexShaderDX11* m_gBufferToViewSpacePassVS;
       PixelShaderDX11* m_gBufferToViewSpacePassPS;
 
+      VertexShaderDX11* m_ssaoPassVS;
+      PixelShaderDX11* m_ssaoPassPS;
+
       /** External Resources; Don't delete in renderer! */
       /** Per Frame Datas */
       std::vector<CameraComponent*> m_cameras;
@@ -86,7 +109,8 @@ namespace Mile
       DynamicCubemapRef m_prefilteredEnvMap;
       RenderTargetRef   m_brdfLUT;
 
-      /** Deferred Shading */
+      /** Post-process */
+      SSAOParams m_ssaoParams;
 
    };
 }

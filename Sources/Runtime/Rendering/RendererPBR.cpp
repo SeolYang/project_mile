@@ -27,6 +27,8 @@
 #include "Resource/Material.h"
 #include "Resource/Texture2D.h"
 #include "MT/ThreadPool.h"
+#include <random>
+#include <iterator>
 
 namespace Mile
 {
@@ -75,6 +77,16 @@ namespace Mile
       Matrix View;
    };
 
+   DEFINE_CONSTANT_BUFFER(SSAOParamsConstantBuffer)
+   {
+      Vector4 Samples[64];
+      Vector2 NoiseScale;
+      Matrix Projection;
+      float Radius;
+      float Bias;
+      float Magnitude;
+   };
+
    RendererPBR::RendererPBR(Context* context, size_t maximumThreads) :
       RendererDX11(context, maximumThreads),
       m_targetCamera(nullptr),
@@ -101,12 +113,16 @@ namespace Mile
       m_lightingPassVS(nullptr),
       m_lightingPassPS(nullptr),
       m_gBufferToViewSpacePassVS(nullptr),
-      m_gBufferToViewSpacePassPS(nullptr)
+      m_gBufferToViewSpacePassPS(nullptr),
+      m_ssaoPassVS(nullptr),
+      m_ssaoPassPS(nullptr)
    {
    }
 
    RendererPBR::~RendererPBR()
    {
+      SafeDelete(m_ssaoPassPS);
+      SafeDelete(m_ssaoPassVS);
       SafeDelete(m_gBufferToViewSpacePassPS);
       SafeDelete(m_gBufferToViewSpacePassVS);
       SafeDelete(m_lightingPassPS);
@@ -277,6 +293,24 @@ namespace Mile
       if (m_gBufferToViewSpacePassPS == nullptr)
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load GBuffer convert pass pixel shader!"));
+         return false;
+      }
+
+      /** SSAO Pass Shaders  */
+      ShaderDescriptor ssaoPassDesc;
+      ssaoPassDesc.Renderer = this;
+      ssaoPassDesc.FilePath = TEXT("Contents/Shaders/SSAO.hlsl");
+      m_ssaoPassVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(ssaoPassDesc);
+      if (m_ssaoPassVS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load ssao pass vertex shader!"));
+         return false;
+      }
+
+      m_ssaoPassPS = Elaina::Realize<ShaderDescriptor, PixelShaderDX11>(ssaoPassDesc);
+      if (m_ssaoPassPS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load ssao pass pixel shader!"));
          return false;
       }
 
@@ -1304,7 +1338,165 @@ namespace Mile
          });
 
       auto convertGBufferPassData = gBufferConvertPass->GetData();
-      gBufferConvertPass->SetCullImmune(true);
+
+      /** SSAO */
+      struct SSAOPassData : public RenderPassDataBase
+      {
+         SamplerResource* Sampler = nullptr;
+         SamplerResource* NoiseSampler = nullptr;
+         SamplerResource* PositionSampler = nullptr;
+
+         ViewportResource* Viewport = nullptr;
+         DepthStencilStateResource* DepthDisableState = nullptr;
+
+         CameraRefResource* CamRef = nullptr;
+
+         ConstantBufferResource* SSAOParamsBuffer = nullptr;
+
+         Texture2dDX11Resource* NoiseTexture = nullptr;
+         GBufferResource* ViewspaceGBuffer = nullptr;
+
+         MeshRefResource* QuadMeshRef = nullptr;
+         RenderTargetResource* Output = nullptr;
+      };
+
+      auto ssaoPassVSRes = m_frameGraph.AddExternalPermanentResource(
+         "SSAOPassVertexShader",
+         ShaderDescriptor(),
+         m_ssaoPassVS);
+
+      auto ssaoPassPSRes = m_frameGraph.AddExternalPermanentResource(
+         "SSAOPassPixelShader",
+         ShaderDescriptor(),
+         m_ssaoPassPS);
+
+      auto ssaoPass = m_frameGraph.AddCallbackPass<SSAOPassData>(
+         "SSAOPass",
+         [&](Elaina::RenderPassBuilder& builder, SSAOPassData& data)
+         {
+            data.Renderer = this;
+            data.VertexShader = builder.Read(ssaoPassVSRes);
+            data.PixelShader = builder.Read(ssaoPassPSRes);
+
+            SamplerDescriptor samplerDesc;
+            samplerDesc.Renderer = this;
+            samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+            samplerDesc.AddressModeU = samplerDesc.AddressModeV = samplerDesc.AddressModeW = D3D11_TEXTURE_ADDRESS_CLAMP;
+            samplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
+            data.Sampler = builder.Create<SamplerResource>("SSAOSampler", samplerDesc);
+
+            SamplerDescriptor noiseSamplerDesc;
+            noiseSamplerDesc.Renderer = this;
+            noiseSamplerDesc.Filter = samplerDesc.Filter;
+            noiseSamplerDesc.AddressModeU = noiseSamplerDesc.AddressModeV = noiseSamplerDesc.AddressModeW = D3D11_TEXTURE_ADDRESS_WRAP;
+            noiseSamplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
+            data.NoiseSampler = builder.Create<SamplerResource>("NoiseSampler", noiseSamplerDesc);
+
+            data.PositionSampler = builder.Create<SamplerResource>("PositionSampler", samplerDesc);
+
+            data.Viewport = builder.Read(lightingPassData.Viewport);
+            data.DepthDisableState = builder.Read(lightingPassData.DepthDisableState);
+
+            data.CamRef = builder.Read(lightingPassData.CamRef);
+
+            ConstantBufferDescriptor ssaoParamsBufferDesc;
+            ssaoParamsBufferDesc.Renderer = this;
+            ssaoParamsBufferDesc.Size = sizeof(SSAOParamsConstantBuffer);
+            data.SSAOParamsBuffer = builder.Create<ConstantBufferResource>(
+               "SSAOParamsConstantBuffer",
+               ssaoParamsBufferDesc);
+
+            Texture2dDX11Descriptor noiseTexDesc;
+            noiseTexDesc.Renderer = this;
+            noiseTexDesc.Width = noiseTexDesc.Height = RendererPBRConstants::SSAONoiseTextureSize;
+            noiseTexDesc.Channels = 4;
+            noiseTexDesc.Format = static_cast<DXGI_FORMAT>(EColorFormat::R32G32B32A32_FLOAT);
+            noiseTexDesc.Data = (unsigned char*)(m_ssaoParams.Noise.data());
+            data.NoiseTexture = builder.Create<Texture2dDX11Resource>(
+               "SSAONoiseTexture",
+               noiseTexDesc);
+
+            data.ViewspaceGBuffer = builder.Read(convertGBufferPassData.ConvertedGBuffer);
+
+            data.QuadMeshRef = builder.Read(lightingPassData.QuadMeshRef);
+
+            RenderTargetDescriptor outputSSAODesc;
+            outputSSAODesc.Renderer = this;
+            outputSSAODesc.ResolutionReference = &m_outputRenderTarget;
+            outputSSAODesc.Format = EColorFormat::R32_FLOAT;
+            data.Output = builder.Create<RenderTargetResource>(
+               "SSAOOutput",
+               outputSSAODesc);
+         },
+         [](const SSAOPassData& data)
+         {
+            ID3D11DeviceContext& immeidiateContext = data.Renderer->GetImmediateContext();
+
+            immeidiateContext.ClearState();
+            immeidiateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            auto vertexShader = data.VertexShader->GetActual();
+            auto pixelShader = data.PixelShader->GetActual();
+            auto sampler = data.Sampler->GetActual();
+            auto noiseSampler = data.NoiseSampler->GetActual();
+            auto posSampler = data.PositionSampler->GetActual();
+            auto viewport = data.Viewport->GetActual();
+            auto depthDisableState = data.DepthDisableState->GetActual();
+            auto camera = *data.CamRef->GetActual();
+            auto ssaoParamsBuffer = data.SSAOParamsBuffer->GetActual();
+            auto noiseTexture = data.NoiseTexture->GetActual();
+            auto viewspaceGBuffer = data.ViewspaceGBuffer->GetActual();
+            auto quadMesh = *data.QuadMeshRef->GetActual();
+            auto output = data.Output->GetActual();
+
+            /** Binds */
+            vertexShader->Bind(immeidiateContext);
+            pixelShader->Bind(immeidiateContext);
+            sampler->Bind(immeidiateContext, 0);
+            noiseSampler->Bind(immeidiateContext, 1);
+            posSampler->Bind(immeidiateContext, 2);
+            viewport->Bind(immeidiateContext);
+            depthDisableState->Bind(immeidiateContext);
+            ssaoParamsBuffer->Bind(immeidiateContext, 0, EShaderType::PixelShader);
+            noiseTexture->Bind(immeidiateContext, 5, EShaderType::PixelShader);
+            viewspaceGBuffer->BindAsShaderResource(immeidiateContext, 0);
+            quadMesh->Bind(immeidiateContext, 0);
+            output->BindAsRenderTarget(immeidiateContext);
+
+            /** Render */
+            auto camTransform = camera->GetTransform();
+            Matrix projMatrix = Matrix::CreatePerspectiveProj(
+               camera->GetFov(),
+               (output->GetWidth() / (float)output->GetHeight()),
+               camera->GetNearPlane(),
+               camera->GetFarPlane());
+
+            auto ssaoParams = ((RendererPBR*)data.Renderer)->GetSSAOParams();
+
+            auto mappedSSAOParamsBuffer = ssaoParamsBuffer->Map<SSAOParamsConstantBuffer>(immeidiateContext);
+            ZeroMemory(mappedSSAOParamsBuffer, sizeof(SSAOParamsConstantBuffer));
+            std::copy(std::begin(ssaoParams.Samples), std::end(ssaoParams.Samples), std::begin((*mappedSSAOParamsBuffer).Samples));
+            (*mappedSSAOParamsBuffer).NoiseScale = ssaoParams.NoiseScale;
+            (*mappedSSAOParamsBuffer).Projection = projMatrix;
+            (*mappedSSAOParamsBuffer).Radius = ssaoParams.Radius;
+            (*mappedSSAOParamsBuffer).Bias = ssaoParams.Bias;
+            (*mappedSSAOParamsBuffer).Magnitude = ssaoParams.Magnitude;
+            ssaoParamsBuffer->UnMap(immeidiateContext);
+            immeidiateContext.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+
+            /** Unbinds */
+            output->UnbindRenderTarget(immeidiateContext);
+            viewspaceGBuffer->UnbindShaderResource(immeidiateContext);
+            noiseTexture->Unbind(immeidiateContext);
+            ssaoParamsBuffer->Unbind(immeidiateContext);
+            posSampler->Unbind(immeidiateContext);
+            noiseSampler->Unbind(immeidiateContext);
+            sampler->Unbind(immeidiateContext);
+            pixelShader->Unbind(immeidiateContext);
+            vertexShader->Unbind(immeidiateContext);
+         });
+
+      ssaoPass->SetCullImmune(true);
 
       m_frameGraph.Compile();
 
@@ -1313,6 +1505,49 @@ namespace Mile
       visualizeParams.RankSep = 2.0;
       m_frameGraph.ExportVisualization("RendererPBR.dot", visualizeParams);
       return true;
+   }
+
+   bool RendererPBR::SetupSSAOParams()
+   {
+      if (m_outputRenderTarget != nullptr)
+      {
+         unsigned int width = m_outputRenderTarget->GetWidth();
+         unsigned int height = m_outputRenderTarget->GetHeight();
+         m_ssaoParams.NoiseScale = Vector2(width / (float)RendererPBRConstants::SSAONoiseTextureSize, height / (float)RendererPBRConstants::SSAONoiseTextureSize);
+
+         std::uniform_real_distribution<float> randomFloats(0.0f, 1.0f);
+         std::default_random_engine generator;
+         for (unsigned int idx = 0; idx < RendererPBRConstants::SSAOKernelSize; ++idx)
+         {
+            Vector4 sample{
+               randomFloats(generator) * 2.0f - 1.0f,
+               randomFloats(generator) * 2.0f - 1.0f,
+               randomFloats(generator) /* Hemisphere : z = [0, 1] */,
+               0.0f };
+            sample.Normalize();
+            sample *= randomFloats(generator);
+
+            float scale = (float)idx / (float)RendererPBRConstants::SSAOKernelSize;
+            scale = Math::Lerp(0.1f, 1.0f, scale * scale);
+            sample *= scale;
+
+            m_ssaoParams.Samples[idx] = sample;
+         }
+
+         size_t noiseTexRes2 = (RendererPBRConstants::SSAONoiseTextureSize * RendererPBRConstants::SSAONoiseTextureSize);
+         for (size_t idx = 0; idx < noiseTexRes2; ++idx)
+         {
+            m_ssaoParams.Noise[idx] = Vector4(
+               randomFloats(generator) * 2.0f - 1.0f,
+               randomFloats(generator) * 2.0f - 1.0f,
+               0.0f,
+               0.0f);
+         }
+
+         return true;
+      }
+
+      return false;
    }
 
    void RendererPBR::RenderImpl(const World& world)
@@ -1384,6 +1619,11 @@ namespace Mile
 #else
             m_outputRenderTarget = &GetBackBuffer();
 #endif
+         }
+
+         if (!SetupSSAOParams())
+         {
+            ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to setup ssao params!"));
          }
 
          m_frameGraph.Execute();
