@@ -1,7 +1,7 @@
 digraph FrameGraph 
 {
 splines=true
-graph [pad="0.1", nodestep="0.6", ranksep="3.5"]
+graph [pad="0.1", nodestep="0.6", ranksep="3"]
 rankdir = LR
 bgcolor = black
 node [shape=rectangle, fontname="arial", fontsize=12, fontcolor=black]
@@ -23,19 +23,22 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nRefs : 2", style=filled, fillcolor=darkorange];
 "LightingPass" [label="LightingPass
 \nDistribution Group : 0
-\nRefs : 0", style=filled, fillcolor=darkorange];
+\nRefs : 1", style=filled, fillcolor=darkorange];
 "ConvertGBufferToViewSpacePass" [label="ConvertGBufferToViewSpacePass
 \nDistribution Group : 0
 \nRefs : 1", style=filled, fillcolor=darkorange];
 "SSAOPass" [label="SSAOPass
 \nDistribution Group : 0
-\nRefs : 2", style=filled, fillcolor=darkorange];
+\nRefs : 3", style=filled, fillcolor=darkorange];
 "SSAOBlurPass" [label="SSAOBlurPass
+\nDistribution Group : 0
+\nRefs : 1", style=filled, fillcolor=darkorange];
+"AmbientEmissivePass" [label="AmbientEmissivePass
 \nDistribution Group : 0
 \nRefs : 0", style=filled, fillcolor=darkorange];
 "CameraRef" [label="CameraRef
 \nID : 0
-\nRefs : 4
+\nRefs : 5
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "Lights" [label="Lights
 \nID : 1
@@ -75,11 +78,11 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nTransient", style=filled, fillcolor=peachpuff]
 "GBuffer" [label="GBuffer
 \nID : 10
-\nRefs : 2
+\nRefs : 3
 \nTransient", style=filled, fillcolor=peachpuff]
 "Viewport" [label="Viewport
 \nID : 11
-\nRefs : 4
+\nRefs : 5
 \nTransient", style=filled, fillcolor=peachpuff]
 "DefaultRasterizerState" [label="DefaultRasterizerState
 \nID : 12
@@ -163,7 +166,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "IrradianceMapRef" [label="IrradianceMapRef
 \nID : 32
-\nRefs : 0
+\nRefs : 1
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "PrefilterEnvironmentMapPassVertexShader" [label="PrefilterEnvironmentMapPassVertexShader
 \nID : 33
@@ -175,7 +178,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "PrefilteredEnvironmentMapRef" [label="PrefilteredEnvironmentMapRef
 \nID : 35
-\nRefs : 0
+\nRefs : 1
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "Viewport_Mip0" [label="Viewport_Mip0
 \nID : 36
@@ -227,15 +230,15 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "BrdfLUTRef" [label="BrdfLUTRef
 \nID : 48
-\nRefs : 0
+\nRefs : 1
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "QuadMeshRef" [label="QuadMeshRef
 \nID : 49
-\nRefs : 5
+\nRefs : 6
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "DepthDisableState" [label="DepthDisableState
 \nID : 50
-\nRefs : 4
+\nRefs : 5
 \nTransient", style=filled, fillcolor=peachpuff]
 "LUTViewport" [label="LUTViewport
 \nID : 51
@@ -267,7 +270,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nTransient", style=filled, fillcolor=peachpuff]
 "AdditiveBlendState" [label="AdditiveBlendState
 \nID : 58
-\nRefs : 0
+\nRefs : 1
 \nTransient", style=filled, fillcolor=peachpuff]
 "SourceHDRBuffer" [label="SourceHDRBuffer
 \nID : 59
@@ -301,40 +304,72 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nID : 66
 \nRefs : 1
 \nExternal Permanent", style=filled, fillcolor=palegreen]
-"SSAOSampler" [label="SSAOSampler
+"SSAOEnabledRef" [label="SSAOEnabledRef
 \nID : 67
+\nRefs : 2
+\nTransient", style=filled, fillcolor=peachpuff]
+"SSAOSampler" [label="SSAOSampler
+\nID : 68
 \nRefs : 1
 \nTransient", style=filled, fillcolor=peachpuff]
 "NoiseSampler" [label="NoiseSampler
-\nID : 68
-\nRefs : 0
-\nTransient", style=filled, fillcolor=peachpuff]
-"PositionSampler" [label="PositionSampler
 \nID : 69
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"SSAOParamsConstantBuffer" [label="SSAOParamsConstantBuffer
+"PositionSampler" [label="PositionSampler
 \nID : 70
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"SSAONoiseTexture" [label="SSAONoiseTexture
+"SSAOParamsConstantBuffer" [label="SSAOParamsConstantBuffer
 \nID : 71
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"SSAOOutput" [label="SSAOOutput
+"SSAONoiseTexture" [label="SSAONoiseTexture
 \nID : 72
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
+"SSAOOutput" [label="SSAOOutput
+\nID : 73
 \nRefs : 1
 \nTransient", style=filled, fillcolor=peachpuff]
 "SSAOBlurPassVertexShader" [label="SSAOBlurPassVertexShader
-\nID : 73
-\nRefs : 1
-\nExternal Permanent", style=filled, fillcolor=palegreen]
-"SSAOBlurPassPixelShader" [label="SSAOBlurPassPixelShader
 \nID : 74
 \nRefs : 1
 \nExternal Permanent", style=filled, fillcolor=palegreen]
-"BlurredSSAO" [label="BlurredSSAO
+"SSAOBlurPassPixelShader" [label="SSAOBlurPassPixelShader
 \nID : 75
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"BlurredSSAO" [label="BlurredSSAO
+\nID : 76
+\nRefs : 1
+\nTransient", style=filled, fillcolor=peachpuff]
+"AmbientEmissivePassVertexShader" [label="AmbientEmissivePassVertexShader
+\nID : 77
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"AmbientEmissivePassPixelShader" [label="AmbientEmissivePassPixelShader
+\nID : 78
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"AnisoSampler" [label="AnisoSampler
+\nID : 79
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
+"LinearClampSampler" [label="LinearClampSampler
+\nID : 80
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
+"SSAOSampler" [label="SSAOSampler
+\nID : 81
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
+"AmbientEmissiveParamsConstantBuffer" [label="AmbientEmissiveParamsConstantBuffer
+\nID : 82
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
+"GlobalAOFactorRef" [label="GlobalAOFactorRef
+\nID : 83
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
 "Geometry Pass" -> { "AnisoWrapAlwaysSampler" "GeometryPassTransform" "GeometryPassPackedMaterialParams" "GBuffer" "Viewport" "DefaultRasterizerState" } [color=aquamarine]
@@ -351,12 +386,14 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "LightingPass" -> { } [color=firebrick1]
 "ConvertGBufferToViewSpacePass" -> { "PointClampSampler" "ConvertParamsConstantBuffer" "ViewSpaceGBuffer" } [color=aquamarine]
 "ConvertGBufferToViewSpacePass" -> { } [color=firebrick1]
-"SSAOPass" -> { "SSAOSampler" "NoiseSampler" "PositionSampler" "SSAOParamsConstantBuffer" "SSAONoiseTexture" "SSAOOutput" } [color=aquamarine]
+"SSAOPass" -> { "SSAOEnabledRef" "SSAOSampler" "NoiseSampler" "PositionSampler" "SSAOParamsConstantBuffer" "SSAONoiseTexture" "SSAOOutput" } [color=aquamarine]
 "SSAOPass" -> { } [color=firebrick1]
 "SSAOBlurPass" -> { "BlurredSSAO" } [color=aquamarine]
 "SSAOBlurPass" -> { } [color=firebrick1]
+"AmbientEmissivePass" -> { "AnisoSampler" "LinearClampSampler" "SSAOSampler" "AmbientEmissiveParamsConstantBuffer" "GlobalAOFactorRef" } [color=aquamarine]
+"AmbientEmissivePass" -> { "SourceHDRBuffer" } [color=firebrick1]
 
-"CameraRef" -> { "Geometry Pass" "LightingPass" "ConvertGBufferToViewSpacePass" "SSAOPass" } [color=yellow]
+"CameraRef" -> { "Geometry Pass" "LightingPass" "ConvertGBufferToViewSpacePass" "SSAOPass" "AmbientEmissivePass" } [color=yellow]
 "Lights" -> { } [color=yellow]
 "Meshes" -> { } [color=yellow]
 "MaterialMap" -> { "Geometry Pass" } [color=yellow]
@@ -366,8 +403,8 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "AnisoWrapAlwaysSampler" -> { } [color=yellow]
 "GeometryPassTransform" -> { } [color=yellow]
 "GeometryPassPackedMaterialParams" -> { } [color=yellow]
-"GBuffer" -> { "LightingPass" "ConvertGBufferToViewSpacePass" } [color=yellow]
-"Viewport" -> { "LightingPass" "ConvertGBufferToViewSpacePass" "SSAOPass" "SSAOBlurPass" } [color=yellow]
+"GBuffer" -> { "LightingPass" "ConvertGBufferToViewSpacePass" "AmbientEmissivePass" } [color=yellow]
+"Viewport" -> { "LightingPass" "ConvertGBufferToViewSpacePass" "SSAOPass" "SSAOBlurPass" "AmbientEmissivePass" } [color=yellow]
 "DefaultRasterizerState" -> { } [color=yellow]
 "SkyboxTextureRef" -> { "ConvertTextureToCubemap" } [color=yellow]
 "CubeMeshRef" -> { "ConvertTextureToCubemap" "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
@@ -388,10 +425,10 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "DepthLessEqualState" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
 "DiffuseIntegralPassVertexShader" -> { "DiffuseConvolutionPass" } [color=yellow]
 "DiffuseIntegralPassPixelShader" -> { "DiffuseConvolutionPass" } [color=yellow]
-"IrradianceMapRef" -> { } [color=yellow]
+"IrradianceMapRef" -> { "AmbientEmissivePass" } [color=yellow]
 "PrefilterEnvironmentMapPassVertexShader" -> { "PrefilterEnvironmentMapPass" } [color=yellow]
 "PrefilterEnvironmentMapPassPixelShader" -> { "PrefilterEnvironmentMapPass" } [color=yellow]
-"PrefilteredEnvironmentMapRef" -> { } [color=yellow]
+"PrefilteredEnvironmentMapRef" -> { "AmbientEmissivePass" } [color=yellow]
 "Viewport_Mip0" -> { } [color=yellow]
 "Viewport_Mip1" -> { } [color=yellow]
 "Viewport_Mip2" -> { } [color=yellow]
@@ -404,9 +441,9 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "PrefilterParamsConstantBuffer" -> { } [color=yellow]
 "IntegrateBRDFsPassVertexShader" -> { "IntegrateBRDFsPass" } [color=yellow]
 "IntegrateBRDFsPassPixelShader" -> { "IntegrateBRDFsPass" } [color=yellow]
-"BrdfLUTRef" -> { } [color=yellow]
-"QuadMeshRef" -> { "IntegrateBRDFsPass" "LightingPass" "ConvertGBufferToViewSpacePass" "SSAOPass" "SSAOBlurPass" } [color=yellow]
-"DepthDisableState" -> { "LightingPass" "ConvertGBufferToViewSpacePass" "SSAOPass" "SSAOBlurPass" } [color=yellow]
+"BrdfLUTRef" -> { "AmbientEmissivePass" } [color=yellow]
+"QuadMeshRef" -> { "IntegrateBRDFsPass" "LightingPass" "ConvertGBufferToViewSpacePass" "SSAOPass" "SSAOBlurPass" "AmbientEmissivePass" } [color=yellow]
+"DepthDisableState" -> { "LightingPass" "ConvertGBufferToViewSpacePass" "SSAOPass" "SSAOBlurPass" "AmbientEmissivePass" } [color=yellow]
 "LUTViewport" -> { } [color=yellow]
 "LightingPassVertexShader" -> { "LightingPass" } [color=yellow]
 "LightingPassPixelShader" -> { "LightingPass" } [color=yellow]
@@ -414,7 +451,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "AnistropicBorderSampler" -> { } [color=yellow]
 "CameraParamsConstantBuffer" -> { } [color=yellow]
 "LightParamsConstantBuffer" -> { } [color=yellow]
-"AdditiveBlendState" -> { } [color=yellow]
+"AdditiveBlendState" -> { "AmbientEmissivePass" } [color=yellow]
 "SourceHDRBuffer" -> { } [color=yellow]
 "ConvertGBufferToViewSpaceVertexShader" -> { "ConvertGBufferToViewSpacePass" } [color=yellow]
 "ConvertGBufferToViewSpacePixelShader" -> { "ConvertGBufferToViewSpacePass" } [color=yellow]
@@ -423,6 +460,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "ViewSpaceGBuffer" -> { "SSAOPass" } [color=yellow]
 "SSAOPassVertexShader" -> { "SSAOPass" } [color=yellow]
 "SSAOPassPixelShader" -> { "SSAOPass" } [color=yellow]
+"SSAOEnabledRef" -> { "SSAOBlurPass" "AmbientEmissivePass" } [color=yellow]
 "SSAOSampler" -> { "SSAOBlurPass" } [color=yellow]
 "NoiseSampler" -> { } [color=yellow]
 "PositionSampler" -> { } [color=yellow]
@@ -431,5 +469,12 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "SSAOOutput" -> { "SSAOBlurPass" } [color=yellow]
 "SSAOBlurPassVertexShader" -> { "SSAOBlurPass" } [color=yellow]
 "SSAOBlurPassPixelShader" -> { "SSAOBlurPass" } [color=yellow]
-"BlurredSSAO" -> { } [color=yellow]
+"BlurredSSAO" -> { "AmbientEmissivePass" } [color=yellow]
+"AmbientEmissivePassVertexShader" -> { "AmbientEmissivePass" } [color=yellow]
+"AmbientEmissivePassPixelShader" -> { "AmbientEmissivePass" } [color=yellow]
+"AnisoSampler" -> { } [color=yellow]
+"LinearClampSampler" -> { } [color=yellow]
+"SSAOSampler" -> { } [color=yellow]
+"AmbientEmissiveParamsConstantBuffer" -> { } [color=yellow]
+"GlobalAOFactorRef" -> { } [color=yellow]
 }

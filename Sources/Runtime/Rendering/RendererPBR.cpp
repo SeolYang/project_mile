@@ -87,6 +87,13 @@ namespace Mile
       float Magnitude;
    };
 
+   DEFINE_CONSTANT_BUFFER(AmbientParamsConstantBuffer)
+   {
+      Vector3 CameraPos;
+      float Ao;
+      unsigned int SSAOEnabled;
+   };
+
    RendererPBR::RendererPBR(Context* context, size_t maximumThreads) :
       RendererDX11(context, maximumThreads),
       m_targetCamera(nullptr),
@@ -117,12 +124,18 @@ namespace Mile
       m_ssaoPassVS(nullptr),
       m_ssaoPassPS(nullptr),
       m_ssaoBlurPassVS(nullptr),
-      m_ssaoBlurPassPS(nullptr)
+      m_ssaoBlurPassPS(nullptr),
+      m_bSSAOEnabled(true),
+      m_ambientEmissivePassVS(nullptr),
+      m_ambientEmissivePassPS(nullptr),
+      m_globalAOFactor(1.0f)
    {
    }
 
    RendererPBR::~RendererPBR()
    {
+      SafeDelete(m_ambientEmissivePassPS);
+      SafeDelete(m_ambientEmissivePassVS);
       SafeDelete(m_ssaoBlurPassPS);
       SafeDelete(m_ssaoBlurPassVS);
       SafeDelete(m_ssaoPassPS);
@@ -333,6 +346,24 @@ namespace Mile
       if (m_ssaoBlurPassPS == nullptr)
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load ssao blur pass pixel shader!"));
+         return false;
+      }
+
+      /** Ambient Emissive Pass Shaders  */
+      ShaderDescriptor ambientEmissivePassDesc;
+      ambientEmissivePassDesc.Renderer = this;
+      ambientEmissivePassDesc.FilePath = TEXT("Contents/Shaders/AmbientEmissivePass.hlsl");
+      m_ambientEmissivePassVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(ambientEmissivePassDesc);
+      if (m_ambientEmissivePassVS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load ambient emissive pass vertex shader!"));
+         return false;
+      }
+
+      m_ambientEmissivePassPS = Elaina::Realize<ShaderDescriptor, PixelShaderDX11>(ambientEmissivePassDesc);
+      if (m_ambientEmissivePassPS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load ambient emissive pass pixel shader!"));
          return false;
       }
 
@@ -1364,6 +1395,7 @@ namespace Mile
       /** SSAO */
       struct SSAOPassData : public RenderPassDataBase
       {
+         BoolRefResource* SSAOEnabledRef = nullptr;
          SamplerResource* Sampler = nullptr;
          SamplerResource* NoiseSampler = nullptr;
          SamplerResource* PositionSampler = nullptr;
@@ -1399,6 +1431,10 @@ namespace Mile
             data.Renderer = this;
             data.VertexShader = builder.Read(ssaoPassVSRes);
             data.PixelShader = builder.Read(ssaoPassPSRes);
+
+            BoolRefDescriptor ssaoEnabledDesc;
+            ssaoEnabledDesc.Reference = &m_bSSAOEnabled;
+            data.SSAOEnabledRef = builder.Create<BoolRefResource>("SSAOEnabledRef", ssaoEnabledDesc);
 
             SamplerDescriptor samplerDesc;
             samplerDesc.Renderer = this;
@@ -1452,70 +1488,74 @@ namespace Mile
          },
          [](const SSAOPassData& data)
          {
-            ID3D11DeviceContext& immeidiateContext = data.Renderer->GetImmediateContext();
+            bool bSSAOEnabled = *(*data.SSAOEnabledRef->GetActual());
+            if (bSSAOEnabled)
+            {
+               ID3D11DeviceContext& immeidiateContext = data.Renderer->GetImmediateContext();
 
-            immeidiateContext.ClearState();
-            immeidiateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+               immeidiateContext.ClearState();
+               immeidiateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-            auto vertexShader = data.VertexShader->GetActual();
-            auto pixelShader = data.PixelShader->GetActual();
-            auto sampler = data.Sampler->GetActual();
-            auto noiseSampler = data.NoiseSampler->GetActual();
-            auto posSampler = data.PositionSampler->GetActual();
-            auto viewport = data.Viewport->GetActual();
-            auto depthDisableState = data.DepthDisableState->GetActual();
-            auto camera = *data.CamRef->GetActual();
-            auto ssaoParamsBuffer = data.SSAOParamsBuffer->GetActual();
-            auto noiseTexture = data.NoiseTexture->GetActual();
-            auto viewspaceGBuffer = data.ViewspaceGBuffer->GetActual();
-            auto quadMesh = *data.QuadMeshRef->GetActual();
-            auto output = data.Output->GetActual();
+               auto vertexShader = data.VertexShader->GetActual();
+               auto pixelShader = data.PixelShader->GetActual();
+               auto sampler = data.Sampler->GetActual();
+               auto noiseSampler = data.NoiseSampler->GetActual();
+               auto posSampler = data.PositionSampler->GetActual();
+               auto viewport = data.Viewport->GetActual();
+               auto depthDisableState = data.DepthDisableState->GetActual();
+               auto camera = *data.CamRef->GetActual();
+               auto ssaoParamsBuffer = data.SSAOParamsBuffer->GetActual();
+               auto noiseTexture = data.NoiseTexture->GetActual();
+               auto viewspaceGBuffer = data.ViewspaceGBuffer->GetActual();
+               auto quadMesh = *data.QuadMeshRef->GetActual();
+               auto output = data.Output->GetActual();
 
-            /** Binds */
-            vertexShader->Bind(immeidiateContext);
-            pixelShader->Bind(immeidiateContext);
-            sampler->Bind(immeidiateContext, 0);
-            noiseSampler->Bind(immeidiateContext, 1);
-            posSampler->Bind(immeidiateContext, 2);
-            viewport->Bind(immeidiateContext);
-            depthDisableState->Bind(immeidiateContext);
-            ssaoParamsBuffer->Bind(immeidiateContext, 0, EShaderType::PixelShader);
-            noiseTexture->Bind(immeidiateContext, 5, EShaderType::PixelShader);
-            viewspaceGBuffer->BindAsShaderResource(immeidiateContext, 0);
-            quadMesh->Bind(immeidiateContext, 0);
-            output->BindAsRenderTarget(immeidiateContext);
+               /** Binds */
+               vertexShader->Bind(immeidiateContext);
+               pixelShader->Bind(immeidiateContext);
+               sampler->Bind(immeidiateContext, 0);
+               noiseSampler->Bind(immeidiateContext, 1);
+               posSampler->Bind(immeidiateContext, 2);
+               viewport->Bind(immeidiateContext);
+               depthDisableState->Bind(immeidiateContext);
+               ssaoParamsBuffer->Bind(immeidiateContext, 0, EShaderType::PixelShader);
+               noiseTexture->Bind(immeidiateContext, 5, EShaderType::PixelShader);
+               viewspaceGBuffer->BindAsShaderResource(immeidiateContext, 0);
+               quadMesh->Bind(immeidiateContext, 0);
+               output->BindAsRenderTarget(immeidiateContext);
 
-            /** Render */
-            auto camTransform = camera->GetTransform();
-            Matrix projMatrix = Matrix::CreatePerspectiveProj(
-               camera->GetFov(),
-               (output->GetWidth() / (float)output->GetHeight()),
-               camera->GetNearPlane(),
-               camera->GetFarPlane());
+               /** Render */
+               auto camTransform = camera->GetTransform();
+               Matrix projMatrix = Matrix::CreatePerspectiveProj(
+                  camera->GetFov(),
+                  (output->GetWidth() / (float)output->GetHeight()),
+                  camera->GetNearPlane(),
+                  camera->GetFarPlane());
 
-            auto ssaoParams = ((RendererPBR*)data.Renderer)->GetSSAOParams();
+               auto ssaoParams = ((RendererPBR*)data.Renderer)->GetSSAOParams();
 
-            auto mappedSSAOParamsBuffer = ssaoParamsBuffer->Map<SSAOParamsConstantBuffer>(immeidiateContext);
-            ZeroMemory(mappedSSAOParamsBuffer, sizeof(SSAOParamsConstantBuffer));
-            std::copy(std::begin(ssaoParams.Samples), std::end(ssaoParams.Samples), std::begin((*mappedSSAOParamsBuffer).Samples));
-            (*mappedSSAOParamsBuffer).NoiseScale = ssaoParams.NoiseScale;
-            (*mappedSSAOParamsBuffer).Projection = projMatrix;
-            (*mappedSSAOParamsBuffer).Radius = ssaoParams.Radius;
-            (*mappedSSAOParamsBuffer).Bias = ssaoParams.Bias;
-            (*mappedSSAOParamsBuffer).Magnitude = ssaoParams.Magnitude;
-            ssaoParamsBuffer->UnMap(immeidiateContext);
-            immeidiateContext.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+               auto mappedSSAOParamsBuffer = ssaoParamsBuffer->Map<SSAOParamsConstantBuffer>(immeidiateContext);
+               ZeroMemory(mappedSSAOParamsBuffer, sizeof(SSAOParamsConstantBuffer));
+               std::copy(std::begin(ssaoParams.Samples), std::end(ssaoParams.Samples), std::begin((*mappedSSAOParamsBuffer).Samples));
+               (*mappedSSAOParamsBuffer).NoiseScale = ssaoParams.NoiseScale;
+               (*mappedSSAOParamsBuffer).Projection = projMatrix;
+               (*mappedSSAOParamsBuffer).Radius = ssaoParams.Radius;
+               (*mappedSSAOParamsBuffer).Bias = ssaoParams.Bias;
+               (*mappedSSAOParamsBuffer).Magnitude = ssaoParams.Magnitude;
+               ssaoParamsBuffer->UnMap(immeidiateContext);
+               immeidiateContext.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
 
-            /** Unbinds */
-            output->UnbindRenderTarget(immeidiateContext);
-            viewspaceGBuffer->UnbindShaderResource(immeidiateContext);
-            noiseTexture->Unbind(immeidiateContext);
-            ssaoParamsBuffer->Unbind(immeidiateContext);
-            posSampler->Unbind(immeidiateContext);
-            noiseSampler->Unbind(immeidiateContext);
-            sampler->Unbind(immeidiateContext);
-            pixelShader->Unbind(immeidiateContext);
-            vertexShader->Unbind(immeidiateContext);
+               /** Unbinds */
+               output->UnbindRenderTarget(immeidiateContext);
+               viewspaceGBuffer->UnbindShaderResource(immeidiateContext);
+               noiseTexture->Unbind(immeidiateContext);
+               ssaoParamsBuffer->Unbind(immeidiateContext);
+               posSampler->Unbind(immeidiateContext);
+               noiseSampler->Unbind(immeidiateContext);
+               sampler->Unbind(immeidiateContext);
+               pixelShader->Unbind(immeidiateContext);
+               vertexShader->Unbind(immeidiateContext);
+            }
          });
 
       auto ssaoPassData = ssaoPass->GetData();
@@ -1523,6 +1563,8 @@ namespace Mile
       /** SSAO Blur */
       struct SSAOBlurPassData : public RenderPassDataBase
       {
+         BoolRefResource* SSAOEnabledRef = nullptr;
+
          SamplerResource* Sampler = nullptr;
 
          RenderTargetResource* Source = nullptr;
@@ -1544,6 +1586,8 @@ namespace Mile
             data.VertexShader = builder.Read(ssaoBlurPassVSRes);
             data.PixelShader = builder.Read(ssaoBlurPassPSRes);
 
+            data.SSAOEnabledRef = builder.Read(ssaoPassData.SSAOEnabledRef);
+
             data.Sampler = builder.Read(ssaoPassData.Sampler);
 
             data.Source = builder.Read(ssaoPassData.Output);
@@ -1560,50 +1604,206 @@ namespace Mile
          },
          [](const SSAOBlurPassData& data)
          {
-            ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
-            context.ClearState();
-            context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+            bool bSSAOEnabled = *(*data.SSAOEnabledRef->GetActual());
+            if (bSSAOEnabled)
+            {
+               ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
+               context.ClearState();
+               context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-            auto vertexShader = data.VertexShader->GetActual();
-            auto pixelShader = data.PixelShader->GetActual();
-            auto sampler = data.Sampler->GetActual();
-            auto source = data.Source->GetActual();
-            auto viewport = data.Viewport->GetActual();
-            auto depthDisableState = data.DepthDisableState->GetActual();
-            auto quadMesh = *data.QuadMeshRef->GetActual();
-            auto output = data.Output->GetActual();
+               auto vertexShader = data.VertexShader->GetActual();
+               auto pixelShader = data.PixelShader->GetActual();
+               auto sampler = data.Sampler->GetActual();
+               auto source = data.Source->GetActual();
+               auto viewport = data.Viewport->GetActual();
+               auto depthDisableState = data.DepthDisableState->GetActual();
+               auto quadMesh = *data.QuadMeshRef->GetActual();
+               auto output = data.Output->GetActual();
 
-            /** Binds */
-            vertexShader->Bind(context);
-            pixelShader->Bind(context);
-            sampler->Bind(context, 0);
-            source->BindAsShaderResource(context, 0, EShaderType::PixelShader);
-            viewport->Bind(context);
-            depthDisableState->Bind(context);
-            output->BindAsRenderTarget(context);
+               /** Binds */
+               vertexShader->Bind(context);
+               pixelShader->Bind(context);
+               sampler->Bind(context, 0);
+               source->BindAsShaderResource(context, 0, EShaderType::PixelShader);
+               viewport->Bind(context);
+               depthDisableState->Bind(context);
+               output->BindAsRenderTarget(context);
 
-            quadMesh->Bind(context, 0);
+               quadMesh->Bind(context, 0);
 
-            /** Render */
-            context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+               /** Render */
+               context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
 
-            /** Unbinds */
-            output->UnbindRenderTarget(context);
-            source->UnbindShaderResource(context);
-            sampler->Unbind(context);
-            pixelShader->Unbind(context);
-            vertexShader->Unbind(context);
+               /** Unbinds */
+               output->UnbindRenderTarget(context);
+               source->UnbindShaderResource(context);
+               sampler->Unbind(context);
+               pixelShader->Unbind(context);
+               vertexShader->Unbind(context);
+            }
          });
 
       ssaoBlurPass->SetCullImmune(true);
 
       auto ssaoBlurPassData = ssaoBlurPass->GetData();
 
+      /** Ambient-Emissive Pass */
+      struct AmbientEmissivePassData : public RenderPassDataBase
+      {
+         ViewportResource* Viewport = nullptr;
+         DepthStencilStateResource* DepthDisableState = nullptr;
+         BlendStateResource* AdditiveBlendState = nullptr;
+         SamplerResource* AnisoSampler = nullptr;
+         SamplerResource* LinearClampSampler = nullptr;
+         SamplerResource* SSAOSampler = nullptr;
+         GBufferResource* GBuffer = nullptr;
+         DynamicCubemapRefResource* IrradianceMapRef = nullptr;
+         DynamicCubemapRefResource* PrefilteredMapRef = nullptr;
+         RenderTargetRefResource* BrdfLUTRef = nullptr;
+         CameraRefResource* CamRef = nullptr;
+         ConstantBufferResource* ParamsBuffer = nullptr;
+         BoolRefResource* SSAOEnabledRef = nullptr;
+         RenderTargetResource* BlurredSSAO = nullptr;
+         FloatRefResource* GlobalAOFactorRef = nullptr;
+         MeshRefResource* QuadMeshRef = nullptr;
+         RenderTargetResource* Output = nullptr;
+      };
+
+      auto ambientEmissivePassVSRes = 
+         m_frameGraph.AddExternalPermanentResource("AmbientEmissivePassVertexShader", ShaderDescriptor(), m_ambientEmissivePassVS);
+      auto ambientEmissivePassPSRes =
+         m_frameGraph.AddExternalPermanentResource("AmbientEmissivePassPixelShader", ShaderDescriptor(), m_ambientEmissivePassPS);
+
+      auto ambientEmissivePass = m_frameGraph.AddCallbackPass<AmbientEmissivePassData>(
+         "AmbientEmissivePass",
+         [&](Elaina::RenderPassBuilder& builder, AmbientEmissivePassData& data)
+         {
+            data.Renderer = this;
+            data.VertexShader = builder.Read(ambientEmissivePassVSRes);
+            data.PixelShader = builder.Read(ambientEmissivePassPSRes);
+
+            data.Viewport = builder.Read(ssaoBlurPassData.Viewport);
+            data.DepthDisableState = builder.Read(ssaoBlurPassData.DepthDisableState);
+            data.AdditiveBlendState = builder.Read(lightingPassData.AdditiveBlendState);
+
+            SamplerDescriptor anisoSamplerDesc;
+            anisoSamplerDesc.Renderer = this;
+            anisoSamplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+            anisoSamplerDesc.AddressModeU = anisoSamplerDesc.AddressModeV = anisoSamplerDesc.AddressModeW = D3D11_TEXTURE_ADDRESS_WRAP;
+            anisoSamplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
+            data.AnisoSampler = builder.Create<SamplerResource>("AnisoSampler", anisoSamplerDesc);
+
+            SamplerDescriptor linClampSamplerDesc;
+            linClampSamplerDesc.Renderer = this;
+            linClampSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+            linClampSamplerDesc.AddressModeU = linClampSamplerDesc.AddressModeV = linClampSamplerDesc.AddressModeW = D3D11_TEXTURE_ADDRESS_WRAP;
+            linClampSamplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
+            data.LinearClampSampler = builder.Create<SamplerResource>("LinearClampSampler", linClampSamplerDesc);
+
+            SamplerDescriptor ssaoSamplerDesc;
+            ssaoSamplerDesc.Renderer = this;
+            ssaoSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+            ssaoSamplerDesc.AddressModeU = ssaoSamplerDesc.AddressModeV = ssaoSamplerDesc.AddressModeW = D3D11_TEXTURE_ADDRESS_WRAP;
+            ssaoSamplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
+            data.SSAOSampler = builder.Create<SamplerResource>("SSAOSampler", anisoSamplerDesc);
+
+            data.GBuffer = builder.Read(geometryPassData.OutputGBuffer);
+            data.IrradianceMapRef = builder.Read(diffuseIntegralPassData.OutputIrradianceMapRef);
+            data.PrefilteredMapRef = builder.Read(prefilterEnvMapPassData.OutputPrefilteredEnvMapRef);
+            data.BrdfLUTRef = builder.Read(integrateBRDFPassData.OutputBrdfLUTRef);
+            data.CamRef = builder.Read(ssaoPassData.CamRef);
+
+            ConstantBufferDescriptor paramsBufferDesc;
+            paramsBufferDesc.Renderer = this;
+            paramsBufferDesc.Size = sizeof(AmbientParamsConstantBuffer);
+            data.ParamsBuffer = builder.Create<ConstantBufferResource>("AmbientEmissiveParamsConstantBuffer", paramsBufferDesc);
+            data.SSAOEnabledRef = builder.Read(ssaoBlurPassData.SSAOEnabledRef);
+            data.BlurredSSAO = builder.Read(ssaoBlurPassData.Output);
+
+            FloatRefDescriptor globalAOFactorRefDesc;
+            globalAOFactorRefDesc.Reference = &m_globalAOFactor;
+            data.GlobalAOFactorRef = builder.Create<FloatRefResource>("GlobalAOFactorRef", globalAOFactorRefDesc);
+
+            data.QuadMeshRef = builder.Read(ssaoBlurPassData.QuadMeshRef);
+
+            data.Output = builder.Write(lightingPassData.OutputHDRBuffer);
+         },
+         [](const AmbientEmissivePassData& data)
+         {
+            ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
+            context.ClearState();
+            context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            auto vertexShader = data.VertexShader->GetActual();
+            auto pixelShader = data.PixelShader->GetActual();
+            auto viewport = data.Viewport->GetActual();
+            auto depthDisableState = data.DepthDisableState->GetActual();
+            auto additiveBlendState = data.AdditiveBlendState->GetActual();
+            auto anisoSampler = data.AnisoSampler->GetActual();
+            auto linearClampSampler = data.LinearClampSampler->GetActual();
+            auto ssaoSampler = data.SSAOSampler->GetActual();
+            auto gBuffer = data.GBuffer->GetActual();
+            auto irraidianceMap = *data.IrradianceMapRef->GetActual();
+            auto prefilteredMap = *data.PrefilteredMapRef->GetActual();
+            auto brdfLUT = *data.BrdfLUTRef->GetActual();
+            auto camera = *data.CamRef->GetActual();
+            bool bSSAOEnabled = *(*data.SSAOEnabledRef->GetActual());
+            auto blurredSSAO = data.BlurredSSAO->GetActual();
+            auto quadMesh = *data.QuadMeshRef->GetActual();
+            auto output = data.Output->GetActual();
+
+            /** Binds */
+            vertexShader->Bind(context);
+            pixelShader->Bind(context);
+            viewport->Bind(context);
+            depthDisableState->Bind(context);
+            additiveBlendState->Bind(context);
+            anisoSampler->Bind(context, 0);
+            linearClampSampler->Bind(context, 1);
+            ssaoSampler->Bind(context, 2);
+            gBuffer->BindAsShaderResource(context, 0);
+            irraidianceMap->Bind(context, 5, EShaderType::PixelShader);
+            prefilteredMap->Bind(context, 6, EShaderType::PixelShader);
+            brdfLUT->BindAsShaderResource(context, 7, EShaderType::PixelShader);
+            if (bSSAOEnabled)
+            {
+               blurredSSAO->BindAsShaderResource(context, 8, EShaderType::PixelShader);
+            }
+            quadMesh->Bind(context, 0);
+            output->BindAsRenderTarget(context);
+
+            /** Update Constant Buffer */
+            auto camTransform = camera->GetTransform();
+            auto paramsBuffer = data.ParamsBuffer->GetActual();
+            float globalAOFactor = *(*data.GlobalAOFactorRef->GetActual());
+            auto mappedParamsBuffer = paramsBuffer->Map<AmbientParamsConstantBuffer>(context);
+            (*mappedParamsBuffer) = AmbientParamsConstantBuffer{camTransform->GetPosition(TransformSpace::World), globalAOFactor, static_cast<unsigned int>(bSSAOEnabled)};
+            paramsBuffer->UnMap(context);
+            paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
+
+            /** Render */
+            context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+
+            /** Unbinds */
+            output->UnbindRenderTarget(context);
+            blurredSSAO->UnbindShaderResource(context);
+            brdfLUT->UnbindShaderResource(context);
+            prefilteredMap->Unbind(context);
+            irraidianceMap->Unbind(context);
+            gBuffer->UnbindShaderResource(context);
+            ssaoSampler->Unbind(context);
+            linearClampSampler->Unbind(context);
+            anisoSampler->Unbind(context);
+            pixelShader->Unbind(context);
+            vertexShader->Unbind(context);
+         });
+
+      ambientEmissivePass->SetCullImmune(true);
       m_frameGraph.Compile();
 
       Elaina::VisualizeParams visualizeParams;
       visualizeParams.bSplines = true;
-      visualizeParams.RankSep = 3.5;
+      visualizeParams.RankSep = 3.0;
       m_frameGraph.ExportVisualization("RendererPBR.dot", visualizeParams);
       return true;
    }

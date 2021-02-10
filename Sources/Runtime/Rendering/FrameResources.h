@@ -193,6 +193,13 @@ namespace Mile
    };
    using UINT32RefResource = Elaina::FrameResource<UINT32RefDescriptor, UINT32Ref>;
 
+   using FloatRef = float*;
+   struct FloatRefDescriptor
+   {
+      FloatRef Reference = nullptr;
+   };
+   using FloatRefResource = Elaina::FrameResource<FloatRefDescriptor, FloatRef>;
+
    struct MatrixDescriptor
    {
       Matrix Value;

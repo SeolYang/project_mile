@@ -298,6 +298,12 @@ namespace Elaina
    }
 
    template<>
+   FloatRef* Realize(const FloatRefDescriptor& desc)
+   {
+      return new FloatRef(desc.Reference);
+   }
+
+   template<>
    Matrix* Realize(const MatrixDescriptor& desc)
    {
       return new Matrix(desc.Value);

@@ -93,6 +93,9 @@ namespace Mile
       VertexShaderDX11* m_ssaoBlurPassVS;
       PixelShaderDX11* m_ssaoBlurPassPS;
 
+      VertexShaderDX11* m_ambientEmissivePassVS;
+      PixelShaderDX11* m_ambientEmissivePassPS;
+
       /** External Resources; Don't delete in renderer! */
       /** Per Frame Datas */
       std::vector<CameraComponent*> m_cameras;
@@ -113,7 +116,10 @@ namespace Mile
       RenderTargetRef   m_brdfLUT;
 
       /** Post-process */
+      bool m_bSSAOEnabled;
       SSAOParams m_ssaoParams;
+
+      float m_globalAOFactor;
 
    };
 }
