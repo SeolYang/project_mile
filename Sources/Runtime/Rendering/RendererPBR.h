@@ -35,6 +35,12 @@ namespace Mile
       float Magnitude = 1.1f;
    };
 
+   enum class MEAPI ESkyboxType
+   {
+      EnvironmentMap,
+      IrradianceMap,
+   };
+
    class MEAPI RendererPBR : public RendererDX11
    {
    public:
@@ -96,6 +102,9 @@ namespace Mile
       VertexShaderDX11* m_ambientEmissivePassVS;
       PixelShaderDX11* m_ambientEmissivePassPS;
 
+      VertexShaderDX11* m_skyboxPassVS;
+      PixelShaderDX11* m_skyboxPassPS;
+
       /** External Resources; Don't delete in renderer! */
       /** Per Frame Datas */
       std::vector<CameraComponent*> m_cameras;
@@ -120,6 +129,8 @@ namespace Mile
       SSAOParams m_ssaoParams;
 
       float m_globalAOFactor;
+
+      ESkyboxType m_renderSkyboxType;
 
    };
 }

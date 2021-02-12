@@ -36,9 +36,12 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "AmbientEmissivePass" [label="AmbientEmissivePass
 \nDistribution Group : 0
 \nRefs : 0", style=filled, fillcolor=darkorange];
+"SkyboxPass" [label="SkyboxPass
+\nDistribution Group : 0
+\nRefs : 0", style=filled, fillcolor=darkorange];
 "CameraRef" [label="CameraRef
 \nID : 0
-\nRefs : 5
+\nRefs : 6
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "Lights" [label="Lights
 \nID : 1
@@ -78,11 +81,11 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nTransient", style=filled, fillcolor=peachpuff]
 "GBuffer" [label="GBuffer
 \nID : 10
-\nRefs : 3
+\nRefs : 4
 \nTransient", style=filled, fillcolor=peachpuff]
 "Viewport" [label="Viewport
 \nID : 11
-\nRefs : 5
+\nRefs : 6
 \nTransient", style=filled, fillcolor=peachpuff]
 "DefaultRasterizerState" [label="DefaultRasterizerState
 \nID : 12
@@ -94,7 +97,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "CubeMeshRef" [label="CubeMeshRef
 \nID : 14
-\nRefs : 3
+\nRefs : 4
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "ConvertSkyboxPassVertexShader" [label="ConvertSkyboxPassVertexShader
 \nID : 15
@@ -106,7 +109,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "EnvironmentMapRef" [label="EnvironmentMapRef
 \nID : 17
-\nRefs : 2
+\nRefs : 3
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "LinearClampAlwaysSampler" [label="LinearClampAlwaysSampler
 \nID : 18
@@ -150,11 +153,11 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nTransient", style=filled, fillcolor=peachpuff]
 "NoCullingState" [label="NoCullingState
 \nID : 28
-\nRefs : 2
+\nRefs : 3
 \nTransient", style=filled, fillcolor=peachpuff]
 "DepthLessEqualState" [label="DepthLessEqualState
 \nID : 29
-\nRefs : 2
+\nRefs : 3
 \nTransient", style=filled, fillcolor=peachpuff]
 "DiffuseIntegralPassVertexShader" [label="DiffuseIntegralPassVertexShader
 \nID : 30
@@ -166,7 +169,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "IrradianceMapRef" [label="IrradianceMapRef
 \nID : 32
-\nRefs : 1
+\nRefs : 2
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "PrefilterEnvironmentMapPassVertexShader" [label="PrefilterEnvironmentMapPassVertexShader
 \nID : 33
@@ -372,6 +375,26 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nID : 83
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
+"SkyboxPassVertexShader" [label="SkyboxPassVertexShader
+\nID : 84
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"SkyboxPassPixelShader" [label="SkyboxPassPixelShader
+\nID : 85
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"SkyboxType" [label="SkyboxType
+\nID : 86
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
+"SkyboxSampler" [label="SkyboxSampler
+\nID : 87
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
+"SkyboxTransformConstantBuffer" [label="SkyboxTransformConstantBuffer
+\nID : 88
+\nRefs : 0
+\nTransient", style=filled, fillcolor=peachpuff]
 "Geometry Pass" -> { "AnisoWrapAlwaysSampler" "GeometryPassTransform" "GeometryPassPackedMaterialParams" "GBuffer" "Viewport" "DefaultRasterizerState" } [color=aquamarine]
 "Geometry Pass" -> { } [color=firebrick1]
 "ConvertTextureToCubemap" -> { "LinearClampAlwaysSampler" "IBLPrecomputeEnabledRef" "CubeCaptureView+x" "CubeCaptureView-x" "CubeCaptureView+y" "CubeCaptureView-y" "CubeCaptureView+z" "CubeCaptureView-z" "CaptureViewport" "CaptureTransformBuffer" "NoCullingState" "DepthLessEqualState" } [color=aquamarine]
@@ -392,8 +415,10 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "SSAOBlurPass" -> { } [color=firebrick1]
 "AmbientEmissivePass" -> { "AnisoSampler" "LinearClampSampler" "SSAOSampler" "AmbientEmissiveParamsConstantBuffer" "GlobalAOFactorRef" } [color=aquamarine]
 "AmbientEmissivePass" -> { "SourceHDRBuffer" } [color=firebrick1]
+"SkyboxPass" -> { "SkyboxType" "SkyboxSampler" "SkyboxTransformConstantBuffer" } [color=aquamarine]
+"SkyboxPass" -> { "SourceHDRBuffer" } [color=firebrick1]
 
-"CameraRef" -> { "Geometry Pass" "LightingPass" "ConvertGBufferToViewSpacePass" "SSAOPass" "AmbientEmissivePass" } [color=yellow]
+"CameraRef" -> { "Geometry Pass" "LightingPass" "ConvertGBufferToViewSpacePass" "SSAOPass" "AmbientEmissivePass" "SkyboxPass" } [color=yellow]
 "Lights" -> { } [color=yellow]
 "Meshes" -> { } [color=yellow]
 "MaterialMap" -> { "Geometry Pass" } [color=yellow]
@@ -403,14 +428,14 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "AnisoWrapAlwaysSampler" -> { } [color=yellow]
 "GeometryPassTransform" -> { } [color=yellow]
 "GeometryPassPackedMaterialParams" -> { } [color=yellow]
-"GBuffer" -> { "LightingPass" "ConvertGBufferToViewSpacePass" "AmbientEmissivePass" } [color=yellow]
-"Viewport" -> { "LightingPass" "ConvertGBufferToViewSpacePass" "SSAOPass" "SSAOBlurPass" "AmbientEmissivePass" } [color=yellow]
+"GBuffer" -> { "LightingPass" "ConvertGBufferToViewSpacePass" "AmbientEmissivePass" "SkyboxPass" } [color=yellow]
+"Viewport" -> { "LightingPass" "ConvertGBufferToViewSpacePass" "SSAOPass" "SSAOBlurPass" "AmbientEmissivePass" "SkyboxPass" } [color=yellow]
 "DefaultRasterizerState" -> { } [color=yellow]
 "SkyboxTextureRef" -> { "ConvertTextureToCubemap" } [color=yellow]
-"CubeMeshRef" -> { "ConvertTextureToCubemap" "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
+"CubeMeshRef" -> { "ConvertTextureToCubemap" "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" "SkyboxPass" } [color=yellow]
 "ConvertSkyboxPassVertexShader" -> { "ConvertTextureToCubemap" } [color=yellow]
 "ConvertSkyboxPassPixelShader" -> { "ConvertTextureToCubemap" } [color=yellow]
-"EnvironmentMapRef" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
+"EnvironmentMapRef" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" "SkyboxPass" } [color=yellow]
 "LinearClampAlwaysSampler" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" "IntegrateBRDFsPass" } [color=yellow]
 "IBLPrecomputeEnabledRef" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" "IntegrateBRDFsPass" } [color=yellow]
 "CubeCaptureView+x" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
@@ -421,11 +446,11 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "CubeCaptureView-z" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
 "CaptureViewport" -> { "DiffuseConvolutionPass" } [color=yellow]
 "CaptureTransformBuffer" -> { } [color=yellow]
-"NoCullingState" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
-"DepthLessEqualState" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
+"NoCullingState" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" "SkyboxPass" } [color=yellow]
+"DepthLessEqualState" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" "SkyboxPass" } [color=yellow]
 "DiffuseIntegralPassVertexShader" -> { "DiffuseConvolutionPass" } [color=yellow]
 "DiffuseIntegralPassPixelShader" -> { "DiffuseConvolutionPass" } [color=yellow]
-"IrradianceMapRef" -> { "AmbientEmissivePass" } [color=yellow]
+"IrradianceMapRef" -> { "AmbientEmissivePass" "SkyboxPass" } [color=yellow]
 "PrefilterEnvironmentMapPassVertexShader" -> { "PrefilterEnvironmentMapPass" } [color=yellow]
 "PrefilterEnvironmentMapPassPixelShader" -> { "PrefilterEnvironmentMapPass" } [color=yellow]
 "PrefilteredEnvironmentMapRef" -> { "AmbientEmissivePass" } [color=yellow]
@@ -477,4 +502,9 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "SSAOSampler" -> { } [color=yellow]
 "AmbientEmissiveParamsConstantBuffer" -> { } [color=yellow]
 "GlobalAOFactorRef" -> { } [color=yellow]
+"SkyboxPassVertexShader" -> { "SkyboxPass" } [color=yellow]
+"SkyboxPassPixelShader" -> { "SkyboxPass" } [color=yellow]
+"SkyboxType" -> { } [color=yellow]
+"SkyboxSampler" -> { } [color=yellow]
+"SkyboxTransformConstantBuffer" -> { } [color=yellow]
 }

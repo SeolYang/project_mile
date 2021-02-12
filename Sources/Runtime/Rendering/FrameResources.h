@@ -248,4 +248,11 @@ namespace Mile
       Texture2dDX11Ref Reference;
    };
    using Texture2dDX11RefResource = Elaina::FrameResource<Texture2dDX11RefDescriptor, Texture2dDX11Ref>;
+
+   using VoidRef = void*;
+   struct VoidRefDescriptor
+   {
+      VoidRef Reference = nullptr;
+   };
+   using VoidRefRefResource = Elaina::FrameResource<VoidRefDescriptor, VoidRef>;
 }

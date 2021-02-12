@@ -399,4 +399,10 @@ namespace Elaina
    {
       return new Texture2dDX11Ref(desc.Reference);
    }
+
+   template<>
+   VoidRef* Realize(const VoidRefDescriptor& desc)
+   {
+      return new VoidRef(desc.Reference);
+   }
 }

@@ -49,11 +49,6 @@ namespace Mile
       float SpecularFactor;
    };
 
-   DEFINE_CONSTANT_BUFFER(CubemapTransformBuffer)
-   {
-      Matrix ViewProj;
-   };
-
    DEFINE_CONSTANT_BUFFER(PrefilterParamsBuffer)
    {
       float Roughness;
@@ -72,9 +67,9 @@ namespace Mile
       UINT32 LightType;
    };
 
-   DEFINE_CONSTANT_BUFFER(ConvertParams)
+   DEFINE_CONSTANT_BUFFER(OneMatrixConstantBuffer)
    {
-      Matrix View;
+      Matrix Mat;
    };
 
    DEFINE_CONSTANT_BUFFER(SSAOParamsConstantBuffer)
@@ -128,12 +123,17 @@ namespace Mile
       m_bSSAOEnabled(true),
       m_ambientEmissivePassVS(nullptr),
       m_ambientEmissivePassPS(nullptr),
-      m_globalAOFactor(1.0f)
+      m_globalAOFactor(1.0f),
+      m_skyboxPassVS(nullptr),
+      m_skyboxPassPS(nullptr),
+      m_renderSkyboxType(ESkyboxType::EnvironmentMap)
    {
    }
 
    RendererPBR::~RendererPBR()
    {
+      SafeDelete(m_skyboxPassPS);
+      SafeDelete(m_skyboxPassVS);
       SafeDelete(m_ambientEmissivePassPS);
       SafeDelete(m_ambientEmissivePassVS);
       SafeDelete(m_ssaoBlurPassPS);
@@ -364,6 +364,24 @@ namespace Mile
       if (m_ambientEmissivePassPS == nullptr)
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load ambient emissive pass pixel shader!"));
+         return false;
+      }
+
+      /** Skybox Pass Shaders  */
+      ShaderDescriptor skyboxPassDesc;
+      skyboxPassDesc.Renderer = this;
+      skyboxPassDesc.FilePath = TEXT("Contents/Shaders/SkyboxPass.hlsl");
+      m_skyboxPassVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(skyboxPassDesc);
+      if (m_ambientEmissivePassVS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load skybox pass vertex shader!"));
+         return false;
+      }
+
+      m_skyboxPassPS = Elaina::Realize<ShaderDescriptor, PixelShaderDX11>(skyboxPassDesc);
+      if (m_ambientEmissivePassPS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load skybox pass pixel shader!"));
          return false;
       }
 
@@ -656,7 +674,7 @@ namespace Mile
 
             ConstantBufferDescriptor captureTransformDesc;
             captureTransformDesc.Renderer = this;
-            captureTransformDesc.Size = sizeof(CubemapTransformBuffer);
+            captureTransformDesc.Size = sizeof(OneMatrixConstantBuffer);
             data.CaptureTransformBuffer = builder.Create<ConstantBufferResource>("CaptureTransformBuffer", captureTransformDesc);
 
             RasterizerStateDescriptor noCullingDesc;
@@ -718,8 +736,8 @@ namespace Mile
                for (unsigned int faceIdx = 0; faceIdx < CUBE_FACES; ++faceIdx)
                {
                   outputEnvMap->BindAsRenderTarget(immediateContext, faceIdx);
-                  auto mappedTrasnformBuffer = transformBuffer->Map<CubemapTransformBuffer>(immediateContext);
-                  (*mappedTrasnformBuffer) = CubemapTransformBuffer{ *captureViews[faceIdx]->GetActual() };
+                  auto mappedTrasnformBuffer = transformBuffer->Map<OneMatrixConstantBuffer>(immediateContext);
+                  (*mappedTrasnformBuffer) = OneMatrixConstantBuffer{ *captureViews[faceIdx]->GetActual() };
                   transformBuffer->UnMap(immediateContext);
                   immediateContext.DrawIndexed(cubeMesh->GetIndexCount(), 0, 0);
                   outputEnvMap->UnbindAsRenderTarget(immediateContext);
@@ -840,8 +858,8 @@ namespace Mile
                for (unsigned int faceIdx = 0; faceIdx < CUBE_FACES; ++faceIdx)
                {
                   outputIrradianceMap->BindAsRenderTarget(immediateContext, faceIdx);
-                  auto mappedTrasnformBuffer = transformBuffer->Map<CubemapTransformBuffer>(immediateContext);
-                  (*mappedTrasnformBuffer) = CubemapTransformBuffer{ *data.CaptureViews[faceIdx]->GetActual() };
+                  auto mappedTrasnformBuffer = transformBuffer->Map<OneMatrixConstantBuffer>(immediateContext);
+                  (*mappedTrasnformBuffer) = OneMatrixConstantBuffer{ *data.CaptureViews[faceIdx]->GetActual() };
                   transformBuffer->UnMap(immediateContext);
                   immediateContext.DrawIndexed(cubeMesh->GetIndexCount(), 0, 0);
                   outputIrradianceMap->UnbindAsRenderTarget(immediateContext);
@@ -985,8 +1003,8 @@ namespace Mile
 
                   for (unsigned int faceIdx = 0; faceIdx < CUBE_FACES; ++faceIdx)
                   {
-                     auto mappedTrasnformBuffer = transformBuffer->Map<CubemapTransformBuffer>(immediateContext);
-                     (*mappedTrasnformBuffer) = CubemapTransformBuffer{ *data.CaptureViews[faceIdx]->GetActual() };
+                     auto mappedTrasnformBuffer = transformBuffer->Map<OneMatrixConstantBuffer>(immediateContext);
+                     (*mappedTrasnformBuffer) = OneMatrixConstantBuffer{ *data.CaptureViews[faceIdx]->GetActual() };
                      transformBuffer->UnMap(immediateContext);
 
                      outputPrefilteredEnvMap->BindAsRenderTarget(immediateContext, faceIdx, mipLevel);
@@ -1324,7 +1342,7 @@ namespace Mile
 
             ConstantBufferDescriptor paramsDesc;
             paramsDesc.Renderer = this;
-            paramsDesc.Size = sizeof(ConvertParams);
+            paramsDesc.Size = sizeof(OneMatrixConstantBuffer);
             data.ConvertParamsBuffer = builder.Create<ConstantBufferResource>(
                "ConvertParamsConstantBuffer",
                paramsDesc);
@@ -1376,8 +1394,8 @@ namespace Mile
                camTransform->GetForward(TransformSpace::World),
                camTransform->GetUp(TransformSpace::World));
 
-            auto mappedConvertParams = convertParamsBuffer->Map<ConvertParams>(immediateContext);
-            (*mappedConvertParams) = ConvertParams{ viewMatrix };
+            auto mappedConvertParams = convertParamsBuffer->Map<OneMatrixConstantBuffer>(immediateContext);
+            (*mappedConvertParams) = OneMatrixConstantBuffer{ viewMatrix };
             convertParamsBuffer->UnMap(immediateContext);
             immediateContext.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
 
@@ -1770,7 +1788,7 @@ namespace Mile
                blurredSSAO->BindAsShaderResource(context, 8, EShaderType::PixelShader);
             }
             quadMesh->Bind(context, 0);
-            output->BindAsRenderTarget(context);
+            output->BindAsRenderTarget(context, false, false);
 
             /** Update Constant Buffer */
             auto camTransform = camera->GetTransform();
@@ -1799,6 +1817,144 @@ namespace Mile
          });
 
       ambientEmissivePass->SetCullImmune(true);
+      auto ambientEmissivePassData = ambientEmissivePass->GetData();
+
+      struct SkyboxPassData : public RenderPassDataBase
+      {
+         ViewportResource* Viewport = nullptr;
+         CameraRefResource* CamRef = nullptr;
+         GBufferResource* GBuffer = nullptr;
+         VoidRefRefResource* SkyboxType = nullptr;
+         DynamicCubemapRefResource* EnvironmentMapRef = nullptr;
+         DynamicCubemapRefResource* IrradianceMapRef = nullptr;
+         SamplerResource* Sampler = nullptr;
+         MeshRefResource* CubeMeshRef = nullptr;
+         DepthStencilStateResource* DepthLessEqualState = nullptr;
+         RasterizerStateResource* NoCullingState = nullptr;
+         ConstantBufferResource* TransformConstantBuffer = nullptr;
+         RenderTargetResource* Output = nullptr;
+      };
+
+      auto skyboxPassVSRes =
+         m_frameGraph.AddExternalPermanentResource("SkyboxPassVertexShader", ShaderDescriptor(), m_skyboxPassVS);
+      auto skyboxPassPSRes =
+         m_frameGraph.AddExternalPermanentResource("SkyboxPassPixelShader", ShaderDescriptor(), m_skyboxPassPS);
+
+      auto skyboxPass = m_frameGraph.AddCallbackPass<SkyboxPassData>(
+         "SkyboxPass",
+         [&](Elaina::RenderPassBuilder& builder, SkyboxPassData& data)
+         {
+            data.Renderer = this;
+            data.VertexShader = builder.Read(skyboxPassVSRes);
+            data.PixelShader = builder.Read(skyboxPassPSRes);
+
+            data.Viewport = builder.Read(ambientEmissivePassData.Viewport);
+
+            data.CamRef = builder.Read(ambientEmissivePassData.CamRef);
+            data.GBuffer = builder.Read(ambientEmissivePassData.GBuffer);
+
+            VoidRefDescriptor skyboxRefDesc;
+            skyboxRefDesc.Reference = (void*)&m_renderSkyboxType;
+            data.SkyboxType = builder.Create<VoidRefRefResource>("SkyboxType", skyboxRefDesc);
+
+            SamplerDescriptor samplerDesc;
+            samplerDesc.Renderer = this;
+            samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+            samplerDesc.AddressModeU = samplerDesc.AddressModeV = samplerDesc.AddressModeW = D3D11_TEXTURE_ADDRESS_WRAP;
+            samplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
+            data.Sampler = builder.Create<SamplerResource>("SkyboxSampler", samplerDesc);
+
+            data.DepthLessEqualState = builder.Read(convertSkyboxToCubemapPassData.DepthLessEqualState);
+            data.NoCullingState = builder.Read(convertSkyboxToCubemapPassData.NoCullingState);
+
+            ConstantBufferDescriptor transformBufferDesc;
+            transformBufferDesc.Renderer = this;
+            transformBufferDesc.Size = sizeof(OneMatrixConstantBuffer);
+            data.TransformConstantBuffer = builder.Create<ConstantBufferResource>("SkyboxTransformConstantBuffer", transformBufferDesc);
+
+            data.EnvironmentMapRef = builder.Read(convertSkyboxToCubemapPassData.OutputEnvMapRef);
+            data.IrradianceMapRef = builder.Read(diffuseIntegralPassData.OutputIrradianceMapRef);
+
+            data.CubeMeshRef = builder.Read(convertSkyboxToCubemapPassData.CubeMeshRef);
+
+            data.Output = builder.Write(ambientEmissivePassData.Output);
+         },
+         [](const SkyboxPassData& data)
+         {
+            ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
+            context.ClearState();
+            context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            auto vertexShader = data.VertexShader->GetActual();
+            auto pixelShader = data.PixelShader->GetActual();
+            auto sampler = data.Sampler->GetActual();
+            auto viewport = data.Viewport->GetActual();
+            auto depthLessEqualState = data.DepthLessEqualState->GetActual();
+            auto noCullingState = data.NoCullingState->GetActual();
+            auto transformBuffer = data.TransformConstantBuffer->GetActual();
+            auto envMap = *data.EnvironmentMapRef->GetActual();
+            auto irrdianceMap = *data.IrradianceMapRef->GetActual();
+            auto cubeMesh = *data.CubeMeshRef->GetActual();
+            auto output = data.Output->GetActual();
+            auto gBuffer = data.GBuffer->GetActual();
+            auto skyboxType = *reinterpret_cast<ESkyboxType*>(*data.SkyboxType->GetActual());
+
+            /** Binds */
+            vertexShader->Bind(context);
+            pixelShader->Bind(context);
+            sampler->Bind(context, 0);
+            depthLessEqualState->Bind(context);
+            noCullingState->Bind(context);
+            transformBuffer->Bind(context, 0, EShaderType::VertexShader);
+            cubeMesh->Bind(context, 0);
+            viewport->Bind(context);
+            auto gBufferDepthStencil = gBuffer->GetDepthStencilBufferDX11();
+            output->SetDepthStencilBuffer(gBufferDepthStencil);
+            output->BindAsRenderTarget(context, false, false);
+
+            switch (skyboxType)
+            {
+            case ESkyboxType::IrradianceMap:
+               irrdianceMap->Bind(context, 0, EShaderType::PixelShader);
+               break;
+            case ESkyboxType::EnvironmentMap:
+            default:
+               envMap->Bind(context, 0, EShaderType::PixelShader);
+            }
+
+            /** Upload Constant Buffer datas */
+            auto camera = *data.CamRef->GetActual();
+            auto camTransform = camera->GetTransform();
+            Matrix viewMat = Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), camTransform->GetForward(TransformSpace::World), camTransform->GetUp(TransformSpace::World));
+            Matrix projMat = Matrix::CreatePerspectiveProj(camera->GetFov(), output->GetAspectRatio(), 0.1f, 1000.0f);
+            auto mappedTransformBuffer = transformBuffer->Map<OneMatrixConstantBuffer>(context);
+            (*mappedTransformBuffer) = OneMatrixConstantBuffer{ viewMat * projMat };
+            transformBuffer->UnMap(context);
+
+            /** Render */
+            context.DrawIndexed(cubeMesh->GetIndexCount(), 0, 0);
+
+            /** Unbinds */
+            switch (skyboxType)
+            {
+            case ESkyboxType::IrradianceMap:
+               irrdianceMap->Unbind(context);
+               break;
+            case ESkyboxType::EnvironmentMap:
+            default:
+               envMap->Unbind(context);
+               break;
+            }
+
+            output->UnbindRenderTarget(context);
+            output->SetDepthStencilBuffer(nullptr);
+            transformBuffer->Unbind(context);
+            sampler->Unbind(context);
+            pixelShader->Unbind(context);
+            vertexShader->Unbind(context);
+         });
+
+      skyboxPass->SetCullImmune(true);
       m_frameGraph.Compile();
 
       Elaina::VisualizeParams visualizeParams;
