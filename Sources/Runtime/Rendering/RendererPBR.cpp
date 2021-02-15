@@ -51,7 +51,12 @@ namespace Mile
 
    DEFINE_CONSTANT_BUFFER(OneFloatConstantBuffer)
    {
-      float Value;
+      float Value = 0.0f;
+   };
+
+   DEFINE_CONSTANT_BUFFER(OneUINTConstantBuffer)
+   {
+      unsigned int Value = 0;
    };
 
    DEFINE_CONSTANT_BUFFER(CameraParamsConstantBuffer)
@@ -2097,6 +2102,131 @@ namespace Mile
          });
 
       extractBrightnessPass->SetCullImmune(true);
+      auto extractBrightnessPassData = extractBrightnessPass->GetData();
+
+      /** Bloom - Gaussian Blur Pass */
+      struct BloomGaussBlurPassData : public RenderPassDataBase
+      {
+         VoidRefResource* BloomParamsRef = nullptr;
+         SamplerResource* Sampler = nullptr;
+         ViewportResource* Viewport = nullptr;
+         DepthStencilStateResource* DepthDisableState = nullptr;
+         ConstantBufferResource* ParamsBuffer = nullptr;
+         MeshRefResource* QuadMeshRef = nullptr;
+         RenderTargetResource* Input = nullptr;
+         std::array<RenderTargetResource*, 2> PingPongBuffer; /** Latest output = (BlurAmount)%2 */
+      };
+
+      auto gaussianBlurVSRes = m_frameGraph.AddExternalPermanentResource(
+         "GaussianBlurVertexShader",
+         ShaderDescriptor(),
+         m_gaussBloomPassVS);
+
+      auto gaussianBlurPSRes = m_frameGraph.AddExternalPermanentResource(
+         "GaussianBlurPixelShader",
+         ShaderDescriptor(),
+         m_gaussBloomPassPS);
+
+      auto bloomGaussBlurPass = m_frameGraph.AddCallbackPass<BloomGaussBlurPassData>(
+         "BloomGaussBlurPass",
+         [&](Elaina::RenderPassBuilder& builder, BloomGaussBlurPassData& data)
+         {
+            data.Renderer = this;
+            data.VertexShader = builder.Read(gaussianBlurVSRes);
+            data.PixelShader = builder.Read(gaussianBlurPSRes);
+
+            data.BloomParamsRef = builder.Read(extractBrightnessPassData.BloomParamsRef);
+            data.Sampler = builder.Read(extractBrightnessPassData.Sampler);
+            data.Viewport = builder.Read(extractBrightnessPassData.Viewport);
+            data.DepthDisableState = builder.Read(extractBrightnessPassData.DepthDisableState);
+
+            data.QuadMeshRef = builder.Read(extractBrightnessPassData.QuadMeshRef);
+            data.Input = builder.Read(extractBrightnessPassData.Output);
+
+            ConstantBufferDescriptor paramsBufferDesc;
+            paramsBufferDesc.Renderer = this;
+            paramsBufferDesc.Size = sizeof(OneUINTConstantBuffer);
+            data.ParamsBuffer = builder.Create<ConstantBufferResource>("GaussianBlurParamsConstantBuffer", paramsBufferDesc);
+
+            RenderTargetDescriptor pingPongBufferDesc;
+            pingPongBufferDesc.Renderer = this;
+            pingPongBufferDesc.ResolutionReference = &m_outputRenderTarget;
+            pingPongBufferDesc.Format = EColorFormat::R16G16B16A16_FLOAT;
+            for (size_t idx = 0; idx < data.PingPongBuffer.size(); ++idx)
+            {
+               data.PingPongBuffer[idx] = builder.Create<RenderTargetResource>("PingPongBuffer_" + std::to_string(idx), pingPongBufferDesc);
+            }
+         },
+         [](const BloomGaussBlurPassData& data)
+         {
+            ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
+            context.ClearState();
+            context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            auto vertexShader = data.VertexShader->GetActual();
+            auto pixelShader = data.PixelShader->GetActual();
+            auto sampler = data.Sampler->GetActual();
+            auto bloomParams = (BloomParams*)(*data.BloomParamsRef->GetActual());
+            auto viewport = data.Viewport->GetActual();
+            auto depthDisableState = data.DepthDisableState->GetActual();
+            auto quadMesh = *data.QuadMeshRef->GetActual();
+            auto paramsBuffer = data.ParamsBuffer->GetActual();
+            auto input = data.Input->GetActual();
+            std::array<RenderTargetDX11*, 2> pingPongBuffer{ data.PingPongBuffer[0]->GetActual(), data.PingPongBuffer[1]->GetActual() };
+
+            /** Binds */
+            vertexShader->Bind(context);
+            pixelShader->Bind(context);
+            sampler->Bind(context, 0);
+            viewport->Bind(context);
+            depthDisableState->Bind(context);
+            quadMesh->Bind(context, 0);
+            paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
+
+            /** Render */
+            auto latestInput = input;
+            auto latestOutput = pingPongBuffer[0];
+            bool bHorizontal = true;
+            for (unsigned int epoch = 0; epoch < bloomParams->BlurAmount; ++epoch)
+            {
+               if (epoch > 0)
+               {
+                  bHorizontal = !bHorizontal;
+                  unsigned int swap = epoch % 2;
+                  switch (swap)
+                  {
+                  case 0:
+                     latestInput = pingPongBuffer[1];
+                     latestOutput = pingPongBuffer[0];
+                     break;
+
+                  case 1:
+                     latestInput = pingPongBuffer[0];
+                     latestOutput = pingPongBuffer[1];
+                     break;
+                  }
+               }
+
+               latestInput->BindAsShaderResource(context, 0, EShaderType::PixelShader);
+               latestOutput->BindAsRenderTarget(context);
+
+               auto mappedParamsBuffer = paramsBuffer->Map<OneUINTConstantBuffer>(context);
+               (*mappedParamsBuffer) = OneUINTConstantBuffer{ static_cast<unsigned int>(bHorizontal ? 1 : 0) };
+               paramsBuffer->UnMap(context);
+               context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+
+               latestOutput->UnbindRenderTarget(context);
+               latestInput->UnbindShaderResource(context);
+            }
+
+            /** Unbinds */
+            paramsBuffer->Unbind(context);
+            sampler->Unbind(context);
+            pixelShader->Unbind(context);
+            vertexShader->Unbind(context);
+         });
+
+      bloomGaussBlurPass->SetCullImmune(true);
       m_frameGraph.Compile();
 
       Elaina::VisualizeParams visualizeParams;
