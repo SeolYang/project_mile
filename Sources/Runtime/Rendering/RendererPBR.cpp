@@ -135,12 +135,16 @@ namespace Mile
       m_extractBrightnessPassVS(nullptr),
       m_extractBrightnessPassPS(nullptr),
       m_gaussBloomPassVS(nullptr),
-      m_gaussBloomPassPS(nullptr)
+      m_gaussBloomPassPS(nullptr),
+      m_printTextureVS(nullptr),
+      m_printTexturePS(nullptr)
    {
    }
 
    RendererPBR::~RendererPBR()
    {
+      SafeDelete(m_printTexturePS);
+      SafeDelete(m_printTextureVS);
       SafeDelete(m_gaussBloomPassPS);
       SafeDelete(m_gaussBloomPassVS);
       SafeDelete(m_extractBrightnessPassPS);
@@ -431,6 +435,24 @@ namespace Mile
       if (m_gaussBloomPassPS == nullptr)
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load gaussian bloom pass pixel shader!"));
+         return false;
+      }
+
+      /** Gaussian Bloom Pass Shaders  */
+      ShaderDescriptor printTextureDesc;
+      printTextureDesc.Renderer = this;
+      printTextureDesc.FilePath = TEXT("Contents/Shaders/PrintTexture.hlsl");
+      m_printTextureVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(printTextureDesc);
+      if (m_printTextureVS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load print texture vertex shader!"));
+         return false;
+      }
+
+      m_printTexturePS = Elaina::Realize<ShaderDescriptor, PixelShaderDX11>(printTextureDesc);
+      if (m_printTexturePS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load print texture pixel shader!"));
          return false;
       }
 
@@ -2101,7 +2123,6 @@ namespace Mile
             vertexShader->Unbind(context);
          });
 
-      extractBrightnessPass->SetCullImmune(true);
       auto extractBrightnessPassData = extractBrightnessPass->GetData();
 
       /** Bloom - Gaussian Blur Pass */
@@ -2226,7 +2247,100 @@ namespace Mile
             vertexShader->Unbind(context);
          });
 
-      bloomGaussBlurPass->SetCullImmune(true);
+      auto bloomGaussBlurPassData = bloomGaussBlurPass->GetData();
+
+      /** Bloom - Blend */
+      struct BloomBlendPassData : public RenderPassDataBase
+      {
+         VoidRefResource* BloomParamsRef = nullptr;
+         SamplerResource* Sampler = nullptr;
+         ViewportResource* Viewport = nullptr;
+         DepthStencilStateResource* DepthDisableState = nullptr;
+         BlendStateResource* AdditiveBlendState = nullptr;
+         ConstantBufferResource* ParamsBuffer = nullptr;
+         MeshRefResource* QuadMeshRef = nullptr;
+         std::array<RenderTargetResource*, 2> PingPongBuffer;
+         RenderTargetResource* Output = nullptr;
+      };
+
+      auto printTextureVSRes = m_frameGraph.AddExternalPermanentResource("PrintTextureVertexShader", ShaderDescriptor(), m_printTextureVS);
+      auto printTexturePSRes = m_frameGraph.AddExternalPermanentResource("PrintTexturePixelShader", ShaderDescriptor(), m_printTexturePS);
+      auto bloomBlendPass = m_frameGraph.AddCallbackPass<BloomBlendPassData>(
+         "BloomBlendPass",
+         [&](Elaina::RenderPassBuilder& builder, BloomBlendPassData& data)
+         {
+            data.Renderer = this;
+            data.VertexShader = builder.Read(printTextureVSRes);
+            data.PixelShader = builder.Read(printTexturePSRes);
+
+            data.Sampler = builder.Read(bloomGaussBlurPassData.Sampler);
+
+            data.BloomParamsRef = builder.Read(bloomGaussBlurPassData.BloomParamsRef);
+            data.Viewport = builder.Read(bloomGaussBlurPassData.Viewport);
+            data.DepthDisableState = builder.Read(bloomGaussBlurPassData.DepthDisableState);
+            data.AdditiveBlendState = builder.Read(ambientEmissivePassData.AdditiveBlendState);
+
+            ConstantBufferDescriptor paramsBufferDesc;
+            paramsBufferDesc.Renderer = this;
+            paramsBufferDesc.Size = sizeof(OneFloatConstantBuffer);
+            data.ParamsBuffer = builder.Create<ConstantBufferResource>("BlendPassConstantBuffer", paramsBufferDesc);
+
+            data.QuadMeshRef = builder.Read(bloomGaussBlurPassData.QuadMeshRef);
+            data.PingPongBuffer[0] = builder.Read(bloomGaussBlurPassData.PingPongBuffer[0]);
+            data.PingPongBuffer[1] = builder.Read(bloomGaussBlurPassData.PingPongBuffer[1]);
+
+            data.Output = builder.Read(skyboxPassData.Output);
+         },
+         [](const BloomBlendPassData& data)
+         {
+            ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
+            context.ClearState();
+            context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            auto vertexShader = data.VertexShader->GetActual();
+            auto pixelShader = data.PixelShader->GetActual();
+            auto sampler = data.Sampler->GetActual();
+            auto bloomParams = (BloomParams*)(*data.BloomParamsRef->GetActual());
+            auto viewport = data.Viewport->GetActual();
+            auto depthDisableState = data.DepthDisableState->GetActual();
+            auto additiveBlendState = data.AdditiveBlendState->GetActual();
+            auto paramsBuffer = data.ParamsBuffer->GetActual();
+            auto quadMesh = *data.QuadMeshRef->GetActual();
+            auto input = data.PingPongBuffer[bloomParams->BlurAmount % 2]->GetActual();
+            auto output = data.Output->GetActual();
+
+            /** Binds */
+            vertexShader->Bind(context);
+            pixelShader->Bind(context);
+            sampler->Bind(context, 0);
+            viewport->Bind(context);
+            depthDisableState->Bind(context);
+            additiveBlendState->Bind(context);
+            paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
+            quadMesh->Bind(context, 0);
+            input->BindAsShaderResource(context, 0, EShaderType::PixelShader);
+            output->BindAsRenderTarget(context, false, false);
+
+            /** Update Constant Buffers */
+            auto mappedParamsBuffer = paramsBuffer->Map<OneFloatConstantBuffer>(context);
+            (*mappedParamsBuffer) = OneFloatConstantBuffer{ bloomParams->Intensity };
+            paramsBuffer->UnMap(context);
+
+            /** Render */
+            context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+
+            /** Unbinds */
+            output->UnbindRenderTarget(context);
+            input->UnbindShaderResource(context);
+            paramsBuffer->Unbind(context);
+            sampler->Unbind(context);
+            pixelShader->Unbind(context);
+            vertexShader->Unbind(context);
+         });
+
+      bloomBlendPass->SetCullImmune(true);
+      auto bloomBlendPassData = bloomBlendPass->GetData();
+
       m_frameGraph.Compile();
 
       Elaina::VisualizeParams visualizeParams;

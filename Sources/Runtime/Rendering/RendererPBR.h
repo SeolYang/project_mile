@@ -118,6 +118,9 @@ namespace Mile
       VertexShaderDX11* m_gaussBloomPassVS;
       PixelShaderDX11* m_gaussBloomPassPS;
 
+      VertexShaderDX11* m_printTextureVS;
+      PixelShaderDX11* m_printTexturePS;
+
       /** External Resources; Don't delete in renderer! */
       /** Per Frame Datas */
       std::vector<CameraComponent*> m_cameras;
