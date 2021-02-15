@@ -94,7 +94,7 @@ namespace Mile
        * @brief	Win32의 raw handle 포인터를 반환합니다.
        * @return	핸들 포인터
        */
-      void* GetHandle() const { return m_handle; }
+      void* GetHandle() { return m_handle; }
 
       /**
        * @brief 설정된 윈도우의 client 영역의 해상도를 반환합니다.

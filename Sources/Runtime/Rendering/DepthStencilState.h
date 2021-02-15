@@ -26,10 +26,10 @@ namespace Mile
          desc.StencilEnable = false;
          desc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
          desc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
-         desc.FrontFace.StencilFailOp = desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+         desc.FrontFace.StencilFunc = desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
          desc.FrontFace.StencilDepthFailOp = desc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
          desc.FrontFace.StencilPassOp = desc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-         desc.FrontFace.StencilFunc = desc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+         desc.FrontFace.StencilFailOp = desc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
          return desc;
       }
 

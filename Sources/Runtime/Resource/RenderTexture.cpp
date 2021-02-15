@@ -103,7 +103,7 @@ namespace Mile
 
          SafeDelete(m_renderTarget);
          m_renderTarget = new RenderTargetDX11(renderer);
-         if (!m_renderTarget->Init(m_width, m_height, m_colorFormat, m_depthStencil))
+         if (!m_renderTarget->Init(m_width, m_height, ColorFormatToDXGIFormat(m_colorFormat), m_depthStencil))
          {
             ME_LOG(MileRenderTexture, Fatal, TEXT("Failed to initialize render target!"));
             return;

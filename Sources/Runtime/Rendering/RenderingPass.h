@@ -1,6 +1,7 @@
 #pragma once
 #include "Rendering/RenderObject.h"
 
+#define DEFINE_CONSTANT_BUFFER(BUFFER_NAME) struct alignas(16) BUFFER_NAME
 namespace Mile
 {
    class VertexShaderDX11;

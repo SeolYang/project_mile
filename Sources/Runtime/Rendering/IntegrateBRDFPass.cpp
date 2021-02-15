@@ -38,7 +38,7 @@ namespace Mile
          }
 
          m_brdfLUT = new RenderTargetDX11(renderer);
-         if (!m_brdfLUT->Init(lutSize, lutSize, EColorFormat::R16G16_FLOAT, m_depthStencil))
+         if (!m_brdfLUT->Init(lutSize, lutSize, DXGI_FORMAT_R16G16_FLOAT, m_depthStencil))
          {
             return false;
          }

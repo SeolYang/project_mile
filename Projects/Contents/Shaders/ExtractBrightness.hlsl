@@ -26,7 +26,12 @@ cbuffer ExtractParams : register(b0)
 };
 
 /* Textures & Samplers */
-Texture2D renderBuffer					: register(t0);
+Texture2D posBuffer						: register(t0);
+Texture2D albedoBuffer					: register(t1);
+Texture2D emissiveAOBuffer				: register(t2);
+Texture2D normalBuffer					: register(t3);
+Texture2D extraComponents				: register(t4);
+Texture2D renderBuffer					: register(t5);
 SamplerState Sampler						: register(s0);
 
 VSOutput MileVS(in VSInput input)

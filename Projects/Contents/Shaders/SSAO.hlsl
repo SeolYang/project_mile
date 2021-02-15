@@ -20,10 +20,14 @@ struct PSInput
 };
 
 /* Constant Buffers (Pixel Shader) */
-cbuffer SSAOVariableParams : register(b0)
+cbuffer SSAOParams : register(b0)
 {
 	float4 Samples[64];
 	float2 NoiseScale;
+};
+
+cbuffer SSAOVariableParams : register(b1)
+{
 	matrix Projection;
 	float Radius;
 	float Bias;

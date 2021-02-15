@@ -70,12 +70,6 @@
     <Filter Include="Sources\Resource\Resources">
       <UniqueIdentifier>{32b12185-7784-4505-9a19-d94411444ae9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Elaina">
-      <UniqueIdentifier>{3e853850-08bd-477f-995f-4786d3dd63f3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Rendering\Renderer">
-      <UniqueIdentifier>{e2cc0e98-4a04-455b-89c2-1f9c0a7a85da}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ThirdParty\json\src\json.hpp">
@@ -414,6 +408,9 @@
     <ClInclude Include="..\Sources\Runtime\MT\ThreadPool.h">
       <Filter>Sources\MT</Filter>
     </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\RendererDX11.h">
+      <Filter>Sources\Rendering</Filter>
+    </ClInclude>
     <ClInclude Include="..\Sources\Runtime\Rendering\RenderingCore.h">
       <Filter>Sources\Rendering</Filter>
     </ClInclude>
@@ -600,39 +597,6 @@
     <ClInclude Include="..\ThirdParty\imgui_lib\include\imgui.h">
       <Filter>ThirdParty\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Elaina\RenderPassBuilder.h">
-      <Filter>Sources\Elaina</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Elaina\CallbackRenderPass.h">
-      <Filter>Sources\Elaina</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Elaina\Elaina.config.h">
-      <Filter>Sources\Elaina</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Elaina\FrameGraph.h">
-      <Filter>Sources\Elaina</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Elaina\FrameResource.h">
-      <Filter>Sources\Elaina</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Elaina\Realize.h">
-      <Filter>Sources\Elaina</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Elaina\RenderPass.h">
-      <Filter>Sources\Elaina</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\RendererDX11.h">
-      <Filter>Sources\Rendering\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\RendererPBR.h">
-      <Filter>Sources\Rendering\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Component\SkyboxComponent.h">
-      <Filter>Sources\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\FrameResources.h">
-      <Filter>Sources\Rendering</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Sources\Runtime\Component\CameraComponent.cpp">
@@ -709,6 +673,9 @@
     </ClCompile>
     <ClCompile Include="..\Sources\Runtime\MT\ThreadPool.cpp">
       <Filter>Sources\MT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\RendererDX11.cpp">
+      <Filter>Sources\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="..\Sources\Runtime\Rendering\RenderingPass.cpp">
       <Filter>Sources\Rendering</Filter>
@@ -881,18 +848,6 @@
     <ClCompile Include="..\ThirdParty\imgui_lib\include\imgui_impl_dx11.cpp">
       <Filter>ThirdParty\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\RendererDX11.cpp">
-      <Filter>Sources\Rendering\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\RendererPBR.cpp">
-      <Filter>Sources\Rendering\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Component\SkyboxComponent.cpp">
-      <Filter>Sources\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\FrameResourceRealizeImpl.hpp">
-      <Filter>Sources\Rendering</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Contents\Shaders\LightingPass.hlsl">
@@ -953,9 +908,6 @@
       <Filter>Shaders\Post-Process</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\AmbientEmissivePass.hlsl">
-      <Filter>Shaders\Post-Process</Filter>
-    </FxCompile>
-    <FxCompile Include="Contents\Shaders\PrintTexture.hlsl">
       <Filter>Shaders\Post-Process</Filter>
     </FxCompile>
   </ItemGroup>

@@ -21,8 +21,8 @@ namespace Mile
       if (IsInitializable() || m_depthStencilState == nullptr)
       {
          RendererDX11* renderer = GetRenderer();
-         auto& device = renderer->GetDevice();
-         auto result = device.CreateDepthStencilState(&m_desc, &m_depthStencilState);
+         auto device = renderer->GetDevice();
+         auto result = device->CreateDepthStencilState(&m_desc, &m_depthStencilState);
          if (FAILED(result))
          {
             m_bIsDirty = true;

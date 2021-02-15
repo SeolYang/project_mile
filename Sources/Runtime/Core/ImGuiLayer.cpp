@@ -53,7 +53,7 @@ namespace Mile
          else
          {
             ImGui_ImplWin32_Init(window->GetHandle());
-            ImGui_ImplDX11_Init(&renderer->GetDevice(), &renderer->GetImmediateContext());
+            ImGui_ImplDX11_Init(renderer->GetDevice(), renderer->GetImmediateContext());
          }
       }
    }
@@ -83,12 +83,9 @@ namespace Mile
       io.DisplaySize = ImVec2(clientAreaRes.x, clientAreaRes.y);
 
       ImGui::Render();
-      auto& immediateContext = renderer->GetImmediateContext();
-#ifdef MILE_EDITOR
-      renderer->SetBackBufferAsRenderTarget(immediateContext);
-#else
-      renderer->SetBackBufferAsRenderTarget(immediateContext, false, true);
-#endif
+      auto immediateContext = renderer->GetImmediateContext();
+      renderer->SetBackbufferAsRenderTarget(*immediateContext);
+      renderer->ClearDepthStencil(*immediateContext);
       ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
       if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)

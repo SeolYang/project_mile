@@ -29,7 +29,7 @@ namespace Mile
          desc.MiscFlags = 0;
 
          RendererDX11* renderer = GetRenderer();
-         auto result = renderer->GetDevice().CreateBuffer(&desc, nullptr, &m_buffer);
+         auto result = renderer->GetDevice()->CreateBuffer(&desc, nullptr, &m_buffer);
          if (!FAILED(result))
          {
             m_desc = desc;

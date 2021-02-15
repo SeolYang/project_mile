@@ -40,7 +40,7 @@ namespace Mile
          for (size_t idx = 0; idx < m_pingPongBuffer.size(); ++idx)
          {
             m_pingPongBuffer[idx] = new RenderTargetDX11(renderer);
-            if (!m_pingPongBuffer[idx]->Init(width, height, EColorFormat::R16G16B16A16_FLOAT, globalDepthStencilBuffer))
+            if (!m_pingPongBuffer[idx]->Init(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, globalDepthStencilBuffer))
             {
                return false;
             }

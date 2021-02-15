@@ -6,6 +6,13 @@
 
 namespace Mile
 {
+   enum class EStaticMeshType
+   {
+      External = 0,
+      Cube = 1,
+      Quad = 2,
+   };
+
    class RendererDX11;
    class MEAPI Mesh : public RenderObject
    {

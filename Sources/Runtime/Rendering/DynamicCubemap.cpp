@@ -35,7 +35,7 @@ namespace Mile
       {
          m_maxMipLevels = static_cast<unsigned int>(std::log2f(static_cast<float>(size)));
          RendererDX11* renderer = GetRenderer();
-         auto& device = renderer->GetDevice();
+         auto device = renderer->GetDevice();
          D3D11_TEXTURE2D_DESC desc;
          ZeroMemory(&desc, sizeof(desc));
          desc.Width = size;
@@ -50,7 +50,7 @@ namespace Mile
          desc.SampleDesc.Count = 1;
          desc.SampleDesc.Quality = 0;
 
-         auto result = device.CreateTexture2D(&desc, nullptr, &m_texture);
+         auto result = device->CreateTexture2D(&desc, nullptr, &m_texture);
          if (!FAILED(result))
          {
             D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
@@ -67,7 +67,7 @@ namespace Mile
                for (unsigned int mipLevel = 0; mipLevel <= m_maxMipLevels; ++mipLevel)
                {
                   rtvDesc.Texture2DArray.MipSlice = mipLevel;
-                  result = device.CreateRenderTargetView(m_texture, &rtvDesc, &m_rtvs[idx][mipLevel]);
+                  result = device->CreateRenderTargetView(m_texture, &rtvDesc, &m_rtvs[idx][mipLevel]);
                   if (FAILED(result))
                   {
                      return false;

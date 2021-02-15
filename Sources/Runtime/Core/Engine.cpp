@@ -8,7 +8,7 @@
 #include "Core/Application.h"
 #include "GameFramework/World.h"
 #include "Resource/ResourceManager.h"
-#include "Rendering/RendererPBR.h"
+#include "Rendering/RendererDX11.h"
 #include "MT/ThreadPool.h"
 #include <iostream>
 #include <algorithm>
@@ -45,7 +45,7 @@ namespace Mile
       m_window = new Window(context);
       context->RegisterSubSystem(m_window);
 
-      m_renderer = new RendererPBR(context, 8);
+      m_renderer = new RendererDX11(context);
       context->RegisterSubSystem(m_renderer);
 
       m_world = new World(context);
@@ -127,7 +127,7 @@ namespace Mile
             return false;
          }
 
-         if (!context->GetSubSystem<RendererPBR>()->Init((*m_window)))
+         if (!context->GetSubSystem<RendererDX11>()->Init())
          {
             ME_LOG(MileEngine, Fatal, TEXT("Failed to initialize Renderer!"));
             m_instance = nullptr;
@@ -197,12 +197,7 @@ namespace Mile
 
             this->Update();
             m_app->Update();
-            /** @todo 나중에 audio/physics 시스템이 추가되면 서로 다른 스레드에서 처리하도록 하기 */
-            auto mainRenderTask = m_threadPool->AddTask(
-               [this]() 
-               {
-                  this->m_renderer->Render(*this->m_world); 
-               }); 
+            auto mainRenderTask = m_threadPool->AddTask([this]() {this->m_renderer->Render(); }); /** @todo 나중에 audio/physics 시스템이 추가되면 서로 다른 스레드에서 처리하도록 하기 */
             mainRenderTask.get();
             m_app->RenderIMGUI();
             m_renderer->Present();

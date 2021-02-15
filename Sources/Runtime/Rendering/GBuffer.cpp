@@ -49,11 +49,11 @@ namespace Mile
          m_depthStencilBuffer = new DepthStencilBufferDX11(renderer);
 
          bool bBuffersInitialized =
-            m_positionBuffer->Init(width, height, EColorFormat::R32G32B32A32_FLOAT) &&
-            m_albedoBuffer->Init(width, height, EColorFormat::R16G16B16A16_FLOAT) &&
-            m_emissiveAOBuffer->Init(width, height, EColorFormat::R16G16B16A16_FLOAT) &&
-            m_normalBuffer->Init(width, height, EColorFormat::R16G16B16A16_FLOAT) &&
-            m_extraComponents->Init(width, height, EColorFormat::R16G16B16A16_FLOAT) &&
+            m_positionBuffer->Init(width, height, DXGI_FORMAT_R32G32B32A32_FLOAT) &&
+            m_albedoBuffer->Init(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT) &&
+            m_emissiveAOBuffer->Init(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT) &&
+            m_normalBuffer->Init(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT) &&
+            m_extraComponents->Init(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT) &&
             m_depthStencilBuffer->Init(width, height, true);
          if (bBuffersInitialized && m_blendState->Init())
          {
