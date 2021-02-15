@@ -37,8 +37,9 @@ namespace Mile
 
    struct MEAPI BloomParams
    {
-      float BrightnessThreshold = 0.0f;
+      float BrightnessThreshold = 0.5f;
       unsigned int BlurAmount = 4;
+      float Intensity = 0.8f;
    };
 
    enum class MEAPI ESkyboxType

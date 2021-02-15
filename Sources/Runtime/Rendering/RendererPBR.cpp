@@ -396,7 +396,7 @@ namespace Mile
       /** Extract Brightness Pass Shaders  */
       ShaderDescriptor extractBrightnessPassDesc;
       extractBrightnessPassDesc.Renderer = this;
-      extractBrightnessPassDesc.FilePath = TEXT("Contents/Shaders/SkyboxPass.hlsl");
+      extractBrightnessPassDesc.FilePath = TEXT("Contents/Shaders/ExtractBrightness.hlsl");
       m_extractBrightnessPassVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(extractBrightnessPassDesc);
       if (m_extractBrightnessPassVS == nullptr)
       {
@@ -414,7 +414,7 @@ namespace Mile
       /** Gaussian Bloom Pass Shaders  */
       ShaderDescriptor gaussBloomPassDesc;
       gaussBloomPassDesc.Renderer = this;
-      gaussBloomPassDesc.FilePath = TEXT("Contents/Shaders/SkyboxPass.hlsl");
+      gaussBloomPassDesc.FilePath = TEXT("Contents/Shaders/GaussianBlur.hlsl");
       m_gaussBloomPassVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(gaussBloomPassDesc);
       if (m_gaussBloomPassVS == nullptr)
       {
@@ -2065,6 +2065,7 @@ namespace Mile
             auto paramsBuffer = data.ParamsBuffer->GetActual();
             auto depthDisableState = data.DepthDisableState->GetActual();
             auto quadMesh = *data.QuadMeshRef->GetActual();
+            auto viewport = data.Viewport->GetActual();
             auto output = data.Output->GetActual();
 
             /** Binds */
@@ -2075,6 +2076,7 @@ namespace Mile
             paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
             depthDisableState->Bind(context);
             quadMesh->Bind(context, 0);
+            viewport->Bind(context);
             output->BindAsRenderTarget(context);
 
             /** Update Constant Buffer */
