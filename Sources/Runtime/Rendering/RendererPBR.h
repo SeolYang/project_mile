@@ -35,6 +35,12 @@ namespace Mile
       float Magnitude = 1.1f;
    };
 
+   struct MEAPI BloomParams
+   {
+      float BrightnessThreshold = 0.0f;
+      unsigned int BlurAmount = 4;
+   };
+
    enum class MEAPI ESkyboxType
    {
       EnvironmentMap,
@@ -105,6 +111,12 @@ namespace Mile
       VertexShaderDX11* m_skyboxPassVS;
       PixelShaderDX11* m_skyboxPassPS;
 
+      VertexShaderDX11* m_extractBrightnessPassVS;
+      PixelShaderDX11* m_extractBrightnessPassPS;
+
+      VertexShaderDX11* m_gaussBloomPassVS;
+      PixelShaderDX11* m_gaussBloomPassPS;
+
       /** External Resources; Don't delete in renderer! */
       /** Per Frame Datas */
       std::vector<CameraComponent*> m_cameras;
@@ -127,10 +139,11 @@ namespace Mile
       /** Post-process */
       bool m_bSSAOEnabled;
       SSAOParams m_ssaoParams;
-
       float m_globalAOFactor;
 
       ESkyboxType m_renderSkyboxType;
+
+      BloomParams m_bloomParams;
 
    };
 }

@@ -49,9 +49,9 @@ namespace Mile
       float SpecularFactor;
    };
 
-   DEFINE_CONSTANT_BUFFER(PrefilterParamsBuffer)
+   DEFINE_CONSTANT_BUFFER(OneFloatConstantBuffer)
    {
-      float Roughness;
+      float Value;
    };
 
    DEFINE_CONSTANT_BUFFER(CameraParamsConstantBuffer)
@@ -126,12 +126,20 @@ namespace Mile
       m_globalAOFactor(1.0f),
       m_skyboxPassVS(nullptr),
       m_skyboxPassPS(nullptr),
-      m_renderSkyboxType(ESkyboxType::EnvironmentMap)
+      m_renderSkyboxType(ESkyboxType::EnvironmentMap),
+      m_extractBrightnessPassVS(nullptr),
+      m_extractBrightnessPassPS(nullptr),
+      m_gaussBloomPassVS(nullptr),
+      m_gaussBloomPassPS(nullptr)
    {
    }
 
    RendererPBR::~RendererPBR()
    {
+      SafeDelete(m_gaussBloomPassPS);
+      SafeDelete(m_gaussBloomPassVS);
+      SafeDelete(m_extractBrightnessPassPS);
+      SafeDelete(m_extractBrightnessPassVS);
       SafeDelete(m_skyboxPassPS);
       SafeDelete(m_skyboxPassVS);
       SafeDelete(m_ambientEmissivePassPS);
@@ -382,6 +390,42 @@ namespace Mile
       if (m_ambientEmissivePassPS == nullptr)
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load skybox pass pixel shader!"));
+         return false;
+      }
+
+      /** Extract Brightness Pass Shaders  */
+      ShaderDescriptor extractBrightnessPassDesc;
+      extractBrightnessPassDesc.Renderer = this;
+      extractBrightnessPassDesc.FilePath = TEXT("Contents/Shaders/SkyboxPass.hlsl");
+      m_extractBrightnessPassVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(extractBrightnessPassDesc);
+      if (m_extractBrightnessPassVS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load extract brightness pass vertex shader!"));
+         return false;
+      }
+
+      m_extractBrightnessPassPS = Elaina::Realize<ShaderDescriptor, PixelShaderDX11>(extractBrightnessPassDesc);
+      if (m_extractBrightnessPassPS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load extract brightness pass pixel shader!"));
+         return false;
+      }
+
+      /** Gaussian Bloom Pass Shaders  */
+      ShaderDescriptor gaussBloomPassDesc;
+      gaussBloomPassDesc.Renderer = this;
+      gaussBloomPassDesc.FilePath = TEXT("Contents/Shaders/SkyboxPass.hlsl");
+      m_gaussBloomPassVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(gaussBloomPassDesc);
+      if (m_gaussBloomPassVS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load gaussian bloom pass vertex shader!"));
+         return false;
+      }
+
+      m_gaussBloomPassPS = Elaina::Realize<ShaderDescriptor, PixelShaderDX11>(gaussBloomPassDesc);
+      if (m_gaussBloomPassPS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load gaussian bloom pass pixel shader!"));
          return false;
       }
 
@@ -949,7 +993,7 @@ namespace Mile
             data.TransformBuffer = builder.Write(diffuseIntegralPassData.TransformBuffer);
             ConstantBufferDescriptor paramsBufferDesc;
             paramsBufferDesc.Renderer = this;
-            paramsBufferDesc.Size = sizeof(PrefilterParamsBuffer);
+            paramsBufferDesc.Size = sizeof(OneFloatConstantBuffer);
             data.PrefilterParamsBuffer = builder.Create<ConstantBufferResource>("PrefilterParamsConstantBuffer", paramsBufferDesc);
 
             data.EnvironmentMapRef = builder.Read(diffuseIntegralPassData.EnvironmentMapRef);
@@ -997,8 +1041,8 @@ namespace Mile
                   float roughness = (mipLevel / static_cast<float>(prefilteredEnvMapMaxMips - 1));
                   auto viewport = data.MipViewports[mipLevel]->GetActual();
                   viewport->Bind(immediateContext);
-                  auto mappedParamsBuffer = paramsBuffer->Map<PrefilterParamsBuffer>(immediateContext);
-                  (*mappedParamsBuffer) = PrefilterParamsBuffer{roughness};
+                  auto mappedParamsBuffer = paramsBuffer->Map<OneFloatConstantBuffer>(immediateContext);
+                  (*mappedParamsBuffer) = OneFloatConstantBuffer{roughness};
                   paramsBuffer->UnMap(immediateContext);
 
                   for (unsigned int faceIdx = 0; faceIdx < CUBE_FACES; ++faceIdx)
@@ -1816,7 +1860,6 @@ namespace Mile
             vertexShader->Unbind(context);
          });
 
-      ambientEmissivePass->SetCullImmune(true);
       auto ambientEmissivePassData = ambientEmissivePass->GetData();
 
       struct SkyboxPassData : public RenderPassDataBase
@@ -1824,7 +1867,7 @@ namespace Mile
          ViewportResource* Viewport = nullptr;
          CameraRefResource* CamRef = nullptr;
          GBufferResource* GBuffer = nullptr;
-         VoidRefRefResource* SkyboxType = nullptr;
+         VoidRefResource* SkyboxType = nullptr;
          DynamicCubemapRefResource* EnvironmentMapRef = nullptr;
          DynamicCubemapRefResource* IrradianceMapRef = nullptr;
          SamplerResource* Sampler = nullptr;
@@ -1855,7 +1898,7 @@ namespace Mile
 
             VoidRefDescriptor skyboxRefDesc;
             skyboxRefDesc.Reference = (void*)&m_renderSkyboxType;
-            data.SkyboxType = builder.Create<VoidRefRefResource>("SkyboxType", skyboxRefDesc);
+            data.SkyboxType = builder.Create<VoidRefResource>("SkyboxType", skyboxRefDesc);
 
             SamplerDescriptor samplerDesc;
             samplerDesc.Renderer = this;
@@ -1954,7 +1997,104 @@ namespace Mile
             vertexShader->Unbind(context);
          });
 
-      skyboxPass->SetCullImmune(true);
+      auto skyboxPassData = skyboxPass->GetData();
+
+      /** Extract Brightness Pass */
+      struct ExtractBrightnessPassData : public RenderPassDataBase
+      {
+         SamplerResource* Sampler = nullptr;
+         ViewportResource* Viewport = nullptr;
+         RenderTargetResource* Input = nullptr;
+         VoidRefResource* BloomParamsRef = nullptr;
+         ConstantBufferResource* ParamsBuffer = nullptr;
+         DepthStencilStateResource* DepthDisableState = nullptr;
+         MeshRefResource* QuadMeshRef = nullptr;
+         RenderTargetResource* Output = nullptr;
+      };
+
+      auto extractBrightnessPassVSRes = m_frameGraph.AddExternalPermanentResource("ExtractBrightnessPassVertexShader", ShaderDescriptor(), m_extractBrightnessPassVS);
+      auto extractBrightnessPassPSRes = m_frameGraph.AddExternalPermanentResource("ExtractBrightnessPassPixelShader", ShaderDescriptor(), m_extractBrightnessPassPS);
+
+      auto extractBrightnessPass = m_frameGraph.AddCallbackPass<ExtractBrightnessPassData>(
+         "ExtractBrightnessPass",
+         [&](Elaina::RenderPassBuilder& builder, ExtractBrightnessPassData& data)
+         {
+            data.Renderer = this;
+            data.VertexShader = builder.Read(extractBrightnessPassVSRes);
+            data.PixelShader = builder.Read(extractBrightnessPassPSRes);
+
+            SamplerDescriptor samplerDesc;
+            samplerDesc.Renderer = this;
+            samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+            samplerDesc.AddressModeU = samplerDesc.AddressModeV = samplerDesc.AddressModeW = D3D11_TEXTURE_ADDRESS_CLAMP;
+            samplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
+            data.Sampler = builder.Create<SamplerResource>("ExtractBrightnessSampler", samplerDesc);
+
+            data.Viewport = builder.Read(skyboxPassData.Viewport);
+            data.Input = builder.Read(skyboxPassData.Output);
+            
+            VoidRefDescriptor bloomParamRefDesc;
+            bloomParamRefDesc.Reference = &m_bloomParams;
+            data.BloomParamsRef = builder.Create<VoidRefResource>("BloomParams", bloomParamRefDesc);
+
+            ConstantBufferDescriptor paramsBufferDesc;
+            paramsBufferDesc.Renderer = this;
+            paramsBufferDesc.Size = sizeof(OneFloatConstantBuffer);
+            data.ParamsBuffer = builder.Create<ConstantBufferResource>("ExtractBrightnessParamsConstantBuffer", paramsBufferDesc);
+
+            data.DepthDisableState = builder.Read(ambientEmissivePassData.DepthDisableState);
+            data.QuadMeshRef = builder.Read(ambientEmissivePassData.QuadMeshRef);
+
+            RenderTargetDescriptor outputDesc;
+            outputDesc.Renderer = this;
+            outputDesc.ResolutionReference = &m_outputRenderTarget;
+            outputDesc.Format = EColorFormat::R16G16B16A16_FLOAT;
+            data.Output = builder.Create<RenderTargetResource>("ExtractedBrightness", outputDesc);
+         },
+         [](const ExtractBrightnessPassData& data)
+         {
+            ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
+            context.ClearState();
+            context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            auto vertexShader = data.VertexShader->GetActual();
+            auto pixelShader = data.PixelShader->GetActual();
+            auto sampler = data.Sampler->GetActual();
+            auto input = data.Input->GetActual();
+            auto bloomParams = (BloomParams*)(*data.BloomParamsRef->GetActual());
+            auto paramsBuffer = data.ParamsBuffer->GetActual();
+            auto depthDisableState = data.DepthDisableState->GetActual();
+            auto quadMesh = *data.QuadMeshRef->GetActual();
+            auto output = data.Output->GetActual();
+
+            /** Binds */
+            vertexShader->Bind(context);
+            pixelShader->Bind(context);
+            sampler->Bind(context, 0);
+            input->BindAsShaderResource(context, 0, EShaderType::PixelShader);
+            paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
+            depthDisableState->Bind(context);
+            quadMesh->Bind(context, 0);
+            output->BindAsRenderTarget(context);
+
+            /** Update Constant Buffer */
+            auto mappedParamsBuffer = paramsBuffer->Map<OneFloatConstantBuffer>(context);
+            (*mappedParamsBuffer) = OneFloatConstantBuffer{ bloomParams->BrightnessThreshold };
+            paramsBuffer->UnMap(context);
+
+            /** Render */
+            context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+
+            /** Unbinds */
+            output->UnbindRenderTarget(context);
+            paramsBuffer->Unbind(context);
+            input->UnbindShaderResource(context);
+            sampler->Unbind(context);
+            pixelShader->Unbind(context);
+            vertexShader->Unbind(context);
+         });
+
+      extractBrightnessPass->SetCullImmune(true);
       m_frameGraph.Compile();
 
       Elaina::VisualizeParams visualizeParams;

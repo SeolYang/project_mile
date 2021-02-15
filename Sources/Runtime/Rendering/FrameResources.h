@@ -254,5 +254,5 @@ namespace Mile
    {
       VoidRef Reference = nullptr;
    };
-   using VoidRefRefResource = Elaina::FrameResource<VoidRefDescriptor, VoidRef>;
+   using VoidRefResource = Elaina::FrameResource<VoidRefDescriptor, VoidRef>;
 }
