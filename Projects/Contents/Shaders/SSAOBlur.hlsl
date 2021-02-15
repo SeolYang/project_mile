@@ -40,14 +40,14 @@ float MilePS(in PSInput input) : SV_Target0
 	float2 texelSize = 1.0f / float2(width, height);
 
 	float result = 0.0f;
-	for (int x = -2; x <= 2; ++x)
+	for (int x = -2; x < 2; ++x)
 	{
-		for (int y = -2; y <= 2; ++y)
+		for (int y = -2; y < 2; ++y)
 		{
 			float2 offset = float2(float(x), float(y)) * texelSize;
 			result += ssaoInput.Sample(Sampler, input.TexCoord + offset).r;
 		}
 	}
 
-	return (result / (5.0f * 5.0f));
+	return (result / (4.0f * 4.0f));
 }
