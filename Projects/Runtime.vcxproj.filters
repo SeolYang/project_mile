@@ -955,6 +955,9 @@
     <FxCompile Include="Contents\Shaders\AmbientEmissivePass.hlsl">
       <Filter>Shaders\Post-Process</Filter>
     </FxCompile>
+    <FxCompile Include="Contents\Shaders\PrintTexture.hlsl">
+      <Filter>Shaders\Post-Process</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ThirdParty\assimp\include\assimp\color4.inl">
