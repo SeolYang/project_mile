@@ -53,25 +53,6 @@ namespace Mile
          return m_maximumThreads;
       }
 
-      void SetRenderResolution(const Vector2& newResolution)
-      {
-         bool bIsValidResolution = newResolution.x > 0.0f && newResolution.y > 0.0f;
-         if (bIsValidResolution)
-         {
-            m_renderResolution = newResolution;
-            OnRenderResolutionChanged();
-         }
-         else
-         {
-            ME_LOG(MileRenderer, Warning, TEXT("Input resolution is not a valid resolution."));
-         }
-      }
-
-      Vector2 GetRenderResolution() const
-      {
-         return m_renderResolution;
-      }
-
       void SetVsync(bool enable)
       {
          m_bVsyncEnabled = enable;
@@ -93,7 +74,6 @@ namespace Mile
 
    protected:
       virtual void RenderImpl(const World& world) { }
-      virtual void OnRenderResolutionChanged() { };
 
    private:
       bool InitLowLevelAPI(Window& window);

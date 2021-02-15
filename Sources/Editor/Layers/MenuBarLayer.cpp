@@ -55,7 +55,6 @@ namespace Mile
 
                if (ImGui::MenuItem("Renderer", NULL, &m_bIsRendererConfigOpened))
                {
-                  m_referenceResolution = m_renderer->GetRenderResolution();
                }
 
                ImGui::EndMenu();
@@ -208,7 +207,6 @@ namespace Mile
             ImGui::InputFloat2("", m_referenceResolution.elements, "%.0f");
             if (ImGui::Button("Apply"))
             {
-               m_renderer->SetRenderResolution(m_referenceResolution);
             }
 
             bool bIsVsyncEnabled = m_renderer->IsVsyncEnabled();
