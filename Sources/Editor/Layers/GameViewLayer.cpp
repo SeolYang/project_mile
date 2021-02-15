@@ -55,7 +55,7 @@ namespace Mile
                ImVec2 actualContentArea = ImVec2{ windowSize.x, windowSize.y - titleBarHeight };
 
                auto renderTexWidth = (float)m_editorCameraRenderTex->GetWidth();
-               auto renderTexHeight = (float)m_editorCameraRenderTex->GetWidth();
+               auto renderTexHeight = (float)m_editorCameraRenderTex->GetHeight();
                Vector2 relativeOutputRes = FindResolutionWithAspectRatio(actualContentArea.x, actualContentArea.y, renderTexWidth/renderTexHeight);
                ImVec2 outputRes{ relativeOutputRes.x, relativeOutputRes.y };
                //m_editorCameraRenderTex->SetWidth((UINT32)referenceRes.x);

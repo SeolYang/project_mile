@@ -59,9 +59,14 @@ namespace Mile
       unsigned int Value = 0;
    };
 
-   DEFINE_CONSTANT_BUFFER(CameraParamsConstantBuffer)
+   DEFINE_CONSTANT_BUFFER(OneVector2ConstantBuffer)
    {
-      Vector3 CameraPos;
+      Vector2 Value;
+   };
+
+   DEFINE_CONSTANT_BUFFER(OneVector3ConstantBuffer)
+   {
+      Vector3 Value;
    };
 
    DEFINE_CONSTANT_BUFFER(LightParamsConstantBuffer)
@@ -465,7 +470,7 @@ namespace Mile
       auto lightsInfoRes = m_frameGraph.AddExternalPermanentResource("Lights", WorldDescriptor(), &m_lights);
       auto meshesInfoRes = m_frameGraph.AddExternalPermanentResource("Meshes", WorldDescriptor(), &m_meshes);
       auto materialMapRes = m_frameGraph.AddExternalPermanentResource("MaterialMap", WorldDescriptor(), &m_materialMap);
-      auto outputRenderTargetRefRes = m_frameGraph.AddExternalPermanentResource("OutputRef", RenderTargetRefDescriptor(), &m_outputRenderTarget);
+      auto outputRenderTargetRefRes = m_frameGraph.AddExternalPermanentResource("FinalOutputRef", RenderTargetRefDescriptor(), &m_outputRenderTarget);
 
       /** Geometry Pass */
       auto geometryPassVS = m_frameGraph.AddExternalPermanentResource("GeometryPassVS", ShaderDescriptor(), m_geometryPassVS);
@@ -1261,7 +1266,7 @@ namespace Mile
 
             ConstantBufferDescriptor cameraParamsDesc;
             cameraParamsDesc.Renderer = this;
-            cameraParamsDesc.Size = sizeof(CameraParamsConstantBuffer);
+            cameraParamsDesc.Size = sizeof(OneVector3ConstantBuffer);
             data.CameraParamsBuffer = builder.Create<ConstantBufferResource>(
                "CameraParamsConstantBuffer",
                cameraParamsDesc);
@@ -1333,8 +1338,8 @@ namespace Mile
             Transform* camTransform = camera->GetTransform();
             for (const auto lightComponent : lightsData)
             {
-               auto mappedCamParamsBuffer = camParamsBuffer->Map<CameraParamsConstantBuffer>(immediateContext);
-               (*mappedCamParamsBuffer) = CameraParamsConstantBuffer{ camTransform->GetPosition(TransformSpace::World) };
+               auto mappedCamParamsBuffer = camParamsBuffer->Map<OneVector3ConstantBuffer>(immediateContext);
+               (*mappedCamParamsBuffer) = OneVector3ConstantBuffer{ camTransform->GetPosition(TransformSpace::World) };
                camParamsBuffer->UnMap(immediateContext);
 
                Transform* lightTransform = lightComponent->GetTransform();
@@ -2338,8 +2343,77 @@ namespace Mile
             vertexShader->Unbind(context);
          });
 
-      bloomBlendPass->SetCullImmune(true);
       auto bloomBlendPassData = bloomBlendPass->GetData();
+
+      /** Print to Final Render Target */
+      struct FinalPassData : public RenderPassDataBase
+      {
+         SamplerResource* Sampler = nullptr;
+         ViewportResource* Viewport = nullptr;
+         DepthStencilStateResource* DepthDisableState = nullptr;
+         ConstantBufferResource* ParamsBuffer = nullptr;
+         MeshRefResource* QuadMeshRef = nullptr;
+         RenderTargetResource* Input = nullptr;
+         RenderTargetRefResource* OutputRef = nullptr;
+      };
+
+      auto finalPass = m_frameGraph.AddCallbackPass<FinalPassData>("FinalPass",
+         [&](Elaina::RenderPassBuilder& builder, FinalPassData& data)
+         {
+            data.Renderer = this;
+            data.VertexShader = builder.Read(printTextureVSRes);
+            data.PixelShader = builder.Read(printTexturePSRes);
+            data.Sampler = builder.Read(bloomBlendPassData.Sampler);
+            data.Viewport = builder.Read(bloomBlendPassData.Viewport);
+            data.DepthDisableState = builder.Read(bloomBlendPassData.DepthDisableState);
+            data.ParamsBuffer = builder.Read(bloomBlendPassData.ParamsBuffer);
+            data.QuadMeshRef = builder.Read(bloomBlendPassData.QuadMeshRef);
+            data.Input = builder.Read(bloomBlendPassData.Output);
+            data.OutputRef = builder.Write(outputRenderTargetRefRes);
+         },
+         [](const FinalPassData& data)
+         {
+            ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
+            context.ClearState();
+            context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            auto vertexShader = data.VertexShader->GetActual();
+            auto pixelShader = data.PixelShader->GetActual();
+            auto sampler = data.Sampler->GetActual();
+            auto viewport = data.Viewport->GetActual();
+            auto depthDisableState = data.DepthDisableState->GetActual();
+            auto paramsBuffer = data.ParamsBuffer->GetActual();
+            auto quadMesh = *data.QuadMeshRef->GetActual();
+            auto input = data.Input->GetActual();
+            auto output = *data.OutputRef->GetActual();
+
+            /** Binds */
+            vertexShader->Bind(context);
+            pixelShader->Bind(context);
+            sampler->Bind(context, 0);
+            viewport->Bind(context);
+            depthDisableState->Bind(context);
+            paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
+            quadMesh->Bind(context, 0);
+            input->BindAsShaderResource(context, 0, EShaderType::PixelShader);
+            output->BindAsRenderTarget(context, false, false);
+
+            /** Update Constant Buffers */
+            auto mappedParamsBuffer = paramsBuffer->Map<OneFloatConstantBuffer>(context);
+            (*mappedParamsBuffer) = OneFloatConstantBuffer{ 1.0f };
+            paramsBuffer->UnMap(context);
+
+            /** Render */
+            context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+
+            /** Unbinds */
+            output->UnbindRenderTarget(context);
+            input->UnbindShaderResource(context);
+            paramsBuffer->Unbind(context);
+            sampler->Unbind(context);
+            pixelShader->Unbind(context);
+            vertexShader->Unbind(context);
+         });
 
       m_frameGraph.Compile();
 

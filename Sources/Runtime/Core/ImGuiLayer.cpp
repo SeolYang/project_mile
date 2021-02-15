@@ -84,7 +84,11 @@ namespace Mile
 
       ImGui::Render();
       auto& immediateContext = renderer->GetImmediateContext();
+#ifdef MILE_EDITOR
       renderer->SetBackBufferAsRenderTarget(immediateContext);
+#else
+      renderer->SetBackBufferAsRenderTarget(immediateContext, false, true);
+#endif
       ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
       if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)

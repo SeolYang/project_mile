@@ -67,7 +67,7 @@ namespace Mile
 
       void OnWindowReisze(unsigned int width, unsigned int height);
 
-      void SetBackBufferAsRenderTarget(ID3D11DeviceContext& deviceContext);
+      void SetBackBufferAsRenderTarget(ID3D11DeviceContext& deviceContext, bool bClear = true, bool bClearDepthStencil = true);
 
       Quad* GetPrimitiveQuad() const { return m_quad; }
       Cube* GetPrimitiveCube() const { return m_cube; }
