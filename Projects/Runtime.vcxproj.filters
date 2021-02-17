@@ -43,12 +43,6 @@
     <Filter Include="Shaders\PBS">
       <UniqueIdentifier>{c2821aad-7a87-4d95-b69f-010444de68b5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders\Light-Pre Pass">
-      <UniqueIdentifier>{bdf3b01c-07fd-41cf-bff3-38a304f8d0f9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shaders\Post-Process">
-      <UniqueIdentifier>{e6280367-3731-4e5d-955c-6958b66856f0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ThirdParty\imgui">
       <UniqueIdentifier>{536edf63-f21b-415e-8c14-7b29cb049595}</UniqueIdentifier>
     </Filter>
@@ -72,6 +66,9 @@
     </Filter>
     <Filter Include="Sources\Rendering\Renderer">
       <UniqueIdentifier>{e2cc0e98-4a04-455b-89c2-1f9c0a7a85da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\PostProcess">
+      <UniqueIdentifier>{e6280367-3731-4e5d-955c-6958b66856f0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -806,7 +803,7 @@
       <Filter>Shaders\PBS</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\ToneMapping.hlsl">
-      <Filter>Shaders\Post-Process</Filter>
+      <Filter>Shaders\PostProcess</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\Prefiltering.hlsl">
       <Filter>Shaders\PBS</Filter>
@@ -815,31 +812,31 @@
       <Filter>Shaders\PBS</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\Blending.hlsl">
-      <Filter>Shaders\Post-Process</Filter>
+      <Filter>Shaders\PostProcess</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\BoxBloom.hlsl">
-      <Filter>Shaders\Post-Process</Filter>
+      <Filter>Shaders\PostProcess</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\GaussianBlur.hlsl">
-      <Filter>Shaders\Post-Process</Filter>
+      <Filter>Shaders\PostProcess</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\ExtractBrightness.hlsl">
-      <Filter>Shaders\Post-Process</Filter>
+      <Filter>Shaders\PostProcess</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\SSAO.hlsl">
-      <Filter>Shaders\Post-Process</Filter>
+      <Filter>Shaders\PostProcess</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\SSAOBlur.hlsl">
-      <Filter>Shaders\Post-Process</Filter>
+      <Filter>Shaders\PostProcess</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\ViewSpaceGBuffer.hlsl">
-      <Filter>Shaders\Post-Process</Filter>
+      <Filter>Shaders\PostProcess</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\AmbientEmissivePass.hlsl">
-      <Filter>Shaders\Post-Process</Filter>
+      <Filter>Shaders\PostProcess</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\PrintTexture.hlsl">
-      <Filter>Shaders\Post-Process</Filter>
+      <Filter>Shaders\PostProcess</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

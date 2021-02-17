@@ -55,7 +55,7 @@ namespace Mile
          /** Renderer Config */
          RendererDX11* m_renderer;
          bool m_bIsRendererConfigOpened;
-         Vector2 m_referenceResolution;
+         Vector2 m_renderRes;
 
       };
    }

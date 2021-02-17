@@ -72,6 +72,12 @@ namespace Mile
       ToneMappingParams& GetToneMappingParams() { return m_toneMappingParams; }
       ToneMappingParams GetToneMappingParams() const { return m_toneMappingParams; }
 
+      float& GetGlobalAmbientFactor() { return m_globalAOFactor; }
+      float GetGlobaoAmbientFactor() const { return m_globalAOFactor; }
+
+      bool& SSAOEnabled() { return m_bSSAOEnabled; }
+      bool IsSSAOEnabled() const { return m_bSSAOEnabled; }
+
    protected:
       void RenderImpl(const World& world) override;
       void OnRenderResolutionChanged() override;
