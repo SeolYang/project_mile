@@ -65,10 +65,12 @@ namespace Mile
 
       SSAOParams& GetSSAOParams() { return m_ssaoParams; }
       SSAOParams GetSSAOParams() const { return m_ssaoParams; }
-      void SetSSAOParams(const SSAOParams& ssaoParams)
-      {
-         m_ssaoParams = ssaoParams;
-      }
+
+      BloomParams& GetBloomParams() { return m_bloomParams; }
+      BloomParams GetBloomParams() const { return m_bloomParams; }
+
+      ToneMappingParams& GetToneMappingParams() { return m_toneMappingParams; }
+      ToneMappingParams GetToneMappingParams() const { return m_toneMappingParams; }
 
    protected:
       void RenderImpl(const World& world) override;
