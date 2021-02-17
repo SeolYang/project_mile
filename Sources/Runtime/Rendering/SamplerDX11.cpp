@@ -36,8 +36,8 @@ namespace Mile
          desc.MaxLOD = FLT_MAX;
 
          RendererDX11* renderer = GetRenderer();
-         auto device = renderer->GetDevice();
-         auto result = device->CreateSamplerState(&desc, &m_sampler);
+         auto& device = renderer->GetDevice();
+         auto result = device.CreateSamplerState(&desc, &m_sampler);
          if (!FAILED(result))
          {
             RenderObject::ConfirmInit();

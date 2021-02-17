@@ -12,6 +12,7 @@ namespace Mile
       m_width(0),
       m_height(0),
       m_clearColor{ 0.0f, 0.0f, 0.0f, 1.0f },
+      m_format(EColorFormat::R8G8B8A8_UNORM),
       RenderObject(renderer)
    {
    }
@@ -21,13 +22,14 @@ namespace Mile
       DeInit();
    }
 
-   bool RenderTargetDX11::Init(unsigned int width, unsigned int height, DXGI_FORMAT format, DepthStencilBufferDX11* depthStencilBuffer)
+   bool RenderTargetDX11::Init(unsigned int width, unsigned int height, EColorFormat format, DepthStencilBufferDX11* depthStencilBuffer)
    {
       bool bIsValidParams = (width > 0 && height > 0);
       if (RenderObject::IsInitializable() && bIsValidParams)
       {
          m_width = width;
          m_height = height;
+         m_format = format;
 
          D3D11_TEXTURE2D_DESC texDesc;
          ZeroMemory(&texDesc, sizeof(texDesc));
@@ -35,7 +37,7 @@ namespace Mile
          texDesc.Height = height;
          texDesc.MipLevels = 1;
          texDesc.ArraySize = 1;
-         texDesc.Format = format;
+         texDesc.Format = static_cast<DXGI_FORMAT>(format);
          texDesc.SampleDesc.Count = 1;
          texDesc.SampleDesc.Quality = 0;
          texDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -45,8 +47,8 @@ namespace Mile
 
          RendererDX11* renderer = GetRenderer();
          ID3D11Texture2D* texture = nullptr;
-         auto device = renderer->GetDevice();
-         auto result = device->CreateTexture2D(
+         auto& device = renderer->GetDevice();
+         auto result = device.CreateTexture2D(
             &texDesc,
             nullptr,
             &texture);
@@ -54,11 +56,11 @@ namespace Mile
          {
             D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
             ZeroMemory(&rtvDesc, sizeof(rtvDesc));
-            rtvDesc.Format = format;
+            rtvDesc.Format = static_cast<DXGI_FORMAT>(format);
             rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
             rtvDesc.Texture2D.MipSlice = 0;
 
-            result = device->CreateRenderTargetView(
+            result = device.CreateRenderTargetView(
                texture,
                &rtvDesc,
                &m_rtv);
@@ -104,6 +106,7 @@ namespace Mile
             texture->GetDesc(&desc);
             m_width = desc.Width;
             m_height = desc.Height;
+            m_format = static_cast<EColorFormat>(desc.Format);
 
             m_depthStencilBuffer = depthStencilBuffer;
 

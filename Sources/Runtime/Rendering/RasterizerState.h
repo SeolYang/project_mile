@@ -3,19 +3,6 @@
 
 namespace Mile
 {
-   enum class ECullMode
-   {
-      None,
-      Front,
-      Back
-   };
-
-   enum class EWindingOrder
-   {
-      CCW,
-      CW
-   };
-
    class RendererDX11;
    /**
     * @brief	렌더러가 Rasterizer 단계에서 어떻게 동작할지에 대해 기술하는 클래스 입니다.

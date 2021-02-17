@@ -23,8 +23,8 @@ namespace Mile
          if (Compile(shaderPath, EShaderType::VertexShader))
          {
             RendererDX11* renderer = GetRenderer();
-            auto device = renderer->GetDevice();
-            auto result = device->CreateVertexShader(m_blob->GetBufferPointer(), m_blob->GetBufferSize(),
+            auto& device = renderer->GetDevice();
+            auto result = device.CreateVertexShader(m_blob->GetBufferPointer(), m_blob->GetBufferSize(),
                nullptr,
                &m_shader);
 

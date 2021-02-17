@@ -19,7 +19,6 @@ namespace Mile
          m_colorFormat(EColorFormat::R8G8B8A8_UNORM),
          m_bEnableStencil(true),
          m_renderTarget(nullptr),
-         m_depthStencil(nullptr),
          Resource(context, path, ResourceType::RenderTexture)
       {
       }
@@ -89,7 +88,6 @@ namespace Mile
       bool m_bEnableStencil;
 
       RenderTargetDX11* m_renderTarget;
-      DepthStencilBufferDX11* m_depthStencil;
 
    };
 }

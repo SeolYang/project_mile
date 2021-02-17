@@ -40,8 +40,8 @@ namespace Mile
          bufferDesc.MiscFlags = 0;
 
          RendererDX11* renderer = GetRenderer();
-         auto device = renderer->GetDevice();
-         auto result = device->CreateTexture2D(
+         auto& device = renderer->GetDevice();
+         auto result = device.CreateTexture2D(
             &bufferDesc,
             nullptr,
             &m_depthStencilBuffer);
@@ -53,7 +53,7 @@ namespace Mile
             dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
             dsvDesc.Texture2D.MipSlice = 0;
 
-            result = device->CreateDepthStencilView(m_depthStencilBuffer, &dsvDesc, &m_depthStencilView);
+            result = device.CreateDepthStencilView(m_depthStencilBuffer, &dsvDesc, &m_depthStencilView);
             if (!FAILED(result))
             {
                D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
@@ -63,7 +63,7 @@ namespace Mile
                srvDesc.Texture2D.MipLevels = -1;
                srvDesc.Texture2D.MostDetailedMip = 0;
 
-               result = device->CreateShaderResourceView(m_depthStencilBuffer, &srvDesc, &m_srv);
+               result = device.CreateShaderResourceView(m_depthStencilBuffer, &srvDesc, &m_srv);
                if (!FAILED(result))
                {
                   RenderObject::ConfirmInit();

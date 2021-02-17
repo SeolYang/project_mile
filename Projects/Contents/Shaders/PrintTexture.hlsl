@@ -20,14 +20,14 @@ struct PSInput
 };
 
 /* Constant Buffers (Pixel Shader) */
-cbuffer ExtractParams : register(b0)
+cbuffer BlendingParams : register(b0)
 {
-	float Threshold;
+	float SrcRatio : packoffset(c0);
 };
 
 /* Textures & Samplers */
-Texture2D renderBuffer					: register(t0);
-SamplerState Sampler						: register(s0);
+Texture2D srcBuffer			: register(t0);
+SamplerState Sampler			: register(s0);
 
 VSOutput MileVS(in VSInput input)
 {
@@ -39,13 +39,6 @@ VSOutput MileVS(in VSInput input)
 
 float4 MilePS(in PSInput input) : SV_Target0
 {
-	float3 result = 0.0f;
-	float3 color = renderBuffer.Sample(Sampler, input.TexCoord).rgb;
-	float brightness = max(color.r, max(color.g, color.b));
-	if (brightness > Threshold)
-	{
-		result = color;
-	}
-
-	return float4(result, 1.0f);
+	float3 srcColor = srcBuffer.Sample(Sampler, input.TexCoord).rgb * SrcRatio;
+	return float4(srcColor, 1.0f);
 }

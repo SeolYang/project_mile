@@ -14,7 +14,6 @@ namespace Mile
    RenderTexture::~RenderTexture()
    {
       SafeDelete(m_renderTarget);
-      SafeDelete(m_depthStencil);
    }
 
    bool RenderTexture::Init()
@@ -93,17 +92,9 @@ namespace Mile
       RendererDX11* renderer = Engine::GetRenderer();
       if (renderer != nullptr)
       {
-         SafeDelete(m_depthStencil);
-         m_depthStencil = new DepthStencilBufferDX11(renderer);
-         if (!m_depthStencil->Init(m_width, m_height, m_bEnableStencil))
-         {
-            ME_LOG(MileRenderTexture, Fatal, TEXT("Failed to initialize depth stencil!"));
-            return;
-         }
-
          SafeDelete(m_renderTarget);
          m_renderTarget = new RenderTargetDX11(renderer);
-         if (!m_renderTarget->Init(m_width, m_height, ColorFormatToDXGIFormat(m_colorFormat), m_depthStencil))
+         if (!m_renderTarget->Init(m_width, m_height, m_colorFormat, nullptr))
          {
             ME_LOG(MileRenderTexture, Fatal, TEXT("Failed to initialize render target!"));
             return;

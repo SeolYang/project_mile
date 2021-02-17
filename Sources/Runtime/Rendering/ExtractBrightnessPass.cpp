@@ -36,7 +36,7 @@ namespace Mile
          }
 
          m_outputHDRBuffer = new RenderTargetDX11(renderer);
-         if (!m_outputHDRBuffer->Init(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, globalDepthStencilBuffer))
+         if (!m_outputHDRBuffer->Init(width, height, EColorFormat::R16G16B16A16_FLOAT, globalDepthStencilBuffer))
          {
             return false;
          }
