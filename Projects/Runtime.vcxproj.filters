@@ -796,15 +796,6 @@
     <FxCompile Include="Contents\Shaders\GeometryPass.hlsl">
       <Filter>Shaders\PBS</Filter>
     </FxCompile>
-    <FxCompile Include="Contents\Shaders\LightBuffer.hlsl">
-      <Filter>Shaders\Light-Pre Pass</Filter>
-    </FxCompile>
-    <FxCompile Include="Contents\Shaders\Shading.hlsl">
-      <Filter>Shaders\Light-Pre Pass</Filter>
-    </FxCompile>
-    <FxCompile Include="Contents\Shaders\CheckerBoardInterpolate.hlsl">
-      <Filter>Shaders\Light-Pre Pass</Filter>
-    </FxCompile>
     <FxCompile Include="Contents\Shaders\Equirectangular2Cube.hlsl">
       <Filter>Shaders\PBS</Filter>
     </FxCompile>
@@ -834,9 +825,6 @@
     </FxCompile>
     <FxCompile Include="Contents\Shaders\ExtractBrightness.hlsl">
       <Filter>Shaders\Post-Process</Filter>
-    </FxCompile>
-    <FxCompile Include="Contents\Shaders\GBuffer.hlsl">
-      <Filter>Shaders\Light-Pre Pass</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\SSAO.hlsl">
       <Filter>Shaders\Post-Process</Filter>
