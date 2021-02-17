@@ -43,17 +43,12 @@ float4 MilePS(in PSInput input) : SV_Target0
 {
 	float3 color = renderBuffer.Sample(AnisoSampler, input.TexCoord).rgb;
 	float3 mappedColor;
+
 	/** Exposure Tone Mapping */
-	if (ExposureFactor >= 0.0f)
-	{
-		mappedColor = float3(1.0f, 1.0f, 1.0f) - exp(-color * ExposureFactor);
-	}
+	mappedColor = float3(1.0f, 1.0f, 1.0f) - exp(-color * ExposureFactor);
 
 	/** Gamma Correction */
-	if (GammaFactor >= 0.0f)
-	{
-		mappedColor = pow(mappedColor, (1.0f / GammaFactor));
-	}
+	mappedColor = pow(mappedColor, (1.0f / GammaFactor));
 
 	return float4(mappedColor, 1.0f);
 }

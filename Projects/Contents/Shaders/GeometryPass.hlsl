@@ -93,12 +93,12 @@ PSOutput MilePS(in PSInput input)
 {
 	float2 uv = input.TexCoord + uvOffset;
 	/* Albedo */
-	float3 albedo = pow(baseColorMap.Sample(Sampler, uv), 2.2).rgb;
-	albedo += pow(baseColorFactor, 2.2);
+	float3 albedo = pow(baseColorMap.Sample(Sampler, uv).rgb, 2.2);
+	albedo += baseColorFactor;
 	
 	/* Emissive */
-	float3 emissive = pow(emissiveMap.Sample(Sampler, uv), 2.2).rgb;
-	emissive += pow(emissiveFactor, 2.2);
+	float3 emissive = pow(emissiveMap.Sample(Sampler, uv).rgb, 2.2);
+	emissive += emissiveFactor;
 	
 	/* Metallic-Roughness */
 	float roughness = metallicRoughnessMap.Sample(Sampler, uv).g;
