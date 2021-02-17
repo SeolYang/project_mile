@@ -147,7 +147,8 @@ namespace Mile
       m_hdrBuffer(nullptr),
       m_extractedBrightness(nullptr),
       m_ssao(nullptr),
-      m_blurredSSAO(nullptr)
+      m_blurredSSAO(nullptr),
+      m_pingPongBuffers({ nullptr, })
    {
    }
 
@@ -2182,15 +2183,6 @@ namespace Mile
          ShaderDescriptor(),
          m_gaussBloomPassPS);
 
-      RenderTargetDescriptor pingPongBufferDesc;
-      pingPongBufferDesc.Renderer = this;
-      pingPongBufferDesc.ResolutionReference = &m_hdrBuffer;
-      pingPongBufferDesc.FormatReference = &m_hdrBuffer;
-      for (size_t idx = 0; idx < m_pingPongBuffers.size(); ++idx)
-      {
-         m_pingPongBuffers[idx] = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(pingPongBufferDesc);
-      }
-
       std::array<RenderTargetRefResource*, 2> pingPongBuffersRefRes;
       for (size_t idx = 0; idx < m_pingPongBuffers.size(); ++idx)
       {
@@ -2614,6 +2606,10 @@ namespace Mile
       SafeDelete(m_gBuffer);
       SafeDelete(m_hdrBuffer);
       SafeDelete(m_extractedBrightness);
+      SafeDelete(m_ssao);
+      SafeDelete(m_blurredSSAO);
+      SafeDelete(m_pingPongBuffers[0]);
+      SafeDelete(m_pingPongBuffers[1]);
 
       auto renderRes = this->GetRenderResolution();
 
@@ -2635,6 +2631,15 @@ namespace Mile
       brightnessRenderTargetDesc.ResolutionReference = &m_hdrBuffer;
       brightnessRenderTargetDesc.FormatReference = &m_hdrBuffer;
       m_extractedBrightness = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(brightnessRenderTargetDesc);
+
+      RenderTargetDescriptor pingPongBufferDesc;
+      pingPongBufferDesc.Renderer = this;
+      pingPongBufferDesc.ResolutionReference = &m_hdrBuffer;
+      pingPongBufferDesc.FormatReference = &m_hdrBuffer;
+      for (size_t idx = 0; idx < m_pingPongBuffers.size(); ++idx)
+      {
+         m_pingPongBuffers[idx] = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(pingPongBufferDesc);
+      }
 
       RenderTargetDescriptor outputSSAODesc;
       outputSSAODesc.Renderer = this;
