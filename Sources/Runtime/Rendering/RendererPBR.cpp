@@ -1218,8 +1218,8 @@ namespace Mile
                auto quadMesh = *data.QuadMeshRef->GetActual();
                auto outputBrdfLUT = *data.OutputBrdfLUTRef->GetActual();
 
-               viewport->SetWidth(outputBrdfLUT->GetWidth());
-               viewport->SetHeight(outputBrdfLUT->GetHeight());
+               viewport->SetWidth((float)outputBrdfLUT->GetWidth());
+               viewport->SetHeight((float)outputBrdfLUT->GetHeight());
 
                /** Binds */
                vertexShader->Bind(immediateContext);

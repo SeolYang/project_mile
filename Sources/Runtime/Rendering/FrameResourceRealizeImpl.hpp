@@ -186,7 +186,7 @@ namespace Elaina
    ConstantBufferDX11* Realize(const ConstantBufferDescriptor& desc)
    {
       ConstantBufferDX11* buffer = new ConstantBufferDX11(desc.Renderer);
-      if (!buffer->Init(desc.Size))
+      if (!buffer->Init((UINT)desc.Size))
       {
          Elaina::SafeDelete(buffer);
       }
@@ -238,8 +238,8 @@ namespace Elaina
       {
          if ((*desc.OutputRenderTargetReference) != nullptr)
          {
-            viewport->SetWidth((*desc.OutputRenderTargetReference)->GetWidth());
-            viewport->SetHeight((*desc.OutputRenderTargetReference)->GetHeight());
+            viewport->SetWidth((float)(*desc.OutputRenderTargetReference)->GetWidth());
+            viewport->SetHeight((float)(*desc.OutputRenderTargetReference)->GetHeight());
          }
       }
       else
