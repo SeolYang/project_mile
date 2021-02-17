@@ -45,26 +45,23 @@ namespace Mile
 
          ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
          ImGui::Begin("Game", nullptr, windowFlag);
-         if (true)//(renderer->IsRenderedFrame())
+         if (m_editorCameraRenderTex != nullptr)
          {
-            if (m_editorCameraRenderTex != nullptr)
-            {
-               auto contentRegion = ImGui::GetContentRegionAvail();
+            auto contentRegion = ImGui::GetContentRegionAvail();
 
-               ImVec2 windowSize = ImGui::GetWindowSize();
-               float titleBarHeight = ImGui::GetCurrentWindow()->TitleBarHeight();
-               ImVec2 actualContentArea = ImVec2{ windowSize.x, windowSize.y - titleBarHeight };
+            ImVec2 windowSize = ImGui::GetWindowSize();
+            float titleBarHeight = ImGui::GetCurrentWindow()->TitleBarHeight();
+            ImVec2 actualContentArea = ImVec2{ windowSize.x, windowSize.y - titleBarHeight };
 
-               auto renderRes = renderer->GetRenderResolution();
-               Vector2 relativeOutputRes = FindResolutionWithAspectRatio(actualContentArea.x, actualContentArea.y, renderRes.x / renderRes.y);
-               ImVec2 outputRes{ relativeOutputRes.x, relativeOutputRes.y };
-               m_editorCameraRenderTex->SetWidth((UINT32)renderRes.x);
-               m_editorCameraRenderTex->SetHeight((UINT32)renderRes.y);
-               //m_editorCameraComponent->SetFov(GameViewDefaultFOV * ((outputRes.x + outputRes.y) / (GameViewDefaultWidth + GameViewDefaultHeight)));
-               ImGui::SetCursorPosX((actualContentArea.x - outputRes.x) * 0.5f);
-               ImGui::SetCursorPosY((actualContentArea.y - outputRes.y) * 0.5f + titleBarHeight);
-               ImGui::Image((void*)m_editorCameraRenderTex->GetRenderTarget()->GetTexture()->GetSRV(), outputRes);
-            }
+            auto renderRes = renderer->GetRenderResolution();
+            Vector2 relativeOutputRes = FindResolutionWithAspectRatio(actualContentArea.x, actualContentArea.y, renderRes.x / renderRes.y);
+            ImVec2 outputRes{ relativeOutputRes.x, relativeOutputRes.y };
+            m_editorCameraRenderTex->SetWidth((UINT32)renderRes.x);
+            m_editorCameraRenderTex->SetHeight((UINT32)renderRes.y);
+            //m_editorCameraComponent->SetFov(GameViewDefaultFOV * ((outputRes.x + outputRes.y) / (GameViewDefaultWidth + GameViewDefaultHeight)));
+            ImGui::SetCursorPosX((actualContentArea.x - outputRes.x) * 0.5f);
+            ImGui::SetCursorPosY((actualContentArea.y - outputRes.y) * 0.5f + titleBarHeight);
+            ImGui::Image((void*)m_editorCameraRenderTex->GetRenderTarget()->GetTexture()->GetSRV(), outputRes);
          }
          ImGui::End();
          ImGui::PopStyleColor();
