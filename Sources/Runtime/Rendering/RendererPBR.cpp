@@ -490,7 +490,7 @@ namespace Mile
          return false;
       }
 
-      m_toneMappingPS = Elaina::Realize<ShaderDescriptor, PixelShaderDX11>(printTextureDesc);
+      m_toneMappingPS = Elaina::Realize<ShaderDescriptor, PixelShaderDX11>(toneMappingDesc);
       if (m_toneMappingPS == nullptr)
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load tone mapping pixel shader!"));
