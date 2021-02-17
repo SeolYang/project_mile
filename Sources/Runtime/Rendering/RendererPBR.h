@@ -42,6 +42,12 @@ namespace Mile
       float Intensity = 0.8f;
    };
 
+   struct MEAPI ToneMappingParams
+   {
+      float ExposureFactor = 2.4f;
+      float GammaFactor = 2.2f;
+   };
+
    enum class MEAPI ESkyboxType
    {
       EnvironmentMap,
@@ -123,6 +129,9 @@ namespace Mile
       VertexShaderDX11* m_printTextureVS;
       PixelShaderDX11* m_printTexturePS;
 
+      VertexShaderDX11* m_toneMappingVS;
+      PixelShaderDX11* m_toneMappingPS;
+
       GBuffer* m_gBuffer;
       RenderTargetDX11* m_hdrBuffer;
       RenderTargetDX11* m_extractedBrightness;
@@ -155,6 +164,7 @@ namespace Mile
       ESkyboxType m_renderSkyboxType;
 
       BloomParams m_bloomParams;
+      ToneMappingParams m_toneMappingParams;
 
    };
 }

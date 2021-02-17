@@ -55,9 +55,6 @@
     <Filter Include="ThirdParty\optick">
       <UniqueIdentifier>{1a366322-d6de-46f1-9422-9a558827b5a0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Rendering\RenderPasses">
-      <UniqueIdentifier>{be4efd3a-942d-4e6d-b102-e563be4c9ed6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Rendering\Resources">
       <UniqueIdentifier>{26a79c48-8016-45ba-9875-405c6f2efc4c}</UniqueIdentifier>
     </Filter>
@@ -417,56 +414,8 @@
     <ClInclude Include="..\Sources\Runtime\Rendering\RenderingCore.h">
       <Filter>Sources\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\RenderingPass.h">
-      <Filter>Sources\Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="..\Sources\Runtime\Rendering\RenderObject.h">
       <Filter>Sources\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\AmbientEmissivePass.h">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\BlendingPass.h">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\BoxBloomPass.h">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\ConvertGBufferToViewPass.h">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\Equirect2CubemapPass.h">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\ExtractBrightnessPass.h">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\GaussianBlurPass.h">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\GeometryPass.h">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\IntegrateBRDFPass.h">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\IrradianceConvPass.h">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\LightingPass.h">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\ToneMappingPass.h">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\SkyboxPass.h">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\SSAOBlurPass.h">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\SSAOPass.h">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="..\Sources\Runtime\Rendering\BufferDX11.h">
       <Filter>Sources\Rendering\Resources</Filter>
@@ -524,9 +473,6 @@
     </ClInclude>
     <ClInclude Include="..\Sources\Runtime\Rendering\VertexShaderDX11.h">
       <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\PrefilteringPass.h">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="..\Sources\Runtime\Rendering\Viewport.h">
       <Filter>Sources\Rendering\States</Filter>
@@ -710,56 +656,8 @@
     <ClCompile Include="..\Sources\Runtime\MT\ThreadPool.cpp">
       <Filter>Sources\MT</Filter>
     </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\RenderingPass.cpp">
-      <Filter>Sources\Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="..\Sources\Runtime\Rendering\RenderObject.cpp">
       <Filter>Sources\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\AmbientEmissivePass.cpp">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\BlendingPass.cpp">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\BoxBloomPass.cpp">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\ConvertGBufferToViewPass.cpp">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\Equirect2CubemapPass.cpp">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\ExtractBrightnessPass.cpp">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\GaussianBlurPass.cpp">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\GeometryPass.cpp">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\IntegrateBRDFPass.cpp">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\IrradianceConvPass.cpp">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\LightingPass.cpp">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\ToneMappingPass.cpp">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\SSAOBlurPass.cpp">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\SkyboxPass.cpp">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\SSAOPass.cpp">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\Sources\Runtime\Rendering\BufferDX11.cpp">
       <Filter>Sources\Rendering\Resources</Filter>
@@ -811,9 +709,6 @@
     </ClCompile>
     <ClCompile Include="..\Sources\Runtime\Rendering\VertexShaderDX11.cpp">
       <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\PrefilteringPass.cpp">
-      <Filter>Sources\Rendering\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\Sources\Runtime\Rendering\Viewport.cpp">
       <Filter>Sources\Rendering\States</Filter>

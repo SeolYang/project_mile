@@ -159,6 +159,8 @@ namespace Mile
       SafeDelete(m_extractedBrightness);
       SafeDelete(m_hdrBuffer);
       SafeDelete(m_gBuffer);
+      SafeDelete(m_toneMappingPS);
+      SafeDelete(m_toneMappingVS);
       SafeDelete(m_printTexturePS);
       SafeDelete(m_printTextureVS);
       SafeDelete(m_gaussBloomPassPS);
@@ -455,7 +457,7 @@ namespace Mile
          return false;
       }
 
-      /** Gaussian Bloom Pass Shaders  */
+      /** Print Texture Pass Shaders  */
       ShaderDescriptor printTextureDesc;
       printTextureDesc.Renderer = this;
       printTextureDesc.FilePath = TEXT("Contents/Shaders/PrintTexture.hlsl");
@@ -470,6 +472,24 @@ namespace Mile
       if (m_printTexturePS == nullptr)
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load print texture pixel shader!"));
+         return false;
+      }
+
+      /** Tone Mapping Pass Shaders  */
+      ShaderDescriptor toneMappingDesc;
+      toneMappingDesc.Renderer = this;
+      toneMappingDesc.FilePath = TEXT("Contents/Shaders/ToneMapping.hlsl");
+      m_toneMappingVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(toneMappingDesc);
+      if (m_toneMappingVS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load tone mapping vertex shader!"));
+         return false;
+      }
+
+      m_toneMappingPS = Elaina::Realize<ShaderDescriptor, PixelShaderDX11>(printTextureDesc);
+      if (m_toneMappingPS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load tone mapping pixel shader!"));
          return false;
       }
 
@@ -493,7 +513,6 @@ namespace Mile
       struct GeometryPassData : public RenderPassDataBase
       {
          CameraRefResource* TargetCameraRef = nullptr;
-         RenderTargetRefResource* OutputRenderTargetRef = nullptr;
          MaterialMapResource* MateralMap = nullptr;
          SamplerResource* Sampler = nullptr;
          ConstantBufferResource* TransformBuffer = nullptr;
@@ -510,7 +529,6 @@ namespace Mile
          {
             data.Renderer = this;
             data.TargetCameraRef = builder.Read(targetCameraRefRes);
-            data.OutputRenderTargetRef = builder.Read(outputRenderTargetRefRes);
             data.MateralMap = builder.Read(materialMapRes);
             data.VertexShader = builder.Read(geometryPassVS);
             data.PixelShader = builder.Read(geometryPassPS);
@@ -2313,7 +2331,7 @@ namespace Mile
             data.PingPongBufferRef[0] = builder.Read(bloomGaussBlurPassData.PingPongBufferRef[0]);
             data.PingPongBufferRef[1] = builder.Read(bloomGaussBlurPassData.PingPongBufferRef[1]);
 
-            data.OutputRef = builder.Read(skyboxPassData.OutputRef);
+            data.OutputRef = builder.Write(skyboxPassData.OutputRef);
          },
          [](const BloomBlendPassData& data)
          {
@@ -2364,33 +2382,45 @@ namespace Mile
 
       auto bloomBlendPassData = bloomBlendPass->GetData();
 
-      /** Print to Final Render Target */
-      struct FinalPassData : public RenderPassDataBase
+      /** Tone Mapping Pass */
+      struct ToneMappingPassData : public RenderPassDataBase
       {
          SamplerResource* Sampler = nullptr;
          ViewportResource* Viewport = nullptr;
          DepthStencilStateResource* DepthDisableState = nullptr;
+         VoidRefResource* Params = nullptr;
          ConstantBufferResource* ParamsBuffer = nullptr;
          MeshRefResource* QuadMeshRef = nullptr;
          RenderTargetRefResource* InputRef = nullptr;
          RenderTargetRefResource* OutputRef = nullptr;
       };
 
-      auto finalPass = m_frameGraph.AddCallbackPass<FinalPassData>("FinalPass",
-         [&](Elaina::RenderPassBuilder& builder, FinalPassData& data)
+      auto toneMappingVSRes = m_frameGraph.AddExternalPermanentResource("ToneMappingVertexShader", ShaderDescriptor(), m_toneMappingVS);
+      auto toneMappingPSRes = m_frameGraph.AddExternalPermanentResource("ToneMappingPixelShader", ShaderDescriptor(), m_toneMappingPS);
+
+      auto toneMappingPass = m_frameGraph.AddCallbackPass<ToneMappingPassData>("ToneMappingPass",
+         [&](Elaina::RenderPassBuilder& builder, ToneMappingPassData& data)
          {
             data.Renderer = this;
-            data.VertexShader = builder.Read(printTextureVSRes);
-            data.PixelShader = builder.Read(printTexturePSRes);
+            data.VertexShader = builder.Read(toneMappingVSRes);
+            data.PixelShader = builder.Read(toneMappingPSRes);
             data.Sampler = builder.Read(bloomBlendPassData.Sampler);
             data.Viewport = builder.Read(bloomBlendPassData.Viewport);
             data.DepthDisableState = builder.Read(bloomBlendPassData.DepthDisableState);
-            data.ParamsBuffer = builder.Read(bloomBlendPassData.ParamsBuffer);
+
+            VoidRefDescriptor paramsDesc;
+            paramsDesc.Reference = &m_toneMappingParams;
+            data.Params = builder.Create<VoidRefResource>("ToneMappingParams", paramsDesc);
+
+            ConstantBufferDescriptor toneMappingBufferDesc;
+            toneMappingBufferDesc.Renderer = this;
+            toneMappingBufferDesc.Size = sizeof(OneVector2ConstantBuffer);
+            data.ParamsBuffer = builder.Create<ConstantBufferResource>("ToneMappingConstantBuffer", toneMappingBufferDesc);
             data.QuadMeshRef = builder.Read(bloomBlendPassData.QuadMeshRef);
             data.InputRef = builder.Read(bloomBlendPassData.OutputRef);
             data.OutputRef = builder.Write(outputRenderTargetRefRes);
          },
-         [](const FinalPassData& data)
+         [](const ToneMappingPassData& data)
          {
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
             context.ClearState();
@@ -2402,6 +2432,7 @@ namespace Mile
             auto viewport = data.Viewport->GetActual();
             auto depthDisableState = data.DepthDisableState->GetActual();
             auto paramsBuffer = data.ParamsBuffer->GetActual();
+            auto params = (ToneMappingParams*)(*data.Params->GetActual());
             auto quadMesh = *data.QuadMeshRef->GetActual();
             auto input = *data.InputRef->GetActual();
             auto output = *data.OutputRef->GetActual();
@@ -2418,8 +2449,8 @@ namespace Mile
             output->BindAsRenderTarget(context, false, false);
 
             /** Update Constant Buffers */
-            auto mappedParamsBuffer = paramsBuffer->Map<OneFloatConstantBuffer>(context);
-            (*mappedParamsBuffer) = OneFloatConstantBuffer{ 1.0f };
+            auto mappedParamsBuffer = paramsBuffer->Map<OneVector2ConstantBuffer>(context);
+            (*mappedParamsBuffer) = OneVector2ConstantBuffer{ Vector2(params->ExposureFactor, params->GammaFactor) };
             paramsBuffer->UnMap(context);
 
             /** Render */
