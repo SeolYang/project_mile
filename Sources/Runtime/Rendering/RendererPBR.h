@@ -38,7 +38,7 @@ namespace Mile
    struct MEAPI BloomParams
    {
       float BrightnessThreshold = 0.5f;
-      unsigned int BlurAmount = 2;
+      unsigned int BlurAmount = 8;
       float Intensity = 0.8f;
    };
 
@@ -136,6 +136,8 @@ namespace Mile
       RenderTargetDX11* m_hdrBuffer;
       RenderTargetDX11* m_extractedBrightness;
       std::array<RenderTargetDX11*, 2> m_pingPongBuffers;
+      RenderTargetDX11* m_ssao;
+      RenderTargetDX11* m_blurredSSAO;
 
       /** External Resources; Don't delete in renderer! */
       /** Per Frame Datas */

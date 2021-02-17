@@ -319,33 +319,33 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nID : 66
 \nRefs : 1
 \nExternal Permanent", style=filled, fillcolor=palegreen]
-"SSAOEnabledRef" [label="SSAOEnabledRef
+"SSAO" [label="SSAO
 \nID : 67
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"SSAOEnabledRef" [label="SSAOEnabledRef
+\nID : 68
 \nRefs : 2
 \nTransient", style=filled, fillcolor=peachpuff]
 "SSAOSampler" [label="SSAOSampler
-\nID : 68
+\nID : 69
 \nRefs : 1
 \nTransient", style=filled, fillcolor=peachpuff]
 "NoiseSampler" [label="NoiseSampler
-\nID : 69
-\nRefs : 0
-\nTransient", style=filled, fillcolor=peachpuff]
-"PositionSampler" [label="PositionSampler
 \nID : 70
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"SSAOParamsConstantBuffer" [label="SSAOParamsConstantBuffer
+"PositionSampler" [label="PositionSampler
 \nID : 71
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"SSAONoiseTexture" [label="SSAONoiseTexture
+"SSAOParamsConstantBuffer" [label="SSAOParamsConstantBuffer
 \nID : 72
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"SSAOOutput" [label="SSAOOutput
+"SSAONoiseTexture" [label="SSAONoiseTexture
 \nID : 73
-\nRefs : 1
+\nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
 "SSAOBlurPassVertexShader" [label="SSAOBlurPassVertexShader
 \nID : 74
@@ -358,7 +358,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "BlurredSSAO" [label="BlurredSSAO
 \nID : 76
 \nRefs : 1
-\nTransient", style=filled, fillcolor=peachpuff]
+\nExternal Permanent", style=filled, fillcolor=palegreen]
 "AmbientEmissivePassVertexShader" [label="AmbientEmissivePassVertexShader
 \nID : 77
 \nRefs : 1
@@ -493,10 +493,10 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "LightingPass" -> { "HDRBufferRef" } [color=firebrick1]
 "ConvertGBufferToViewSpacePass" -> { "PointClampSampler" "ConvertParamsConstantBuffer" "ViewSpaceGBuffer" } [color=aquamarine]
 "ConvertGBufferToViewSpacePass" -> { } [color=firebrick1]
-"SSAOPass" -> { "SSAOEnabledRef" "SSAOSampler" "NoiseSampler" "PositionSampler" "SSAOParamsConstantBuffer" "SSAONoiseTexture" "SSAOOutput" } [color=aquamarine]
-"SSAOPass" -> { } [color=firebrick1]
-"SSAOBlurPass" -> { "BlurredSSAO" } [color=aquamarine]
-"SSAOBlurPass" -> { } [color=firebrick1]
+"SSAOPass" -> { "SSAOEnabledRef" "SSAOSampler" "NoiseSampler" "PositionSampler" "SSAOParamsConstantBuffer" "SSAONoiseTexture" } [color=aquamarine]
+"SSAOPass" -> { "SSAO" } [color=firebrick1]
+"SSAOBlurPass" -> { } [color=aquamarine]
+"SSAOBlurPass" -> { "BlurredSSAO" } [color=firebrick1]
 "AmbientEmissivePass" -> { "AnisoSampler" "LinearClampSampler" "SSAOSampler" "AmbientEmissiveParamsConstantBuffer" "GlobalAOFactorRef" } [color=aquamarine]
 "AmbientEmissivePass" -> { "HDRBufferRef" } [color=firebrick1]
 "SkyboxPass" -> { "SkyboxType" "SkyboxSampler" "SkyboxTransformConstantBuffer" } [color=aquamarine]
@@ -577,13 +577,13 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "ViewSpaceGBuffer" -> { "SSAOPass" } [color=yellow]
 "SSAOPassVertexShader" -> { "SSAOPass" } [color=yellow]
 "SSAOPassPixelShader" -> { "SSAOPass" } [color=yellow]
+"SSAO" -> { "SSAOBlurPass" } [color=yellow]
 "SSAOEnabledRef" -> { "SSAOBlurPass" "AmbientEmissivePass" } [color=yellow]
 "SSAOSampler" -> { "SSAOBlurPass" } [color=yellow]
 "NoiseSampler" -> { } [color=yellow]
 "PositionSampler" -> { } [color=yellow]
 "SSAOParamsConstantBuffer" -> { } [color=yellow]
 "SSAONoiseTexture" -> { } [color=yellow]
-"SSAOOutput" -> { "SSAOBlurPass" } [color=yellow]
 "SSAOBlurPassVertexShader" -> { "SSAOBlurPass" } [color=yellow]
 "SSAOBlurPassPixelShader" -> { "SSAOBlurPass" } [color=yellow]
 "BlurredSSAO" -> { "AmbientEmissivePass" } [color=yellow]

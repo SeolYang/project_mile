@@ -145,13 +145,17 @@ namespace Mile
       m_printTexturePS(nullptr),
       m_gBuffer(nullptr),
       m_hdrBuffer(nullptr),
-      m_extractedBrightness(nullptr)
+      m_extractedBrightness(nullptr),
+      m_ssao(nullptr),
+      m_blurredSSAO(nullptr)
    {
    }
 
    RendererPBR::~RendererPBR()
    {
       m_frameGraph.Clear();
+      SafeDelete(m_blurredSSAO);
+      SafeDelete(m_ssao);
       for (auto* pingPongBuffer : m_pingPongBuffers)
       {
          SafeDelete(pingPongBuffer);
@@ -1531,7 +1535,7 @@ namespace Mile
          GBufferResource* ViewspaceGBuffer = nullptr;
 
          MeshRefResource* QuadMeshRef = nullptr;
-         RenderTargetResource* Output = nullptr;
+         RenderTargetRefResource* OutputRef = nullptr;
       };
 
       auto ssaoPassVSRes = m_frameGraph.AddExternalPermanentResource(
@@ -1543,6 +1547,8 @@ namespace Mile
          "SSAOPassPixelShader",
          ShaderDescriptor(),
          m_ssaoPassPS);
+
+      auto ssaoOutputRefRes = m_frameGraph.AddExternalPermanentResource("SSAO", RenderTargetRefDescriptor(), &m_ssao);
 
       auto ssaoPass = m_frameGraph.AddCallbackPass<SSAOPassData>(
          "SSAOPass",
@@ -1602,9 +1608,7 @@ namespace Mile
             outputSSAODesc.Renderer = this;
             outputSSAODesc.ResolutionReference = &m_outputRenderTarget;
             outputSSAODesc.Format = EColorFormat::R32_FLOAT;
-            data.Output = builder.Create<RenderTargetResource>(
-               "SSAOOutput",
-               outputSSAODesc);
+            data.OutputRef = builder.Write(ssaoOutputRefRes);
          },
          [](const SSAOPassData& data)
          {
@@ -1628,7 +1632,7 @@ namespace Mile
                auto noiseTexture = data.NoiseTexture->GetActual();
                auto viewspaceGBuffer = data.ViewspaceGBuffer->GetActual();
                auto quadMesh = *data.QuadMeshRef->GetActual();
-               auto output = data.Output->GetActual();
+               auto output = *data.OutputRef->GetActual();
 
                /** Binds */
                vertexShader->Bind(immeidiateContext);
@@ -1687,16 +1691,18 @@ namespace Mile
 
          SamplerResource* Sampler = nullptr;
 
-         RenderTargetResource* Source = nullptr;
+         RenderTargetRefResource* SourceRef = nullptr;
          ViewportResource* Viewport = nullptr;
          DepthStencilStateResource* DepthDisableState = nullptr;
 
          MeshRefResource* QuadMeshRef = nullptr;
-         RenderTargetResource* Output = nullptr;
+         RenderTargetRefResource* OutputRef = nullptr;
       };
 
       auto ssaoBlurPassVSRes = m_frameGraph.AddExternalPermanentResource("SSAOBlurPassVertexShader", ShaderDescriptor(), m_ssaoBlurPassVS);
       auto ssaoBlurPassPSRes = m_frameGraph.AddExternalPermanentResource("SSAOBlurPassPixelShader", ShaderDescriptor(), m_ssaoBlurPassPS);
+
+      auto blurredSSAORefRes = m_frameGraph.AddExternalPermanentResource("BlurredSSAO", RenderTargetRefDescriptor(), &m_blurredSSAO);
 
       auto ssaoBlurPass = m_frameGraph.AddCallbackPass<SSAOBlurPassData>(
          "SSAOBlurPass",
@@ -1710,7 +1716,7 @@ namespace Mile
 
             data.Sampler = builder.Read(ssaoPassData.Sampler);
 
-            data.Source = builder.Read(ssaoPassData.Output);
+            data.SourceRef = builder.Read(ssaoPassData.OutputRef);
             data.Viewport = builder.Read(ssaoPassData.Viewport);
             data.DepthDisableState = builder.Read(ssaoPassData.DepthDisableState);
 
@@ -1720,7 +1726,7 @@ namespace Mile
             outputDesc.Renderer = this;
             outputDesc.ResolutionReference = &m_outputRenderTarget;
             outputDesc.Format = EColorFormat::R32_FLOAT;
-            data.Output = builder.Create<RenderTargetResource>("BlurredSSAO", outputDesc);
+            data.OutputRef = builder.Write(blurredSSAORefRes);
          },
          [](const SSAOBlurPassData& data)
          {
@@ -1734,11 +1740,11 @@ namespace Mile
                auto vertexShader = data.VertexShader->GetActual();
                auto pixelShader = data.PixelShader->GetActual();
                auto sampler = data.Sampler->GetActual();
-               auto source = data.Source->GetActual();
+               auto source = *data.SourceRef->GetActual();
                auto viewport = data.Viewport->GetActual();
                auto depthDisableState = data.DepthDisableState->GetActual();
                auto quadMesh = *data.QuadMeshRef->GetActual();
-               auto output = data.Output->GetActual();
+               auto output = *data.OutputRef->GetActual();
 
                /** Binds */
                vertexShader->Bind(context);
@@ -1783,7 +1789,7 @@ namespace Mile
          CameraRefResource* CamRef = nullptr;
          ConstantBufferResource* ParamsBuffer = nullptr;
          BoolRefResource* SSAOEnabledRef = nullptr;
-         RenderTargetResource* BlurredSSAO = nullptr;
+         RenderTargetRefResource* BlurredSSAORef = nullptr;
          FloatRefResource* GlobalAOFactorRef = nullptr;
          MeshRefResource* QuadMeshRef = nullptr;
          RenderTargetRefResource* OutputRef = nullptr;
@@ -1838,7 +1844,7 @@ namespace Mile
             paramsBufferDesc.Size = sizeof(AmbientParamsConstantBuffer);
             data.ParamsBuffer = builder.Create<ConstantBufferResource>("AmbientEmissiveParamsConstantBuffer", paramsBufferDesc);
             data.SSAOEnabledRef = builder.Read(ssaoBlurPassData.SSAOEnabledRef);
-            data.BlurredSSAO = builder.Read(ssaoBlurPassData.Output);
+            data.BlurredSSAORef = builder.Read(ssaoBlurPassData.OutputRef);
 
             FloatRefDescriptor globalAOFactorRefDesc;
             globalAOFactorRefDesc.Reference = &m_globalAOFactor;
@@ -1868,7 +1874,7 @@ namespace Mile
             auto brdfLUT = *data.BrdfLUTRef->GetActual();
             auto camera = *data.CamRef->GetActual();
             bool bSSAOEnabled = *(*data.SSAOEnabledRef->GetActual());
-            auto blurredSSAO = data.BlurredSSAO->GetActual();
+            auto blurredSSAO = *data.BlurredSSAORef->GetActual();
             auto quadMesh = *data.QuadMeshRef->GetActual();
             auto output = *data.OutputRef->GetActual();
 
@@ -2630,5 +2636,11 @@ namespace Mile
       brightnessRenderTargetDesc.FormatReference = &m_hdrBuffer;
       m_extractedBrightness = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(brightnessRenderTargetDesc);
 
+      RenderTargetDescriptor outputSSAODesc;
+      outputSSAODesc.Renderer = this;
+      outputSSAODesc.ResolutionReference = &m_hdrBuffer;
+      outputSSAODesc.Format = EColorFormat::R32_FLOAT;
+      m_ssao = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputSSAODesc);
+      m_blurredSSAO = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputSSAODesc);
    }
 }
