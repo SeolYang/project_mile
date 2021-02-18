@@ -55,18 +55,25 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float3 albedo = albedoBuffer.Sample(AnisoSampler, input.TexCoord).rgb;
 	float roughness = extraComponents.Sample(AnisoSampler, input.TexCoord).g;
 	float metallic = extraComponents.Sample(AnisoSampler, input.TexCoord).b;
-	
+
+	float distance = length(LightPos.xyz - worldPos);
+	float attenuation = 1.0f / (distance * distance);
+
 	float3 N = normalize(normalBuffer.Sample(AnisoSampler, input.TexCoord).xyz);
 	float3 V = normalize(CameraPos - worldPos);
-	float3 L = normalize(LightPos.rgb - worldPos);
+	float3 L = normalize(LightPos.xyz - worldPos);
+	if (LightType == 0) // Directional light
+	{
+		L = normalize(-LightDirection.xyz);
+		attenuation = 1.0f;
+	}
+
 	float3 H = normalize(V + L);
 	
 	float3 F0 = 0.04f;
 	F0 = lerp(F0, albedo, metallic);
 	
 	float3 Lo = 0.0f;
-	float distance = length(LightPos.xyz - worldPos);
-	float attenuation = 1.0f / (distance * distance);
 	float3 radiance = LightRadiance.rgb * attenuation;
 	
 	// Cook-Torrance BRDF
