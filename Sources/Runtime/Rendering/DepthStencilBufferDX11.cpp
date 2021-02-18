@@ -83,4 +83,59 @@ namespace Mile
 
       return false;
    }
+
+   bool DepthStencilBufferDX11::BindAsShaderResource(ID3D11DeviceContext& deviceContext, unsigned int bindSlot, EShaderType bindShader)
+   {
+      if (RenderObject::IsBindable())
+      {
+         switch (bindShader)
+         {
+         case EShaderType::VertexShader:
+            deviceContext.VSSetShaderResources(bindSlot, 1, &m_srv);
+            break;
+         case EShaderType::HullShader:
+            deviceContext.HSSetShaderResources(bindSlot, 1, &m_srv);
+            break;
+         case EShaderType::DomainShader:
+            deviceContext.DSSetShaderResources(bindSlot, 1, &m_srv);
+            break;
+         case EShaderType::GeometryShader:
+            deviceContext.GSSetShaderResources(bindSlot, 1, &m_srv);
+            break;
+         case EShaderType::PixelShader:
+            deviceContext.PSSetShaderResources(bindSlot, 1, &m_srv);
+            break;
+         }
+
+         return true;
+      }
+
+      return false;
+   }
+
+   void DepthStencilBufferDX11::UnbindShaderResource(ID3D11DeviceContext& deviceContext, unsigned int boundSlot, EShaderType boundShader)
+   {
+      if (RenderObject::IsBindable())
+      {
+         ID3D11ShaderResourceView* nullSRV = nullptr;
+         switch (boundShader)
+         {
+         case EShaderType::VertexShader:
+            deviceContext.VSSetShaderResources(boundSlot, 1, &nullSRV);
+            break;
+         case EShaderType::GeometryShader:
+            deviceContext.GSSetShaderResources(boundSlot, 1, &nullSRV);
+            break;
+         case EShaderType::DomainShader:
+            deviceContext.DSSetShaderResources(boundSlot, 1, &nullSRV);
+            break;
+         case EShaderType::HullShader:
+            deviceContext.HSSetShaderResources(boundSlot, 1, &nullSRV);
+            break;
+         case EShaderType::PixelShader:
+            deviceContext.PSSetShaderResources(boundSlot, 1, &nullSRV);
+            break;
+         }
+      }
+   }
 }

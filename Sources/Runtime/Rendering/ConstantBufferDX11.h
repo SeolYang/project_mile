@@ -40,17 +40,8 @@ namespace Mile
          return false;
       }
 
-      bool Bind(ID3D11DeviceContext& deviceContext, unsigned int slot, EShaderType shaderType);
-      void Unbind(ID3D11DeviceContext& deviceContext);
-
-      FORCEINLINE bool IsBound() const { return m_bIsBound; }
-      FORCEINLINE unsigned int GetBoundSlot() const { return m_boundSlot; }
-      FORCEINLINE EShaderType GetBoundShaderType() const { return m_boundShader; }
-
-   private:
-      bool           m_bIsBound;
-      unsigned int   m_boundSlot;
-      EShaderType    m_boundShader;
+      bool Bind(ID3D11DeviceContext& deviceContext, unsigned int bindSlot, EShaderType bindShader);
+      void Unbind(ID3D11DeviceContext& deviceContext, unsigned int boundSlot, EShaderType boundShader);
 
    };
 }

@@ -18,7 +18,6 @@ namespace Mile
       m_normalBuffer(nullptr),
       m_extraComponents(nullptr),
       m_blendState(nullptr),
-      m_bBoundDepthAsShaderResource(false),
       m_tempRenderTarget(nullptr),
       RenderObject(renderer)
    {
@@ -69,58 +68,51 @@ namespace Mile
    {
       if (RenderObject::IsBindable())
       {
-         if (!m_bBoundDepthAsShaderResource)
+         ID3D11DepthStencilView* dsv = nullptr;
+         if (m_depthStencilBuffer != nullptr)
          {
-            ID3D11DepthStencilView* dsv = nullptr;
-            if (m_depthStencilBuffer != nullptr)
+            dsv = m_depthStencilBuffer->GetDSV();
+            if (clearDepthStencil)
             {
-               dsv = m_depthStencilBuffer->GetDSV();
-               if (clearDepthStencil)
-               {
-                  deviceContext.ClearDepthStencilView(dsv,
-                     D3D11_CLEAR_DEPTH,
-                     1.0f,
-                     0);
-               }
-            }
-
-            std::array<ID3D11RenderTargetView*, GBUFFER_RENDER_TARGET_NUM> targets{
-               m_positionBuffer->GetRTV(),
-               m_albedoBuffer->GetRTV(),
-               m_emissiveAOBuffer->GetRTV(),
-               m_normalBuffer->GetRTV(),
-               m_extraComponents->GetRTV()
-            };
-
-            if (clearRenderTargets)
-            {
-               const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-               for (auto rtv : targets)
-               {
-                  deviceContext.ClearRenderTargetView(rtv, clearColor);
-               }
-            }
-
-            deviceContext.OMSetRenderTargets(GBUFFER_RENDER_TARGET_NUM, targets.data(), dsv);
-
-            if (m_blendState != nullptr)
-            {
-               if (m_blendState->Bind(deviceContext))
-               {
-                  return true;
-               }
+               deviceContext.ClearDepthStencilView(dsv,
+                  D3D11_CLEAR_DEPTH,
+                  1.0f,
+                  0);
             }
          }
-         else
+
+         std::array<ID3D11RenderTargetView*, GBUFFER_RENDER_TARGET_NUM> targets{
+            m_positionBuffer->GetRTV(),
+            m_albedoBuffer->GetRTV(),
+            m_emissiveAOBuffer->GetRTV(),
+            m_normalBuffer->GetRTV(),
+            m_extraComponents->GetRTV()
+         };
+
+         if (clearRenderTargets)
          {
-            ME_LOG(MileGBuffer, Warning, TEXT("GBuffer's depth buffer was already bounded as shader resource."));
+            const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+            for (auto rtv : targets)
+            {
+               deviceContext.ClearRenderTargetView(rtv, clearColor);
+            }
+         }
+
+         deviceContext.OMSetRenderTargets(GBUFFER_RENDER_TARGET_NUM, targets.data(), dsv);
+
+         if (m_blendState != nullptr)
+         {
+            if (m_blendState->Bind(deviceContext))
+            {
+               return true;
+            }
          }
       }
       
       return false;
    }
 
-   bool GBuffer::BindAsShaderResource(ID3D11DeviceContext& deviceContext, unsigned int startSlot, bool bBindDepthStencil)
+   bool GBuffer::BindAsShaderResource(ID3D11DeviceContext& deviceContext, unsigned int bindSlot, EShaderType bindShader, bool bBindDepthStencil)
    {
       if (RenderObject::IsBindable())
       {
@@ -133,7 +125,7 @@ namespace Mile
 
          for (unsigned int idx = 0; idx < GBUFFER_RENDER_TARGET_NUM; ++idx)
          {
-            if (!targets[idx]->BindAsShaderResource(deviceContext, startSlot + idx, EShaderType::PixelShader))
+            if (!targets[idx]->BindAsShaderResource(deviceContext, bindSlot + idx, bindShader))
             {
                return false;
             }
@@ -141,9 +133,7 @@ namespace Mile
 
          if (bBindDepthStencil)
          {
-            ID3D11ShaderResourceView* depthSRV = m_depthStencilBuffer->GetSRV();
-            deviceContext.PSSetShaderResources(startSlot + GBUFFER_RENDER_TARGET_NUM, 1, &depthSRV);
-            m_bBoundDepthAsShaderResource = bBindDepthStencil;
+            m_depthStencilBuffer->BindAsShaderResource(deviceContext, bindSlot + GBUFFER_RENDER_TARGET_NUM, bindShader);
          }
 
          return true;
@@ -152,28 +142,24 @@ namespace Mile
       return false;
    }
 
-   void GBuffer::UnbindShaderResource(ID3D11DeviceContext& deviceContext)
+   void GBuffer::UnbindShaderResource(ID3D11DeviceContext& deviceContext, unsigned int boundSlot, EShaderType boundShader, bool bBoundDepthStencil)
    {
       if (RenderObject::IsBindable())
       {
-         m_positionBuffer->UnbindShaderResource(deviceContext);
-         m_albedoBuffer->UnbindShaderResource(deviceContext);
-         m_emissiveAOBuffer->UnbindShaderResource(deviceContext);
-         m_normalBuffer->UnbindShaderResource(deviceContext);
-         m_extraComponents->UnbindShaderResource(deviceContext);
+         m_positionBuffer->UnbindShaderResource(deviceContext, boundSlot, boundShader);
+         m_albedoBuffer->UnbindShaderResource(deviceContext, boundSlot, boundShader);
+         m_emissiveAOBuffer->UnbindShaderResource(deviceContext, boundSlot, boundShader);
+         m_normalBuffer->UnbindShaderResource(deviceContext, boundSlot, boundShader);
+         m_extraComponents->UnbindShaderResource(deviceContext, boundSlot, boundShader);
 
-         if (m_bBoundDepthAsShaderResource)
+         if (bBoundDepthStencil)
          {
-            ID3D11ShaderResourceView* nullSRV = nullptr;
-            Texture2dDX11* positionTexture = m_positionBuffer->GetTexture();
-            unsigned int startSlot = positionTexture->GetBoundSlot();
-            deviceContext.PSSetShaderResources(startSlot + GBUFFER_RENDER_TARGET_NUM, 1, &nullSRV);
-            m_bBoundDepthAsShaderResource = false;
+            m_depthStencilBuffer->UnbindShaderResource(deviceContext, boundSlot, boundShader);
          }
       }
    }
 
-   bool GBuffer::BindDepthBufferWithExternalTarget(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderTarget, bool clearTarget, bool clearDepthStencil)
+   /*bool GBuffer::BindDepthBufferWithExternalTarget(ID3D11DeviceContext& deviceContext, RenderTargetDX11* renderTarget, bool clearTarget, bool clearDepthStencil)
    {
       bool bValidRenderTarget = renderTarget != nullptr && renderTarget->IsBindable();
       if (RenderObject::IsBindable() && bValidRenderTarget && m_tempRenderTarget == nullptr)
@@ -207,7 +193,7 @@ namespace Mile
       }
 
       return false;
-   }
+   }*/
 
    void GBuffer::UnbindDepthBuffer(ID3D11DeviceContext& deviceContext)
    {

@@ -37,6 +37,9 @@ namespace Mile
        */
       bool IsStencilEnabled() const { return m_bStencilEnabled; }
 
+      bool BindAsShaderResource(ID3D11DeviceContext& deviceContext, unsigned int bindSlot, EShaderType bindShader);
+      void UnbindShaderResource(ID3D11DeviceContext& deviceContext, unsigned int boundSlot, EShaderType boundShader);
+
    private:
       ID3D11Texture2D*        m_depthStencilBuffer;
       ID3D11DepthStencilView* m_depthStencilView;

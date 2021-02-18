@@ -16,12 +16,8 @@ namespace Mile
 
       virtual EShaderType GetShaderType() const override { return EShaderType::PixelShader; }
 
-      bool AddSampler(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE AddressModeU, D3D11_TEXTURE_ADDRESS_MODE AddressModeV, D3D11_TEXTURE_ADDRESS_MODE AddressModeW, D3D11_COMPARISON_FUNC compFunc);
-      bool AddSampler(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE AddressMode, D3D11_COMPARISON_FUNC compFunc);
-
    private:
       ID3D11PixelShader* m_shader;
-      std::vector<SamplerDX11*> m_samplers;
 
    };
 }

@@ -105,10 +105,7 @@ namespace Mile
 
    bool DynamicCubemap::BindAsRenderTarget(ID3D11DeviceContext& deviceContext, unsigned int faceIdx, unsigned int mipLevel, bool clearRenderTarget, bool clearDepth)
    {
-      /*
-      * @todo  렌더 타겟 클래스 이용/렌더 타겟 클래스 기능 확장(인터페이스 통합) : 아래 구현 내용이 중복됨
-      **/
-      if (RenderObject::IsBindable() && !IsBoundAsShaderResource())
+      if (RenderObject::IsBindable())
       {
          if (faceIdx < 6)
          {
