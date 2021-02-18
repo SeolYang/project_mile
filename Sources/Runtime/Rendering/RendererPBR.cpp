@@ -1155,7 +1155,6 @@ namespace Mile
             {
                ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
                immediateContext.ClearState();
-
                immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
                auto vertexShader = data.VertexShader->GetActual();
@@ -1759,6 +1758,7 @@ namespace Mile
 
             data.Viewport = builder.Read(ssaoBlurPassData.Viewport);
             data.DepthDisableState = builder.Read(ssaoBlurPassData.DepthDisableState);
+
             data.AdditiveBlendState = builder.Read(lightingPassData.AdditiveBlendState);
 
             SamplerDescriptor anisoSamplerDesc;
@@ -2266,7 +2266,7 @@ namespace Mile
             data.BloomParamsRef = builder.Read(bloomGaussBlurPassData.BloomParamsRef);
             data.Viewport = builder.Read(bloomGaussBlurPassData.Viewport);
             data.DepthDisableState = builder.Read(bloomGaussBlurPassData.DepthDisableState);
-            data.AdditiveBlendState = builder.Read(ambientEmissivePassData.AdditiveBlendState);
+            data.AdditiveBlendState = builder.Read(lightingPassData.AdditiveBlendState);
 
             ConstantBufferDescriptor paramsBufferDesc;
             paramsBufferDesc.Renderer = this;
@@ -2512,6 +2512,15 @@ namespace Mile
                if (m_skyboxTexture != m_oldSkyboxTexture)
                {
                   m_oldSkyboxTexture = m_skyboxTexture;
+                  m_bPrecomputeIBL = true;
+               }
+            }
+            else
+            {
+               m_skyboxTexture = nullptr;
+               if (m_oldSkyboxTexture != nullptr)
+               {
+                  m_oldSkyboxTexture = nullptr;
                   m_bPrecomputeIBL = true;
                }
             }
