@@ -587,7 +587,10 @@ namespace Mile
             size_t meshesPerThread = max(1, (meshesNum / maximumThreadsNum));
             size_t restMeshes = (meshesNum > maximumThreadsNum) ? meshesNum % maximumThreadsNum : 0;
             size_t offset = 0;
-           
+
+            // @For performance test!
+            //RendererPBR::RenderMeshes(true, *meshes, 0, meshesNum, data.Renderer->GetImmediateContext(), vertexShader, pixelShader, sampler, gBuffer, data.TransformBuffers[0]->GetActual(), data.MaterialBuffers[0]->GetActual(), rasterizerState, viewport, targetCamera);
+
             /** Scheduling */
             std::queue <std::pair<size_t, std::future<void>>> taskQueue;
             for (size_t thread = 0; ((thread < maximumThreadsNum) && (offset < meshesNum)); ++thread)
