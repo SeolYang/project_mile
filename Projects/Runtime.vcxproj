@@ -404,6 +404,7 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
     <ClCompile Include="..\Sources\Runtime\Core\Context.cpp" />
     <ClCompile Include="..\Sources\Runtime\Core\Delegate.cpp" />
     <ClCompile Include="..\Sources\Runtime\Core\Engine.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Core\ImGuiHelper.cpp" />
     <ClCompile Include="..\Sources\Runtime\Core\ImGuiLayer.cpp" />
     <ClCompile Include="..\Sources\Runtime\Core\InputManager.cpp" />
     <ClCompile Include="..\Sources\Runtime\Core\Layer.cpp" />

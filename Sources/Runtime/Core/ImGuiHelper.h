@@ -7,6 +7,9 @@
 #define WIN32_MEAN_AND_LEAN
 #include <Windows.h>
 
+#include <string>
+#include "Core/CoreMinimal.h"
+
 namespace Mile
 {
 	constexpr unsigned int DEFAULT_STR_INPUT_BUFFER_SIZE = 64;
@@ -638,5 +641,12 @@ namespace Mile
 		float titleBarHeight = ImGui::GetCurrentWindow()->TitleBarHeight();
 		ImVec2 actualContentArea = ImVec2{ windowSize.x, windowSize.y - titleBarHeight };
 		return actualContentArea;
+	}
+
+	class Vector3;
+	class Transform;
+	namespace GUI
+	{
+		MEAPI bool Vector3Input(const std::string& name, Vector3& target);
 	}
 }

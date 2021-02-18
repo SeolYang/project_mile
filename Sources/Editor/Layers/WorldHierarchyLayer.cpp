@@ -96,50 +96,57 @@ namespace Mile
          {
             if (m_target->CheckEntityValidation(m_selectedEntity))
             {
-               ImGui::Text("Entity Properties");
                bool bIsEntityActivated = m_selectedEntity->IsActivated();
-               if (ImGui::Checkbox("Activate", &bIsEntityActivated))
+               if (ImGui::Checkbox("", &bIsEntityActivated))
                {
                   m_selectedEntity->SetActive(bIsEntityActivated);
                }
 
+               ImGui::SameLine();
+
                char buffer[DEFAULT_STR_INPUT_BUFFER_SIZE] = { 0 };
                strcpy_s(buffer, WString2String(m_selectedEntity->GetName()).c_str());
-               if (ImGui::InputText("Name", buffer, DEFAULT_STR_INPUT_BUFFER_SIZE))
+               if (ImGui::InputText("", buffer, DEFAULT_STR_INPUT_BUFFER_SIZE))
                {
                   std::string newName = buffer;
                   m_selectedEntity->SetName(String2WString(newName));
                }
 
-               ImGui::Dummy(ImVec2(0.0f, 5.0f));
-               ImGui::Text("Transform");
-               Transform* entitiyTransform = m_selectedEntity->GetTransform();
-               auto position = entitiyTransform->GetPosition();
-               if (ImGui::InputFloat3("Position(X, Y, Z)", position.elements, "%.3f"))
+               if (ImGui::CollapsingHeader("Transform"))
                {
-                  entitiyTransform->SetPosition(position);
+                  Transform* entitiyTransform = m_selectedEntity->GetTransform();
+                  auto position = entitiyTransform->GetPosition();
+                  if (GUI::Vector3Input("Position", position))
+                  {
+                     entitiyTransform->SetPosition(position);
+                  }
+
+                  if (GUI::Vector3Input("Rotation", m_tempEulerRotation))
+                  {
+                     entitiyTransform->SetRotation(Math::EulerToQuaternion(m_tempEulerRotation));
+                  }
+
+                  auto scale = entitiyTransform->GetScale();
+                  if (GUI::Vector3Input("Scale", scale))
+                  {
+                     entitiyTransform->SetScale(scale);
+                  }
+
+                  ImGui::Separator();
                }
 
-               if (ImGui::InputFloat3("Rotation(Pitch, Yaw, Roll)", m_tempEulerRotation.elements, "%.3f"))
-               {
-                  entitiyTransform->SetRotation(Math::EulerToQuaternion(m_tempEulerRotation));
-               }
-
-               auto scale = entitiyTransform->GetScale();
-               if (ImGui::InputFloat3("Scale(X, Y, Z)", scale.elements, "%.3f"))
-               {
-                  entitiyTransform->SetScale(scale);
-               }
-
-               ImGui::Dummy(ImVec2(0.0f, 5.0f));
-               ImGui::Text("Components");
-               ImGui::Dummy(ImVec2(0.0f, 5.0f));
                auto& components = m_selectedEntity->GetComponents();
                for (auto component : components)
                {
-                  component->OnGUIBegin();
-                  component->OnGUI();
-                  component->OnGUIEnd();
+                  String typeStr = component->GetType();
+                  if (ImGui::CollapsingHeader(WString2String(typeStr).c_str()))
+                  {
+                     component->OnGUIBegin();
+                     component->OnGUI();
+                     component->OnGUIEnd();
+
+                     ImGui::Separator();
+                  }
                }
             }
             else

@@ -785,6 +785,9 @@
     <ClCompile Include="..\Sources\Runtime\Rendering\FrameResourceRealizeImpl.hpp">
       <Filter>Sources\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Core\ImGuiHelper.cpp">
+      <Filter>Sources\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Contents\Shaders\LightingPass.hlsl">

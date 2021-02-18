@@ -44,7 +44,6 @@ namespace Mile
 
    void Component::OnGUIBegin()
    {
-      ImGui::Text(WString2String(GetType()).c_str());
    }
 
    void Component::OnGUIEnd()
