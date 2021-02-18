@@ -596,7 +596,7 @@ namespace Mile
                if (restMeshes > 0)
                {
                   --restMeshes;
-                  num += 1;
+                  ++num;
                }
 
                taskQueue.push(std::make_pair(thread, threadPool->AddTask([=]()
