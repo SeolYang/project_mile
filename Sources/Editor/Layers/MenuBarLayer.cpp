@@ -203,57 +203,79 @@ namespace Mile
          if (m_renderer != nullptr)
          {
             /** Display */
-            ImGui::Text("Display");
-            ImGui::Spacing();
-            ImGui::Text("Render Resolution");
-            if (m_renderRes.SizeSquared() == 0.0f)
+            if (ImGui::CollapsingHeader("Display"))
             {
-               m_renderRes = m_renderer->GetRenderResolution();
-            }
-            ImGui::InputFloat2("", m_renderRes.elements, "%.0f");
-            if (ImGui::Button("Apply"))
-            {
-               m_renderer->SetRenderResolution(m_renderRes);
-            }
+               //ImGui::Spacing();
+               if (ImGui::TreeNode("Render Resolution"))
+               {
+                  if (m_renderRes.SizeSquared() == 0.0f)
+                  {
+                     m_renderRes = m_renderer->GetRenderResolution();
+                  }
+                  ImGui::InputFloat2("", m_renderRes.elements, "%.0f");
+                  ImGui::SameLine();
+                  if (ImGui::Button("Apply"))
+                  {
+                     m_renderer->SetRenderResolution(m_renderRes);
+                  }
 
-            bool bIsVsyncEnabled = m_renderer->IsVsyncEnabled();
-            if (ImGui::Checkbox("Vsync", &bIsVsyncEnabled))
-            {
-               m_renderer->SetVsync(bIsVsyncEnabled);
+                  ImGui::TreePop();
+               }
+
+               bool bIsVsyncEnabled = m_renderer->IsVsyncEnabled();
+               if (ImGui::Checkbox("Vsync", &bIsVsyncEnabled))
+               {
+                  m_renderer->SetVsync(bIsVsyncEnabled);
+               }
+
+               ImGui::Separator();
             }
 
             auto pbrRenderer = dynamic_cast<RendererPBR*>(m_renderer);
             if (pbrRenderer != nullptr)
             {
-               ImGui::Text("RendererPBR Configs");
-               ImGui::Spacing();
-               ImGui::Text("Tone Mapping Params");
-               auto& toneMappingParams = pbrRenderer->GetToneMappingParams();
-               ImGui::SliderFloat("Exposure", &toneMappingParams.ExposureFactor, 0.0f, 64.0f);
-               ImGui::SliderFloat("Gamma", &toneMappingParams.GammaFactor, 0.0f, 10.0f);
-
-               ImGui::Spacing();
-               ImGui::Text("Ambient Occlusion");
-               float& ao = pbrRenderer->GetGlobalAmbientFactor();
-               ImGui::SliderFloat("Ambient Occlusion", &ao, 0.0f, 1.0f);
-
-               ImGui::Text("Screen Space Ambient Occlusion(SSAO)");
-               bool& bSSAOEnabled = pbrRenderer->SSAOEnabled();
-               ImGui::Checkbox("Enable SSAO", &bSSAOEnabled);
-               if (bSSAOEnabled)
+               if (ImGui::CollapsingHeader("RendererPBR"))
                {
-                  auto& ssaoParams = pbrRenderer->GetSSAOParams();
-                  ImGui::SliderFloat("SSAO Radius", &ssaoParams.Radius, 0.0f, 32.0f);
-                  ImGui::SliderFloat("SSAO Bias", &ssaoParams.Bias, -16.0f, 16.0f);
-                  ImGui::SliderFloat("SSAO Magnitude", &ssaoParams.Magnitude, 0.0f, 16.0f);
-               }
+                  if (ImGui::TreeNode("Tone Mapping"))
+                  {
+                     auto& toneMappingParams = pbrRenderer->GetToneMappingParams();
+                     ImGui::SliderFloat("Exposure", &toneMappingParams.ExposureFactor, 0.0f, 64.0f);
+                     ImGui::SliderFloat("Gamma", &toneMappingParams.GammaFactor, 0.0f, 10.0f);
+                     ImGui::TreePop();
+                  }
 
-               ImGui::Spacing();
-               ImGui::Text("Bloom");
-               BloomParams& bloomParams = pbrRenderer->GetBloomParams();
-               ImGui::SliderInt("BlurAmount", (int*)&bloomParams.BlurAmount, 0, 16);
-               ImGui::SliderFloat("Intensity", &bloomParams.Intensity, 0.0f, 30.0f);
-               ImGui::SliderFloat("Brightness Threshold", &bloomParams.BrightnessThreshold, 0.0f, 1.0f);
+                  if (ImGui::TreeNode("Ambient Occlusion"))
+                  {
+                     float& ao = pbrRenderer->GetGlobalAmbientFactor();
+                     ImGui::SliderFloat("Ambient Occlusion", &ao, 0.0f, 1.0f);
+                     ImGui::TreePop();
+                  }
+
+                  if (ImGui::TreeNode("Screen Space Ambient Occlusion(SSAO)"))
+                  {
+                     bool& bSSAOEnabled = pbrRenderer->SSAOEnabled();
+                     ImGui::Checkbox("Enable SSAO", &bSSAOEnabled);
+                     if (bSSAOEnabled)
+                     {
+                        auto& ssaoParams = pbrRenderer->GetSSAOParams();
+                        ImGui::SliderFloat("SSAO Radius", &ssaoParams.Radius, 0.0f, 32.0f);
+                        ImGui::SliderFloat("SSAO Bias", &ssaoParams.Bias, -16.0f, 16.0f);
+                        ImGui::SliderFloat("SSAO Magnitude", &ssaoParams.Magnitude, 0.0f, 16.0f);
+                     }
+                     ImGui::TreePop();
+                  }
+
+                  if (ImGui::TreeNode("Bloom"))
+                  {
+                     BloomParams& bloomParams = pbrRenderer->GetBloomParams();
+                     ImGui::SliderInt("BlurAmount", (int*)&bloomParams.BlurAmount, 0, 16);
+                     ImGui::SliderFloat("Intensity", &bloomParams.Intensity, 0.0f, 30.0f);
+                     ImGui::SliderFloat("Brightness Threshold", &bloomParams.BrightnessThreshold, 0.0f, 1.0f);
+                     ImGui::TreePop();
+                  }
+
+                  ImGui::Separator();
+               }
             }
          }
          else
