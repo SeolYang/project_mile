@@ -6,7 +6,7 @@ using namespace Mile;
 
 class RotateComponent : public Component
 {
-   ComponentBegin( RotateComponent )
+   DeclareComponent(RotateComponent);
 
 public:
    RotateComponent( Entity* entity ) :

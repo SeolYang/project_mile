@@ -9,7 +9,7 @@ using namespace Mile;
 
 class InputTestComponent : public Component
 {
-   ComponentBegin(InputTestComponent)
+   DeclareComponent(InputTestComponent);
 
 public:
    InputTestComponent(Entity* entity) :
@@ -19,7 +19,6 @@ public:
 
    void Forward()
    {
-      MELog(GetContext(), TEXT("InputTestComponent"), ELogType::DEBUG, TEXT("Forward"));
    }
 
    virtual void Start() override
