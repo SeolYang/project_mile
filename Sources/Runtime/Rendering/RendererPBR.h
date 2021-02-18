@@ -83,6 +83,17 @@ namespace Mile
       void OnRenderResolutionChanged() override;
       void SetupRenderResources();
 
+      static void RenderMeshes(
+         bool bClearGBuffer,
+         Meshes& meshes,
+         size_t offset,
+         size_t num,
+         ID3D11DeviceContext& context,
+         VertexShaderDX11* vertexShader, PixelShaderDX11* pixelShader, SamplerDX11* sampler, 
+         GBuffer* gBuffer, ConstantBufferDX11* transformBuffer, ConstantBufferDX11* materialParamsBuffer, 
+         RasterizerState* rasterizeState, Viewport* viewport,
+         CameraRef camera);
+
    private:
       bool InitShader();
       bool InitFrameGraph();

@@ -506,9 +506,8 @@ namespace Mile
       SetupRenderResources();
 
       auto targetCameraRefRes = m_frameGraph.AddExternalPermanentResource("CameraRef", CameraRefDescriptor(), &m_targetCamera);
-      auto lightsInfoRes = m_frameGraph.AddExternalPermanentResource("Lights", WorldDescriptor(), &m_lights);
-      auto meshesInfoRes = m_frameGraph.AddExternalPermanentResource("Meshes", WorldDescriptor(), &m_meshes);
-      auto materialMapRes = m_frameGraph.AddExternalPermanentResource("MaterialMap", WorldDescriptor(), &m_materialMap);
+      auto lightsRes = m_frameGraph.AddExternalPermanentResource("Lights", WorldDescriptor(), &m_lights);
+      auto meshesRes = m_frameGraph.AddExternalPermanentResource("Meshes", WorldDescriptor(), &m_meshes);
       auto outputRenderTargetRefRes = m_frameGraph.AddExternalPermanentResource("FinalOutputRef", RenderTargetRefDescriptor(), &m_outputRenderTarget);
 
       /** Geometry Pass */
@@ -518,10 +517,10 @@ namespace Mile
       struct GeometryPassData : public RenderPassDataBase
       {
          CameraRefResource* TargetCameraRef = nullptr;
-         MaterialMapResource* MateralMap = nullptr;
+         MeshesDataResource* Meshes = nullptr;
          SamplerResource* Sampler = nullptr;
-         ConstantBufferResource* TransformBuffer = nullptr;
-         ConstantBufferResource* MaterialBuffer = nullptr;
+         std::vector<ConstantBufferResource*> TransformBuffers = { nullptr, };
+         std::vector<ConstantBufferResource*> MaterialBuffers = { nullptr, };
          ViewportResource* OutputViewport = nullptr;
          RasterizerStateResource* OutputRasterizerState = nullptr;
          GBufferRefResource* OutputGBufferRef = nullptr;
@@ -533,8 +532,6 @@ namespace Mile
          [&](Elaina::RenderPassBuilder& builder, GeometryPassData& data)
          {
             data.Renderer = this;
-            data.TargetCameraRef = builder.Read(targetCameraRefRes);
-            data.MateralMap = builder.Read(materialMapRes);
             data.VertexShader = builder.Read(geometryPassVS);
             data.PixelShader = builder.Read(geometryPassPS);
 
@@ -542,15 +539,25 @@ namespace Mile
             samplerDesc.Renderer = this;
             data.Sampler = builder.Create<SamplerResource>("AnisoWrapAlwaysSampler", samplerDesc);
 
+            data.TargetCameraRef = builder.Read(targetCameraRefRes);
+            data.Meshes = builder.Read(meshesRes);
+
             ConstantBufferDescriptor transformBufferDesc;
             transformBufferDesc.Renderer = this;
             transformBufferDesc.Size = sizeof(GeometryPassTransformBuffer);
-            data.TransformBuffer = builder.Create<ConstantBufferResource>("GeometryPassTransform", transformBufferDesc);
 
             ConstantBufferDescriptor packedMaterialParamsBufferDesc;
             packedMaterialParamsBufferDesc.Renderer = this;
             packedMaterialParamsBufferDesc.Size = sizeof(PackedMaterialParams);
-            data.MaterialBuffer = builder.Create<ConstantBufferResource>("GeometryPassPackedMaterialParams", packedMaterialParamsBufferDesc);
+
+            size_t maximumThreadsNum = this->GetMaximumThreads();
+            data.TransformBuffers.resize(maximumThreadsNum);
+            data.MaterialBuffers.resize(maximumThreadsNum);
+            for (size_t threads = 0; threads < maximumThreadsNum; ++threads)
+            {
+               data.TransformBuffers[threads] = builder.Create<ConstantBufferResource>("GeometryPassTransformConstantBuffers", transformBufferDesc);
+               data.MaterialBuffers[threads] = builder.Create<ConstantBufferResource>("GeometryPassPackedMaterialParamsConstantBuffers", packedMaterialParamsBufferDesc);
+            }
 
             data.OutputGBufferRef = builder.Write(gBufferRefRes);
 
@@ -563,120 +570,68 @@ namespace Mile
             rasterizerStateDesc.Renderer = this;
             data.OutputRasterizerState = builder.Create<RasterizerStateResource>("DefaultRasterizerState", rasterizerStateDesc);
          },
-         [&](const GeometryPassData& data)
+         [](const GeometryPassData& data)
          {
-            /** @todo   Multi-threaded objects rendering */
-            ID3D11DeviceContext& deviceContext = data.Renderer->GetImmediateContext();
-            deviceContext.ClearState();
-
-            deviceContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
             auto vertexShader = data.VertexShader->GetActual();
             auto pixelShader = data.PixelShader->GetActual();
             auto sampler = data.Sampler->GetActual();
             auto gBuffer = *data.OutputGBufferRef->GetActual();
-            auto transformBuffer = data.TransformBuffer->GetActual();
-            auto materialBuffer = data.MaterialBuffer->GetActual();
             auto rasterizerState = data.OutputRasterizerState->GetActual();
             auto viewport = data.OutputViewport->GetActual();
             auto targetCamera = (*data.TargetCameraRef->GetActual());
+            auto meshes = data.Meshes->GetActual();
 
-            vertexShader->Bind(deviceContext);
-            pixelShader->Bind(deviceContext);
-            sampler->Bind(deviceContext, 0);
-
-            gBuffer->BindAsRenderTarget(deviceContext);
-            transformBuffer->Bind(deviceContext, 0, EShaderType::VertexShader);
-            materialBuffer->Bind(deviceContext, 0, EShaderType::PixelShader);
-
-            rasterizerState->Bind(deviceContext);
-            viewport->Bind(deviceContext);
-
-            auto camTransform = targetCamera->GetTransform();
-            Matrix viewMatrix = Matrix::CreateView(
-               camTransform->GetPosition(TransformSpace::World),
-               camTransform->GetForward(TransformSpace::World),
-               camTransform->GetUp(TransformSpace::World));
-            Matrix projMatrix = Matrix::CreatePerspectiveProj(
-               targetCamera->GetFov(),
-               (viewport->GetWidth() / (float)viewport->GetHeight()),
-               targetCamera->GetNearPlane(),
-               targetCamera->GetFarPlane());
-
-            for (auto batchedMaterial : m_materialMap)
+            auto threadPool = Engine::GetThreadPool();
+            size_t maximumThreadsNum = data.Renderer->GetMaximumThreads();
+            size_t meshesNum = meshes->size();
+            size_t meshesPerThread = max(1, (meshesNum / maximumThreadsNum));
+            size_t restMeshes = (meshesNum > maximumThreadsNum) ? meshesNum % maximumThreadsNum : 0;
+            size_t offset = 0;
+           
+            /** Scheduling */
+            std::queue <std::pair<size_t, std::future<void>>> taskQueue;
+            for (size_t thread = 0; ((thread < maximumThreadsNum) && (offset < meshesNum)); ++thread)
             {
-               /* 물리 기반 머테리얼 정보 취득 **/
-               Material* material = batchedMaterial.first;
-               if (material != nullptr)
+               size_t num = meshesPerThread;
+               if (restMeshes > 0)
                {
-                  EMaterialType materialType = material->GetMaterialType();
-                  switch (materialType)
-                  {
-                  case EMaterialType::Opaque:
-                  default:
-                     Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
-                     Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
-                     Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
-                     Texture2dDX11* specularMapTex = material->GetTexture2D(MaterialTextureProperty::Specular)->GetRawTexture();
-                     Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
-                     Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
-
-                     Vector4 baseColorFactor = material->GetVector4Factor(MaterialFactorProperty::BaseColor);
-                     Vector4 emissiveFactor = material->GetVector4Factor(MaterialFactorProperty::Emissive);
-                     float metallicFactor = material->GetScalarFactor(MaterialFactorProperty::Metallic);
-                     float roughnessFactor = material->GetScalarFactor(MaterialFactorProperty::Roughness);
-                     float specularFactor = material->GetScalarFactor(MaterialFactorProperty::Specular);
-                     Vector2 uvOffset = material->GetVector2Factor(MaterialFactorProperty::UVOffset);
-
-                     auto materialParams = materialBuffer->Map<PackedMaterialParams>(deviceContext);
-                     materialParams->BaseColorFactor = baseColorFactor;
-                     materialParams->EmissiveColorFactor = emissiveFactor;
-                     materialParams->MetallicRoughnessUV = Vector4(metallicFactor, roughnessFactor, uvOffset.x, uvOffset.y);
-                     materialParams->SpecularFactor = specularFactor;
-                     materialBuffer->UnMap(deviceContext);
-
-                     SAFE_TEX_BIND(baseColorTex, deviceContext, 0, EShaderType::PixelShader);
-                     SAFE_TEX_BIND(emissiveTex, deviceContext, 1, EShaderType::PixelShader);
-                     SAFE_TEX_BIND(metallicRoughnessTex, deviceContext, 2, EShaderType::PixelShader);
-                     SAFE_TEX_BIND(specularMapTex, deviceContext, 3, EShaderType::PixelShader);
-                     SAFE_TEX_BIND(aoTex, deviceContext, 4, EShaderType::PixelShader);
-                     SAFE_TEX_BIND(normalTex, deviceContext, 5, EShaderType::PixelShader);
-
-                     for (auto meshRenderer : batchedMaterial.second)
-                     {
-                        Transform* transform = meshRenderer->GetTransform();
-                        Mesh* mesh = meshRenderer->GetMesh();
-                        if (mesh != nullptr)
-                        {
-                           Matrix worldMatrix = transform->GetWorldMatrix();
-                           Matrix worldViewMatrix = worldMatrix * viewMatrix;
-                           auto transforms = transformBuffer->Map<GeometryPassTransformBuffer>(deviceContext);
-                           transforms->WorldMatrix = worldMatrix;
-                           transforms->WorldViewMatrix = worldViewMatrix;
-                           transforms->WorldViewProjMatrix = (worldViewMatrix * projMatrix);
-                           transformBuffer->UnMap(deviceContext);
-                           mesh->Bind(deviceContext, 0);
-                           deviceContext.DrawIndexed(mesh->GetIndexCount(), 0, 0);
-                        }
-                     }
-
-                     SAFE_TEX_UNBIND(baseColorTex, deviceContext);
-                     SAFE_TEX_UNBIND(emissiveTex, deviceContext);
-                     SAFE_TEX_UNBIND(metallicRoughnessTex, deviceContext);
-                     SAFE_TEX_UNBIND(specularMapTex, deviceContext);
-                     SAFE_TEX_UNBIND(aoTex, deviceContext);
-                     SAFE_TEX_UNBIND(normalTex, deviceContext);
-                  }
+                  --restMeshes;
+                  num += 1;
                }
+
+               taskQueue.push(std::make_pair(thread, threadPool->AddTask([=]()
+                  {
+                     auto transformBuffer = data.TransformBuffers[thread]->GetActual();
+                     auto materialParamsBuffer = data.MaterialBuffers[thread]->GetActual();
+                     RendererPBR::RenderMeshes(false, *meshes, offset, num, data.Renderer->GetDeferredContext(thread), vertexShader, pixelShader, sampler, gBuffer, transformBuffer, materialParamsBuffer, rasterizerState, viewport, targetCamera);
+                  })));
+
+               offset += num;
             }
 
-            gBuffer->UnbindRenderTarget(deviceContext);
-            transformBuffer->Unbind(deviceContext);
-            materialBuffer->Unbind(deviceContext);
+            /** Clear GBuffer */
+            ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
+            gBuffer->BindAsRenderTarget(immediateContext);
+            gBuffer->UnbindRenderTarget(immediateContext);
+            while (!taskQueue.empty())
+            {
+               auto task = std::move(taskQueue.front());
+               taskQueue.pop();
 
-            vertexShader->Unbind(deviceContext);
-            pixelShader->Unbind(deviceContext);
-            sampler->Unbind(deviceContext);
+               task.second.get();
+
+               ID3D11DeviceContext& deferredContext = data.Renderer->GetDeferredContext(task.first);
+
+               ID3D11CommandList* commandList = nullptr;
+               deferredContext.FinishCommandList(false, &commandList);
+               if (commandList != nullptr)
+               {
+                  immediateContext.ClearState();
+                  immediateContext.ExecuteCommandList(commandList, false);
+               }
+
+               SafeRelease(commandList);
+            }
          });
 
       auto geometryPassData = geometryPass->GetData();
@@ -698,18 +653,8 @@ namespace Mile
          // -z
          Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f)) * captureProj
       };
-      const std::array<std::string, CUBE_FACES> cubeFaces =
-      {
-         "+x",
-         "-x",
-         "+y",
-         "-y",
-         "+z",
-         "-z"
-      };
 
       /** Calculate Diffuse Irradiance */
-
       /** Convert Equirect To Cubemap */
       struct ConvertSkyboxPassData : public RenderPassDataBase
       {
@@ -774,7 +719,7 @@ namespace Mile
             data.SkyboxTextureRef = builder.Read(skyboxTextureRefRes);
             for (size_t idx = 0; idx < CUBE_FACES; ++idx)
             {
-               data.CaptureViews[idx] = builder.Create<MatrixResource>("CubeCaptureView" + cubeFaces[idx], MatrixDescriptor{ captureViews[idx] });
+               data.CaptureViews[idx] = builder.Create<MatrixResource>("CubeCaptureViews", MatrixDescriptor{ captureViews[idx] });
             }
 
             ViewportDescriptor viewportDesc;
@@ -858,11 +803,11 @@ namespace Mile
                /** Unbinds */
                if (skyboxTextureDX11 != nullptr)
                {
-                  skyboxTextureDX11->Unbind(immediateContext);
+                  skyboxTextureDX11->Unbind(immediateContext, 0, EShaderType::PixelShader);
                }
-               sampler->Unbind(immediateContext);
+               sampler->Unbind(immediateContext, 0);
                pixelShader->Unbind(immediateContext);
-               transformBuffer->Unbind(immediateContext);
+               transformBuffer->Unbind(immediateContext, 0, EShaderType::VertexShader);
                vertexShader->Unbind(immediateContext);
             }
          });
@@ -978,9 +923,9 @@ namespace Mile
                outputIrradianceMap->GenerateMips(immediateContext);
 
                /** Unbinds */
-               envMap->Unbind(immediateContext);
-               transformBuffer->Unbind(immediateContext);
-               sampler->Unbind(immediateContext);
+               envMap->Unbind(immediateContext, 0, EShaderType::PixelShader);
+               transformBuffer->Unbind(immediateContext, 0, EShaderType::VertexShader);
+               sampler->Unbind(immediateContext, 0);
                pixelShader->Unbind(immediateContext);
                vertexShader->Unbind(immediateContext);
             }
@@ -1125,10 +1070,10 @@ namespace Mile
                }
 
                /** Unbinds */
-               envMap->Unbind(immediateContext);
-               paramsBuffer->Unbind(immediateContext);
-               transformBuffer->Unbind(immediateContext);
-               sampler->Unbind(immediateContext);
+               envMap->Unbind(immediateContext, 0, EShaderType::PixelShader);
+               paramsBuffer->Unbind(immediateContext, 0, EShaderType::PixelShader);
+               transformBuffer->Unbind(immediateContext, 0, EShaderType::VertexShader);
+               sampler->Unbind(immediateContext, 0);
                pixelShader->Unbind(immediateContext);
                vertexShader->Unbind(immediateContext);
             }
@@ -1235,7 +1180,7 @@ namespace Mile
 
                /** Unbinds */
                outputBrdfLUT->UnbindRenderTarget(immediateContext);
-               sampler->Unbind(immediateContext);
+               sampler->Unbind(immediateContext, 0);
                pixelShader->Unbind(immediateContext);
                vertexShader->Unbind(immediateContext);
 
@@ -1361,7 +1306,7 @@ namespace Mile
             additiveBlendState->Bind(immediateContext);
             camParamsBuffer->Bind(immediateContext, 0, EShaderType::PixelShader);
             lightParamsBuffer->Bind(immediateContext, 1, EShaderType::PixelShader);
-            gBuffer->BindAsShaderResource(immediateContext, 0);
+            gBuffer->BindAsShaderResource(immediateContext, 0, EShaderType::PixelShader);
             viewport->Bind(immediateContext);
             quadMesh->Bind(immediateContext, 0);
             outputHDRBuffer->BindAsRenderTarget(immediateContext);
@@ -1393,10 +1338,10 @@ namespace Mile
 
             /** Unbinds */
             outputHDRBuffer->UnbindRenderTarget(immediateContext);
-            gBuffer->UnbindShaderResource(immediateContext);
-            lightParamsBuffer->Unbind(immediateContext);
-            camParamsBuffer->Unbind(immediateContext);
-            sampler->Unbind(immediateContext);
+            gBuffer->UnbindShaderResource(immediateContext, 0, EShaderType::PixelShader);
+            lightParamsBuffer->Unbind(immediateContext, 1, EShaderType::PixelShader);
+            camParamsBuffer->Unbind(immediateContext, 0, EShaderType::PixelShader);
+            sampler->Unbind(immediateContext, 0);
             pixelShader->Unbind(immediateContext);
             vertexShader->Unbind(immediateContext);
          });
@@ -1491,7 +1436,7 @@ namespace Mile
             viewport->Bind(immediateContext);
             quadMesh->Bind(immediateContext, 0);
             depthDisableState->Bind(immediateContext);
-            sourceGBuffer->BindAsShaderResource(immediateContext, 0, true);
+            sourceGBuffer->BindAsShaderResource(immediateContext, 0, EShaderType::PixelShader, true);
             convertedGBuffer->BindAsRenderTarget(immediateContext);
 
             /** Render */
@@ -1508,9 +1453,9 @@ namespace Mile
 
             /** Unbinds */
             convertedGBuffer->UnbindRenderTarget(immediateContext);
-            sourceGBuffer->UnbindShaderResource(immediateContext);
-            convertParamsBuffer->Unbind(immediateContext);
-            sampler->Unbind(immediateContext);
+            sourceGBuffer->UnbindShaderResource(immediateContext, 0, EShaderType::PixelShader, true);
+            convertParamsBuffer->Unbind(immediateContext, 0, EShaderType::PixelShader);
+            sampler->Unbind(immediateContext, 0);
             pixelShader->Unbind(immediateContext);
             vertexShader->Unbind(immediateContext);
          });
@@ -1645,7 +1590,7 @@ namespace Mile
                depthDisableState->Bind(immeidiateContext);
                ssaoParamsBuffer->Bind(immeidiateContext, 0, EShaderType::PixelShader);
                noiseTexture->Bind(immeidiateContext, 5, EShaderType::PixelShader);
-               viewspaceGBuffer->BindAsShaderResource(immeidiateContext, 0);
+               viewspaceGBuffer->BindAsShaderResource(immeidiateContext, 0, EShaderType::PixelShader);
                quadMesh->Bind(immeidiateContext, 0);
                output->BindAsRenderTarget(immeidiateContext);
 
@@ -1672,12 +1617,12 @@ namespace Mile
 
                /** Unbinds */
                output->UnbindRenderTarget(immeidiateContext);
-               viewspaceGBuffer->UnbindShaderResource(immeidiateContext);
-               noiseTexture->Unbind(immeidiateContext);
-               ssaoParamsBuffer->Unbind(immeidiateContext);
-               posSampler->Unbind(immeidiateContext);
-               noiseSampler->Unbind(immeidiateContext);
-               sampler->Unbind(immeidiateContext);
+               viewspaceGBuffer->UnbindShaderResource(immeidiateContext, 0, EShaderType::PixelShader);
+               noiseTexture->Unbind(immeidiateContext, 5, EShaderType::PixelShader);
+               ssaoParamsBuffer->Unbind(immeidiateContext, 0, EShaderType::PixelShader);
+               posSampler->Unbind(immeidiateContext, 2);
+               noiseSampler->Unbind(immeidiateContext, 1);
+               sampler->Unbind(immeidiateContext, 0);
                pixelShader->Unbind(immeidiateContext);
                vertexShader->Unbind(immeidiateContext);
             }
@@ -1763,8 +1708,8 @@ namespace Mile
 
                /** Unbinds */
                output->UnbindRenderTarget(context);
-               source->UnbindShaderResource(context);
-               sampler->Unbind(context);
+               source->UnbindShaderResource(context, 0, EShaderType::PixelShader);
+               sampler->Unbind(context, 0);
                pixelShader->Unbind(context);
                vertexShader->Unbind(context);
             }
@@ -1888,7 +1833,7 @@ namespace Mile
             anisoSampler->Bind(context, 0);
             linearClampSampler->Bind(context, 1);
             ssaoSampler->Bind(context, 2);
-            gBuffer->BindAsShaderResource(context, 0);
+            gBuffer->BindAsShaderResource(context, 0, EShaderType::PixelShader);
             irraidianceMap->Bind(context, 5, EShaderType::PixelShader);
             prefilteredMap->Bind(context, 6, EShaderType::PixelShader);
             brdfLUT->BindAsShaderResource(context, 7, EShaderType::PixelShader);
@@ -1913,14 +1858,14 @@ namespace Mile
 
             /** Unbinds */
             output->UnbindRenderTarget(context);
-            blurredSSAO->UnbindShaderResource(context);
-            brdfLUT->UnbindShaderResource(context);
-            prefilteredMap->Unbind(context);
-            irraidianceMap->Unbind(context);
-            gBuffer->UnbindShaderResource(context);
-            ssaoSampler->Unbind(context);
-            linearClampSampler->Unbind(context);
-            anisoSampler->Unbind(context);
+            blurredSSAO->UnbindShaderResource(context, 8, EShaderType::PixelShader);
+            brdfLUT->UnbindShaderResource(context, 7, EShaderType::PixelShader);
+            prefilteredMap->Unbind(context, 6, EShaderType::PixelShader);
+            irraidianceMap->Unbind(context, 5, EShaderType::PixelShader);
+            gBuffer->UnbindShaderResource(context, 0, EShaderType::PixelShader);
+            ssaoSampler->Unbind(context, 2);
+            linearClampSampler->Unbind(context, 1);
+            anisoSampler->Unbind(context, 0);
             pixelShader->Unbind(context);
             vertexShader->Unbind(context);
          });
@@ -2046,18 +1991,18 @@ namespace Mile
             switch (skyboxType)
             {
             case ESkyboxType::IrradianceMap:
-               irrdianceMap->Unbind(context);
+               irrdianceMap->Unbind(context, 0, EShaderType::PixelShader);
                break;
             case ESkyboxType::EnvironmentMap:
             default:
-               envMap->Unbind(context);
+               envMap->Unbind(context, 0, EShaderType::PixelShader);
                break;
             }
 
             output->UnbindRenderTarget(context);
             output->SetDepthStencilBuffer(nullptr);
-            transformBuffer->Unbind(context);
-            sampler->Unbind(context);
+            transformBuffer->Unbind(context, 0, EShaderType::VertexShader);
+            sampler->Unbind(context, 0);
             pixelShader->Unbind(context);
             vertexShader->Unbind(context);
          });
@@ -2151,9 +2096,9 @@ namespace Mile
 
             /** Unbinds */
             output->UnbindRenderTarget(context);
-            paramsBuffer->Unbind(context);
-            input->UnbindShaderResource(context);
-            sampler->Unbind(context);
+            paramsBuffer->Unbind(context, 0, EShaderType::PixelShader);
+            input->UnbindShaderResource(context, 0, EShaderType::PixelShader);
+            sampler->Unbind(context, 0);
             pixelShader->Unbind(context);
             vertexShader->Unbind(context);
          });
@@ -2277,12 +2222,12 @@ namespace Mile
                context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
 
                latestOutput->UnbindRenderTarget(context);
-               latestInput->UnbindShaderResource(context);
+               latestInput->UnbindShaderResource(context, 0, EShaderType::PixelShader);
             }
 
             /** Unbinds */
-            paramsBuffer->Unbind(context);
-            sampler->Unbind(context);
+            paramsBuffer->Unbind(context, 0, EShaderType::PixelShader);
+            sampler->Unbind(context, 0);
             pixelShader->Unbind(context);
             vertexShader->Unbind(context);
          });
@@ -2371,9 +2316,9 @@ namespace Mile
 
             /** Unbinds */
             output->UnbindRenderTarget(context);
-            input->UnbindShaderResource(context);
-            paramsBuffer->Unbind(context);
-            sampler->Unbind(context);
+            input->UnbindShaderResource(context, 0, EShaderType::PixelShader);
+            paramsBuffer->Unbind(context, 0, EShaderType::PixelShader);
+            sampler->Unbind(context, 0);
             pixelShader->Unbind(context);
             vertexShader->Unbind(context);
          });
@@ -2456,9 +2401,9 @@ namespace Mile
 
             /** Unbinds */
             output->UnbindRenderTarget(context);
-            input->UnbindShaderResource(context);
-            paramsBuffer->Unbind(context);
-            sampler->Unbind(context);
+            input->UnbindShaderResource(context, 0, EShaderType::PixelShader);
+            paramsBuffer->Unbind(context, 0, EShaderType::PixelShader);
+            sampler->Unbind(context, 0);
             pixelShader->Unbind(context);
             vertexShader->Unbind(context);
          });
@@ -2535,6 +2480,13 @@ namespace Mile
                {
                   m_materialMap[material].push_back(renderComponent);
                }
+            }
+
+            m_meshes.clear();
+            for (auto materialMapComp : m_materialMap)
+            {
+               Meshes& meshes = materialMapComp.second;
+               std::copy(meshes.begin(), meshes.end(), std::back_inserter(m_meshes));
             }
          });
       auto acquireLightsTask = threadPool->AddTask([&]()
@@ -2647,5 +2599,112 @@ namespace Mile
       outputSSAODesc.Format = EColorFormat::R32_FLOAT;
       m_ssao = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputSSAODesc);
       m_blurredSSAO = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputSSAODesc);
+   }
+
+   void RendererPBR::RenderMeshes(bool bClearGBuffer, Meshes& meshes, size_t offset, size_t num, ID3D11DeviceContext& context, VertexShaderDX11* vertexShader, PixelShaderDX11* pixelShader, SamplerDX11* sampler, GBuffer* gBuffer, ConstantBufferDX11* transformBuffer, ConstantBufferDX11* materialParamsBuffer, RasterizerState* rasterizerState, Viewport* viewport, CameraRef camera)
+   {
+      context.ClearState();
+      context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+      vertexShader->Bind(context);
+      pixelShader->Bind(context);
+      sampler->Bind(context, 0);
+
+      gBuffer->BindAsRenderTarget(context, bClearGBuffer, bClearGBuffer);
+      transformBuffer->Bind(context, 0, EShaderType::VertexShader);
+      materialParamsBuffer->Bind(context, 0, EShaderType::PixelShader);
+
+      rasterizerState->Bind(context);
+      viewport->Bind(context);
+
+      auto camTransform = camera->GetTransform();
+      Matrix viewMatrix = Matrix::CreateView(
+         camTransform->GetPosition(TransformSpace::World),
+         camTransform->GetForward(TransformSpace::World),
+         camTransform->GetUp(TransformSpace::World));
+      Matrix projMatrix = Matrix::CreatePerspectiveProj(
+         camera->GetFov(),
+         (viewport->GetWidth() / (float)viewport->GetHeight()),
+         camera->GetNearPlane(),
+         camera->GetFarPlane());
+
+      Material* material = nullptr;
+      for (auto meshItr = meshes.begin() + offset; meshItr != meshes.begin()+offset+num; ++meshItr)
+      {
+         auto meshComponent = (*meshItr);
+         Material* meshMaterial = meshComponent->GetMaterial();
+         if (meshMaterial->GetMaterialType() == EMaterialType::Opaque)
+         {
+            if (material != meshMaterial)
+            {
+               material = meshMaterial;
+               Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
+               Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
+               Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
+               Texture2dDX11* specularMapTex = material->GetTexture2D(MaterialTextureProperty::Specular)->GetRawTexture();
+               Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
+               Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
+
+               Vector4 baseColorFactor = material->GetVector4Factor(MaterialFactorProperty::BaseColor);
+               Vector4 emissiveFactor = material->GetVector4Factor(MaterialFactorProperty::Emissive);
+               float metallicFactor = material->GetScalarFactor(MaterialFactorProperty::Metallic);
+               float roughnessFactor = material->GetScalarFactor(MaterialFactorProperty::Roughness);
+               float specularFactor = material->GetScalarFactor(MaterialFactorProperty::Specular);
+               Vector2 uvOffset = material->GetVector2Factor(MaterialFactorProperty::UVOffset);
+
+               auto materialParams = materialParamsBuffer->Map<PackedMaterialParams>(context);
+               materialParams->BaseColorFactor = baseColorFactor;
+               materialParams->EmissiveColorFactor = emissiveFactor;
+               materialParams->MetallicRoughnessUV = Vector4(metallicFactor, roughnessFactor, uvOffset.x, uvOffset.y);
+               materialParams->SpecularFactor = specularFactor;
+               materialParamsBuffer->UnMap(context);
+
+               SAFE_TEX_BIND(baseColorTex, context, 0, EShaderType::PixelShader);
+               SAFE_TEX_BIND(emissiveTex, context, 1, EShaderType::PixelShader);
+               SAFE_TEX_BIND(metallicRoughnessTex, context, 2, EShaderType::PixelShader);
+               SAFE_TEX_BIND(specularMapTex, context, 3, EShaderType::PixelShader);
+               SAFE_TEX_BIND(aoTex, context, 4, EShaderType::PixelShader);
+               SAFE_TEX_BIND(normalTex, context, 5, EShaderType::PixelShader);
+            }
+
+            /** Render Mesh */
+            Transform* transform = meshComponent->GetTransform();
+            Mesh* mesh = meshComponent->GetMesh();
+            Matrix worldMatrix = transform->GetWorldMatrix();
+            Matrix worldViewMatrix = worldMatrix * viewMatrix;
+            auto transforms = transformBuffer->Map<GeometryPassTransformBuffer>(context);
+            transforms->WorldMatrix = worldMatrix;
+            transforms->WorldViewMatrix = worldViewMatrix;
+            transforms->WorldViewProjMatrix = (worldViewMatrix * projMatrix);
+            transformBuffer->UnMap(context);
+            mesh->Bind(context, 0);
+            context.DrawIndexed(mesh->GetIndexCount(), 0, 0);
+
+            auto nextMeshItr = (meshItr + 1);
+            if (nextMeshItr == meshes.end() || (*nextMeshItr)->GetMaterial() != material)
+            {
+               Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
+               Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
+               Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
+               Texture2dDX11* specularMapTex = material->GetTexture2D(MaterialTextureProperty::Specular)->GetRawTexture();
+               Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
+               Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
+               SAFE_TEX_UNBIND(baseColorTex, context, 0, EShaderType::PixelShader);
+               SAFE_TEX_UNBIND(emissiveTex, context, 1, EShaderType::PixelShader);
+               SAFE_TEX_UNBIND(metallicRoughnessTex, context, 2, EShaderType::PixelShader);
+               SAFE_TEX_UNBIND(specularMapTex, context, 3, EShaderType::PixelShader);
+               SAFE_TEX_UNBIND(aoTex, context, 4, EShaderType::PixelShader);
+               SAFE_TEX_UNBIND(normalTex, context, 5, EShaderType::PixelShader);
+            }
+         }
+      }
+
+      gBuffer->UnbindRenderTarget(context);
+      transformBuffer->Unbind(context, 0, EShaderType::VertexShader);
+      materialParamsBuffer->Unbind(context, 0, EShaderType::PixelShader);
+
+      sampler->Unbind(context, 0);
+      pixelShader->Unbind(context);
+      vertexShader->Unbind(context);
    }
 }
