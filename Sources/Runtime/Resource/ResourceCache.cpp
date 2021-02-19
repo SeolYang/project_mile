@@ -31,7 +31,7 @@ namespace Mile
          SafeDelete(resource);
       }
 
-      m_resources.clear();
+      m_resources.resize(0);
    }
 
    void ResourceCache::Remove(Resource* resPtr)
