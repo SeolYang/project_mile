@@ -613,8 +613,6 @@ namespace Mile
                      ID3D11DeviceContext& context = data.Renderer->GetDeferredContext(thread);
                      auto transformBuffer = data.TransformBuffers[thread]->GetActual();
                      auto materialParamsBuffer = data.MaterialBuffers[thread]->GetActual();
-                     auto& profiler = data.Renderer->GetProfiler();
-                     ScopedContextProfile profile(profiler, "GeometryPass_Thread" + std::to_string(thread), context, true);
                      RendererPBR::RenderMeshes(
                         data.Renderer, 
                         false, *meshes, offset, num, 
