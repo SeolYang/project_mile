@@ -19,7 +19,7 @@ namespace Mile
          UINT64 ElapsedTimeHz = 0;
          UINT64 QueryBeginFrame = 0;
 
-         GPUProfileData()
+         ~GPUProfileData()
          {
             Reset();
          }
