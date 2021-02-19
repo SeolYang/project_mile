@@ -596,7 +596,7 @@ namespace Mile
 
             /** Scheduling */
             std::queue <std::pair<size_t, std::future<void>>> taskQueue;
-            for (size_t thread = 0; ((thread < maximumThreadsNum) && (offset < meshesNum)); ++thread)
+            for (size_t subThreadIdx = 0; ((subThreadIdx < maximumThreadsNum) && (offset < meshesNum)); ++subThreadIdx)
             {
                size_t num = meshesPerThread;
                if (restMeshes > 0)
@@ -605,17 +605,17 @@ namespace Mile
                   ++num;
                }
 
-               taskQueue.push(std::make_pair(thread, threadPool->AddTask([=]()
+               size_t threadIdx = subThreadIdx + 1; /** thread index = thread + 1(Main Thread) */
+               taskQueue.push(std::make_pair(subThreadIdx, threadPool->AddTask([=]()
                   {
-                     ID3D11DeviceContext& context = data.Renderer->GetDeferredContext(thread);
-                     auto transformBuffer = data.TransformBuffers[thread]->GetActual();
-                     auto materialParamsBuffer = data.MaterialBuffers[thread]->GetActual();
+                     auto transformBuffer = data.TransformBuffers[subThreadIdx]->GetActual();
+                     auto materialParamsBuffer = data.MaterialBuffers[subThreadIdx]->GetActual();
                      RendererPBR::RenderMeshes(
                         data.Renderer,
                         false, *meshes, offset, num,
-                        context, vertexShader, pixelShader, sampler,
+                        vertexShader, pixelShader, sampler,
                         gBuffer, transformBuffer, materialParamsBuffer,
-                        rasterizerState, viewport, targetCamera);
+                        rasterizerState, viewport, targetCamera, threadIdx);
                   })));
 
                offset += num;
@@ -812,8 +812,7 @@ namespace Mile
                   auto mappedTrasnformBuffer = transformBuffer->Map<OneMatrixConstantBuffer>(immediateContext);
                   (*mappedTrasnformBuffer) = OneMatrixConstantBuffer{ *captureViews[faceIdx]->GetActual() };
                   transformBuffer->UnMap(immediateContext);
-                  immediateContext.DrawIndexed(cubeMesh->GetIndexCount(), 0, 0);
-                  profiler.DrawCall();
+                  data.Renderer->DrawIndexed(cubeMesh->GetVertexCount(), cubeMesh->GetIndexCount());
                   outputEnvMap->UnbindAsRenderTarget(immediateContext);
                }
                outputEnvMap->GenerateMips(immediateContext);
@@ -938,8 +937,7 @@ namespace Mile
                   auto mappedTrasnformBuffer = transformBuffer->Map<OneMatrixConstantBuffer>(immediateContext);
                   (*mappedTrasnformBuffer) = OneMatrixConstantBuffer{ *data.CaptureViews[faceIdx]->GetActual() };
                   transformBuffer->UnMap(immediateContext);
-                  immediateContext.DrawIndexed(cubeMesh->GetIndexCount(), 0, 0);
-                  profiler.DrawCall();
+                  data.Renderer->DrawIndexed(cubeMesh->GetVertexCount(), cubeMesh->GetIndexCount());
                   outputIrradianceMap->UnbindAsRenderTarget(immediateContext);
                }
                outputIrradianceMap->GenerateMips(immediateContext);
@@ -1089,8 +1087,7 @@ namespace Mile
                      transformBuffer->UnMap(immediateContext);
 
                      outputPrefilteredEnvMap->BindAsRenderTarget(immediateContext, faceIdx, mipLevel);
-                     immediateContext.DrawIndexed(cubeMesh->GetIndexCount(), 0, 0);
-                     profiler.DrawCall();
+                     data.Renderer->DrawIndexed(cubeMesh->GetVertexCount(), cubeMesh->GetIndexCount());
                      outputPrefilteredEnvMap->UnbindAsRenderTarget(immediateContext);
                   }
                }
@@ -1205,8 +1202,7 @@ namespace Mile
                outputBrdfLUT->BindAsRenderTarget(immediateContext);
 
                /** Render */
-               immediateContext.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
-               profiler.DrawCall();
+               data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
 
                /** Unbinds */
                outputBrdfLUT->UnbindRenderTarget(immediateContext);
@@ -1366,8 +1362,7 @@ namespace Mile
                };
                lightParamsBuffer->UnMap(immediateContext);
 
-               immediateContext.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
-               profiler.DrawCall();
+               data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
             }
 
             /** Unbinds */
@@ -1485,8 +1480,8 @@ namespace Mile
             auto mappedConvertParams = convertParamsBuffer->Map<OneMatrixConstantBuffer>(immediateContext);
             (*mappedConvertParams) = OneMatrixConstantBuffer{ viewMatrix };
             convertParamsBuffer->UnMap(immediateContext);
-            immediateContext.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
-            profiler.DrawCall();
+
+            data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
 
             /** Unbinds */
             convertedGBuffer->UnbindRenderTarget(immediateContext);
@@ -1606,9 +1601,9 @@ namespace Mile
             bool bSSAOEnabled = *(*data.SSAOEnabledRef->GetActual());
             if (bSSAOEnabled)
             {
-               ID3D11DeviceContext& immeidiateContext = data.Renderer->GetImmediateContext();
-               immeidiateContext.ClearState();
-               immeidiateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+               ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
+               immediateContext.ClearState();
+               immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
                auto vertexShader = data.VertexShader->GetActual();
                auto pixelShader = data.PixelShader->GetActual();
@@ -1626,19 +1621,19 @@ namespace Mile
                auto output = *data.OutputRef->GetActual();
 
                /** Binds */
-               vertexShader->Bind(immeidiateContext);
-               pixelShader->Bind(immeidiateContext);
-               sampler->Bind(immeidiateContext, 0);
-               noiseSampler->Bind(immeidiateContext, 1);
-               posSampler->Bind(immeidiateContext, 2);
-               viewport->Bind(immeidiateContext);
-               depthDisableState->Bind(immeidiateContext);
-               ssaoBaseDataBuffer->Bind(immeidiateContext, 0, EShaderType::PixelShader);
-               ssaoParamsBuffer->Bind(immeidiateContext, 1, EShaderType::PixelShader);
-               noiseTexture->Bind(immeidiateContext, 5, EShaderType::PixelShader);
-               viewspaceGBuffer->BindAsShaderResource(immeidiateContext, 0, EShaderType::PixelShader);
-               quadMesh->Bind(immeidiateContext, 0);
-               output->BindAsRenderTarget(immeidiateContext);
+               vertexShader->Bind(immediateContext);
+               pixelShader->Bind(immediateContext);
+               sampler->Bind(immediateContext, 0);
+               noiseSampler->Bind(immediateContext, 1);
+               posSampler->Bind(immediateContext, 2);
+               viewport->Bind(immediateContext);
+               depthDisableState->Bind(immediateContext);
+               ssaoBaseDataBuffer->Bind(immediateContext, 0, EShaderType::PixelShader);
+               ssaoParamsBuffer->Bind(immediateContext, 1, EShaderType::PixelShader);
+               noiseTexture->Bind(immediateContext, 5, EShaderType::PixelShader);
+               viewspaceGBuffer->BindAsShaderResource(immediateContext, 0, EShaderType::PixelShader);
+               quadMesh->Bind(immediateContext, 0);
+               output->BindAsRenderTarget(immediateContext);
 
                /** Render */
                auto camTransform = camera->GetTransform();
@@ -1650,24 +1645,23 @@ namespace Mile
 
                const auto& ssaoParams = ((RendererPBR*)data.Renderer)->GetSSAOParams();
 
-               auto mappedSSAOParamsBuffer = ssaoParamsBuffer->Map<SSAOParamsConstantBuffer>(immeidiateContext);
+               auto mappedSSAOParamsBuffer = ssaoParamsBuffer->Map<SSAOParamsConstantBuffer>(immediateContext);
                ZeroMemory(mappedSSAOParamsBuffer, sizeof(SSAOParamsConstantBuffer));
                (*mappedSSAOParamsBuffer) = SSAOParamsConstantBuffer{ projMatrix, Vector3(ssaoParams.Radius, ssaoParams.Bias, ssaoParams.Magnitude) };
-               ssaoParamsBuffer->UnMap(immeidiateContext);
-               immeidiateContext.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
-               profiler.DrawCall();
+               ssaoParamsBuffer->UnMap(immediateContext);
+               data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
 
                /** Unbinds */
-               output->UnbindRenderTarget(immeidiateContext);
-               viewspaceGBuffer->UnbindShaderResource(immeidiateContext, 0, EShaderType::PixelShader);
-               noiseTexture->Unbind(immeidiateContext, 5, EShaderType::PixelShader);
-               ssaoParamsBuffer->Unbind(immeidiateContext, 1, EShaderType::PixelShader);
-               ssaoBaseDataBuffer->Unbind(immeidiateContext, 0, EShaderType::PixelShader);
-               posSampler->Unbind(immeidiateContext, 2);
-               noiseSampler->Unbind(immeidiateContext, 1);
-               sampler->Unbind(immeidiateContext, 0);
-               pixelShader->Unbind(immeidiateContext);
-               vertexShader->Unbind(immeidiateContext);
+               output->UnbindRenderTarget(immediateContext);
+               viewspaceGBuffer->UnbindShaderResource(immediateContext, 0, EShaderType::PixelShader);
+               noiseTexture->Unbind(immediateContext, 5, EShaderType::PixelShader);
+               ssaoParamsBuffer->Unbind(immediateContext, 1, EShaderType::PixelShader);
+               ssaoBaseDataBuffer->Unbind(immediateContext, 0, EShaderType::PixelShader);
+               posSampler->Unbind(immediateContext, 2);
+               noiseSampler->Unbind(immediateContext, 1);
+               sampler->Unbind(immediateContext, 0);
+               pixelShader->Unbind(immediateContext);
+               vertexShader->Unbind(immediateContext);
             }
          });
 
@@ -1750,8 +1744,7 @@ namespace Mile
                quadMesh->Bind(context, 0);
 
                /** Render */
-               context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
-               profiler.DrawCall();
+               data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
 
                /** Unbinds */
                output->UnbindRenderTarget(context);
@@ -1905,8 +1898,7 @@ namespace Mile
             paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
 
             /** Render */
-            context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
-            profiler.DrawCall();
+            data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
 
             /** Unbinds */
             output->UnbindRenderTarget(context);
@@ -2040,8 +2032,7 @@ namespace Mile
             transformBuffer->UnMap(context);
 
             /** Render */
-            context.DrawIndexed(cubeMesh->GetIndexCount(), 0, 0);
-            profiler.DrawCall();
+            data.Renderer->DrawIndexed(cubeMesh->GetVertexCount(), cubeMesh->GetIndexCount());
 
             /** Unbinds */
             switch (skyboxType)
@@ -2151,8 +2142,7 @@ namespace Mile
             paramsBuffer->UnMap(context);
 
             /** Render */
-            context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
-            profiler.DrawCall();
+            data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
 
             /** Unbinds */
             output->UnbindRenderTarget(context);
@@ -2282,8 +2272,8 @@ namespace Mile
                auto mappedParamsBuffer = paramsBuffer->Map<OneUINTConstantBuffer>(context);
                (*mappedParamsBuffer) = OneUINTConstantBuffer{ static_cast<unsigned int>(bHorizontal ? 1 : 0) };
                paramsBuffer->UnMap(context);
-               context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
-               profiler.DrawCall();
+
+               data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
 
                latestOutput->UnbindRenderTarget(context);
                latestInput->UnbindShaderResource(context, 0, EShaderType::PixelShader);
@@ -2379,8 +2369,7 @@ namespace Mile
             paramsBuffer->UnMap(context);
 
             /** Render */
-            context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
-            profiler.DrawCall();
+            data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
 
             /** Unbinds */
             output->UnbindRenderTarget(context);
@@ -2468,8 +2457,7 @@ namespace Mile
             paramsBuffer->UnMap(context);
 
             /** Render */
-            context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
-            profiler.DrawCall();
+            data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
 
             /** Unbinds */
             output->UnbindRenderTarget(context);
@@ -2697,11 +2685,12 @@ namespace Mile
       acquireSkyboxTask.get();
    }
 
-   void RendererPBR::RenderMeshes(RendererDX11* renderer, bool bClearGBuffer, Meshes& meshes, size_t offset, size_t num, ID3D11DeviceContext& context, VertexShaderDX11* vertexShader, PixelShaderDX11* pixelShader, SamplerDX11* sampler, GBuffer* gBuffer, ConstantBufferDX11* transformBuffer, ConstantBufferDX11* materialParamsBuffer, RasterizerState* rasterizerState, Viewport* viewport, CameraRef camera)
+   void RendererPBR::RenderMeshes(RendererDX11* renderer, bool bClearGBuffer, Meshes& meshes, size_t offset, size_t num, VertexShaderDX11* vertexShader, PixelShaderDX11* pixelShader, SamplerDX11* sampler, GBuffer* gBuffer, ConstantBufferDX11* transformBuffer, ConstantBufferDX11* materialParamsBuffer, RasterizerState* rasterizerState, Viewport* viewport, CameraRef camera, size_t threadIdx)
    {
       OPTICK_EVENT();
       auto& profiler = renderer->GetProfiler();
       {
+         ID3D11DeviceContext& context = renderer->GetDeviceContext(threadIdx);
          context.ClearState();
          context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -2777,8 +2766,8 @@ namespace Mile
                transforms->WorldViewProjMatrix = (worldViewMatrix * projMatrix);
                transformBuffer->UnMap(context);
                mesh->Bind(context, 0);
-               context.DrawIndexed(mesh->GetIndexCount(), 0, 0);
-               profiler.DrawCall();
+
+               renderer->ThreadSafeDrawIndexed(threadIdx, mesh->GetVertexCount(), mesh->GetIndexCount());
 
                auto nextMeshItr = (meshItr + 1);
                if (nextMeshItr == meshes.end() || (*nextMeshItr)->GetMaterial() != material)

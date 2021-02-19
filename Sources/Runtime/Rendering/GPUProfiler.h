@@ -50,10 +50,11 @@ namespace Mile
       void Begin(const std::string& name, ID3D11DeviceContext& context, bool bIsDeferred = false);
       void End(const std::string& name, ID3D11DeviceContext& context);
 
-      /** Thread-safe draw call count increment */
-      void DrawCall() { m_drawCalls.fetch_add(1); }
-      UINT64 GetDrawCalls() const { return m_drawCalls.load(); }
+      /** Thread-safe draw call count increment, Thread0 == Main Thread */
+      void DrawCall(UINT64 vertices, UINT64 triangles, size_t threadIdx = 0) { ++m_drawCalls[threadIdx]; m_vertices[threadIdx] += vertices; m_triangles[threadIdx] += triangles; }
       UINT64 GetLatestDrawCalls() const { return m_latestDrawCalls; }
+      UINT64 GetLatestVertices() const { return m_latestDrawVertices; }
+      UINT64 GetLatestTriangles() const { return m_latestDrawTriangles; }
 
       UINT64 GetCurrentFrame() const { return m_currentFrame; }
 
@@ -81,8 +82,12 @@ namespace Mile
       std::map<std::string, double> m_profileTimes;
       UINT64 m_currentFrame;
       UINT64 m_queryLatency;
-      std::atomic<UINT64> m_drawCalls;
+      std::vector<UINT64> m_drawCalls;
+      std::vector<UINT64> m_vertices;
+      std::vector<UINT64> m_triangles;
       UINT64 m_latestDrawCalls;
+      UINT64 m_latestDrawVertices;
+      UINT64 m_latestDrawTriangles;
       
    };
 

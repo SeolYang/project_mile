@@ -44,6 +44,17 @@ namespace Mile
          return (*m_deferredContexts[idx]); 
       }
 
+      /** ThreadIndex 0 = Main Thread(return immeidate device context), else return deferred device context! */
+      ID3D11DeviceContext& GetDeviceContext(size_t threadIdx) const 
+      {
+         if (threadIdx == 0)
+         {
+            return *m_immediateContext;
+         }
+
+         return *m_deferredContexts[threadIdx - 1];
+      }
+
       RenderTargetDX11& GetBackBuffer() const 
       {
          return (*m_backBuffer); 
@@ -94,6 +105,9 @@ namespace Mile
 
       const GPUProfiler& GetProfiler() const;
       GPUProfiler& GetProfiler();
+
+      void DrawIndexed(UINT vertexCount, UINT indexCount, UINT startIndexLocation = 0, UINT basedVertexLocation = 0);
+      void ThreadSafeDrawIndexed(size_t threadIdx, UINT vertexCount, UINT indexCount, UINT startIndexLocation = 0, UINT basedVertexLocation = 0);
 
    protected:
       virtual void RenderImpl(const World& world) { }

@@ -7,9 +7,14 @@ namespace Mile
       m_renderer(renderer),
       m_currentFrame(0),
       m_queryLatency(30),
-      m_latestDrawCalls(0)
+      m_latestDrawCalls(0),
+      m_latestDrawVertices(0),
+      m_latestDrawTriangles(0)
    {
-      m_drawCalls.store(0);
+      size_t maximumThraeds = m_renderer->GetMaximumThreads() + 1; // Include Main thread
+      m_drawCalls.resize(maximumThraeds);
+      m_vertices.resize(maximumThraeds);
+      m_triangles.resize(maximumThraeds);
    }
 
    GPUProfiler::~GPUProfiler()
@@ -72,8 +77,12 @@ namespace Mile
 
    void GPUProfiler::EndFrame()
    {
-      m_latestDrawCalls = m_drawCalls.load();
-      m_drawCalls.store(0);
+      m_latestDrawCalls = std::accumulate<std::vector<UINT64>::iterator, UINT64>(m_drawCalls.begin(), m_drawCalls.end(), 0);
+      m_latestDrawTriangles = std::accumulate<std::vector<UINT64>::iterator, UINT64>(m_vertices.begin(), m_vertices.end(), 0);
+      m_latestDrawVertices = std::accumulate<std::vector<UINT64>::iterator, UINT64>(m_triangles.begin(), m_triangles.end(), 0);
+      std::fill(m_drawCalls.begin(), m_drawCalls.end(), 0);
+      std::fill(m_vertices.begin(), m_vertices.end(), 0);
+      std::fill(m_triangles.begin(), m_triangles.end(), 0);
       ++m_currentFrame;
 
       ID3D11DeviceContext& context = m_renderer->GetImmediateContext();

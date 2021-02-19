@@ -270,4 +270,16 @@ namespace Mile
    {
       return (*m_profiler);
    }
+
+   void RendererDX11::DrawIndexed(UINT vertexCount, UINT indexCount, UINT startIndexLocation, UINT basedVertexLocation)
+   {
+      ThreadSafeDrawIndexed(0, vertexCount, indexCount, startIndexLocation, basedVertexLocation);
+   }
+
+   void RendererDX11::ThreadSafeDrawIndexed(size_t threadIdx, UINT vertexCount, UINT indexCount, UINT startIndexLocation, UINT basedVertexLocation)
+   {
+      ID3D11DeviceContext& context = GetDeviceContext(threadIdx);
+      context.DrawIndexed(indexCount, startIndexLocation, basedVertexLocation);
+      m_profiler->DrawCall(vertexCount, indexCount / 3, threadIdx);
+   }
 }

@@ -329,6 +329,18 @@ namespace Mile
          std::string drawCallsStr = std::string("Draw Calls : ") + std::to_string(profiler.GetLatestDrawCalls());
          ImGui::Text(drawCallsStr.c_str());
 
+         std::string verticesStr = std::string("Verts : ") + std::to_string(profiler.GetLatestVertices());
+         ImGui::SameLine();
+         ImGui::Spacing();
+         ImGui::SameLine();
+         ImGui::Text(verticesStr.c_str());
+
+         std::string trianglesStr = std::string("Tris : ") + std::to_string(profiler.GetLatestTriangles());
+         ImGui::SameLine();
+         ImGui::Spacing();
+         ImGui::SameLine();
+         ImGui::Text(trianglesStr.c_str());
+
          std::string deltaTimeStr = (std::string("Deltatime : ") + std::to_string(engine->GetTimer()->GetDeltaTimeMS())) + std::string(" ms");
          ImGui::Text(deltaTimeStr.c_str());
 

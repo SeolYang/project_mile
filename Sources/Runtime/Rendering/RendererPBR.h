@@ -93,11 +93,11 @@ namespace Mile
          Meshes& meshes,
          size_t offset,
          size_t num,
-         ID3D11DeviceContext& context,
          VertexShaderDX11* vertexShader, PixelShaderDX11* pixelShader, SamplerDX11* sampler, 
          GBuffer* gBuffer, ConstantBufferDX11* transformBuffer, ConstantBufferDX11* materialParamsBuffer, 
          RasterizerState* rasterizeState, Viewport* viewport,
-         CameraRef camera);
+         CameraRef camera,
+         size_t threadIdx = 0);
 
    private:
       bool InitShader();
