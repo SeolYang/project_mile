@@ -29,12 +29,6 @@ namespace Mile
          m_editorCameraRenderTex = resMng->Create<RenderTexture>(EDITOR_GAME_VIEW_RENDER_TEXTURE, false);
          m_editorCameraRenderTex->SetWidth((UINT32)renderRes.x);
          m_editorCameraRenderTex->SetHeight((UINT32)renderRes.y);
-         //m_editorCamera = world->CreateEntity(TEXT("GameViewCamera"));
-         //m_editorCamera->SetVisibleOnHierarchy(true);
-         //m_editorCamera->SetSerializable(false);
-         //m_editorCameraComponent = m_editorCamera->AddComponent<CameraComponent>();
-         //m_editorCameraComponent->SetRenderTexture(m_editorCameraRenderTex);
-
          return true;
       }
 

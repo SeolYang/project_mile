@@ -151,7 +151,7 @@ namespace Mile
 #define DEFINE_LOG_CATEGORY(CategoryName) DefinedLogCategoryType::CategoryName##Type CategoryName
 
 /* Mile Engine Log **/
-#define ME_LOG(CategoryName, Verbosity, Message, ...) Logger::GlobalLogging(CategoryName, Verbosity, Format(Message, __VA_ARGS__))
+#define ME_LOG(CategoryName, Verbosity, Message, ...) Logger::GlobalLogging(CategoryName, Verbosity, Formatting(Message, __VA_ARGS__))
 
 DECLARE_LOG_CATEGORY_EXTERN(MileLogger, Log);
 }

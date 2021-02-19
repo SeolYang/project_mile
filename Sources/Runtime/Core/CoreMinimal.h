@@ -67,20 +67,6 @@ namespace Mile
    using String = std::wstring;
    using Float = float;
 
-   template <typename... Args>
-   String Format(const String& format, Args... args)
-   {
-      int size = _snwprintf(nullptr, 0, format.c_str(), args...) + 1;
-      if (size <= 0)
-      {
-         throw std::runtime_error("Error during formatting!");
-      }
-
-      std::unique_ptr<wchar_t[]> buf(new wchar_t[size]);
-      _snwprintf(buf.get(), size, format.c_str(), args...);
-      return String(buf.get(), buf.get() + size - 1);
-   }
-
    static std::string BoolSerialize(bool value)
    {
       if (value)
