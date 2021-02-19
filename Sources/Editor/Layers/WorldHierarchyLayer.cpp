@@ -94,10 +94,11 @@ namespace Mile
          ImGui::Begin("Properties");
          if (m_selectedEntity != nullptr)
          {
+            ImGui::Spacing();
             if (m_target->CheckEntityValidation(m_selectedEntity))
             {
                bool bIsEntityActivated = m_selectedEntity->IsActivated();
-               if (ImGui::Checkbox("", &bIsEntityActivated))
+               if (ImGui::Checkbox("##entityActivationCheckbox0", &bIsEntityActivated))
                {
                   m_selectedEntity->SetActive(bIsEntityActivated);
                }
@@ -106,11 +107,15 @@ namespace Mile
 
                char buffer[DEFAULT_STR_INPUT_BUFFER_SIZE] = { 0 };
                strcpy_s(buffer, WString2String(m_selectedEntity->GetName()).c_str());
-               if (ImGui::InputText("", buffer, DEFAULT_STR_INPUT_BUFFER_SIZE))
+               if (ImGui::InputText("##entityNameInput0", buffer, DEFAULT_STR_INPUT_BUFFER_SIZE))
                {
                   std::string newName = buffer;
                   m_selectedEntity->SetName(String2WString(newName));
                }
+
+               ImGui::Spacing();
+               ImGui::Separator();
+               ImGui::Spacing();
 
                if (ImGui::CollapsingHeader("Transform"))
                {
@@ -132,7 +137,9 @@ namespace Mile
                      entitiyTransform->SetScale(scale);
                   }
 
+                  ImGui::Spacing();
                   ImGui::Separator();
+                  ImGui::Spacing();
                }
 
                auto& components = m_selectedEntity->GetComponents();
@@ -145,7 +152,9 @@ namespace Mile
                      component->OnGUI();
                      component->OnGUIEnd();
 
+                     ImGui::Spacing();
                      ImGui::Separator();
+                     ImGui::Spacing();
                   }
                }
             }
