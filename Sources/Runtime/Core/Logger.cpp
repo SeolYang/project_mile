@@ -44,6 +44,7 @@ namespace Mile
       {
          this->Logging(MileLogger, Log, TEXT("Logger deinitialized."));
          Flush();
+         m_logs.clear();
          SubSystem::DeInit();
       }
    }
