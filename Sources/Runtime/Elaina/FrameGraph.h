@@ -6,7 +6,10 @@
 #include <Elaina/RenderPass.h>
 #include <Elaina/CallbackRenderPass.h>
 #include <Elaina/RenderPassBuilder.h>
-#include "optick.h"
+
+#pragma warning(push, 0)
+#include <optick.h>
+#pragma warning(pop)
 
 namespace Elaina
 {
@@ -195,7 +198,7 @@ namespace Elaina
                }
 
                /** For resources which read and write by current render pass. */
-               auto readsAndWrites = targetRenderPass->Reads;
+               auto readsAndWrites{ targetRenderPass->Reads };
                readsAndWrites.insert(
                   readsAndWrites.end(),
                   targetRenderPass->Writes.begin(), targetRenderPass->Writes.end());
@@ -251,7 +254,7 @@ namespace Elaina
       /** Execute */
       void Execute()
       {
-         for (auto phase : Phases)
+         for (auto& phase : Phases)
          {
             /* Realize resource */
             {
@@ -282,7 +285,7 @@ namespace Elaina
          {
             for (size_t idx = LatestExcutedIndex; idx < Phases.size(); ++idx)
             {
-               auto phase = Phases[idx];
+               auto& phase = Phases[idx];
                if (phase.RenderPass->GetDistributionGroup() == distributionGroup)
                {
                   /* Realize resource */

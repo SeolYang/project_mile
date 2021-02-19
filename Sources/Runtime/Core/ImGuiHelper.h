@@ -1,13 +1,4 @@
 ﻿#pragma once
-#include <imgui.h>
-#include <imgui_internal.h>
-#include <imgui_impl_win32.h>
-#include <imgui_impl_dx11.h>
-
-#define WIN32_MEAN_AND_LEAN
-#include <Windows.h>
-
-#include <string>
 #include "Core/CoreMinimal.h"
 
 namespace Mile

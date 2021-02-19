@@ -1,9 +1,9 @@
 #pragma once
 #include "Core/Logger.h"
 
-class aiNode;
-class aiMesh;
-class aiScene;
+struct aiNode;
+struct aiMesh;
+struct aiScene;
 namespace Mile
 {
    DECLARE_LOG_CATEGORY_EXTERN(MileModelLoader, Log);

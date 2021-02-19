@@ -12,10 +12,6 @@
 #include "Math/Vector4.h"
 #include "Math/Quaternion.h"
 #include "Math/Vertex.h"
-#include <assimp/scene.h>
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/pbrmaterial.h>
 
 namespace Mile
 {

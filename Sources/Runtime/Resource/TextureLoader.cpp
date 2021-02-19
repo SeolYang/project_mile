@@ -1,7 +1,6 @@
 #include "Resource/TextureLoader.h"
 #include <fstream>
 #include <iostream>
-#include <FreeImage.h>
 
 namespace Mile
 {

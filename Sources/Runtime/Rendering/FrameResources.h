@@ -217,15 +217,15 @@ namespace Mile
    class DynamicCubemap;
    struct DynamicCubemapDescriptor
    {
-      RendererDX11* Renderer;
-      unsigned int Size;
+      RendererDX11* Renderer = nullptr;
+      unsigned int Size = 0;
    };
    using DynamicCubemapResource = Elaina::FrameResource<DynamicCubemapDescriptor, DynamicCubemap>;
 
    using DynamicCubemapRef = DynamicCubemap*;
    struct DynamicCubemapRefDescriptor
    {
-      DynamicCubemapRef Reference;
+      DynamicCubemapRef Reference = nullptr;
    };
    using DynamicCubemapRefResource = Elaina::FrameResource<DynamicCubemapRefDescriptor, DynamicCubemapRef>;
 

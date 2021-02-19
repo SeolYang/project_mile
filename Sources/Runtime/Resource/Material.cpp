@@ -2,7 +2,6 @@
 #include "Resource/ResourceManager.h"
 #include "Resource/Texture2D.h"
 #include "Core/Context.h"
-#include "json.hpp"
 
 namespace Mile
 {

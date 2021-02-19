@@ -1,7 +1,6 @@
 #include "Rendering/DynamicCubemap.h"
 #include "Rendering/DepthStencilBufferDX11.h"
 #include "Rendering/RendererDX11.h"
-#include <cmath>
 
 namespace Mile
 {

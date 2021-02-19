@@ -10,8 +10,6 @@
 #include "Resource/ResourceManager.h"
 #include "Rendering/RendererPBR.h"
 #include "MT/ThreadPool.h"
-#include <iostream>
-#include <algorithm>
 
 namespace Mile
 {

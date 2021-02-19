@@ -1,5 +1,7 @@
 #pragma once
+#pragma warning(push, 0)
 #include <cmath>
+#pragma warning(pop)
 #include "Core/CoreMinimal.h"
 
 namespace Mile

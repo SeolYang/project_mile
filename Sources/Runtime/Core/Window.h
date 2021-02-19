@@ -60,6 +60,7 @@ namespace Mile
    static void WinSetVideoMode(int width, int height, int bpp)
    {
       DEVMODE Mode;
+      ZeroMemory(&Mode, sizeof(DEVMODE));
       EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &Mode);
       Mode.dmBitsPerPel = bpp;
       Mode.dmPelsWidth = width;

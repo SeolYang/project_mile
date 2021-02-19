@@ -4,9 +4,6 @@
 #include "Core/Logger.h"
 #include "Core/Config.h"
 #include "Core/InputManager.h"
-#include "imgui.h"
-#include "imgui_impl_win32.h"
-#include "imgui_impl_dx11.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 namespace Mile

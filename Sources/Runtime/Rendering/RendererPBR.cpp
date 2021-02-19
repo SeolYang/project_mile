@@ -28,8 +28,6 @@
 #include "Resource/Material.h"
 #include "Resource/Texture2D.h"
 #include "MT/ThreadPool.h"
-#include <random>
-#include <iterator>
 
 namespace Mile
 {
@@ -37,16 +35,16 @@ namespace Mile
 
    DEFINE_CONSTANT_BUFFER(GeometryPassTransformBuffer)
    {
-      Matrix WorldMatrix;
-      Matrix WorldViewMatrix;
-      Matrix WorldViewProjMatrix;
+      Matrix WorldMatrix = Matrix::Identity;
+      Matrix WorldViewMatrix = Matrix::Identity;
+      Matrix WorldViewProjMatrix = Matrix::Identity;
    };
 
    DEFINE_CONSTANT_BUFFER(PackedMaterialParams)
    {
-      Vector4 BaseColorFactor;
-      Vector4 EmissiveColorFactor;
-      Vector4 MetallicRoughnessUV;
+      Vector4 BaseColorFactor = Vector4::One();
+      Vector4 EmissiveColorFactor = Vector4::Zero();
+      Vector4 MetallicRoughnessUV = Vector4::Zero();
       float SpecularFactor;
    };
 
@@ -62,43 +60,43 @@ namespace Mile
 
    DEFINE_CONSTANT_BUFFER(OneVector2ConstantBuffer)
    {
-      Vector2 Value;
+      Vector2 Value = Vector2();
    };
 
    DEFINE_CONSTANT_BUFFER(OneVector3ConstantBuffer)
    {
-      Vector3 Value;
+      Vector3 Value = Vector3();
    };
 
    DEFINE_CONSTANT_BUFFER(LightParamsConstantBuffer)
    {
-      Vector4 LightPos;
-      Vector4 LightDirection;
-      Vector4 LightRadiance;
-      float   LightIntensity;
-      UINT32 LightType;
+      Vector4 LightPos = Vector4::Zero();
+      Vector4 LightDirection = Vector4(0.0f, -1.0f, 0.0f, 0.0f);
+      Vector4 LightRadiance = Vector4::One();
+      float   LightIntensity = 1.0f;
+      UINT32 LightType = 0;
    };
 
    DEFINE_CONSTANT_BUFFER(OneMatrixConstantBuffer)
    {
-      Matrix Mat;
+      Matrix Mat = Matrix::Identity;
    };
 
    DEFINE_CONSTANT_BUFFER(SSAOParamsConstantBuffer)
    {
       Vector4 Samples[64];
-      Vector2 NoiseScale;
-      Matrix Projection;
-      float Radius;
-      float Bias;
-      float Magnitude;
+      Vector2 NoiseScale = Vector2(1.0f, 1.0f);
+      Matrix Projection = Matrix::Identity;
+      float Radius = 1.0f;
+      float Bias = 0.0f;
+      float Magnitude = 1.0f;
    };
 
    DEFINE_CONSTANT_BUFFER(AmbientParamsConstantBuffer)
    {
-      Vector3 CameraPos;
-      float Ao;
-      unsigned int SSAOEnabled;
+      Vector3 CameraPos = Vector3();
+      float Ao = 1.0f;
+      unsigned int SSAOEnabled = 0;
    };
 
    RendererPBR::RendererPBR(Context* context, size_t maximumThreads) :
@@ -631,7 +629,7 @@ namespace Mile
             gBuffer->UnbindRenderTarget(immediateContext);
             while (!taskQueue.empty())
             {
-               auto task = std::move(taskQueue.front());
+               auto task{ std::move(taskQueue.front()) };
                taskQueue.pop();
 
                task.second.get();
@@ -651,7 +649,7 @@ namespace Mile
             profiler.End("GeometryPass");
          });
 
-      auto geometryPassData = geometryPass->GetData();
+      const auto& geometryPassData = geometryPass->GetData();
 
       /** Lighting Pass; IBL */
       static const Matrix captureProj = Matrix::CreatePerspectiveProj(90.0f, 1.0f, 0.1f, 10.0f);
@@ -833,7 +831,7 @@ namespace Mile
             }
          });
 
-      auto convertSkyboxToCubemapPassData = convertSkyboxToCubemapPass->GetData();
+      const auto& convertSkyboxToCubemapPassData = convertSkyboxToCubemapPass->GetData();
 
       /** Solve Diffuse Integral */
       struct DiffuseIntegralPassData : public RenderPassDataBase
@@ -956,7 +954,7 @@ namespace Mile
             }
          });
 
-      auto diffuseIntegralPassData = diffuseIntegralPass->GetData();
+      const auto& diffuseIntegralPassData = diffuseIntegralPass->GetData();
 
       /** ComputePrefilteredEnvMap */
       struct PrefilterEnvPassData : public RenderPassDataBase
@@ -1108,7 +1106,7 @@ namespace Mile
             }
          });
 
-      auto prefilterEnvMapPassData = prefilterEnvMapPass->GetData();
+      const auto& prefilterEnvMapPassData = prefilterEnvMapPass->GetData();
 
       /** Integrate BRDF */
       struct IntegrateBRDFPassData : public RenderPassDataBase
@@ -1221,7 +1219,7 @@ namespace Mile
             }
          });
 
-      auto integrateBRDFPassData = integrateBRDFPass->GetData();
+      const auto& integrateBRDFPassData = integrateBRDFPass->GetData();
 
       /** Lighting Pass; Deferred Shading - Lighting */
       struct LightingPassData : public RenderPassDataBase
@@ -1383,7 +1381,7 @@ namespace Mile
             vertexShader->Unbind(immediateContext);
          });
 
-      auto lightingPassData = lightingPass->GetData();
+      const auto& lightingPassData = lightingPass->GetData();
 
       /** Post-process Pass */
       struct ConvertGBufferPassData : public RenderPassDataBase
@@ -1500,7 +1498,7 @@ namespace Mile
             vertexShader->Unbind(immediateContext);
          });
 
-      auto convertGBufferPassData = gBufferConvertPass->GetData();
+      const auto& convertGBufferPassData = gBufferConvertPass->GetData();
 
       /** SSAO */
       struct SSAOPassData : public RenderPassDataBase
@@ -1644,7 +1642,7 @@ namespace Mile
                   camera->GetNearPlane(),
                   camera->GetFarPlane());
 
-               auto ssaoParams = ((RendererPBR*)data.Renderer)->GetSSAOParams();
+               const auto& ssaoParams = ((RendererPBR*)data.Renderer)->GetSSAOParams();
 
                auto mappedSSAOParamsBuffer = ssaoParamsBuffer->Map<SSAOParamsConstantBuffer>(immeidiateContext);
                ZeroMemory(mappedSSAOParamsBuffer, sizeof(SSAOParamsConstantBuffer));
@@ -1671,7 +1669,7 @@ namespace Mile
             }
          });
 
-      auto ssaoPassData = ssaoPass->GetData();
+      const auto& ssaoPassData = ssaoPass->GetData();
 
       /** SSAO Blur */
       struct SSAOBlurPassData : public RenderPassDataBase
@@ -1764,7 +1762,7 @@ namespace Mile
 
       ssaoBlurPass->SetCullImmune(true);
 
-      auto ssaoBlurPassData = ssaoBlurPass->GetData();
+      const auto& ssaoBlurPassData = ssaoBlurPass->GetData();
 
       /** Ambient-Emissive Pass */
       struct AmbientEmissivePassData : public RenderPassDataBase
@@ -1922,7 +1920,7 @@ namespace Mile
             vertexShader->Unbind(context);
          });
 
-      auto ambientEmissivePassData = ambientEmissivePass->GetData();
+      const auto& ambientEmissivePassData = ambientEmissivePass->GetData();
 
       struct SkyboxPassData : public RenderPassDataBase
       {
@@ -2063,7 +2061,7 @@ namespace Mile
             vertexShader->Unbind(context);
          });
 
-      auto skyboxPassData = skyboxPass->GetData();
+      const auto& skyboxPassData = skyboxPass->GetData();
 
       /** Extract Brightness Pass */
       struct ExtractBrightnessPassData : public RenderPassDataBase
@@ -2163,7 +2161,7 @@ namespace Mile
             vertexShader->Unbind(context);
          });
 
-      auto extractBrightnessPassData = extractBrightnessPass->GetData();
+      const auto& extractBrightnessPassData = extractBrightnessPass->GetData();
 
       /** Bloom - Gaussian Blur Pass */
       struct BloomGaussBlurPassData : public RenderPassDataBase
@@ -2188,7 +2186,7 @@ namespace Mile
          ShaderDescriptor(),
          m_gaussBloomPassPS);
 
-      std::array<RenderTargetRefResource*, 2> pingPongBuffersRefRes;
+      std::array<RenderTargetRefResource*, 2> pingPongBuffersRefRes{ nullptr, };
       for (size_t idx = 0; idx < m_pingPongBuffers.size(); ++idx)
       {
          pingPongBuffersRefRes[idx] =
@@ -2296,7 +2294,7 @@ namespace Mile
             vertexShader->Unbind(context);
          });
 
-      auto bloomGaussBlurPassData = bloomGaussBlurPass->GetData();
+      const auto& bloomGaussBlurPassData = bloomGaussBlurPass->GetData();
 
       /** Bloom - Blend */
       struct BloomBlendPassData : public RenderPassDataBase
@@ -2391,7 +2389,7 @@ namespace Mile
             vertexShader->Unbind(context);
          });
 
-      auto bloomBlendPassData = bloomBlendPass->GetData();
+      const auto& bloomBlendPassData = bloomBlendPass->GetData();
 
       /** Tone Mapping Pass */
       struct ToneMappingPassData : public RenderPassDataBase
@@ -2517,7 +2515,7 @@ namespace Mile
             m_ssaoParams.Samples[idx] = sample;
          }
 
-         size_t noiseTexRes2 = (RendererPBRConstants::SSAONoiseTextureSize * RendererPBRConstants::SSAONoiseTextureSize);
+         size_t noiseTexRes2 = ((size_t)RendererPBRConstants::SSAONoiseTextureSize * (size_t)RendererPBRConstants::SSAONoiseTextureSize);
          for (size_t idx = 0; idx < noiseTexRes2; ++idx)
          {
             m_ssaoParams.Noise[idx] = Vector4(
@@ -2648,7 +2646,7 @@ namespace Mile
             }
 
             m_meshes.resize(0);
-            for (auto materialMapComp : m_materialMap)
+            for (auto& materialMapComp : m_materialMap)
             {
                Meshes& meshes = materialMapComp.second;
                std::copy(meshes.begin(), meshes.end(), std::back_inserter(m_meshes));
@@ -2668,7 +2666,7 @@ namespace Mile
          {
             OPTICK_EVENT("AcquireSkybox");
             m_skyboxTexture = nullptr;
-            auto skyboxComponents = std::move(world.GetComponentsFromEntities<SkyboxComponent>());
+            auto skyboxComponents{ std::move(world.GetComponentsFromEntities<SkyboxComponent>()) };
             if (skyboxComponents.size() > 0)
             {
                m_skyboxTexture = skyboxComponents[0]->GetTexture();

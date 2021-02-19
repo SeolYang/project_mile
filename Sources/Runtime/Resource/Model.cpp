@@ -3,9 +3,6 @@
 #include "Rendering/Mesh.h"
 #include "GameFramework/Entity.h"
 #include "GameFramework/World.h"
-#include <assimp/scene.h>
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
 
 namespace Mile
 {

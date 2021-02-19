@@ -1,6 +1,5 @@
 #pragma once
 #include "Rendering/RenderingCore.h"
-#include <atomic>
 
 namespace Mile
 {

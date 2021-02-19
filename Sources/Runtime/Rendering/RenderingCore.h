@@ -5,8 +5,10 @@
 #include "Math/Vector4.h"
 #include "Math/Matrix.h"
 
+#pragma warning(push, 0)
 #include <d3d11.h>
 #include <d3dcompiler.h>
+#pragma warning(pop)
 
 #define SAFE_TEX_BIND(TEXTURE, DEVICE_CONTEXT, BIND_SLOT, BIND_SHADER) if (TEXTURE != nullptr) { TEXTURE->Bind(DEVICE_CONTEXT, BIND_SLOT, BIND_SHADER); }
 #define SAFE_TEX_UNBIND(TEXTURE, DEVICE_CONTEXT, BOUND_SLOT, BOUND_SHADER) if (TEXTURE != nullptr) { TEXTURE->Unbind(DEVICE_CONTEXT, BOUND_SLOT, BOUND_SHADER); }
@@ -15,6 +17,7 @@
 
 #define EDITOR_GAME_VIEW_RENDER_TEXTURE TEXT("Editor/GameViewRenderTexture")
 #define DEFINE_CONSTANT_BUFFER(BUFFER_NAME) struct MEAPI alignas(16) BUFFER_NAME
+
 namespace Mile
 {
    constexpr unsigned int CUBE_FACES = 6;

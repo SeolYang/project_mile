@@ -41,7 +41,7 @@ namespace Mile
       if (jsonData.find("Entities") != jsonData.end())
       {
          const std::vector<json>& entities = jsonData["Entities"];
-         for (auto entity : entities)
+         for (const auto& entity : entities)
          {
             Entity* temp = CreateEntity(TEXT(""));
             temp->DeSerialize(entity);

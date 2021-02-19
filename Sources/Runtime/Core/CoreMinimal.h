@@ -1,14 +1,16 @@
 #pragma once
-#pragma warning( disable : 4251 )
-#pragma warning( disable : 4996 )
-#pragma warning( default : 4265 )
+#pragma warning(disable : 4251)
+#pragma warning(disable : 4996)
+#pragma warning(default : 4265)
+#pragma warning(push, 0)
 #include <vector>
 #include <array>
 #include <map>
 #include <set>
 #include <forward_list>
 #include <queue>
-
+#include <tuple>
+#include <stack>
 #include <memory>
 #include <functional>
 #include <locale>
@@ -23,20 +25,39 @@
 #include <mutex>
 #include <stdexcept>
 #include <chrono>
+#include <random>
+#include <iterator>
+#include <atomic>
+#include <cstdio>
+#include <fstream>
+#include <filesystem>
 
 #define WIN32_MEAN_AND_LEAN
 #include <Windows.h>
+
+#include <json.hpp>
+using json = nlohmann::json;
+
+#include <optick.h>
+
+#include <FreeImage.h>
+
+#include <imgui.h>
+#include <imgui_internal.h>
+#include <imgui_impl_win32.h>
+#include <imgui_impl_dx11.h>
+
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/pbrmaterial.h>
+#pragma warning(pop)
 
 #ifdef RUNTIME_EXPORTS
 #define MEAPI __declspec(dllexport)
 #else
 #define MEAPI __declspec(dllimport) 
 #endif 
-
-#include "json.hpp"
-using json = nlohmann::json;
-
-#include "optick.h"
 
 #define NULL_TEXT TEXT("null")
 #define NULL_TEXT_STD "null"
@@ -121,7 +142,7 @@ namespace Mile
    {
       String temp{ };
 
-      for (auto str : strings)
+      for (const auto& str : strings)
       {
          temp += str;
          temp += token;
