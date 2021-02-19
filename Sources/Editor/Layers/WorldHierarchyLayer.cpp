@@ -27,7 +27,7 @@ namespace Mile
       {
          if (targetRoot != nullptr && targetRoot->IsVisibleOnHierarchy())
          {
-            std::string entityName = targetRoot->GetNameUTF8();
+            const std::string& entityName = targetRoot->GetNameUTF8();
 
             ImGuiTreeNodeFlags flags = 
                ((m_selectedEntity == targetRoot) ? ImGuiTreeNodeFlags_Selected : 0)

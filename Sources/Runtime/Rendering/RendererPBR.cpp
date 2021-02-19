@@ -2529,8 +2529,11 @@ namespace Mile
 
       auto acquireMeshRenderersAndMatTask = threadPool->AddTask([&]()
          {
-            m_meshes.clear();
-            m_materialMap.clear();
+            m_meshes.resize(0);
+            for (auto& meshes : m_materialMap)
+            {
+               meshes.second.resize(0);
+            }
 
             m_meshes = std::move(world.GetComponentsFromEntities<MeshRenderComponent>());
             for (auto renderComponent : m_meshes)
@@ -2542,7 +2545,7 @@ namespace Mile
                }
             }
 
-            m_meshes.clear();
+            m_meshes.resize(0);
             for (auto materialMapComp : m_materialMap)
             {
                Meshes& meshes = materialMapComp.second;
@@ -2551,18 +2554,18 @@ namespace Mile
          });
       auto acquireLightsTask = threadPool->AddTask([&]()
          {
-            m_lights.clear();
+            m_lights.resize(0);
             m_lights = std::move(world.GetComponentsFromEntities<LightComponent>());
          });
       auto acquireCamerasTask = threadPool->AddTask([&]()
          {
-            m_cameras.clear();
+            m_lights.resize(0);
             m_cameras = std::move(world.GetComponentsFromEntities<CameraComponent>());
          });
       auto acquireSkyboxTask = threadPool->AddTask([&]()
          {
             m_skyboxTexture = nullptr;
-            auto skyboxComponents = world.GetComponentsFromEntities<SkyboxComponent>();
+            auto skyboxComponents = std::move(world.GetComponentsFromEntities<SkyboxComponent>());
             if (skyboxComponents.size() > 0)
             {
                m_skyboxTexture = skyboxComponents[0]->GetTexture();
