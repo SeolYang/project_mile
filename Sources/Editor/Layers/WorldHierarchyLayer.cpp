@@ -19,6 +19,7 @@ namespace Mile
 
       void WorldHierarchyLayer::OnIMGUIRender()
       {
+         OPTICK_EVENT();
          DrawHierarchyPanel();
          DrawPropertiesPanel();
       }
@@ -72,6 +73,7 @@ namespace Mile
 
       void WorldHierarchyLayer::DrawHierarchyPanel()
       {
+         OPTICK_EVENT();
          ImGui::Begin("Hierarchy");
          std::string worldName = WString2String(m_target->GetWorldName());
          if (ImGui::TreeNode(worldName.c_str()))
@@ -92,6 +94,7 @@ namespace Mile
 
       void WorldHierarchyLayer::DrawPropertiesPanel()
       {
+         OPTICK_EVENT();
          ImGui::Begin("Properties");
          if (m_selectedEntity != nullptr)
          {

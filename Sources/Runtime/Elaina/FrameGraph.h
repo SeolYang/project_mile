@@ -6,6 +6,7 @@
 #include <Elaina/RenderPass.h>
 #include <Elaina/CallbackRenderPass.h>
 #include <Elaina/RenderPassBuilder.h>
+#include "optick.h"
 
 namespace Elaina
 {
@@ -253,17 +254,23 @@ namespace Elaina
          for (auto phase : Phases)
          {
             /* Realize resource */
-            for (auto resource : phase.ToRealize)
             {
-               resource->Realize();
+               OPTICK_EVENT("RealizeResources");
+               for (auto resource : phase.ToRealize)
+               {
+                  resource->Realize();
+               }
             }
 
             phase.RenderPass->Execute();
 
             /* Derealize Resource*/
-            for (auto resource : phase.ToDerealize)
             {
-               resource->Derealize();
+               OPTICK_EVENT("DeRealizeResources");
+               for (auto resource : phase.ToDerealize)
+               {
+                  resource->Derealize();
+               }
             }
          }
       }

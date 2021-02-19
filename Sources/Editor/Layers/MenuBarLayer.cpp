@@ -36,6 +36,7 @@ namespace Mile
 
       void MenuBarLayer::OnIMGUIRender()
       {
+         OPTICK_EVENT();
          if (ImGui::BeginMainMenuBar())
          {
             if (ImGui::BeginMenu("File"))

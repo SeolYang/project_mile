@@ -83,6 +83,8 @@ namespace Mile
       void OnRenderResolutionChanged() override;
       void SetupRenderResources();
 
+      void AcquireRenderResources(const World& world);
+
       static void RenderMeshes(
          RendererDX11* renderer,
          bool bClearGBuffer,

@@ -576,6 +576,7 @@ namespace Mile
          },
          [](const GeometryPassData& data)
          {
+            OPTICK_EVENT("ExecuteGeometryPass");
             auto& profiler = data.Renderer->GetProfiler();
             auto vertexShader = data.VertexShader->GetActual();
             auto pixelShader = data.PixelShader->GetActual();
@@ -594,7 +595,7 @@ namespace Mile
             size_t offset = 0;
 
             // @For performance test!
-            //RendererPBR::RenderMeshes(true, *meshes, 0, meshesNum, data.Renderer->GetImmediateContext(), vertexShader, pixelShader, sampler, gBuffer, data.TransformBuffers[0]->GetActual(), data.MaterialBuffers[0]->GetActual(), rasterizerState, viewport, targetCamera);
+            //RendererPBR::RenderMeshes(data.Renderer, true, *meshes, 0, meshesNum, data.Renderer->GetImmediateContext(), vertexShader, pixelShader, sampler, gBuffer, data.TransformBuffers[0]->GetActual(), data.MaterialBuffers[0]->GetActual(), rasterizerState, viewport, targetCamera);
 
             /** Scheduling */
             std::queue <std::pair<size_t, std::future<void>>> taskQueue;
@@ -767,6 +768,7 @@ namespace Mile
          },
          [](const ConvertSkyboxPassData& data)
          {
+            OPTICK_EVENT("ExecuteConvertSkyboxPass");
             auto& profiler = data.Renderer->GetProfiler();
             ScopedProfile profile(profiler, "ConvertSkyboxPass");
 
@@ -901,6 +903,7 @@ namespace Mile
          },
          [](const DiffuseIntegralPassData& data)
          {
+            OPTICK_EVENT("ExecuteDiffuseIntegralPass");
             auto& profiler = data.Renderer->GetProfiler();
             ScopedProfile profile(profiler, "DiffuseIntegralPass");
 
@@ -1039,6 +1042,7 @@ namespace Mile
          },
          [](const PrefilterEnvPassData& data)
          {
+            OPTICK_EVENT("ExecutePrefilterEnvPass");
             auto& profiler = data.Renderer->GetProfiler();
             ScopedProfile profile(profiler, "PrefilterEnvironmentMapPass");
 
@@ -1174,6 +1178,7 @@ namespace Mile
          },
          [](const IntegrateBRDFPassData& data)
          {
+            OPTICK_EVENT("ExecuteIntegrateBRDFPass");
             auto& profiler = data.Renderer->GetProfiler();
             ScopedProfile profile(profiler, "IntegrateBRDFPass");
 
@@ -1308,6 +1313,7 @@ namespace Mile
          },
          [](const LightingPassData& data)
          {
+            OPTICK_EVENT("ExecuteLightingPass");
             auto& profiler = data.Renderer->GetProfiler();
             ScopedProfile profile(profiler, "LightingPass");
             ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
@@ -1445,6 +1451,7 @@ namespace Mile
          },
          [](const ConvertGBufferPassData& data)
          {
+            OPTICK_EVENT("ExecuteConvertGBufferPass");
             auto& profiler = data.Renderer->GetProfiler();
             ScopedProfile profile(profiler, "ConvertGBufferPass");
             ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
@@ -1593,6 +1600,7 @@ namespace Mile
          },
          [](const SSAOPassData& data)
          {
+            OPTICK_EVENT("ExecuteSSAOPass");
             auto& profiler = data.Renderer->GetProfiler();
             ScopedProfile profile(profiler, "SSAOPass");
             bool bSSAOEnabled = *(*data.SSAOEnabledRef->GetActual());
@@ -1713,6 +1721,7 @@ namespace Mile
          },
          [](const SSAOBlurPassData& data)
          {
+            OPTICK_EVENT("ExecuteSSAOBlurPass");
             bool bSSAOEnabled = *(*data.SSAOEnabledRef->GetActual());
             if (bSSAOEnabled)
             {
@@ -1843,6 +1852,7 @@ namespace Mile
          },
          [](const AmbientEmissivePassData& data)
          {
+            OPTICK_EVENT("ExecuteAmbientEmissivePass");
             auto& profiler = data.Renderer->GetProfiler();
             ScopedProfile profile(profiler, "AmbientEmissivePass");
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
@@ -1978,6 +1988,7 @@ namespace Mile
          },
          [](const SkyboxPassData& data)
          {
+            OPTICK_EVENT("ExecuteSkyboxPass");
             auto& profiler = data.Renderer->GetProfiler();
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
             ScopedProfile profile(profiler, "SkyboxPass");
@@ -2107,6 +2118,7 @@ namespace Mile
          },
          [](const ExtractBrightnessPassData& data)
          {
+            OPTICK_EVENT("ExecuteExtractBrightnessPass");
             auto& profiler = data.Renderer->GetProfiler();
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
             ScopedProfile profile(profiler, "ExtractBrightnessPass");
@@ -2215,6 +2227,7 @@ namespace Mile
          },
          [](const BloomGaussBlurPassData& data)
          {
+            OPTICK_EVENT("ExecuteBloomGaussBlurPass");
             auto& profiler = data.Renderer->GetProfiler();
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
             ScopedProfile profile(profiler, "BloomGaussBlurPass");
@@ -2331,6 +2344,7 @@ namespace Mile
          },
          [](const BloomBlendPassData& data)
          {
+            OPTICK_EVENT("ExecuteBloomBlendPass");
             auto& profiler = data.Renderer->GetProfiler();
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
             ScopedProfile profile(profiler, "BloomBlendPass");
@@ -2421,6 +2435,7 @@ namespace Mile
          },
          [](const ToneMappingPassData& data)
          {
+            OPTICK_EVENT("ExecuteToneMappingPass");
             auto& profiler = data.Renderer->GetProfiler();
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
             ScopedProfile profile(profiler, "ToneMappingPass");
@@ -2478,6 +2493,7 @@ namespace Mile
 
    bool RendererPBR::SetupSSAOParams()
    {
+      OPTICK_EVENT();
       if (m_outputRenderTarget != nullptr)
       {
          unsigned int width = m_outputRenderTarget->GetWidth();
@@ -2522,73 +2538,10 @@ namespace Mile
    void RendererPBR::RenderImpl(const World& world)
    {
       OPTICK_EVENT();
-      auto threadPool = Engine::GetThreadPool();
+      AcquireRenderResources(world);
 
       m_targetCamera = nullptr;
       m_outputRenderTarget = nullptr;
-
-      auto acquireMeshRenderersAndMatTask = threadPool->AddTask([&]()
-         {
-            m_meshes.resize(0);
-            for (auto& meshes : m_materialMap)
-            {
-               meshes.second.resize(0);
-            }
-
-            m_meshes = std::move(world.GetComponentsFromEntities<MeshRenderComponent>());
-            for (auto renderComponent : m_meshes)
-            {
-               auto material = renderComponent->GetMaterial();
-               if (material != nullptr)
-               {
-                  m_materialMap[material].push_back(renderComponent);
-               }
-            }
-
-            m_meshes.resize(0);
-            for (auto materialMapComp : m_materialMap)
-            {
-               Meshes& meshes = materialMapComp.second;
-               std::copy(meshes.begin(), meshes.end(), std::back_inserter(m_meshes));
-            }
-         });
-      auto acquireLightsTask = threadPool->AddTask([&]()
-         {
-            m_lights = std::move(world.GetComponentsFromEntities<LightComponent>());
-         });
-      auto acquireCamerasTask = threadPool->AddTask([&]()
-         {
-            m_cameras = std::move(world.GetComponentsFromEntities<CameraComponent>());
-         });
-      auto acquireSkyboxTask = threadPool->AddTask([&]()
-         {
-            m_skyboxTexture = nullptr;
-            auto skyboxComponents = std::move(world.GetComponentsFromEntities<SkyboxComponent>());
-            if (skyboxComponents.size() > 0)
-            {
-               m_skyboxTexture = skyboxComponents[0]->GetTexture();
-               if (m_skyboxTexture != m_oldSkyboxTexture)
-               {
-                  m_oldSkyboxTexture = m_skyboxTexture;
-                  m_bPrecomputeIBL = true;
-               }
-            }
-            else
-            {
-               m_skyboxTexture = nullptr;
-               if (m_oldSkyboxTexture != nullptr)
-               {
-                  m_oldSkyboxTexture = nullptr;
-                  m_bPrecomputeIBL = true;
-               }
-            }
-         });
-
-      acquireMeshRenderersAndMatTask.get();
-      acquireLightsTask.get();
-      acquireCamerasTask.get();
-      acquireSkyboxTask.get();
-
       for (auto camera : m_cameras)
       {
          m_targetCamera = camera;
@@ -2620,11 +2573,13 @@ namespace Mile
 
    void RendererPBR::OnRenderResolutionChanged()
    {
+      OPTICK_EVENT();
       SetupRenderResources();
    }
 
    void RendererPBR::SetupRenderResources()
    {
+      OPTICK_EVENT();
       SafeDelete(m_gBuffer);
       SafeDelete(m_hdrBuffer);
       SafeDelete(m_extractedBrightness);
@@ -2671,8 +2626,80 @@ namespace Mile
       m_blurredSSAO = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputSSAODesc);
    }
 
+   void RendererPBR::AcquireRenderResources(const World& world)
+   {
+      OPTICK_EVENT();
+      auto threadPool = Engine::GetThreadPool();
+      auto acquireMeshRenderersAndMatTask = threadPool->AddTask([&]()
+         {
+            OPTICK_EVENT("AcquireMeshRenderersAndMaterial");
+            m_meshes.resize(0);
+            for (auto& meshes : m_materialMap)
+            {
+               meshes.second.resize(0);
+            }
+
+            m_meshes = std::move(world.GetComponentsFromEntities<MeshRenderComponent>());
+            for (auto renderComponent : m_meshes)
+            {
+               auto material = renderComponent->GetMaterial();
+               if (material != nullptr)
+               {
+                  m_materialMap[material].push_back(renderComponent);
+               }
+            }
+
+            m_meshes.resize(0);
+            for (auto materialMapComp : m_materialMap)
+            {
+               Meshes& meshes = materialMapComp.second;
+               std::copy(meshes.begin(), meshes.end(), std::back_inserter(m_meshes));
+            }
+         });
+      auto acquireLightsTask = threadPool->AddTask([&]()
+         {
+            OPTICK_EVENT("AcquireLights");
+            m_lights = std::move(world.GetComponentsFromEntities<LightComponent>());
+         });
+      auto acquireCamerasTask = threadPool->AddTask([&]()
+         {
+            OPTICK_EVENT("AcquireCameras");
+            m_cameras = std::move(world.GetComponentsFromEntities<CameraComponent>());
+         });
+      auto acquireSkyboxTask = threadPool->AddTask([&]()
+         {
+            OPTICK_EVENT("AcquireSkybox");
+            m_skyboxTexture = nullptr;
+            auto skyboxComponents = std::move(world.GetComponentsFromEntities<SkyboxComponent>());
+            if (skyboxComponents.size() > 0)
+            {
+               m_skyboxTexture = skyboxComponents[0]->GetTexture();
+               if (m_skyboxTexture != m_oldSkyboxTexture)
+               {
+                  m_oldSkyboxTexture = m_skyboxTexture;
+                  m_bPrecomputeIBL = true;
+               }
+            }
+            else
+            {
+               m_skyboxTexture = nullptr;
+               if (m_oldSkyboxTexture != nullptr)
+               {
+                  m_oldSkyboxTexture = nullptr;
+                  m_bPrecomputeIBL = true;
+               }
+            }
+         });
+
+      acquireMeshRenderersAndMatTask.get();
+      acquireLightsTask.get();
+      acquireCamerasTask.get();
+      acquireSkyboxTask.get();
+   }
+
    void RendererPBR::RenderMeshes(RendererDX11* renderer, bool bClearGBuffer, Meshes& meshes, size_t offset, size_t num, ID3D11DeviceContext& context, VertexShaderDX11* vertexShader, PixelShaderDX11* pixelShader, SamplerDX11* sampler, GBuffer* gBuffer, ConstantBufferDX11* transformBuffer, ConstantBufferDX11* materialParamsBuffer, RasterizerState* rasterizerState, Viewport* viewport, CameraRef camera)
    {
+      OPTICK_EVENT();
       auto& profiler = renderer->GetProfiler();
       {
          context.ClearState();

@@ -40,6 +40,7 @@ namespace Mile
 
       void GameViewLayer::OnIMGUIRender()
       {
+         OPTICK_EVENT();
          ImGuiWindowFlags windowFlag = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
          auto world = Engine::GetWorld();
          auto window = Engine::GetWindow();
