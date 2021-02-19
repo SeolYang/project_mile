@@ -1,6 +1,7 @@
 #pragma once
 #pragma warning( disable : 4251 )
 #pragma warning( disable : 4996 )
+#pragma warning( default : 4265 )
 #include <vector>
 #include <array>
 #include <map>
