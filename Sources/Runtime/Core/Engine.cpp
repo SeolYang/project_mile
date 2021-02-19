@@ -197,13 +197,8 @@ namespace Mile
 
             this->Update();
             m_app->Update();
-            /** @todo 나중에 audio/physics 시스템이 추가되면 서로 다른 스레드에서 처리하도록 하기 */
-            auto mainRenderTask = m_threadPool->AddTask(
-               [this]() 
-               {
-                  this->m_renderer->Render(*this->m_world); 
-               }); 
-            mainRenderTask.get();
+
+            this->m_renderer->Render(*this->m_world);
 
             m_app->RenderIMGUI();
             m_renderer->Present();
