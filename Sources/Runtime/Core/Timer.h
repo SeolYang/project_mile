@@ -41,9 +41,9 @@ namespace Mile
       * @brief	이전 프레임과 현재 프레임사이에 시간 차이를 'ms' 단위로 반환 해줍니다.
       * @return 프레임간 지난 시간(ms)
       */
-      long long GetDeltaTimeMS() const
+      double GetDeltaTimeMS() const
       {
-         return (std::chrono::duration_cast<std::chrono::milliseconds>(m_deltaTime).count());
+         return (GetDeltaTimeNS() * 0.000001);
       }
 
       long long GetDeltaTimeNS() const
