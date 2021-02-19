@@ -84,12 +84,8 @@ namespace Mile
 
    DEFINE_CONSTANT_BUFFER(SSAOParamsConstantBuffer)
    {
-      Vector4 Samples[64];
-      Vector2 NoiseScale = Vector2(1.0f, 1.0f);
       Matrix Projection = Matrix::Identity;
-      float Radius = 1.0f;
-      float Bias = 0.0f;
-      float Magnitude = 1.0f;
+      Vector3 PackedParams = Vector3(1.0f, 0.0f, 1.0f); // Rad, Bias, Mag
    };
 
    DEFINE_CONSTANT_BUFFER(AmbientParamsConstantBuffer)
@@ -149,6 +145,7 @@ namespace Mile
       m_hdrBuffer(nullptr),
       m_extractedBrightness(nullptr),
       m_ssao(nullptr),
+      m_ssaoBaseDataBuffer(nullptr),
       m_blurredSSAO(nullptr),
       m_pingPongBuffers({ nullptr, })
    {
@@ -157,6 +154,7 @@ namespace Mile
    RendererPBR::~RendererPBR()
    {
       m_frameGraph.Clear();
+      SafeDelete(m_ssaoBaseDataBuffer);
       SafeDelete(m_blurredSSAO);
       SafeDelete(m_ssao);
       for (auto* pingPongBuffer : m_pingPongBuffers)
@@ -506,6 +504,7 @@ namespace Mile
    bool RendererPBR::InitFrameGraph()
    {
       SetupRenderResources();
+      SetupSSAOParams();
 
       auto targetCameraRefRes = m_frameGraph.AddExternalPermanentResource("CameraRef", CameraRefDescriptor(), &m_targetCamera);
       auto lightsRes = m_frameGraph.AddExternalPermanentResource("Lights", WorldDescriptor(), &m_lights);
@@ -612,10 +611,10 @@ namespace Mile
                      auto transformBuffer = data.TransformBuffers[thread]->GetActual();
                      auto materialParamsBuffer = data.MaterialBuffers[thread]->GetActual();
                      RendererPBR::RenderMeshes(
-                        data.Renderer, 
-                        false, *meshes, offset, num, 
+                        data.Renderer,
+                        false, *meshes, offset, num,
                         context, vertexShader, pixelShader, sampler,
-                        gBuffer, transformBuffer, materialParamsBuffer, 
+                        gBuffer, transformBuffer, materialParamsBuffer,
                         rasterizerState, viewport, targetCamera);
                   })));
 
@@ -730,7 +729,7 @@ namespace Mile
             samplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
             data.Sampler = builder.Create<SamplerResource>("LinearClampAlwaysSampler", samplerDesc);
 
-            data.IBLPrecomputeEnabledRef = builder.Create<BoolRefResource>("IBLPrecomputeEnabledRef", BoolRefDescriptor{&m_bPrecomputeIBL});
+            data.IBLPrecomputeEnabledRef = builder.Create<BoolRefResource>("IBLPrecomputeEnabledRef", BoolRefDescriptor{ &m_bPrecomputeIBL });
             data.SkyboxTextureRef = builder.Read(skyboxTextureRefRes);
             for (size_t idx = 0; idx < CUBE_FACES; ++idx)
             {
@@ -1080,7 +1079,7 @@ namespace Mile
                   auto viewport = data.MipViewports[mipLevel]->GetActual();
                   viewport->Bind(immediateContext);
                   auto mappedParamsBuffer = paramsBuffer->Map<OneFloatConstantBuffer>(immediateContext);
-                  (*mappedParamsBuffer) = OneFloatConstantBuffer{roughness};
+                  (*mappedParamsBuffer) = OneFloatConstantBuffer{ roughness };
                   paramsBuffer->UnMap(immediateContext);
 
                   for (unsigned int faceIdx = 0; faceIdx < CUBE_FACES; ++faceIdx)
@@ -1358,12 +1357,12 @@ namespace Mile
                float lightIntensity = lightComponent->GetIntensity();
                auto mappedLightParamsBuffer = lightParamsBuffer->Map<LightParamsConstantBuffer>(immediateContext);
                (*mappedLightParamsBuffer) = LightParamsConstantBuffer
-               { 
+               {
                   Vector4(lightPosition.x, lightPosition.y, lightPosition.z, 1.0f),
                   Vector4(lightDirection.x, lightDirection.y, lightDirection.z, 0.0f),
                   Vector4(lightRadiance.x, lightRadiance.y, lightRadiance.z, 1.0f),
                   lightIntensity,
-                  static_cast<UINT32>(lightComponent->GetLightType()) 
+                  static_cast<UINT32>(lightComponent->GetLightType())
                };
                lightParamsBuffer->UnMap(immediateContext);
 
@@ -1513,6 +1512,7 @@ namespace Mile
 
          CameraRefResource* CamRef = nullptr;
 
+         ConstantBufferRefResource* SSAOBaseDataBuffer = nullptr;
          ConstantBufferResource* SSAOParamsBuffer = nullptr;
 
          Texture2dDX11Resource* NoiseTexture = nullptr;
@@ -1531,6 +1531,8 @@ namespace Mile
          "SSAOPassPixelShader",
          ShaderDescriptor(),
          m_ssaoPassPS);
+
+      auto ssaoBaseDataBufferRefRes = m_frameGraph.AddExternalPermanentResource("SSAOBaseDataConstantBufferRef", ConstantBufferRefDescriptor(), &m_ssaoBaseDataBuffer);
 
       auto ssaoOutputRefRes = m_frameGraph.AddExternalPermanentResource("SSAO", RenderTargetRefDescriptor(), &m_ssao);
 
@@ -1566,6 +1568,8 @@ namespace Mile
             data.DepthDisableState = builder.Read(lightingPassData.DepthDisableState);
 
             data.CamRef = builder.Read(lightingPassData.CamRef);
+
+            data.SSAOBaseDataBuffer = builder.Read(ssaoBaseDataBufferRefRes);
 
             ConstantBufferDescriptor ssaoParamsBufferDesc;
             ssaoParamsBufferDesc.Renderer = this;
@@ -1614,6 +1618,7 @@ namespace Mile
                auto viewport = data.Viewport->GetActual();
                auto depthDisableState = data.DepthDisableState->GetActual();
                auto camera = *data.CamRef->GetActual();
+               auto ssaoBaseDataBuffer = *data.SSAOBaseDataBuffer->GetActual();
                auto ssaoParamsBuffer = data.SSAOParamsBuffer->GetActual();
                auto noiseTexture = data.NoiseTexture->GetActual();
                auto viewspaceGBuffer = data.ViewspaceGBuffer->GetActual();
@@ -1628,7 +1633,8 @@ namespace Mile
                posSampler->Bind(immeidiateContext, 2);
                viewport->Bind(immeidiateContext);
                depthDisableState->Bind(immeidiateContext);
-               ssaoParamsBuffer->Bind(immeidiateContext, 0, EShaderType::PixelShader);
+               ssaoBaseDataBuffer->Bind(immeidiateContext, 0, EShaderType::PixelShader);
+               ssaoParamsBuffer->Bind(immeidiateContext, 1, EShaderType::PixelShader);
                noiseTexture->Bind(immeidiateContext, 5, EShaderType::PixelShader);
                viewspaceGBuffer->BindAsShaderResource(immeidiateContext, 0, EShaderType::PixelShader);
                quadMesh->Bind(immeidiateContext, 0);
@@ -1646,12 +1652,7 @@ namespace Mile
 
                auto mappedSSAOParamsBuffer = ssaoParamsBuffer->Map<SSAOParamsConstantBuffer>(immeidiateContext);
                ZeroMemory(mappedSSAOParamsBuffer, sizeof(SSAOParamsConstantBuffer));
-               std::copy(std::begin(ssaoParams.Samples), std::end(ssaoParams.Samples), std::begin((*mappedSSAOParamsBuffer).Samples));
-               (*mappedSSAOParamsBuffer).NoiseScale = ssaoParams.NoiseScale;
-               (*mappedSSAOParamsBuffer).Projection = projMatrix;
-               (*mappedSSAOParamsBuffer).Radius = ssaoParams.Radius;
-               (*mappedSSAOParamsBuffer).Bias = ssaoParams.Bias;
-               (*mappedSSAOParamsBuffer).Magnitude = ssaoParams.Magnitude;
+               (*mappedSSAOParamsBuffer) = SSAOParamsConstantBuffer{ projMatrix, Vector3(ssaoParams.Radius, ssaoParams.Bias, ssaoParams.Magnitude) };
                ssaoParamsBuffer->UnMap(immeidiateContext);
                immeidiateContext.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
                profiler.DrawCall();
@@ -1660,7 +1661,8 @@ namespace Mile
                output->UnbindRenderTarget(immeidiateContext);
                viewspaceGBuffer->UnbindShaderResource(immeidiateContext, 0, EShaderType::PixelShader);
                noiseTexture->Unbind(immeidiateContext, 5, EShaderType::PixelShader);
-               ssaoParamsBuffer->Unbind(immeidiateContext, 0, EShaderType::PixelShader);
+               ssaoParamsBuffer->Unbind(immeidiateContext, 1, EShaderType::PixelShader);
+               ssaoBaseDataBuffer->Unbind(immeidiateContext, 0, EShaderType::PixelShader);
                posSampler->Unbind(immeidiateContext, 2);
                noiseSampler->Unbind(immeidiateContext, 1);
                sampler->Unbind(immeidiateContext, 0);
@@ -1786,7 +1788,7 @@ namespace Mile
          RenderTargetRefResource* OutputRef = nullptr;
       };
 
-      auto ambientEmissivePassVSRes = 
+      auto ambientEmissivePassVSRes =
          m_frameGraph.AddExternalPermanentResource("AmbientEmissivePassVertexShader", ShaderDescriptor(), m_ambientEmissivePassVS);
       auto ambientEmissivePassPSRes =
          m_frameGraph.AddExternalPermanentResource("AmbientEmissivePassPixelShader", ShaderDescriptor(), m_ambientEmissivePassPS);
@@ -1898,7 +1900,7 @@ namespace Mile
             auto paramsBuffer = data.ParamsBuffer->GetActual();
             float globalAOFactor = *(*data.GlobalAOFactorRef->GetActual());
             auto mappedParamsBuffer = paramsBuffer->Map<AmbientParamsConstantBuffer>(context);
-            (*mappedParamsBuffer) = AmbientParamsConstantBuffer{camTransform->GetPosition(TransformSpace::World), globalAOFactor, static_cast<unsigned int>(bSSAOEnabled)};
+            (*mappedParamsBuffer) = AmbientParamsConstantBuffer{ camTransform->GetPosition(TransformSpace::World), globalAOFactor, static_cast<unsigned int>(bSSAOEnabled) };
             paramsBuffer->UnMap(context);
             paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
 
@@ -2097,7 +2099,7 @@ namespace Mile
 
             data.Viewport = builder.Read(skyboxPassData.Viewport);
             data.InputRef = builder.Read(skyboxPassData.OutputRef);
-            
+
             VoidRefDescriptor bloomParamRefDesc;
             bloomParamRefDesc.Reference = &m_bloomParams;
             data.BloomParamsRef = builder.Create<VoidRefResource>("BloomParams", bloomParamRefDesc);
@@ -2191,7 +2193,7 @@ namespace Mile
       {
          pingPongBuffersRefRes[idx] =
             m_frameGraph.AddExternalPermanentResource(
-               "PingPongBufferRef_" + std::to_string(idx), 
+               "PingPongBufferRef_" + std::to_string(idx),
                RenderTargetRefDescriptor(), &m_pingPongBuffers[idx]);
       }
 
@@ -2487,321 +2489,323 @@ namespace Mile
       return true;
    }
 
-   bool RendererPBR::SetupSSAOParams()
+   void RendererPBR::SetupSSAOParams()
    {
       OPTICK_EVENT();
-      if (m_outputRenderTarget != nullptr)
+      Vector2 renderRes = GetRenderResolution();
+      unsigned int width = (unsigned int)renderRes.x;
+      unsigned int height = (unsigned int)renderRes.y;
+      m_ssaoBaseData.NoiseScale = Vector2(width / (float)RendererPBRConstants::SSAONoiseTextureSize, height / (float)RendererPBRConstants::SSAONoiseTextureSize);
+
+      std::uniform_real_distribution<float> randomFloats(0.0f, 1.0f);
+      std::default_random_engine generator;
+      for (unsigned int idx = 0; idx < RendererPBRConstants::SSAOKernelSize; ++idx)
       {
-         unsigned int width = m_outputRenderTarget->GetWidth();
-         unsigned int height = m_outputRenderTarget->GetHeight();
-         m_ssaoParams.NoiseScale = Vector2(width / (float)RendererPBRConstants::SSAONoiseTextureSize, height / (float)RendererPBRConstants::SSAONoiseTextureSize);
+         Vector4 sample{
+            randomFloats(generator) * 2.0f - 1.0f,
+            randomFloats(generator) * 2.0f - 1.0f,
+            randomFloats(generator) /* Hemisphere : z = [0, 1] */,
+            0.0f };
+         sample.Normalize();
+         sample *= randomFloats(generator);
 
-         std::uniform_real_distribution<float> randomFloats(0.0f, 1.0f);
-         std::default_random_engine generator;
-         for (unsigned int idx = 0; idx < RendererPBRConstants::SSAOKernelSize; ++idx)
-         {
-            Vector4 sample{
-               randomFloats(generator) * 2.0f - 1.0f,
-               randomFloats(generator) * 2.0f - 1.0f,
-               randomFloats(generator) /* Hemisphere : z = [0, 1] */,
-               0.0f };
-            sample.Normalize();
-            sample *= randomFloats(generator);
+         float scale = (float)idx / (float)RendererPBRConstants::SSAOKernelSize;
+         scale = Math::Lerp(0.1f, 1.0f, scale * scale);
+         sample *= scale;
 
-            float scale = (float)idx / (float)RendererPBRConstants::SSAOKernelSize;
-            scale = Math::Lerp(0.1f, 1.0f, scale * scale);
-            sample *= scale;
-
-            m_ssaoParams.Samples[idx] = sample;
-         }
-
-         size_t noiseTexRes2 = ((size_t)RendererPBRConstants::SSAONoiseTextureSize * (size_t)RendererPBRConstants::SSAONoiseTextureSize);
-         for (size_t idx = 0; idx < noiseTexRes2; ++idx)
-         {
-            m_ssaoParams.Noise[idx] = Vector4(
-               randomFloats(generator) * 2.0f - 1.0f,
-               randomFloats(generator) * 2.0f - 1.0f,
-               0.0f,
-               0.0f);
-         }
-
-         return true;
+         m_ssaoBaseData.Samples[idx] = sample;
       }
 
-      return false;
+      if (m_ssaoBaseDataBuffer == nullptr)
+      {
+         ConstantBufferDescriptor baseDataBufferDesc;
+         baseDataBufferDesc.Renderer = this;
+         baseDataBufferDesc.Size = sizeof(SSAOBaseData);
+         m_ssaoBaseDataBuffer = Elaina::Realize<ConstantBufferDescriptor, ConstantBufferDX11>(baseDataBufferDesc);
+      }
+
+      SSAOBaseData* mappedBuffer = m_ssaoBaseDataBuffer->Map<SSAOBaseData>(GetImmediateContext());
+      (*mappedBuffer) = m_ssaoBaseData;
+      m_ssaoBaseDataBuffer->UnMap(GetImmediateContext());
+
+      size_t noiseTexRes2 = ((size_t)RendererPBRConstants::SSAONoiseTextureSize * (size_t)RendererPBRConstants::SSAONoiseTextureSize);
+      for (size_t idx = 0; idx < noiseTexRes2; ++idx)
+      {
+         m_ssaoParams.Noise[idx] = Vector4(
+            randomFloats(generator) * 2.0f - 1.0f,
+            randomFloats(generator) * 2.0f - 1.0f,
+            0.0f,
+            0.0f);
+      }
    }
 
-   void RendererPBR::RenderImpl(const World& world)
-   {
-      OPTICK_EVENT();
-      AcquireRenderResources(world);
+void RendererPBR::RenderImpl(const World& world)
+{
+   OPTICK_EVENT();
+   AcquireRenderResources(world);
 
-      m_targetCamera = nullptr;
-      m_outputRenderTarget = nullptr;
-      for (auto camera : m_cameras)
+   m_targetCamera = nullptr;
+   m_outputRenderTarget = nullptr;
+   for (auto camera : m_cameras)
+   {
+      m_targetCamera = camera;
+      RenderTexture* renderTexture = m_targetCamera->GetRenderTexture();
+      if (renderTexture != nullptr)
       {
-         m_targetCamera = camera;
-         RenderTexture* renderTexture = m_targetCamera->GetRenderTexture();
-         if (renderTexture != nullptr)
+         m_outputRenderTarget = renderTexture->GetRenderTarget();
+      }
+      else
+      {
+#ifdef MILE_EDITOR
+         ResourceManager* resManager = Engine::GetResourceManager();
+         renderTexture = resManager->Load<RenderTexture>(EDITOR_GAME_VIEW_RENDER_TEXTURE, true);
+         m_outputRenderTarget = renderTexture->GetRenderTarget();
+#else
+         m_outputRenderTarget = &GetBackBuffer();
+#endif
+      }
+
+      m_frameGraph.Execute();
+      m_outputRenderTarget = nullptr;
+   }
+}
+
+void RendererPBR::OnRenderResolutionChanged()
+{
+   OPTICK_EVENT();
+   SetupRenderResources();
+   SetupSSAOParams();
+}
+
+void RendererPBR::SetupRenderResources()
+{
+   OPTICK_EVENT();
+   SafeDelete(m_gBuffer);
+   SafeDelete(m_hdrBuffer);
+   SafeDelete(m_extractedBrightness);
+   SafeDelete(m_ssao);
+   SafeDelete(m_blurredSSAO);
+   SafeDelete(m_pingPongBuffers[0]);
+   SafeDelete(m_pingPongBuffers[1]);
+
+   auto renderRes = this->GetRenderResolution();
+
+   GBufferDescriptor gBufferDesc;
+   gBufferDesc.Renderer = this;
+   gBufferDesc.Width = (unsigned int)renderRes.x;
+   gBufferDesc.Height = (unsigned int)renderRes.y;
+   m_gBuffer = Elaina::Realize<GBufferDescriptor, GBuffer>(gBufferDesc);
+
+   RenderTargetDescriptor outputHDRBufferDesc;
+   outputHDRBufferDesc.Renderer = this;
+   outputHDRBufferDesc.Width = (unsigned int)renderRes.x;
+   outputHDRBufferDesc.Height = (unsigned int)renderRes.y;
+   outputHDRBufferDesc.Format = EColorFormat::R16G16B16A16_FLOAT;
+   m_hdrBuffer = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputHDRBufferDesc);
+
+   RenderTargetDescriptor brightnessRenderTargetDesc;
+   brightnessRenderTargetDesc.Renderer = this;
+   brightnessRenderTargetDesc.ResolutionReference = &m_hdrBuffer;
+   brightnessRenderTargetDesc.FormatReference = &m_hdrBuffer;
+   m_extractedBrightness = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(brightnessRenderTargetDesc);
+
+   RenderTargetDescriptor pingPongBufferDesc;
+   pingPongBufferDesc.Renderer = this;
+   pingPongBufferDesc.ResolutionReference = &m_hdrBuffer;
+   pingPongBufferDesc.FormatReference = &m_hdrBuffer;
+   for (size_t idx = 0; idx < m_pingPongBuffers.size(); ++idx)
+   {
+      m_pingPongBuffers[idx] = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(pingPongBufferDesc);
+   }
+
+   RenderTargetDescriptor outputSSAODesc;
+   outputSSAODesc.Renderer = this;
+   outputSSAODesc.ResolutionReference = &m_hdrBuffer;
+   outputSSAODesc.Format = EColorFormat::R32_FLOAT;
+   m_ssao = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputSSAODesc);
+   m_blurredSSAO = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputSSAODesc);
+}
+
+void RendererPBR::AcquireRenderResources(const World& world)
+{
+   OPTICK_EVENT();
+   auto threadPool = Engine::GetThreadPool();
+   auto acquireMeshRenderersAndMatTask = threadPool->AddTask([&]()
+      {
+         OPTICK_EVENT("AcquireMeshRenderersAndMaterial");
+         m_meshes.resize(0);
+         for (auto& meshes : m_materialMap)
          {
-            m_outputRenderTarget = renderTexture->GetRenderTarget();
+            meshes.second.resize(0);
+         }
+
+         m_meshes = std::move(world.GetComponentsFromEntities<MeshRenderComponent>());
+         for (auto renderComponent : m_meshes)
+         {
+            auto material = renderComponent->GetMaterial();
+            if (material != nullptr)
+            {
+               m_materialMap[material].push_back(renderComponent);
+            }
+         }
+
+         m_meshes.resize(0);
+         for (auto& materialMapComp : m_materialMap)
+         {
+            Meshes& meshes = materialMapComp.second;
+            std::copy(meshes.begin(), meshes.end(), std::back_inserter(m_meshes));
+         }
+      });
+   auto acquireLightsTask = threadPool->AddTask([&]()
+      {
+         OPTICK_EVENT("AcquireLights");
+         m_lights = std::move(world.GetComponentsFromEntities<LightComponent>());
+      });
+   auto acquireCamerasTask = threadPool->AddTask([&]()
+      {
+         OPTICK_EVENT("AcquireCameras");
+         m_cameras = std::move(world.GetComponentsFromEntities<CameraComponent>());
+      });
+   auto acquireSkyboxTask = threadPool->AddTask([&]()
+      {
+         OPTICK_EVENT("AcquireSkybox");
+         m_skyboxTexture = nullptr;
+         auto skyboxComponents{ std::move(world.GetComponentsFromEntities<SkyboxComponent>()) };
+         if (skyboxComponents.size() > 0)
+         {
+            m_skyboxTexture = skyboxComponents[0]->GetTexture();
+            if (m_skyboxTexture != m_oldSkyboxTexture)
+            {
+               m_oldSkyboxTexture = m_skyboxTexture;
+               m_bPrecomputeIBL = true;
+            }
          }
          else
          {
-#ifdef MILE_EDITOR
-            ResourceManager* resManager = Engine::GetResourceManager();
-            renderTexture = resManager->Load<RenderTexture>(EDITOR_GAME_VIEW_RENDER_TEXTURE, true);
-            m_outputRenderTarget = renderTexture->GetRenderTarget();
-#else
-            m_outputRenderTarget = &GetBackBuffer();
-#endif
-         }
-
-         if (!SetupSSAOParams())
-         {
-            ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to setup ssao params!"));
-         }
-
-         m_frameGraph.Execute();
-         m_outputRenderTarget = nullptr;
-      }
-   }
-
-   void RendererPBR::OnRenderResolutionChanged()
-   {
-      OPTICK_EVENT();
-      SetupRenderResources();
-   }
-
-   void RendererPBR::SetupRenderResources()
-   {
-      OPTICK_EVENT();
-      SafeDelete(m_gBuffer);
-      SafeDelete(m_hdrBuffer);
-      SafeDelete(m_extractedBrightness);
-      SafeDelete(m_ssao);
-      SafeDelete(m_blurredSSAO);
-      SafeDelete(m_pingPongBuffers[0]);
-      SafeDelete(m_pingPongBuffers[1]);
-
-      auto renderRes = this->GetRenderResolution();
-
-      GBufferDescriptor gBufferDesc;
-      gBufferDesc.Renderer = this;
-      gBufferDesc.Width = (unsigned int)renderRes.x;
-      gBufferDesc.Height = (unsigned int)renderRes.y;
-      m_gBuffer = Elaina::Realize<GBufferDescriptor, GBuffer>(gBufferDesc);
-
-      RenderTargetDescriptor outputHDRBufferDesc;
-      outputHDRBufferDesc.Renderer = this;
-      outputHDRBufferDesc.Width = (unsigned int)renderRes.x;
-      outputHDRBufferDesc.Height = (unsigned int)renderRes.y;
-      outputHDRBufferDesc.Format = EColorFormat::R16G16B16A16_FLOAT;
-      m_hdrBuffer = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputHDRBufferDesc);
-
-      RenderTargetDescriptor brightnessRenderTargetDesc;
-      brightnessRenderTargetDesc.Renderer = this;
-      brightnessRenderTargetDesc.ResolutionReference = &m_hdrBuffer;
-      brightnessRenderTargetDesc.FormatReference = &m_hdrBuffer;
-      m_extractedBrightness = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(brightnessRenderTargetDesc);
-
-      RenderTargetDescriptor pingPongBufferDesc;
-      pingPongBufferDesc.Renderer = this;
-      pingPongBufferDesc.ResolutionReference = &m_hdrBuffer;
-      pingPongBufferDesc.FormatReference = &m_hdrBuffer;
-      for (size_t idx = 0; idx < m_pingPongBuffers.size(); ++idx)
-      {
-         m_pingPongBuffers[idx] = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(pingPongBufferDesc);
-      }
-
-      RenderTargetDescriptor outputSSAODesc;
-      outputSSAODesc.Renderer = this;
-      outputSSAODesc.ResolutionReference = &m_hdrBuffer;
-      outputSSAODesc.Format = EColorFormat::R32_FLOAT;
-      m_ssao = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputSSAODesc);
-      m_blurredSSAO = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputSSAODesc);
-   }
-
-   void RendererPBR::AcquireRenderResources(const World& world)
-   {
-      OPTICK_EVENT();
-      auto threadPool = Engine::GetThreadPool();
-      auto acquireMeshRenderersAndMatTask = threadPool->AddTask([&]()
-         {
-            OPTICK_EVENT("AcquireMeshRenderersAndMaterial");
-            m_meshes.resize(0);
-            for (auto& meshes : m_materialMap)
-            {
-               meshes.second.resize(0);
-            }
-
-            m_meshes = std::move(world.GetComponentsFromEntities<MeshRenderComponent>());
-            for (auto renderComponent : m_meshes)
-            {
-               auto material = renderComponent->GetMaterial();
-               if (material != nullptr)
-               {
-                  m_materialMap[material].push_back(renderComponent);
-               }
-            }
-
-            m_meshes.resize(0);
-            for (auto& materialMapComp : m_materialMap)
-            {
-               Meshes& meshes = materialMapComp.second;
-               std::copy(meshes.begin(), meshes.end(), std::back_inserter(m_meshes));
-            }
-         });
-      auto acquireLightsTask = threadPool->AddTask([&]()
-         {
-            OPTICK_EVENT("AcquireLights");
-            m_lights = std::move(world.GetComponentsFromEntities<LightComponent>());
-         });
-      auto acquireCamerasTask = threadPool->AddTask([&]()
-         {
-            OPTICK_EVENT("AcquireCameras");
-            m_cameras = std::move(world.GetComponentsFromEntities<CameraComponent>());
-         });
-      auto acquireSkyboxTask = threadPool->AddTask([&]()
-         {
-            OPTICK_EVENT("AcquireSkybox");
             m_skyboxTexture = nullptr;
-            auto skyboxComponents{ std::move(world.GetComponentsFromEntities<SkyboxComponent>()) };
-            if (skyboxComponents.size() > 0)
+            if (m_oldSkyboxTexture != nullptr)
             {
-               m_skyboxTexture = skyboxComponents[0]->GetTexture();
-               if (m_skyboxTexture != m_oldSkyboxTexture)
-               {
-                  m_oldSkyboxTexture = m_skyboxTexture;
-                  m_bPrecomputeIBL = true;
-               }
-            }
-            else
-            {
-               m_skyboxTexture = nullptr;
-               if (m_oldSkyboxTexture != nullptr)
-               {
-                  m_oldSkyboxTexture = nullptr;
-                  m_bPrecomputeIBL = true;
-               }
-            }
-         });
-
-      acquireMeshRenderersAndMatTask.get();
-      acquireLightsTask.get();
-      acquireCamerasTask.get();
-      acquireSkyboxTask.get();
-   }
-
-   void RendererPBR::RenderMeshes(RendererDX11* renderer, bool bClearGBuffer, Meshes& meshes, size_t offset, size_t num, ID3D11DeviceContext& context, VertexShaderDX11* vertexShader, PixelShaderDX11* pixelShader, SamplerDX11* sampler, GBuffer* gBuffer, ConstantBufferDX11* transformBuffer, ConstantBufferDX11* materialParamsBuffer, RasterizerState* rasterizerState, Viewport* viewport, CameraRef camera)
-   {
-      OPTICK_EVENT();
-      auto& profiler = renderer->GetProfiler();
-      {
-         context.ClearState();
-         context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-         vertexShader->Bind(context);
-         pixelShader->Bind(context);
-         sampler->Bind(context, 0);
-
-         gBuffer->BindAsRenderTarget(context, bClearGBuffer, bClearGBuffer);
-         transformBuffer->Bind(context, 0, EShaderType::VertexShader);
-         materialParamsBuffer->Bind(context, 0, EShaderType::PixelShader);
-
-         rasterizerState->Bind(context);
-         viewport->Bind(context);
-
-         auto camTransform = camera->GetTransform();
-         Matrix viewMatrix = Matrix::CreateView(
-            camTransform->GetPosition(TransformSpace::World),
-            camTransform->GetForward(TransformSpace::World),
-            camTransform->GetUp(TransformSpace::World));
-         Matrix projMatrix = Matrix::CreatePerspectiveProj(
-            camera->GetFov(),
-            (viewport->GetWidth() / (float)viewport->GetHeight()),
-            camera->GetNearPlane(),
-            camera->GetFarPlane());
-
-         Material* material = nullptr;
-         for (auto meshItr = meshes.begin() + offset; meshItr != meshes.begin() + offset + num; ++meshItr)
-         {
-            auto meshComponent = (*meshItr);
-            Material* meshMaterial = meshComponent->GetMaterial();
-            if (meshMaterial->GetMaterialType() == EMaterialType::Opaque)
-            {
-               if (material != meshMaterial)
-               {
-                  material = meshMaterial;
-                  Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
-                  Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
-                  Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
-                  Texture2dDX11* specularMapTex = material->GetTexture2D(MaterialTextureProperty::Specular)->GetRawTexture();
-                  Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
-                  Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
-
-                  Vector4 baseColorFactor = material->GetVector4Factor(MaterialFactorProperty::BaseColor);
-                  Vector4 emissiveFactor = material->GetVector4Factor(MaterialFactorProperty::Emissive);
-                  float metallicFactor = material->GetScalarFactor(MaterialFactorProperty::Metallic);
-                  float roughnessFactor = material->GetScalarFactor(MaterialFactorProperty::Roughness);
-                  float specularFactor = material->GetScalarFactor(MaterialFactorProperty::Specular);
-                  Vector2 uvOffset = material->GetVector2Factor(MaterialFactorProperty::UVOffset);
-
-                  auto materialParams = materialParamsBuffer->Map<PackedMaterialParams>(context);
-                  materialParams->BaseColorFactor = baseColorFactor;
-                  materialParams->EmissiveColorFactor = emissiveFactor;
-                  materialParams->MetallicRoughnessUV = Vector4(metallicFactor, roughnessFactor, uvOffset.x, uvOffset.y);
-                  materialParams->SpecularFactor = specularFactor;
-                  materialParamsBuffer->UnMap(context);
-
-                  SAFE_TEX_BIND(baseColorTex, context, 0, EShaderType::PixelShader);
-                  SAFE_TEX_BIND(emissiveTex, context, 1, EShaderType::PixelShader);
-                  SAFE_TEX_BIND(metallicRoughnessTex, context, 2, EShaderType::PixelShader);
-                  SAFE_TEX_BIND(specularMapTex, context, 3, EShaderType::PixelShader);
-                  SAFE_TEX_BIND(aoTex, context, 4, EShaderType::PixelShader);
-                  SAFE_TEX_BIND(normalTex, context, 5, EShaderType::PixelShader);
-               }
-
-               /** Render Mesh */
-               Transform* transform = meshComponent->GetTransform();
-               Mesh* mesh = meshComponent->GetMesh();
-               Matrix worldMatrix = transform->GetWorldMatrix();
-               Matrix worldViewMatrix = worldMatrix * viewMatrix;
-               auto transforms = transformBuffer->Map<GeometryPassTransformBuffer>(context);
-               transforms->WorldMatrix = worldMatrix;
-               transforms->WorldViewMatrix = worldViewMatrix;
-               transforms->WorldViewProjMatrix = (worldViewMatrix * projMatrix);
-               transformBuffer->UnMap(context);
-               mesh->Bind(context, 0);
-               context.DrawIndexed(mesh->GetIndexCount(), 0, 0);
-               profiler.DrawCall();
-
-               auto nextMeshItr = (meshItr + 1);
-               if (nextMeshItr == meshes.end() || (*nextMeshItr)->GetMaterial() != material)
-               {
-                  Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
-                  Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
-                  Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
-                  Texture2dDX11* specularMapTex = material->GetTexture2D(MaterialTextureProperty::Specular)->GetRawTexture();
-                  Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
-                  Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
-                  SAFE_TEX_UNBIND(baseColorTex, context, 0, EShaderType::PixelShader);
-                  SAFE_TEX_UNBIND(emissiveTex, context, 1, EShaderType::PixelShader);
-                  SAFE_TEX_UNBIND(metallicRoughnessTex, context, 2, EShaderType::PixelShader);
-                  SAFE_TEX_UNBIND(specularMapTex, context, 3, EShaderType::PixelShader);
-                  SAFE_TEX_UNBIND(aoTex, context, 4, EShaderType::PixelShader);
-                  SAFE_TEX_UNBIND(normalTex, context, 5, EShaderType::PixelShader);
-               }
+               m_oldSkyboxTexture = nullptr;
+               m_bPrecomputeIBL = true;
             }
          }
+      });
 
-         gBuffer->UnbindRenderTarget(context);
-         transformBuffer->Unbind(context, 0, EShaderType::VertexShader);
-         materialParamsBuffer->Unbind(context, 0, EShaderType::PixelShader);
+   acquireMeshRenderersAndMatTask.get();
+   acquireLightsTask.get();
+   acquireCamerasTask.get();
+   acquireSkyboxTask.get();
+}
 
-         sampler->Unbind(context, 0);
-         pixelShader->Unbind(context);
-         vertexShader->Unbind(context);
+void RendererPBR::RenderMeshes(RendererDX11* renderer, bool bClearGBuffer, Meshes& meshes, size_t offset, size_t num, ID3D11DeviceContext& context, VertexShaderDX11* vertexShader, PixelShaderDX11* pixelShader, SamplerDX11* sampler, GBuffer* gBuffer, ConstantBufferDX11* transformBuffer, ConstantBufferDX11* materialParamsBuffer, RasterizerState* rasterizerState, Viewport* viewport, CameraRef camera)
+{
+   OPTICK_EVENT();
+   auto& profiler = renderer->GetProfiler();
+   {
+      context.ClearState();
+      context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+      vertexShader->Bind(context);
+      pixelShader->Bind(context);
+      sampler->Bind(context, 0);
+
+      gBuffer->BindAsRenderTarget(context, bClearGBuffer, bClearGBuffer);
+      transformBuffer->Bind(context, 0, EShaderType::VertexShader);
+      materialParamsBuffer->Bind(context, 0, EShaderType::PixelShader);
+
+      rasterizerState->Bind(context);
+      viewport->Bind(context);
+
+      auto camTransform = camera->GetTransform();
+      Matrix viewMatrix = Matrix::CreateView(
+         camTransform->GetPosition(TransformSpace::World),
+         camTransform->GetForward(TransformSpace::World),
+         camTransform->GetUp(TransformSpace::World));
+      Matrix projMatrix = Matrix::CreatePerspectiveProj(
+         camera->GetFov(),
+         (viewport->GetWidth() / (float)viewport->GetHeight()),
+         camera->GetNearPlane(),
+         camera->GetFarPlane());
+
+      Material* material = nullptr;
+      for (auto meshItr = meshes.begin() + offset; meshItr != meshes.begin() + offset + num; ++meshItr)
+      {
+         auto meshComponent = (*meshItr);
+         Material* meshMaterial = meshComponent->GetMaterial();
+         if (meshMaterial->GetMaterialType() == EMaterialType::Opaque)
+         {
+            if (material != meshMaterial)
+            {
+               material = meshMaterial;
+               Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
+               Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
+               Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
+               Texture2dDX11* specularMapTex = material->GetTexture2D(MaterialTextureProperty::Specular)->GetRawTexture();
+               Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
+               Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
+
+               Vector4 baseColorFactor = material->GetVector4Factor(MaterialFactorProperty::BaseColor);
+               Vector4 emissiveFactor = material->GetVector4Factor(MaterialFactorProperty::Emissive);
+               float metallicFactor = material->GetScalarFactor(MaterialFactorProperty::Metallic);
+               float roughnessFactor = material->GetScalarFactor(MaterialFactorProperty::Roughness);
+               float specularFactor = material->GetScalarFactor(MaterialFactorProperty::Specular);
+               Vector2 uvOffset = material->GetVector2Factor(MaterialFactorProperty::UVOffset);
+
+               auto materialParams = materialParamsBuffer->Map<PackedMaterialParams>(context);
+               materialParams->BaseColorFactor = baseColorFactor;
+               materialParams->EmissiveColorFactor = emissiveFactor;
+               materialParams->MetallicRoughnessUV = Vector4(metallicFactor, roughnessFactor, uvOffset.x, uvOffset.y);
+               materialParams->SpecularFactor = specularFactor;
+               materialParamsBuffer->UnMap(context);
+
+               SAFE_TEX_BIND(baseColorTex, context, 0, EShaderType::PixelShader);
+               SAFE_TEX_BIND(emissiveTex, context, 1, EShaderType::PixelShader);
+               SAFE_TEX_BIND(metallicRoughnessTex, context, 2, EShaderType::PixelShader);
+               SAFE_TEX_BIND(specularMapTex, context, 3, EShaderType::PixelShader);
+               SAFE_TEX_BIND(aoTex, context, 4, EShaderType::PixelShader);
+               SAFE_TEX_BIND(normalTex, context, 5, EShaderType::PixelShader);
+            }
+
+            /** Render Mesh */
+            Transform* transform = meshComponent->GetTransform();
+            Mesh* mesh = meshComponent->GetMesh();
+            Matrix worldMatrix = transform->GetWorldMatrix();
+            Matrix worldViewMatrix = worldMatrix * viewMatrix;
+            auto transforms = transformBuffer->Map<GeometryPassTransformBuffer>(context);
+            transforms->WorldMatrix = worldMatrix;
+            transforms->WorldViewMatrix = worldViewMatrix;
+            transforms->WorldViewProjMatrix = (worldViewMatrix * projMatrix);
+            transformBuffer->UnMap(context);
+            mesh->Bind(context, 0);
+            context.DrawIndexed(mesh->GetIndexCount(), 0, 0);
+            profiler.DrawCall();
+
+            auto nextMeshItr = (meshItr + 1);
+            if (nextMeshItr == meshes.end() || (*nextMeshItr)->GetMaterial() != material)
+            {
+               Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
+               Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
+               Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
+               Texture2dDX11* specularMapTex = material->GetTexture2D(MaterialTextureProperty::Specular)->GetRawTexture();
+               Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
+               Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
+               SAFE_TEX_UNBIND(baseColorTex, context, 0, EShaderType::PixelShader);
+               SAFE_TEX_UNBIND(emissiveTex, context, 1, EShaderType::PixelShader);
+               SAFE_TEX_UNBIND(metallicRoughnessTex, context, 2, EShaderType::PixelShader);
+               SAFE_TEX_UNBIND(specularMapTex, context, 3, EShaderType::PixelShader);
+               SAFE_TEX_UNBIND(aoTex, context, 4, EShaderType::PixelShader);
+               SAFE_TEX_UNBIND(normalTex, context, 5, EShaderType::PixelShader);
+            }
+         }
       }
+
+      gBuffer->UnbindRenderTarget(context);
+      transformBuffer->Unbind(context, 0, EShaderType::VertexShader);
+      materialParamsBuffer->Unbind(context, 0, EShaderType::PixelShader);
+
+      sampler->Unbind(context, 0);
+      pixelShader->Unbind(context);
+      vertexShader->Unbind(context);
    }
+}
 }

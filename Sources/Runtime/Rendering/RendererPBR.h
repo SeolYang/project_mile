@@ -25,10 +25,14 @@ namespace Mile
       PixelShaderResource* PixelShader = nullptr;
    };
 
-   struct MEAPI SSAOParams
+   DEFINE_CONSTANT_BUFFER(SSAOBaseData)
    {
       Vector4 Samples[RendererPBRConstants::SSAOKernelSize];
-      Vector2 NoiseScale;
+      Vector2 NoiseScale = Vector2(1.0f, 1.0f);
+   };
+
+   struct MEAPI SSAOParams
+   {
       std::vector<Vector4> Noise = std::vector<Vector4>(RendererPBRConstants::SSAONoiseTextureSize * RendererPBRConstants::SSAONoiseTextureSize);
       float Radius = 2.0f;
       float Bias = 0.01f;
@@ -61,7 +65,6 @@ namespace Mile
       virtual ~RendererPBR();
 
       bool Init(Window& window) override;
-      bool SetupSSAOParams();
 
       SSAOParams& GetSSAOParams() { return m_ssaoParams; }
       SSAOParams GetSSAOParams() const { return m_ssaoParams; }
@@ -81,7 +84,6 @@ namespace Mile
    protected:
       void RenderImpl(const World& world) override;
       void OnRenderResolutionChanged() override;
-      void SetupRenderResources();
 
       void AcquireRenderResources(const World& world);
 
@@ -100,6 +102,9 @@ namespace Mile
    private:
       bool InitShader();
       bool InitFrameGraph();
+
+      void SetupRenderResources();
+      void SetupSSAOParams();
 
    private:
       Elaina::FrameGraph m_frameGraph;
@@ -182,6 +187,8 @@ namespace Mile
 
       /** Post-process */
       bool m_bSSAOEnabled;
+      SSAOBaseData m_ssaoBaseData;
+      ConstantBufferRef m_ssaoBaseDataBuffer;
       SSAOParams m_ssaoParams;
       float m_globalAOFactor;
 

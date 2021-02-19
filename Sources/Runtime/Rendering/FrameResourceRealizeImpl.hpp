@@ -195,6 +195,12 @@ namespace Elaina
    }
 
    template<>
+   ConstantBufferRef* Realize(const ConstantBufferRefDescriptor& desc)
+   {
+      return new ConstantBufferRef(desc.Reference);
+   }
+
+   template<>
    GBuffer* Realize(const GBufferDescriptor& desc)
    {
       bool bInitialized = false;

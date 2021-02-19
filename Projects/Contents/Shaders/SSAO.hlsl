@@ -20,15 +20,19 @@ struct PSInput
 };
 
 /* Constant Buffers (Pixel Shader) */
-cbuffer SSAOVariableParams : register(b0)
+cbuffer SSAOBaseData : register(b0)
 {
 	float4 Samples[64];
 	float2 NoiseScale;
-	matrix Projection;
-	float Radius;
-	float Bias;
-	float magnitude;
-}
+};
+
+cbuffer SSAOVariableParams : register(b1)
+{
+	matrix Projection	: packoffset(c0);
+	float Radius		: packoffset(c4);
+	float Bias			: packoffset(c4.y);
+	float Magnitude	: packoffset(c4.z);
+};
 
 /* Textures & Samplers */
 Texture2D posBuffer						: register(t0); // : View Space G-Buffer
@@ -80,6 +84,6 @@ float MilePS(in PSInput input) : SV_Target0
 	}
 
 	occlusion = 1.0f - (occlusion / kernelSizeFloat);
-	occlusion = pow(occlusion, magnitude);
+	occlusion = pow(occlusion, Magnitude);
 	return float(occlusion);
 }

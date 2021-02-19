@@ -96,6 +96,12 @@ namespace Mile
       size_t Size = 0;
    };
    using ConstantBufferResource = Elaina::FrameResource<ConstantBufferDescriptor, ConstantBufferDX11>;
+   using ConstantBufferRef = ConstantBufferDX11*;
+   struct ConstantBufferRefDescriptor
+   {
+      ConstantBufferRef Reference = nullptr;
+   };
+   using ConstantBufferRefResource = Elaina::FrameResource<ConstantBufferRefDescriptor, ConstantBufferRef>;
 
    class GBuffer;
    struct GBufferDescriptor
