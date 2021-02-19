@@ -112,6 +112,8 @@ namespace Mile
 
       String GetWorldName() const { return m_name; }
 
+      size_t GetEntitiesNum() const { return m_entities.size(); }
+
    private:
       String m_name;
       std::vector<Entity*> m_entities;

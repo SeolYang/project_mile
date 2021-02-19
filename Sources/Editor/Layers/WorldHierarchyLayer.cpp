@@ -72,8 +72,9 @@ namespace Mile
 
       void WorldHierarchyLayer::DrawHierarchyPanel()
       {
-         ImGui::Begin("World Hierarchy");
-         if (ImGui::TreeNode("Scene"))
+         ImGui::Begin("Hierarchy");
+         std::string worldName = WString2String(m_target->GetWorldName());
+         if (ImGui::TreeNode(worldName.c_str()))
          {
             if (m_target != nullptr)
             {
