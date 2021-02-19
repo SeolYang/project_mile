@@ -120,7 +120,7 @@ namespace Mile
       bool IsUpdateEnabled() const { return m_bCanEverUpdate; }
 
       std::vector<Entity*> GetChildren() const { return m_children; }
-      std::vector<Entity*> GetChildren() { return m_children; }
+      std::vector<Entity*>& GetChildren() { return m_children; }
 
       void Start();
       void Update();
