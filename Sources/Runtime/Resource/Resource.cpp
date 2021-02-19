@@ -21,7 +21,12 @@ namespace Mile
 
    String Resource::GetFileNameFromPath(const String& filePath, bool includeExt)
    {
-      auto splitPath = SplitStr(filePath, '/');
+      auto splitPath = std::move(SplitStr(filePath, '/'));
+      if (splitPath.size() == 1)
+      {
+         splitPath = std::move(SplitStr(filePath, '\\'));
+      }
+
       if (includeExt)
       {
          return splitPath[splitPath.size() - 1];
@@ -33,7 +38,11 @@ namespace Mile
 
    String Resource::GetFolderFromPath(const String & filePath)
    {
-      auto splitPath = SplitStr(filePath, '/');
+      auto splitPath = std::move(SplitStr(filePath, '/'));
+      if (splitPath.size() == 1)
+      {
+         splitPath = std::move(SplitStr(filePath, '\\'));
+      }
       splitPath.pop_back();
 
       return CombineStr(splitPath, TEXT("/"));
