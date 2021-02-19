@@ -136,6 +136,8 @@ namespace Mile
          return result;
       }
 
+      size_t GetThreads() const { return m_threadNum; }
+
    private:
       size_t      m_threadNum;
       bool        m_bStop;

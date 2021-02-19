@@ -45,7 +45,7 @@ namespace Mile
       m_window = new Window(context);
       context->RegisterSubSystem(m_window);
 
-      m_renderer = new RendererPBR(context, 8);
+      m_renderer = new RendererPBR(context, m_threadPool->GetThreads());
       context->RegisterSubSystem(m_renderer);
 
       m_world = new World(context);
