@@ -62,6 +62,8 @@ namespace Mile
       virtual json Serialize() const override;
       virtual void DeSerialize(const json& jsonData) override;
 
+      void OnGUI() override;
+
    private:
       float m_fov;
       float m_nearPlane;
