@@ -1635,6 +1635,7 @@ namespace Mile
                noiseTexture->Bind(immediateContext, 5, EShaderType::PixelShader);
                viewspaceGBuffer->BindAsShaderResource(immediateContext, 0, EShaderType::PixelShader);
                quadMesh->Bind(immediateContext, 0);
+               output->Clear(immediateContext, Vector4::Zero());
                output->BindAsRenderTarget(immediateContext);
 
                /** Render */
@@ -1741,7 +1742,7 @@ namespace Mile
                source->BindAsShaderResource(context, 0, EShaderType::PixelShader);
                viewport->Bind(context);
                depthDisableState->Bind(context);
-               output->Clear(context, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+               output->Clear(context, Vector4::Zero());
                output->BindAsRenderTarget(context);
 
                quadMesh->Bind(context, 0);
