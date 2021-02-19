@@ -256,9 +256,9 @@ namespace Mile
       ME_LOG(MileRenderer, Log, TEXT("Back buffer successfully resized to (%d x %d)"), width, height);
    }
 
-   void RendererDX11::SetBackBufferAsRenderTarget(ID3D11DeviceContext& deviceContext, bool bClear, bool bClearDepthStencil)
+   void RendererDX11::SetBackBufferAsRenderTarget(ID3D11DeviceContext& deviceContext)
    {
-      m_backBuffer->BindAsRenderTarget(deviceContext, bClear, bClearDepthStencil);
+      m_backBuffer->BindAsRenderTarget(deviceContext);
    }
 
    const GPUProfiler& RendererDX11::GetProfiler() const

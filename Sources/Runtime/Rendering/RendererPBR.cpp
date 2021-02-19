@@ -1199,6 +1199,7 @@ namespace Mile
                depthDisableState->Bind(immediateContext);
                viewport->Bind(immediateContext);
                quadMesh->Bind(immediateContext, 0);
+               outputBrdfLUT->Clear(immediateContext, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
                outputBrdfLUT->BindAsRenderTarget(immediateContext);
 
                /** Render */
@@ -1336,6 +1337,7 @@ namespace Mile
             gBuffer->BindAsShaderResource(immediateContext, 0, EShaderType::PixelShader);
             viewport->Bind(immediateContext);
             quadMesh->Bind(immediateContext, 0);
+            outputHDRBuffer->Clear(immediateContext, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
             outputHDRBuffer->BindAsRenderTarget(immediateContext);
 
             /** Render */
@@ -1739,6 +1741,7 @@ namespace Mile
                source->BindAsShaderResource(context, 0, EShaderType::PixelShader);
                viewport->Bind(context);
                depthDisableState->Bind(context);
+               output->Clear(context, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
                output->BindAsRenderTarget(context);
 
                quadMesh->Bind(context, 0);
@@ -1886,7 +1889,7 @@ namespace Mile
                blurredSSAO->BindAsShaderResource(context, 8, EShaderType::PixelShader);
             }
             quadMesh->Bind(context, 0);
-            output->BindAsRenderTarget(context, false, false);
+            output->BindAsRenderTarget(context);
 
             /** Update Constant Buffer */
             auto camTransform = camera->GetTransform();
@@ -2010,7 +2013,7 @@ namespace Mile
             viewport->Bind(context);
             auto gBufferDepthStencil = gBuffer->GetDepthStencilBufferDX11();
             output->SetDepthStencilBuffer(gBufferDepthStencil);
-            output->BindAsRenderTarget(context, false, false);
+            output->BindAsRenderTarget(context);
 
             switch (skyboxType)
             {
@@ -2134,6 +2137,7 @@ namespace Mile
             depthDisableState->Bind(context);
             quadMesh->Bind(context, 0);
             viewport->Bind(context);
+            output->Clear(context, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
             output->BindAsRenderTarget(context);
 
             /** Update Constant Buffer */
@@ -2267,6 +2271,7 @@ namespace Mile
                }
 
                latestInput->BindAsShaderResource(context, 0, EShaderType::PixelShader);
+               latestOutput->Clear(context, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
                latestOutput->BindAsRenderTarget(context);
 
                auto mappedParamsBuffer = paramsBuffer->Map<OneUINTConstantBuffer>(context);
@@ -2361,7 +2366,7 @@ namespace Mile
             paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
             quadMesh->Bind(context, 0);
             input->BindAsShaderResource(context, 0, EShaderType::PixelShader);
-            output->BindAsRenderTarget(context, false, false);
+            output->BindAsRenderTarget(context);
 
             /** Update Constant Buffers */
             auto mappedParamsBuffer = paramsBuffer->Map<OneFloatConstantBuffer>(context);
@@ -2449,7 +2454,7 @@ namespace Mile
             paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
             quadMesh->Bind(context, 0);
             input->BindAsShaderResource(context, 0, EShaderType::PixelShader);
-            output->BindAsRenderTarget(context, false, false);
+            output->BindAsRenderTarget(context);
 
             /** Update Constant Buffers */
             auto mappedParamsBuffer = paramsBuffer->Map<OneVector2ConstantBuffer>(context);
@@ -2533,11 +2538,10 @@ namespace Mile
       AcquireRenderResources(world);
 
       m_targetCamera = nullptr;
-      m_outputRenderTarget = nullptr;
+
       for (auto camera : m_cameras)
       {
-         m_targetCamera = camera;
-         RenderTexture* renderTexture = m_targetCamera->GetRenderTexture();
+         RenderTexture* renderTexture = camera->GetRenderTexture();
          if (renderTexture != nullptr)
          {
             m_outputRenderTarget = renderTexture->GetRenderTarget();
@@ -2553,7 +2557,13 @@ namespace Mile
 #endif
          }
 
-         m_frameGraph.Execute();
+         m_outputRenderTarget->Clear(GetImmediateContext(), camera->GetClearColor());
+         if (camera->IsActivated())
+         {
+            m_targetCamera = camera;
+            m_frameGraph.Execute();
+         }
+
          m_outputRenderTarget = nullptr;
       }
    }
@@ -2652,7 +2662,7 @@ namespace Mile
       auto acquireCamerasTask = threadPool->AddTask([&]()
          {
             OPTICK_EVENT("AcquireCameras");
-            m_cameras = std::move(world.GetComponentsFromEntities<CameraComponent>());
+            m_cameras = std::move(world.GetComponentsFromEntities<CameraComponent>(false));
          });
       auto acquireSkyboxTask = threadPool->AddTask([&]()
          {

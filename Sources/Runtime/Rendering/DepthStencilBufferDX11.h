@@ -40,6 +40,8 @@ namespace Mile
       bool BindAsShaderResource(ID3D11DeviceContext& deviceContext, unsigned int bindSlot, EShaderType bindShader);
       void UnbindShaderResource(ID3D11DeviceContext& deviceContext, unsigned int boundSlot, EShaderType boundShader);
 
+      void Clear(ID3D11DeviceContext& deviceContext, float depth, UINT8 stencil);
+
    private:
       ID3D11Texture2D*        m_depthStencilBuffer;
       ID3D11DepthStencilView* m_depthStencilView;

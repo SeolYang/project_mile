@@ -138,4 +138,10 @@ namespace Mile
          }
       }
    }
+
+   void DepthStencilBufferDX11::Clear(ID3D11DeviceContext& deviceContext, float depth, UINT8 stencil)
+   {
+      auto flags = D3D11_CLEAR_DEPTH | m_bStencilEnabled ? D3D11_CLEAR_STENCIL : 0;
+      deviceContext.ClearDepthStencilView(m_depthStencilView, flags, depth, stencil);
+   }
 }

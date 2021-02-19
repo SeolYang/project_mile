@@ -11,7 +11,6 @@ namespace Mile
       m_rtv(nullptr),
       m_width(0),
       m_height(0),
-      m_clearColor{ 0.0f, 0.0f, 0.0f, 1.0f },
       m_format(EColorFormat::R8G8B8A8_UNORM),
       RenderObject(renderer)
    {
@@ -134,31 +133,14 @@ namespace Mile
       }
    }
 
-   bool RenderTargetDX11::BindAsRenderTarget(ID3D11DeviceContext& deviceContext, bool clearTarget, bool clearDepthStencil)
+   bool RenderTargetDX11::BindAsRenderTarget(ID3D11DeviceContext& deviceContext)
    {
       if (RenderObject::IsBindable())
       {
-         if (clearTarget)
-         {
-            const float clearColor[4] = { m_clearColor.x, m_clearColor.y, m_clearColor.z, 1.0f };
-            deviceContext.ClearRenderTargetView(m_rtv, clearColor);
-         }
-
          ID3D11DepthStencilView* dsv = nullptr;
          if (m_depthStencilBuffer != nullptr)
          {
             dsv = m_depthStencilBuffer->GetDSV();
-
-            if (clearDepthStencil)
-            {
-               if (dsv != nullptr)
-               {
-                  deviceContext.ClearDepthStencilView(dsv,
-                     D3D11_CLEAR_DEPTH,
-                     1.0f,
-                     0);
-               }
-            }
          }
 
          deviceContext.OMSetRenderTargets(1, &m_rtv, dsv);
@@ -195,24 +177,8 @@ namespace Mile
       }
    }
 
-   void RenderTargetDX11::SetClearColor(const Vector4& color)
+   void RenderTargetDX11::Clear(ID3D11DeviceContext& deviceContext, const Vector4& clearColor)
    {
-      m_clearColor = color;
-   }
-
-   void RenderTargetDX11::ClearDepthStencil(ID3D11DeviceContext& deviceContext)
-   {
-      if (RenderObject::IsBindable())
-      {
-         ID3D11DepthStencilView* dsv = nullptr;
-         if (m_depthStencilBuffer != nullptr)
-         {
-            dsv = m_depthStencilBuffer->GetDSV();
-            deviceContext.ClearDepthStencilView(
-               dsv,
-               D3D11_CLEAR_DEPTH,
-               1.0f, 0);
-         }
-      }
+      deviceContext.ClearRenderTargetView(m_rtv, clearColor.elements);
    }
 }
