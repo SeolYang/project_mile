@@ -334,13 +334,14 @@ namespace Mile
 
          if (ImGui::CollapsingHeader("Profiles"))
          {
-            std::string profileOverallTime = "Overall\t" + std::to_string(profiler.GetProfileOverallTime()) + std::string(" ms");
+            std::string profileOverallTime = Mile::Formatting("Overall\t%.03f", profiler.GetProfileOverallTime()).append(" ms");
             ImGui::Text(profileOverallTime.c_str());
 
             const auto& profileDatas = profiler.GetProfileTimes();
             for (const auto& data : profileDatas)
             {
-               std::string profileStr = data.first + std::string("\t") + std::to_string(data.second) + std::string(" ms");
+               std::string profileStr = data.first;
+               profileStr.append(Mile::Formatting("\t%.03f", data.second).append(" ms"));
                ImGui::Text(profileStr.c_str());
             }
          }

@@ -94,7 +94,7 @@ namespace Mile
                data.ElapsedTimeHz = endTime - beginTime;
 
                double frequency = static_cast<double>(disjointData.Frequency);
-               data.ElapsedTime = static_cast<UINT64>((data.ElapsedTimeHz / frequency) * 1000.0);
+               data.ElapsedTime = ((data.ElapsedTimeHz / frequency) * 1000.0);
             }
 
             m_profileTimes[(*dataItr).first] = data.ElapsedTime;

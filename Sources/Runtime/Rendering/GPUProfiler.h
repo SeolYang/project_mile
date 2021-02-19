@@ -14,7 +14,7 @@ namespace Mile
          ID3D11Query* Disjoint = nullptr;
          ID3D11Query* Begin = nullptr;
          ID3D11Query* End = nullptr;
-         UINT64 ElapsedTime = 0;
+         double ElapsedTime = 0.0;
          UINT64 ElapsedTimeHz = 0;
          UINT64 QueryBeginFrame = 0;
 
@@ -61,9 +61,9 @@ namespace Mile
       UINT64 GetQueryLatency() const { return m_queryLatency; }
 
       const auto& GetProfileTimes() const { return m_profileTimes; }
-      UINT64 GetProfileOverallTime() const
+      double GetProfileOverallTime() const
       {
-         UINT64 sum = 0;
+         double sum = 0.0;
          for (const auto& data : m_profileTimes)
          {
             if (!(*m_profiles.find(data.first)).second.bIsDeferred)
@@ -78,7 +78,7 @@ namespace Mile
    private:
       RendererDX11* m_renderer;
       std::map<std::string, GPUProfileData> m_profiles;
-      std::map<std::string, UINT64> m_profileTimes;
+      std::map<std::string, double> m_profileTimes;
       UINT64 m_currentFrame;
       UINT64 m_queryLatency;
       std::atomic<UINT64> m_drawCalls;
