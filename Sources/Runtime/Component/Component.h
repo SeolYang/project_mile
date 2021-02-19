@@ -45,9 +45,7 @@ namespace Mile
       virtual void OnEnable() { }
       virtual void OnDisable() { }
 
-      void OnGUIBegin();
       virtual void OnGUI() { }
-      void OnGUIEnd();
 
       virtual String GetType() const { return TEXT("Component"); }
 

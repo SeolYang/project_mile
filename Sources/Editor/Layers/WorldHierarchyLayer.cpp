@@ -148,9 +148,7 @@ namespace Mile
                   String typeStr = component->GetType();
                   if (ImGui::CollapsingHeader(WString2String(typeStr).c_str()))
                   {
-                     component->OnGUIBegin();
                      component->OnGUI();
-                     component->OnGUIEnd();
 
                      ImGui::Spacing();
                      ImGui::Separator();

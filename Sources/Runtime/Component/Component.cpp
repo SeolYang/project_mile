@@ -41,12 +41,4 @@ namespace Mile
    {
       return m_entity->GetTransform();
    }
-
-   void Component::OnGUIBegin()
-   {
-   }
-
-   void Component::OnGUIEnd()
-   {
-   }
 }
