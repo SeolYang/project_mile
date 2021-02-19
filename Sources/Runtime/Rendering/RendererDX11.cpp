@@ -3,6 +3,7 @@
 #include "Rendering/DepthStencilBufferDX11.h"
 #include "Rendering/Quad.h"
 #include "Rendering/Cube.h"
+#include "Rendering/GPUProfiler.h"
 #include "Core/Window.h"
 
 namespace Mile
@@ -21,12 +22,14 @@ namespace Mile
       m_onWindowResize(nullptr),
       m_bVsyncEnabled(false),
       m_quad(nullptr),
-      m_cube(nullptr)
+      m_cube(nullptr),
+      m_profiler(new GPUProfiler(this))
    {
    }
 
    RendererDX11::~RendererDX11()
    {
+      SafeDelete(m_profiler);
       SafeDelete(m_quad);
       SafeDelete(m_cube);
 
@@ -191,6 +194,7 @@ namespace Mile
    {
       OPTICK_EVENT();
       RenderImpl(world);
+      m_profiler->EndFrame();
    }
 
    void RendererDX11::Present()
@@ -255,5 +259,15 @@ namespace Mile
    void RendererDX11::SetBackBufferAsRenderTarget(ID3D11DeviceContext& deviceContext, bool bClear, bool bClearDepthStencil)
    {
       m_backBuffer->BindAsRenderTarget(deviceContext, bClear, bClearDepthStencil);
+   }
+
+   const GPUProfiler& RendererDX11::GetProfiler() const
+   {
+      return (*m_profiler);
+   }
+
+   GPUProfiler& RendererDX11::GetProfiler()
+   {
+      return (*m_profiler);
    }
 }

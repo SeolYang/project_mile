@@ -10,6 +10,7 @@
 #include "Rendering/RendererDX11.h"
 #include "Rendering/RendererPBR.h"
 #include "Rendering/Texture2dDX11.h"
+#include "Rendering/GPUProfiler.h"
 #include "EditorApp.h"
 
 namespace Mile
@@ -27,7 +28,8 @@ namespace Mile
          m_fps(0),
          m_bIsEngineConfigOpend(false),
          m_bIsEditorConfigOpend(false),
-         m_bIsRendererConfigOpened(false),
+         m_bIsRendererConfigOpened(true),
+         m_bIsGPUProfilerOpened(true),
          Layer(context, TEXT("MenuBarLayer"))
       {
       }
@@ -62,6 +64,12 @@ namespace Mile
                ImGui::EndMenu();
             }
 
+            if (ImGui::BeginMenu("Tools"))
+            {
+               ImGui::MenuItem("GPU Profiler", nullptr, &m_bIsGPUProfilerOpened);
+               ImGui::EndMenu();
+            }
+
             ImGui::EndMainMenuBar();
 
             if (m_bIsEngineConfigOpend)
@@ -77,6 +85,11 @@ namespace Mile
             if (m_bIsRendererConfigOpened)
             {
                RendererConfig();
+            }
+
+            if (m_bIsGPUProfilerOpened)
+            {
+               GPUProfiler();
             }
          }
       }
@@ -298,6 +311,40 @@ namespace Mile
          {
             m_renderer->SaveConfig();
          }
+      }
+
+      void MenuBarLayer::GPUProfiler()
+      {
+         Engine* engine = Engine::GetInstance();
+         const auto& profiler = Engine::GetRenderer()->GetProfiler();
+         ImGui::Begin("GPU Profiler");
+
+         std::string fpsStr = (std::string("FPS : ") + std::to_string(engine->GetCurrentFPS()));
+         ImGui::Text(fpsStr.c_str());
+
+         std::string frameCountStr = std::string("Rendered Frames : ") + std::to_string(profiler.GetCurrentFrame());
+         ImGui::Text(frameCountStr.c_str());
+
+         std::string drawCallsStr = std::string("Draw Calls : ") + std::to_string(profiler.GetLatestDrawCalls());
+         ImGui::Text(drawCallsStr.c_str());
+
+         std::string deltaTimeStr = (std::string("Deltatime : ") + std::to_string(engine->GetTimer()->GetDeltaTimeMS())) + std::string(" ms");
+         ImGui::Text(deltaTimeStr.c_str());
+
+         if (ImGui::CollapsingHeader("Profiles"))
+         {
+            std::string profileOverallTime = "Overall\t" + std::to_string(profiler.GetProfileOverallTime()) + std::string(" ms");
+            ImGui::Text(profileOverallTime.c_str());
+
+            const auto& profileDatas = profiler.GetProfileTimes();
+            for (const auto& data : profileDatas)
+            {
+               std::string profileStr = data.first + std::string("\t") + std::to_string(data.second) + std::string(" ms");
+               ImGui::Text(profileStr.c_str());
+            }
+         }
+
+         ImGui::End();
       }
 
       void MenuBarLayer::EditorConfig()

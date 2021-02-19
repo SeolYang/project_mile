@@ -27,7 +27,7 @@ namespace Mile
       {
          if (targetRoot != nullptr && targetRoot->IsVisibleOnHierarchy())
          {
-            std::string entityName = WString2String(targetRoot->GetName());
+            std::string entityName = targetRoot->GetNameUTF8();
 
             ImGuiTreeNodeFlags flags = 
                ((m_selectedEntity == targetRoot) ? ImGuiTreeNodeFlags_Selected : 0)
@@ -77,7 +77,7 @@ namespace Mile
          {
             if (m_target != nullptr)
             {
-               auto rootEntities = m_target->GetRootEntities();
+               const auto& rootEntities = m_target->GetRootEntities();
                for (Entity* rootEntity : rootEntities)
                {
                   DrawEntityNode(rootEntity);

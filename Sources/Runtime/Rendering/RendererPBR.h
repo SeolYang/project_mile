@@ -84,6 +84,7 @@ namespace Mile
       void SetupRenderResources();
 
       static void RenderMeshes(
+         RendererDX11* renderer,
          bool bClearGBuffer,
          Meshes& meshes,
          size_t offset,

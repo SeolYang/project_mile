@@ -93,16 +93,19 @@ namespace Mile
       * @brief    Entity에 설정되어있는 이름을 반환합니다.
       * @return   Entity의 이름
       */
-      String GetName() const { return m_name; }
+      const String& GetName() const { return m_name; }
+      const std::string& GetNameUTF8() const { return m_nameUTF8; }
 
       /**
       * @brief    Entity에 새로운 이름을 설정해줍니다.
       * @param    Entity에 설정해줄 새로운 이름
       */
-      void SetName(const String& name) { m_name = name; }
+      void SetName(const String& name) { m_name = name; m_nameUTF8 = WString2String(m_name); }
 
-      String GetTag() const { return m_tag; }
-      void SetTag(const String& tag) { m_tag = tag; }
+      const String& GetTag() const { return m_tag; }
+      const std::string& GetTagUTF8() const { return m_tagUTF8; }
+
+      void SetTag(const String& tag) { m_tag = tag; m_tagUTF8 = WString2String(m_tag); }
 
       bool AttachChild(Entity* child);
       bool DetachChild(Entity* child);
@@ -139,7 +142,9 @@ namespace Mile
       std::vector<Component*> m_components;
       std::vector<Entity*>    m_children;
       String   m_name;
+      std::string m_nameUTF8;
       String   m_tag;
+      std::string m_tagUTF8;
 
       bool  m_bIsVisibleOnHierarchy;
       bool  m_bIsSerializable;

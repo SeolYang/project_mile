@@ -39,6 +39,8 @@ namespace Mile
          void RendererConfig();
          void SaveRendererConfig();
 
+         void GPUProfiler();
+
       private:
          World* m_world;
          Window* m_window;
@@ -56,6 +58,9 @@ namespace Mile
          RendererDX11* m_renderer;
          bool m_bIsRendererConfigOpened;
          Vector2 m_renderRes;
+
+         /** Tools */
+         bool m_bIsGPUProfilerOpened;
 
       };
    }

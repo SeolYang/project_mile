@@ -13,8 +13,6 @@ namespace Mile
    Entity::Entity(World* world, const String& name, const String& tag) :
       m_world(world),
       m_context(nullptr),
-      m_name(name),
-      m_tag(tag),
       m_bIsActivated(true),
       m_transform(new Transform(this)),
       m_parent(nullptr),
@@ -26,6 +24,9 @@ namespace Mile
       {
          m_context = m_world->GetContext();
       }
+
+      SetName(name);
+      SetTag(tag);
    }
 
    Entity::~Entity()
@@ -44,8 +45,8 @@ namespace Mile
       json serialized;
       if (m_bIsSerializable)
       {
-         serialized["Name"] = WString2String(m_name);
-         serialized["Tag"] = WString2String(m_tag);
+         serialized["Name"] = m_nameUTF8;
+         serialized["Tag"] = m_tagUTF8;
          serialized["IsActivated"] = m_bIsActivated;
          serialized["Transform"] = m_transform->Serialize();
 
@@ -69,8 +70,10 @@ namespace Mile
 
    void Entity::DeSerialize(const json& jsonData)
    {
-      m_name = String2WString(GetValueSafelyFromJson(jsonData, "Name", std::string("Entity")));
-      m_tag = String2WString(GetValueSafelyFromJson(jsonData, "Tag", std::string("None")));
+      m_nameUTF8 = GetValueSafelyFromJson(jsonData, "Name", std::string("Entity"));
+      m_tagUTF8 = GetValueSafelyFromJson(jsonData, "Tag", std::string("None"));
+      m_name = String2WString(m_nameUTF8);
+      m_tag = String2WString(m_tagUTF8);
       m_bIsActivated = GetValueSafelyFromJson<bool>(jsonData, "IsActivated", true);
 
       std::vector<json> components = jsonData["Components"];

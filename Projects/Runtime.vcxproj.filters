@@ -70,6 +70,9 @@
     <Filter Include="Shaders\PostProcess">
       <UniqueIdentifier>{e6280367-3731-4e5d-955c-6958b66856f0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Rendering\Profiler">
+      <UniqueIdentifier>{41236297-c561-4088-8418-9bf199018f71}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ThirdParty\json\src\json.hpp">
@@ -576,6 +579,9 @@
     <ClInclude Include="..\Sources\Runtime\Rendering\FrameResources.h">
       <Filter>Sources\Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\GPUProfiler.h">
+      <Filter>Sources\Rendering\Profiler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Sources\Runtime\Component\CameraComponent.cpp">
@@ -787,6 +793,9 @@
     </ClCompile>
     <ClCompile Include="..\Sources\Runtime\Core\ImGuiHelper.cpp">
       <Filter>Sources\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\GPUProfiler.cpp">
+      <Filter>Sources\Rendering\Profiler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

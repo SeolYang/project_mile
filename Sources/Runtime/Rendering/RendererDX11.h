@@ -14,6 +14,7 @@ namespace Mile
    class RenderTargetDX11;
    class DepthStencilBufferDX11;
    class OnWindowResizeDelegate;
+   class GPUProfiler;
 
    /**
     * @brief	Mile 엔진의 렌더러 서브 시스템입니다. 렌더링시 World 에 생성되어있는 Entity로 부터 Mesh Renderer 정보, 빛 정보,
@@ -91,9 +92,13 @@ namespace Mile
       Quad* GetPrimitiveQuad() const { return m_quad; }
       Cube* GetPrimitiveCube() const { return m_cube; }
 
+      const GPUProfiler& GetProfiler() const;
+      GPUProfiler& GetProfiler();
+
    protected:
       virtual void RenderImpl(const World& world) { }
       virtual void OnRenderResolutionChanged() { };
+
 
    private:
       bool InitLowLevelAPI(Window& window);
@@ -101,6 +106,8 @@ namespace Mile
 
    private:
       size_t m_maximumThreads;
+
+      GPUProfiler* m_profiler;
 
       /** Low level APIs */
       ID3D11Device* m_device;

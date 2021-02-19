@@ -272,6 +272,7 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
     <ClInclude Include="..\Sources\Runtime\Rendering\DynamicCubemap.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\FrameResources.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\GBuffer.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\GPUProfiler.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\IndexBufferDX11.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\InputLayoutDX11.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\Mesh.h" />
@@ -434,6 +435,7 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Sources\Runtime\Rendering\GBuffer.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\GPUProfiler.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\IndexBufferDX11.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\InputLayoutDX11.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\Mesh.cpp" />

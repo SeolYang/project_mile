@@ -14,6 +14,7 @@
 #include "Rendering/Quad.h"
 #include "Rendering/DynamicCubemap.h"
 #include "Rendering/FrameResourceRealizeImpl.hpp"
+#include "Rendering/GPUProfiler.h"
 #include "Core/Context.h"
 #include "Core/Engine.h"
 #include "GameFramework/World.h"
@@ -144,6 +145,8 @@ namespace Mile
       m_gaussBloomPassPS(nullptr),
       m_printTextureVS(nullptr),
       m_printTexturePS(nullptr),
+      m_toneMappingVS(nullptr),
+      m_toneMappingPS(nullptr),
       m_gBuffer(nullptr),
       m_hdrBuffer(nullptr),
       m_extractedBrightness(nullptr),
@@ -573,6 +576,7 @@ namespace Mile
          },
          [](const GeometryPassData& data)
          {
+            auto& profiler = data.Renderer->GetProfiler();
             auto vertexShader = data.VertexShader->GetActual();
             auto pixelShader = data.PixelShader->GetActual();
             auto sampler = data.Sampler->GetActual();
@@ -605,14 +609,23 @@ namespace Mile
 
                taskQueue.push(std::make_pair(thread, threadPool->AddTask([=]()
                   {
+                     ID3D11DeviceContext& context = data.Renderer->GetDeferredContext(thread);
                      auto transformBuffer = data.TransformBuffers[thread]->GetActual();
                      auto materialParamsBuffer = data.MaterialBuffers[thread]->GetActual();
-                     RendererPBR::RenderMeshes(false, *meshes, offset, num, data.Renderer->GetDeferredContext(thread), vertexShader, pixelShader, sampler, gBuffer, transformBuffer, materialParamsBuffer, rasterizerState, viewport, targetCamera);
+                     auto& profiler = data.Renderer->GetProfiler();
+                     ScopedContextProfile profile(profiler, "GeometryPass_Thread" + std::to_string(thread), context, true);
+                     RendererPBR::RenderMeshes(
+                        data.Renderer, 
+                        false, *meshes, offset, num, 
+                        context, vertexShader, pixelShader, sampler,
+                        gBuffer, transformBuffer, materialParamsBuffer, 
+                        rasterizerState, viewport, targetCamera);
                   })));
 
                offset += num;
             }
 
+            profiler.Begin("GeometryPass");
             /** Clear GBuffer */
             ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
             gBuffer->BindAsRenderTarget(immediateContext);
@@ -636,6 +649,7 @@ namespace Mile
 
                SafeRelease(commandList);
             }
+            profiler.End("GeometryPass");
          });
 
       auto geometryPassData = geometryPass->GetData();
@@ -753,12 +767,14 @@ namespace Mile
          },
          [](const ConvertSkyboxPassData& data)
          {
+            auto& profiler = data.Renderer->GetProfiler();
+            ScopedProfile profile(profiler, "ConvertSkyboxPass");
+
             BoolRef bIBLPrecomputeEnabledRef = (*data.IBLPrecomputeEnabledRef->GetActual());
             if (bIBLPrecomputeEnabledRef != nullptr && (*bIBLPrecomputeEnabledRef))
             {
                ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
                immediateContext.ClearState();
-
                immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
                auto vertexShader = data.VertexShader->GetActual();
@@ -800,6 +816,7 @@ namespace Mile
                   (*mappedTrasnformBuffer) = OneMatrixConstantBuffer{ *captureViews[faceIdx]->GetActual() };
                   transformBuffer->UnMap(immediateContext);
                   immediateContext.DrawIndexed(cubeMesh->GetIndexCount(), 0, 0);
+                  profiler.DrawCall();
                   outputEnvMap->UnbindAsRenderTarget(immediateContext);
                }
                outputEnvMap->GenerateMips(immediateContext);
@@ -884,12 +901,14 @@ namespace Mile
          },
          [](const DiffuseIntegralPassData& data)
          {
+            auto& profiler = data.Renderer->GetProfiler();
+            ScopedProfile profile(profiler, "DiffuseIntegralPass");
+
             BoolRef bIBLPrecomputeEnabledRef = (*data.IBLPrecomputeEnabledRef->GetActual());
             if (bIBLPrecomputeEnabledRef != nullptr && (*bIBLPrecomputeEnabledRef))
             {
                ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
                immediateContext.ClearState();
-
                immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
                auto vertexShader = data.VertexShader->GetActual();
@@ -922,6 +941,7 @@ namespace Mile
                   (*mappedTrasnformBuffer) = OneMatrixConstantBuffer{ *data.CaptureViews[faceIdx]->GetActual() };
                   transformBuffer->UnMap(immediateContext);
                   immediateContext.DrawIndexed(cubeMesh->GetIndexCount(), 0, 0);
+                  profiler.DrawCall();
                   outputIrradianceMap->UnbindAsRenderTarget(immediateContext);
                }
                outputIrradianceMap->GenerateMips(immediateContext);
@@ -1019,12 +1039,14 @@ namespace Mile
          },
          [](const PrefilterEnvPassData& data)
          {
+            auto& profiler = data.Renderer->GetProfiler();
+            ScopedProfile profile(profiler, "PrefilterEnvironmentMapPass");
+
             BoolRef bIBLPrecomputeEnabledRef = (*data.IBLPrecomputeEnabledRef->GetActual());
             if (bIBLPrecomputeEnabledRef != nullptr && (*bIBLPrecomputeEnabledRef))
             {
                ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
                immediateContext.ClearState();
-
                immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
                auto vertexShader = data.VertexShader->GetActual();
@@ -1069,6 +1091,7 @@ namespace Mile
 
                      outputPrefilteredEnvMap->BindAsRenderTarget(immediateContext, faceIdx, mipLevel);
                      immediateContext.DrawIndexed(cubeMesh->GetIndexCount(), 0, 0);
+                     profiler.DrawCall();
                      outputPrefilteredEnvMap->UnbindAsRenderTarget(immediateContext);
                   }
                }
@@ -1151,6 +1174,9 @@ namespace Mile
          },
          [](const IntegrateBRDFPassData& data)
          {
+            auto& profiler = data.Renderer->GetProfiler();
+            ScopedProfile profile(profiler, "IntegrateBRDFPass");
+
             BoolRef bIBLPrecomputeEnabledRef = (*data.IBLPrecomputeEnabledRef->GetActual());
             if (bIBLPrecomputeEnabledRef != nullptr && (*bIBLPrecomputeEnabledRef))
             {
@@ -1180,6 +1206,7 @@ namespace Mile
 
                /** Render */
                immediateContext.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+               profiler.DrawCall();
 
                /** Unbinds */
                outputBrdfLUT->UnbindRenderTarget(immediateContext);
@@ -1267,8 +1294,8 @@ namespace Mile
 
             BlendStateDescriptor blendStateDesc;
             blendStateDesc.Renderer = this;
-            blendStateDesc.BlendDescs[0] = RenderTargetBlendDesc{ 
-               true, 
+            blendStateDesc.BlendDescs[0] = RenderTargetBlendDesc{
+               true,
                EBlend::One, EBlend::One, EBlendOP::Add,EBlend::One, EBlend::Zero, EBlendOP::Add,
                (UINT8)EColorWriteEnable::ColorWriteEnableAll };
             data.AdditiveBlendState = builder.Create<BlendStateResource>(
@@ -1276,14 +1303,14 @@ namespace Mile
                blendStateDesc);
 
             data.QuadMeshRef = builder.Read(integrateBRDFPassData.QuadMeshRef);
-            
+
             data.OutputRef = builder.Write(hdrBufferRefRes);
          },
          [](const LightingPassData& data)
          {
-            /** @TODO Multi-threaded rendering */
+            auto& profiler = data.Renderer->GetProfiler();
+            ScopedProfile profile(profiler, "LightingPass");
             ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
-
             immediateContext.ClearState();
             immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -1339,6 +1366,7 @@ namespace Mile
                lightParamsBuffer->UnMap(immediateContext);
 
                immediateContext.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+               profiler.DrawCall();
             }
 
             /** Unbinds */
@@ -1417,8 +1445,9 @@ namespace Mile
          },
          [](const ConvertGBufferPassData& data)
          {
+            auto& profiler = data.Renderer->GetProfiler();
+            ScopedProfile profile(profiler, "ConvertGBufferPass");
             ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
-            
             immediateContext.ClearState();
             immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -1455,6 +1484,7 @@ namespace Mile
             (*mappedConvertParams) = OneMatrixConstantBuffer{ viewMatrix };
             convertParamsBuffer->UnMap(immediateContext);
             immediateContext.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+            profiler.DrawCall();
 
             /** Unbinds */
             convertedGBuffer->UnbindRenderTarget(immediateContext);
@@ -1563,11 +1593,12 @@ namespace Mile
          },
          [](const SSAOPassData& data)
          {
+            auto& profiler = data.Renderer->GetProfiler();
+            ScopedProfile profile(profiler, "SSAOPass");
             bool bSSAOEnabled = *(*data.SSAOEnabledRef->GetActual());
             if (bSSAOEnabled)
             {
                ID3D11DeviceContext& immeidiateContext = data.Renderer->GetImmediateContext();
-
                immeidiateContext.ClearState();
                immeidiateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -1619,6 +1650,7 @@ namespace Mile
                (*mappedSSAOParamsBuffer).Magnitude = ssaoParams.Magnitude;
                ssaoParamsBuffer->UnMap(immeidiateContext);
                immeidiateContext.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+               profiler.DrawCall();
 
                /** Unbinds */
                output->UnbindRenderTarget(immeidiateContext);
@@ -1684,6 +1716,8 @@ namespace Mile
             bool bSSAOEnabled = *(*data.SSAOEnabledRef->GetActual());
             if (bSSAOEnabled)
             {
+               auto& profiler = data.Renderer->GetProfiler();
+               ScopedProfile profile(profiler, "SSAOBlurPass");
                ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
                context.ClearState();
                context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -1710,6 +1744,7 @@ namespace Mile
 
                /** Render */
                context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+               profiler.DrawCall();
 
                /** Unbinds */
                output->UnbindRenderTarget(context);
@@ -1808,6 +1843,8 @@ namespace Mile
          },
          [](const AmbientEmissivePassData& data)
          {
+            auto& profiler = data.Renderer->GetProfiler();
+            ScopedProfile profile(profiler, "AmbientEmissivePass");
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
             context.ClearState();
             context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -1861,6 +1898,7 @@ namespace Mile
 
             /** Render */
             context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+            profiler.DrawCall();
 
             /** Unbinds */
             output->UnbindRenderTarget(context);
@@ -1940,7 +1978,9 @@ namespace Mile
          },
          [](const SkyboxPassData& data)
          {
+            auto& profiler = data.Renderer->GetProfiler();
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
+            ScopedProfile profile(profiler, "SkyboxPass");
             context.ClearState();
             context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -1992,6 +2032,7 @@ namespace Mile
 
             /** Render */
             context.DrawIndexed(cubeMesh->GetIndexCount(), 0, 0);
+            profiler.DrawCall();
 
             /** Unbinds */
             switch (skyboxType)
@@ -2066,7 +2107,9 @@ namespace Mile
          },
          [](const ExtractBrightnessPassData& data)
          {
+            auto& profiler = data.Renderer->GetProfiler();
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
+            ScopedProfile profile(profiler, "ExtractBrightnessPass");
             context.ClearState();
             context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -2099,6 +2142,7 @@ namespace Mile
 
             /** Render */
             context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+            profiler.DrawCall();
 
             /** Unbinds */
             output->UnbindRenderTarget(context);
@@ -2171,7 +2215,9 @@ namespace Mile
          },
          [](const BloomGaussBlurPassData& data)
          {
+            auto& profiler = data.Renderer->GetProfiler();
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
+            ScopedProfile profile(profiler, "BloomGaussBlurPass");
             context.ClearState();
             context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -2226,6 +2272,7 @@ namespace Mile
                (*mappedParamsBuffer) = OneUINTConstantBuffer{ static_cast<unsigned int>(bHorizontal ? 1 : 0) };
                paramsBuffer->UnMap(context);
                context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+               profiler.DrawCall();
 
                latestOutput->UnbindRenderTarget(context);
                latestInput->UnbindShaderResource(context, 0, EShaderType::PixelShader);
@@ -2284,7 +2331,9 @@ namespace Mile
          },
          [](const BloomBlendPassData& data)
          {
+            auto& profiler = data.Renderer->GetProfiler();
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
+            ScopedProfile profile(profiler, "BloomBlendPass");
             context.ClearState();
             context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -2319,6 +2368,7 @@ namespace Mile
 
             /** Render */
             context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+            profiler.DrawCall();
 
             /** Unbinds */
             output->UnbindRenderTarget(context);
@@ -2371,7 +2421,9 @@ namespace Mile
          },
          [](const ToneMappingPassData& data)
          {
+            auto& profiler = data.Renderer->GetProfiler();
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
+            ScopedProfile profile(profiler, "ToneMappingPass");
             context.ClearState();
             context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -2404,6 +2456,7 @@ namespace Mile
 
             /** Render */
             context.DrawIndexed(quadMesh->GetIndexCount(), 0, 0);
+            profiler.DrawCall();
 
             /** Unbinds */
             output->UnbindRenderTarget(context);
@@ -2468,6 +2521,7 @@ namespace Mile
 
    void RendererPBR::RenderImpl(const World& world)
    {
+      OPTICK_EVENT();
       auto threadPool = Engine::GetThreadPool();
 
       m_targetCamera = nullptr;
@@ -2616,110 +2670,114 @@ namespace Mile
       m_blurredSSAO = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputSSAODesc);
    }
 
-   void RendererPBR::RenderMeshes(bool bClearGBuffer, Meshes& meshes, size_t offset, size_t num, ID3D11DeviceContext& context, VertexShaderDX11* vertexShader, PixelShaderDX11* pixelShader, SamplerDX11* sampler, GBuffer* gBuffer, ConstantBufferDX11* transformBuffer, ConstantBufferDX11* materialParamsBuffer, RasterizerState* rasterizerState, Viewport* viewport, CameraRef camera)
+   void RendererPBR::RenderMeshes(RendererDX11* renderer, bool bClearGBuffer, Meshes& meshes, size_t offset, size_t num, ID3D11DeviceContext& context, VertexShaderDX11* vertexShader, PixelShaderDX11* pixelShader, SamplerDX11* sampler, GBuffer* gBuffer, ConstantBufferDX11* transformBuffer, ConstantBufferDX11* materialParamsBuffer, RasterizerState* rasterizerState, Viewport* viewport, CameraRef camera)
    {
-      context.ClearState();
-      context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-      vertexShader->Bind(context);
-      pixelShader->Bind(context);
-      sampler->Bind(context, 0);
-
-      gBuffer->BindAsRenderTarget(context, bClearGBuffer, bClearGBuffer);
-      transformBuffer->Bind(context, 0, EShaderType::VertexShader);
-      materialParamsBuffer->Bind(context, 0, EShaderType::PixelShader);
-
-      rasterizerState->Bind(context);
-      viewport->Bind(context);
-
-      auto camTransform = camera->GetTransform();
-      Matrix viewMatrix = Matrix::CreateView(
-         camTransform->GetPosition(TransformSpace::World),
-         camTransform->GetForward(TransformSpace::World),
-         camTransform->GetUp(TransformSpace::World));
-      Matrix projMatrix = Matrix::CreatePerspectiveProj(
-         camera->GetFov(),
-         (viewport->GetWidth() / (float)viewport->GetHeight()),
-         camera->GetNearPlane(),
-         camera->GetFarPlane());
-
-      Material* material = nullptr;
-      for (auto meshItr = meshes.begin() + offset; meshItr != meshes.begin()+offset+num; ++meshItr)
+      auto& profiler = renderer->GetProfiler();
       {
-         auto meshComponent = (*meshItr);
-         Material* meshMaterial = meshComponent->GetMaterial();
-         if (meshMaterial->GetMaterialType() == EMaterialType::Opaque)
+         context.ClearState();
+         context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+         vertexShader->Bind(context);
+         pixelShader->Bind(context);
+         sampler->Bind(context, 0);
+
+         gBuffer->BindAsRenderTarget(context, bClearGBuffer, bClearGBuffer);
+         transformBuffer->Bind(context, 0, EShaderType::VertexShader);
+         materialParamsBuffer->Bind(context, 0, EShaderType::PixelShader);
+
+         rasterizerState->Bind(context);
+         viewport->Bind(context);
+
+         auto camTransform = camera->GetTransform();
+         Matrix viewMatrix = Matrix::CreateView(
+            camTransform->GetPosition(TransformSpace::World),
+            camTransform->GetForward(TransformSpace::World),
+            camTransform->GetUp(TransformSpace::World));
+         Matrix projMatrix = Matrix::CreatePerspectiveProj(
+            camera->GetFov(),
+            (viewport->GetWidth() / (float)viewport->GetHeight()),
+            camera->GetNearPlane(),
+            camera->GetFarPlane());
+
+         Material* material = nullptr;
+         for (auto meshItr = meshes.begin() + offset; meshItr != meshes.begin() + offset + num; ++meshItr)
          {
-            if (material != meshMaterial)
+            auto meshComponent = (*meshItr);
+            Material* meshMaterial = meshComponent->GetMaterial();
+            if (meshMaterial->GetMaterialType() == EMaterialType::Opaque)
             {
-               material = meshMaterial;
-               Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
-               Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
-               Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
-               Texture2dDX11* specularMapTex = material->GetTexture2D(MaterialTextureProperty::Specular)->GetRawTexture();
-               Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
-               Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
+               if (material != meshMaterial)
+               {
+                  material = meshMaterial;
+                  Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
+                  Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
+                  Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
+                  Texture2dDX11* specularMapTex = material->GetTexture2D(MaterialTextureProperty::Specular)->GetRawTexture();
+                  Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
+                  Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
 
-               Vector4 baseColorFactor = material->GetVector4Factor(MaterialFactorProperty::BaseColor);
-               Vector4 emissiveFactor = material->GetVector4Factor(MaterialFactorProperty::Emissive);
-               float metallicFactor = material->GetScalarFactor(MaterialFactorProperty::Metallic);
-               float roughnessFactor = material->GetScalarFactor(MaterialFactorProperty::Roughness);
-               float specularFactor = material->GetScalarFactor(MaterialFactorProperty::Specular);
-               Vector2 uvOffset = material->GetVector2Factor(MaterialFactorProperty::UVOffset);
+                  Vector4 baseColorFactor = material->GetVector4Factor(MaterialFactorProperty::BaseColor);
+                  Vector4 emissiveFactor = material->GetVector4Factor(MaterialFactorProperty::Emissive);
+                  float metallicFactor = material->GetScalarFactor(MaterialFactorProperty::Metallic);
+                  float roughnessFactor = material->GetScalarFactor(MaterialFactorProperty::Roughness);
+                  float specularFactor = material->GetScalarFactor(MaterialFactorProperty::Specular);
+                  Vector2 uvOffset = material->GetVector2Factor(MaterialFactorProperty::UVOffset);
 
-               auto materialParams = materialParamsBuffer->Map<PackedMaterialParams>(context);
-               materialParams->BaseColorFactor = baseColorFactor;
-               materialParams->EmissiveColorFactor = emissiveFactor;
-               materialParams->MetallicRoughnessUV = Vector4(metallicFactor, roughnessFactor, uvOffset.x, uvOffset.y);
-               materialParams->SpecularFactor = specularFactor;
-               materialParamsBuffer->UnMap(context);
+                  auto materialParams = materialParamsBuffer->Map<PackedMaterialParams>(context);
+                  materialParams->BaseColorFactor = baseColorFactor;
+                  materialParams->EmissiveColorFactor = emissiveFactor;
+                  materialParams->MetallicRoughnessUV = Vector4(metallicFactor, roughnessFactor, uvOffset.x, uvOffset.y);
+                  materialParams->SpecularFactor = specularFactor;
+                  materialParamsBuffer->UnMap(context);
 
-               SAFE_TEX_BIND(baseColorTex, context, 0, EShaderType::PixelShader);
-               SAFE_TEX_BIND(emissiveTex, context, 1, EShaderType::PixelShader);
-               SAFE_TEX_BIND(metallicRoughnessTex, context, 2, EShaderType::PixelShader);
-               SAFE_TEX_BIND(specularMapTex, context, 3, EShaderType::PixelShader);
-               SAFE_TEX_BIND(aoTex, context, 4, EShaderType::PixelShader);
-               SAFE_TEX_BIND(normalTex, context, 5, EShaderType::PixelShader);
-            }
+                  SAFE_TEX_BIND(baseColorTex, context, 0, EShaderType::PixelShader);
+                  SAFE_TEX_BIND(emissiveTex, context, 1, EShaderType::PixelShader);
+                  SAFE_TEX_BIND(metallicRoughnessTex, context, 2, EShaderType::PixelShader);
+                  SAFE_TEX_BIND(specularMapTex, context, 3, EShaderType::PixelShader);
+                  SAFE_TEX_BIND(aoTex, context, 4, EShaderType::PixelShader);
+                  SAFE_TEX_BIND(normalTex, context, 5, EShaderType::PixelShader);
+               }
 
-            /** Render Mesh */
-            Transform* transform = meshComponent->GetTransform();
-            Mesh* mesh = meshComponent->GetMesh();
-            Matrix worldMatrix = transform->GetWorldMatrix();
-            Matrix worldViewMatrix = worldMatrix * viewMatrix;
-            auto transforms = transformBuffer->Map<GeometryPassTransformBuffer>(context);
-            transforms->WorldMatrix = worldMatrix;
-            transforms->WorldViewMatrix = worldViewMatrix;
-            transforms->WorldViewProjMatrix = (worldViewMatrix * projMatrix);
-            transformBuffer->UnMap(context);
-            mesh->Bind(context, 0);
-            context.DrawIndexed(mesh->GetIndexCount(), 0, 0);
+               /** Render Mesh */
+               Transform* transform = meshComponent->GetTransform();
+               Mesh* mesh = meshComponent->GetMesh();
+               Matrix worldMatrix = transform->GetWorldMatrix();
+               Matrix worldViewMatrix = worldMatrix * viewMatrix;
+               auto transforms = transformBuffer->Map<GeometryPassTransformBuffer>(context);
+               transforms->WorldMatrix = worldMatrix;
+               transforms->WorldViewMatrix = worldViewMatrix;
+               transforms->WorldViewProjMatrix = (worldViewMatrix * projMatrix);
+               transformBuffer->UnMap(context);
+               mesh->Bind(context, 0);
+               context.DrawIndexed(mesh->GetIndexCount(), 0, 0);
+               profiler.DrawCall();
 
-            auto nextMeshItr = (meshItr + 1);
-            if (nextMeshItr == meshes.end() || (*nextMeshItr)->GetMaterial() != material)
-            {
-               Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
-               Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
-               Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
-               Texture2dDX11* specularMapTex = material->GetTexture2D(MaterialTextureProperty::Specular)->GetRawTexture();
-               Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
-               Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
-               SAFE_TEX_UNBIND(baseColorTex, context, 0, EShaderType::PixelShader);
-               SAFE_TEX_UNBIND(emissiveTex, context, 1, EShaderType::PixelShader);
-               SAFE_TEX_UNBIND(metallicRoughnessTex, context, 2, EShaderType::PixelShader);
-               SAFE_TEX_UNBIND(specularMapTex, context, 3, EShaderType::PixelShader);
-               SAFE_TEX_UNBIND(aoTex, context, 4, EShaderType::PixelShader);
-               SAFE_TEX_UNBIND(normalTex, context, 5, EShaderType::PixelShader);
+               auto nextMeshItr = (meshItr + 1);
+               if (nextMeshItr == meshes.end() || (*nextMeshItr)->GetMaterial() != material)
+               {
+                  Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
+                  Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
+                  Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
+                  Texture2dDX11* specularMapTex = material->GetTexture2D(MaterialTextureProperty::Specular)->GetRawTexture();
+                  Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
+                  Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
+                  SAFE_TEX_UNBIND(baseColorTex, context, 0, EShaderType::PixelShader);
+                  SAFE_TEX_UNBIND(emissiveTex, context, 1, EShaderType::PixelShader);
+                  SAFE_TEX_UNBIND(metallicRoughnessTex, context, 2, EShaderType::PixelShader);
+                  SAFE_TEX_UNBIND(specularMapTex, context, 3, EShaderType::PixelShader);
+                  SAFE_TEX_UNBIND(aoTex, context, 4, EShaderType::PixelShader);
+                  SAFE_TEX_UNBIND(normalTex, context, 5, EShaderType::PixelShader);
+               }
             }
          }
+
+         gBuffer->UnbindRenderTarget(context);
+         transformBuffer->Unbind(context, 0, EShaderType::VertexShader);
+         materialParamsBuffer->Unbind(context, 0, EShaderType::PixelShader);
+
+         sampler->Unbind(context, 0);
+         pixelShader->Unbind(context);
+         vertexShader->Unbind(context);
       }
-
-      gBuffer->UnbindRenderTarget(context);
-      transformBuffer->Unbind(context, 0, EShaderType::VertexShader);
-      materialParamsBuffer->Unbind(context, 0, EShaderType::PixelShader);
-
-      sampler->Unbind(context, 0);
-      pixelShader->Unbind(context);
-      vertexShader->Unbind(context);
    }
 }
