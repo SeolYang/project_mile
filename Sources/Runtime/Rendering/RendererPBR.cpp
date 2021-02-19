@@ -2554,12 +2554,10 @@ namespace Mile
          });
       auto acquireLightsTask = threadPool->AddTask([&]()
          {
-            m_lights.resize(0);
             m_lights = std::move(world.GetComponentsFromEntities<LightComponent>());
          });
       auto acquireCamerasTask = threadPool->AddTask([&]()
          {
-            m_lights.resize(0);
             m_cameras = std::move(world.GetComponentsFromEntities<CameraComponent>());
          });
       auto acquireSkyboxTask = threadPool->AddTask([&]()
