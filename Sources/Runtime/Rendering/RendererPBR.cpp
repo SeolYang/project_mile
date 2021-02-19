@@ -74,6 +74,7 @@ namespace Mile
       Vector4 LightPos;
       Vector4 LightDirection;
       Vector4 LightRadiance;
+      float   LightIntensity;
       UINT32 LightType;
    };
 
@@ -1324,13 +1325,15 @@ namespace Mile
                Transform* lightTransform = lightComponent->GetTransform();
                Vector3 lightPosition = lightTransform->GetPosition(TransformSpace::World);
                Vector3 lightDirection = lightTransform->GetForward(TransformSpace::World);
-               Vector3 lightRadiance = lightComponent->GetRadiance();
+               Vector3 lightRadiance = lightComponent->GetColor();
+               float lightIntensity = lightComponent->GetIntensity();
                auto mappedLightParamsBuffer = lightParamsBuffer->Map<LightParamsConstantBuffer>(immediateContext);
                (*mappedLightParamsBuffer) = LightParamsConstantBuffer
                { 
                   Vector4(lightPosition.x, lightPosition.y, lightPosition.z, 1.0f),
                   Vector4(lightDirection.x, lightDirection.y, lightDirection.z, 0.0f),
                   Vector4(lightRadiance.x, lightRadiance.y, lightRadiance.z, 1.0f),
+                  lightIntensity,
                   static_cast<UINT32>(lightComponent->GetLightType()) 
                };
                lightParamsBuffer->UnMap(immediateContext);

@@ -29,7 +29,8 @@ cbuffer LightParamsBuffer : register(b1)
 {
 	float4 LightPos;
 	float4 LightDirection;
-	float4 LightRadiance;
+	float4 LightColor;
+	float	 LightIntensity;
 	uint	 LightType;
 };
 
@@ -56,7 +57,7 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float roughness = extraComponents.Sample(AnisoSampler, input.TexCoord).g;
 	float metallic = extraComponents.Sample(AnisoSampler, input.TexCoord).b;
 
-	float distance = length(LightPos.xyz - worldPos);
+	float distance = length(LightPos.rgb - worldPos);
 	float attenuation = 1.0f / (distance * distance);
 
 	float3 N = normalize(normalBuffer.Sample(AnisoSampler, input.TexCoord).xyz);
@@ -74,7 +75,7 @@ float4 MilePS(in PSInput input) : SV_Target0
 	F0 = lerp(F0, albedo, metallic);
 	
 	float3 Lo = 0.0f;
-	float3 radiance = LightRadiance.rgb * attenuation;
+	float3 radiance = LightColor.rgb * attenuation * LightIntensity;
 	
 	// Cook-Torrance BRDF
 	float NDF = DistributionGGX(N, H, roughness);

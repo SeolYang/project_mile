@@ -22,8 +22,11 @@ namespace Mile
       ELightType GetLightType() const { return m_type; }
       void SetLightType(ELightType type) { m_type = type; }
 
-      Vector3 GetRadiance() const { return m_radiance; }
-      void SetRadiance(const Vector3& radiance) { m_radiance = radiance; }
+      Vector3 GetColor() const { return m_color; }
+      void SetColor(const Vector3& newColor);
+
+      float GetIntensity() const { return m_intensity; }
+      float& Intensity() { return m_intensity; }
 
       Vector3 GetLightDirection() const;
       Vector3 GetLightPosition() const;
@@ -67,9 +70,12 @@ namespace Mile
          return 0;
       }
 
+      void OnGUI() override;
+
    private:
       ELightType	m_type;
-      Vector3	   m_radiance;
+      Vector3	   m_color;
+      float       m_intensity;
 
    };
 }
