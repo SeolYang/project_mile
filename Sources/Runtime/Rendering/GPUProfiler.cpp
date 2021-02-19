@@ -6,7 +6,7 @@ namespace Mile
    GPUProfiler::GPUProfiler(RendererDX11* renderer) :
       m_renderer(renderer),
       m_currentFrame(0),
-      m_queryLatency(10),
+      m_queryLatency(30),
       m_latestDrawCalls(0)
    {
       m_drawCalls.store(0);
