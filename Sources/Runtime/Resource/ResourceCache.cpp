@@ -34,6 +34,20 @@ namespace Mile
       m_resources.clear();
    }
 
+   void ResourceCache::Remove(Resource* resPtr)
+   {
+      std::lock_guard<std::mutex> lock(m_mutex);
+      for (auto resItr = m_resources.begin(); resItr != m_resources.end(); ++resItr)
+      {
+         if (resPtr == (*resItr))
+         {
+            m_resources.erase(resItr);
+            SafeDelete(resPtr);
+            return;
+         }
+      }
+   }
+
    Resource* ResourceCache::GetByPath(const String& path) const
    {
       std::lock_guard<std::mutex> lock(m_mutex);

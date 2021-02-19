@@ -47,6 +47,14 @@ namespace Mile
          return nullptr;
       }
 
+      void Unload(Resource* ptr)
+      {
+         if (ptr != nullptr)
+         {
+            m_cache->Remove(ptr);
+         }
+      }
+
       template < typename Ty >
       Ty* GetByPath(const String& filePath)
       {

@@ -13,6 +13,7 @@ namespace Mile
 
       void Add(Resource* res);
       void Clear();
+      void Remove(Resource* resPtr);
 
       Resource* GetByPath(const String& path) const;
       Resource* GetByName(const String& name) const;
