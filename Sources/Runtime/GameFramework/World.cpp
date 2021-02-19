@@ -32,7 +32,7 @@ namespace Mile
          }
       }
 
-      serialized["Entities"] = serializedEntities;
+      serialized["Entities"] = std::move(serializedEntities);
       return serialized;
    }
 
@@ -40,7 +40,7 @@ namespace Mile
    {
       if (jsonData.find("Entities") != jsonData.end())
       {
-         std::vector<json> entities = jsonData["Entities"];
+         const std::vector<json>& entities = jsonData["Entities"];
          for (auto entity : entities)
          {
             Entity* temp = CreateEntity(TEXT(""));

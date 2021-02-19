@@ -37,6 +37,14 @@ namespace Mile
          SafeDelete(component);
       }
 
+      for (auto* child : m_children)
+      {
+         if (child->m_world == nullptr)
+         {
+            SafeDelete(child);
+         }
+      }
+
       m_children.clear();
    }
 

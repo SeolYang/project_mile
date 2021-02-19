@@ -19,6 +19,7 @@ namespace Mile
 
    Model::~Model()
    {
+      SafeDelete(m_instance);
       for (auto mesh : m_meshes)
       {
          SafeDelete(mesh);
@@ -64,7 +65,8 @@ namespace Mile
    Entity* Model::Instantiate(Model* target, World* targetWorld, const String& entityName)
    {
       Entity* tempEntity = targetWorld->CreateEntity(TEXT(""));
-      tempEntity->DeSerialize(json::parse(target->m_serializedInstance));
+      auto serialized = json::parse(target->m_serializedInstance);
+      tempEntity->DeSerialize(serialized);
       tempEntity->SetName(entityName);
       return tempEntity;
    }
