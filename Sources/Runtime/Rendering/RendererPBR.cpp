@@ -2539,273 +2539,273 @@ namespace Mile
       }
    }
 
-void RendererPBR::RenderImpl(const World& world)
-{
-   OPTICK_EVENT();
-   AcquireRenderResources(world);
-
-   m_targetCamera = nullptr;
-   m_outputRenderTarget = nullptr;
-   for (auto camera : m_cameras)
+   void RendererPBR::RenderImpl(const World& world)
    {
-      m_targetCamera = camera;
-      RenderTexture* renderTexture = m_targetCamera->GetRenderTexture();
-      if (renderTexture != nullptr)
-      {
-         m_outputRenderTarget = renderTexture->GetRenderTarget();
-      }
-      else
-      {
-#ifdef MILE_EDITOR
-         ResourceManager* resManager = Engine::GetResourceManager();
-         renderTexture = resManager->Load<RenderTexture>(EDITOR_GAME_VIEW_RENDER_TEXTURE, true);
-         m_outputRenderTarget = renderTexture->GetRenderTarget();
-#else
-         m_outputRenderTarget = &GetBackBuffer();
-#endif
-      }
+      OPTICK_EVENT();
+      AcquireRenderResources(world);
 
-      m_frameGraph.Execute();
+      m_targetCamera = nullptr;
       m_outputRenderTarget = nullptr;
-   }
-}
-
-void RendererPBR::OnRenderResolutionChanged()
-{
-   OPTICK_EVENT();
-   SetupRenderResources();
-   SetupSSAOParams();
-}
-
-void RendererPBR::SetupRenderResources()
-{
-   OPTICK_EVENT();
-   SafeDelete(m_gBuffer);
-   SafeDelete(m_hdrBuffer);
-   SafeDelete(m_extractedBrightness);
-   SafeDelete(m_ssao);
-   SafeDelete(m_blurredSSAO);
-   SafeDelete(m_pingPongBuffers[0]);
-   SafeDelete(m_pingPongBuffers[1]);
-
-   auto renderRes = this->GetRenderResolution();
-
-   GBufferDescriptor gBufferDesc;
-   gBufferDesc.Renderer = this;
-   gBufferDesc.Width = (unsigned int)renderRes.x;
-   gBufferDesc.Height = (unsigned int)renderRes.y;
-   m_gBuffer = Elaina::Realize<GBufferDescriptor, GBuffer>(gBufferDesc);
-
-   RenderTargetDescriptor outputHDRBufferDesc;
-   outputHDRBufferDesc.Renderer = this;
-   outputHDRBufferDesc.Width = (unsigned int)renderRes.x;
-   outputHDRBufferDesc.Height = (unsigned int)renderRes.y;
-   outputHDRBufferDesc.Format = EColorFormat::R16G16B16A16_FLOAT;
-   m_hdrBuffer = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputHDRBufferDesc);
-
-   RenderTargetDescriptor brightnessRenderTargetDesc;
-   brightnessRenderTargetDesc.Renderer = this;
-   brightnessRenderTargetDesc.ResolutionReference = &m_hdrBuffer;
-   brightnessRenderTargetDesc.FormatReference = &m_hdrBuffer;
-   m_extractedBrightness = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(brightnessRenderTargetDesc);
-
-   RenderTargetDescriptor pingPongBufferDesc;
-   pingPongBufferDesc.Renderer = this;
-   pingPongBufferDesc.ResolutionReference = &m_hdrBuffer;
-   pingPongBufferDesc.FormatReference = &m_hdrBuffer;
-   for (size_t idx = 0; idx < m_pingPongBuffers.size(); ++idx)
-   {
-      m_pingPongBuffers[idx] = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(pingPongBufferDesc);
-   }
-
-   RenderTargetDescriptor outputSSAODesc;
-   outputSSAODesc.Renderer = this;
-   outputSSAODesc.ResolutionReference = &m_hdrBuffer;
-   outputSSAODesc.Format = EColorFormat::R32_FLOAT;
-   m_ssao = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputSSAODesc);
-   m_blurredSSAO = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputSSAODesc);
-}
-
-void RendererPBR::AcquireRenderResources(const World& world)
-{
-   OPTICK_EVENT();
-   auto threadPool = Engine::GetThreadPool();
-   auto acquireMeshRenderersAndMatTask = threadPool->AddTask([&]()
+      for (auto camera : m_cameras)
       {
-         OPTICK_EVENT("AcquireMeshRenderersAndMaterial");
-         m_meshes.resize(0);
-         for (auto& meshes : m_materialMap)
+         m_targetCamera = camera;
+         RenderTexture* renderTexture = m_targetCamera->GetRenderTexture();
+         if (renderTexture != nullptr)
          {
-            meshes.second.resize(0);
-         }
-
-         m_meshes = std::move(world.GetComponentsFromEntities<MeshRenderComponent>());
-         for (auto renderComponent : m_meshes)
-         {
-            auto material = renderComponent->GetMaterial();
-            if (material != nullptr)
-            {
-               m_materialMap[material].push_back(renderComponent);
-            }
-         }
-
-         m_meshes.resize(0);
-         for (auto& materialMapComp : m_materialMap)
-         {
-            Meshes& meshes = materialMapComp.second;
-            std::copy(meshes.begin(), meshes.end(), std::back_inserter(m_meshes));
-         }
-      });
-   auto acquireLightsTask = threadPool->AddTask([&]()
-      {
-         OPTICK_EVENT("AcquireLights");
-         m_lights = std::move(world.GetComponentsFromEntities<LightComponent>());
-      });
-   auto acquireCamerasTask = threadPool->AddTask([&]()
-      {
-         OPTICK_EVENT("AcquireCameras");
-         m_cameras = std::move(world.GetComponentsFromEntities<CameraComponent>());
-      });
-   auto acquireSkyboxTask = threadPool->AddTask([&]()
-      {
-         OPTICK_EVENT("AcquireSkybox");
-         m_skyboxTexture = nullptr;
-         auto skyboxComponents{ std::move(world.GetComponentsFromEntities<SkyboxComponent>()) };
-         if (skyboxComponents.size() > 0)
-         {
-            m_skyboxTexture = skyboxComponents[0]->GetTexture();
-            if (m_skyboxTexture != m_oldSkyboxTexture)
-            {
-               m_oldSkyboxTexture = m_skyboxTexture;
-               m_bPrecomputeIBL = true;
-            }
+            m_outputRenderTarget = renderTexture->GetRenderTarget();
          }
          else
          {
-            m_skyboxTexture = nullptr;
-            if (m_oldSkyboxTexture != nullptr)
-            {
-               m_oldSkyboxTexture = nullptr;
-               m_bPrecomputeIBL = true;
-            }
+#ifdef MILE_EDITOR
+            ResourceManager* resManager = Engine::GetResourceManager();
+            renderTexture = resManager->Load<RenderTexture>(EDITOR_GAME_VIEW_RENDER_TEXTURE, true);
+            m_outputRenderTarget = renderTexture->GetRenderTarget();
+#else
+            m_outputRenderTarget = &GetBackBuffer();
+#endif
          }
-      });
 
-   acquireMeshRenderersAndMatTask.get();
-   acquireLightsTask.get();
-   acquireCamerasTask.get();
-   acquireSkyboxTask.get();
-}
+         m_frameGraph.Execute();
+         m_outputRenderTarget = nullptr;
+      }
+   }
 
-void RendererPBR::RenderMeshes(RendererDX11* renderer, bool bClearGBuffer, Meshes& meshes, size_t offset, size_t num, ID3D11DeviceContext& context, VertexShaderDX11* vertexShader, PixelShaderDX11* pixelShader, SamplerDX11* sampler, GBuffer* gBuffer, ConstantBufferDX11* transformBuffer, ConstantBufferDX11* materialParamsBuffer, RasterizerState* rasterizerState, Viewport* viewport, CameraRef camera)
-{
-   OPTICK_EVENT();
-   auto& profiler = renderer->GetProfiler();
+   void RendererPBR::OnRenderResolutionChanged()
    {
-      context.ClearState();
-      context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+      OPTICK_EVENT();
+      SetupRenderResources();
+      SetupSSAOParams();
+   }
 
-      vertexShader->Bind(context);
-      pixelShader->Bind(context);
-      sampler->Bind(context, 0);
+   void RendererPBR::SetupRenderResources()
+   {
+      OPTICK_EVENT();
+      SafeDelete(m_gBuffer);
+      SafeDelete(m_hdrBuffer);
+      SafeDelete(m_extractedBrightness);
+      SafeDelete(m_ssao);
+      SafeDelete(m_blurredSSAO);
+      SafeDelete(m_pingPongBuffers[0]);
+      SafeDelete(m_pingPongBuffers[1]);
 
-      gBuffer->BindAsRenderTarget(context, bClearGBuffer, bClearGBuffer);
-      transformBuffer->Bind(context, 0, EShaderType::VertexShader);
-      materialParamsBuffer->Bind(context, 0, EShaderType::PixelShader);
+      auto renderRes = this->GetRenderResolution();
 
-      rasterizerState->Bind(context);
-      viewport->Bind(context);
+      GBufferDescriptor gBufferDesc;
+      gBufferDesc.Renderer = this;
+      gBufferDesc.Width = (unsigned int)renderRes.x;
+      gBufferDesc.Height = (unsigned int)renderRes.y;
+      m_gBuffer = Elaina::Realize<GBufferDescriptor, GBuffer>(gBufferDesc);
 
-      auto camTransform = camera->GetTransform();
-      Matrix viewMatrix = Matrix::CreateView(
-         camTransform->GetPosition(TransformSpace::World),
-         camTransform->GetForward(TransformSpace::World),
-         camTransform->GetUp(TransformSpace::World));
-      Matrix projMatrix = Matrix::CreatePerspectiveProj(
-         camera->GetFov(),
-         (viewport->GetWidth() / (float)viewport->GetHeight()),
-         camera->GetNearPlane(),
-         camera->GetFarPlane());
+      RenderTargetDescriptor outputHDRBufferDesc;
+      outputHDRBufferDesc.Renderer = this;
+      outputHDRBufferDesc.Width = (unsigned int)renderRes.x;
+      outputHDRBufferDesc.Height = (unsigned int)renderRes.y;
+      outputHDRBufferDesc.Format = EColorFormat::R16G16B16A16_FLOAT;
+      m_hdrBuffer = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputHDRBufferDesc);
 
-      Material* material = nullptr;
-      for (auto meshItr = meshes.begin() + offset; meshItr != meshes.begin() + offset + num; ++meshItr)
+      RenderTargetDescriptor brightnessRenderTargetDesc;
+      brightnessRenderTargetDesc.Renderer = this;
+      brightnessRenderTargetDesc.ResolutionReference = &m_hdrBuffer;
+      brightnessRenderTargetDesc.FormatReference = &m_hdrBuffer;
+      m_extractedBrightness = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(brightnessRenderTargetDesc);
+
+      RenderTargetDescriptor pingPongBufferDesc;
+      pingPongBufferDesc.Renderer = this;
+      pingPongBufferDesc.ResolutionReference = &m_hdrBuffer;
+      pingPongBufferDesc.FormatReference = &m_hdrBuffer;
+      for (size_t idx = 0; idx < m_pingPongBuffers.size(); ++idx)
       {
-         auto meshComponent = (*meshItr);
-         Material* meshMaterial = meshComponent->GetMaterial();
-         if (meshMaterial->GetMaterialType() == EMaterialType::Opaque)
-         {
-            if (material != meshMaterial)
-            {
-               material = meshMaterial;
-               Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
-               Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
-               Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
-               Texture2dDX11* specularMapTex = material->GetTexture2D(MaterialTextureProperty::Specular)->GetRawTexture();
-               Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
-               Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
-
-               Vector4 baseColorFactor = material->GetVector4Factor(MaterialFactorProperty::BaseColor);
-               Vector4 emissiveFactor = material->GetVector4Factor(MaterialFactorProperty::Emissive);
-               float metallicFactor = material->GetScalarFactor(MaterialFactorProperty::Metallic);
-               float roughnessFactor = material->GetScalarFactor(MaterialFactorProperty::Roughness);
-               float specularFactor = material->GetScalarFactor(MaterialFactorProperty::Specular);
-               Vector2 uvOffset = material->GetVector2Factor(MaterialFactorProperty::UVOffset);
-
-               auto materialParams = materialParamsBuffer->Map<PackedMaterialParams>(context);
-               materialParams->BaseColorFactor = baseColorFactor;
-               materialParams->EmissiveColorFactor = emissiveFactor;
-               materialParams->MetallicRoughnessUV = Vector4(metallicFactor, roughnessFactor, uvOffset.x, uvOffset.y);
-               materialParams->SpecularFactor = specularFactor;
-               materialParamsBuffer->UnMap(context);
-
-               SAFE_TEX_BIND(baseColorTex, context, 0, EShaderType::PixelShader);
-               SAFE_TEX_BIND(emissiveTex, context, 1, EShaderType::PixelShader);
-               SAFE_TEX_BIND(metallicRoughnessTex, context, 2, EShaderType::PixelShader);
-               SAFE_TEX_BIND(specularMapTex, context, 3, EShaderType::PixelShader);
-               SAFE_TEX_BIND(aoTex, context, 4, EShaderType::PixelShader);
-               SAFE_TEX_BIND(normalTex, context, 5, EShaderType::PixelShader);
-            }
-
-            /** Render Mesh */
-            Transform* transform = meshComponent->GetTransform();
-            Mesh* mesh = meshComponent->GetMesh();
-            Matrix worldMatrix = transform->GetWorldMatrix();
-            Matrix worldViewMatrix = worldMatrix * viewMatrix;
-            auto transforms = transformBuffer->Map<GeometryPassTransformBuffer>(context);
-            transforms->WorldMatrix = worldMatrix;
-            transforms->WorldViewMatrix = worldViewMatrix;
-            transforms->WorldViewProjMatrix = (worldViewMatrix * projMatrix);
-            transformBuffer->UnMap(context);
-            mesh->Bind(context, 0);
-            context.DrawIndexed(mesh->GetIndexCount(), 0, 0);
-            profiler.DrawCall();
-
-            auto nextMeshItr = (meshItr + 1);
-            if (nextMeshItr == meshes.end() || (*nextMeshItr)->GetMaterial() != material)
-            {
-               Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
-               Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
-               Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
-               Texture2dDX11* specularMapTex = material->GetTexture2D(MaterialTextureProperty::Specular)->GetRawTexture();
-               Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
-               Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
-               SAFE_TEX_UNBIND(baseColorTex, context, 0, EShaderType::PixelShader);
-               SAFE_TEX_UNBIND(emissiveTex, context, 1, EShaderType::PixelShader);
-               SAFE_TEX_UNBIND(metallicRoughnessTex, context, 2, EShaderType::PixelShader);
-               SAFE_TEX_UNBIND(specularMapTex, context, 3, EShaderType::PixelShader);
-               SAFE_TEX_UNBIND(aoTex, context, 4, EShaderType::PixelShader);
-               SAFE_TEX_UNBIND(normalTex, context, 5, EShaderType::PixelShader);
-            }
-         }
+         m_pingPongBuffers[idx] = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(pingPongBufferDesc);
       }
 
-      gBuffer->UnbindRenderTarget(context);
-      transformBuffer->Unbind(context, 0, EShaderType::VertexShader);
-      materialParamsBuffer->Unbind(context, 0, EShaderType::PixelShader);
-
-      sampler->Unbind(context, 0);
-      pixelShader->Unbind(context);
-      vertexShader->Unbind(context);
+      RenderTargetDescriptor outputSSAODesc;
+      outputSSAODesc.Renderer = this;
+      outputSSAODesc.ResolutionReference = &m_hdrBuffer;
+      outputSSAODesc.Format = EColorFormat::R32_FLOAT;
+      m_ssao = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputSSAODesc);
+      m_blurredSSAO = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputSSAODesc);
    }
-}
+
+   void RendererPBR::AcquireRenderResources(const World& world)
+   {
+      OPTICK_EVENT();
+      auto threadPool = Engine::GetThreadPool();
+      auto acquireMeshRenderersAndMatTask = threadPool->AddTask([&]()
+         {
+            OPTICK_EVENT("AcquireMeshRenderersAndMaterial");
+            m_meshes.resize(0);
+            for (auto& meshes : m_materialMap)
+            {
+               meshes.second.resize(0);
+            }
+
+            m_meshes = std::move(world.GetComponentsFromEntities<MeshRenderComponent>());
+            for (auto renderComponent : m_meshes)
+            {
+               auto material = renderComponent->GetMaterial();
+               if (material != nullptr)
+               {
+                  m_materialMap[material].push_back(renderComponent);
+               }
+            }
+
+            m_meshes.resize(0);
+            for (auto& materialMapComp : m_materialMap)
+            {
+               Meshes& meshes = materialMapComp.second;
+               std::copy(meshes.begin(), meshes.end(), std::back_inserter(m_meshes));
+            }
+         });
+      auto acquireLightsTask = threadPool->AddTask([&]()
+         {
+            OPTICK_EVENT("AcquireLights");
+            m_lights = std::move(world.GetComponentsFromEntities<LightComponent>());
+         });
+      auto acquireCamerasTask = threadPool->AddTask([&]()
+         {
+            OPTICK_EVENT("AcquireCameras");
+            m_cameras = std::move(world.GetComponentsFromEntities<CameraComponent>());
+         });
+      auto acquireSkyboxTask = threadPool->AddTask([&]()
+         {
+            OPTICK_EVENT("AcquireSkybox");
+            m_skyboxTexture = nullptr;
+            auto skyboxComponents{ std::move(world.GetComponentsFromEntities<SkyboxComponent>()) };
+            if (skyboxComponents.size() > 0)
+            {
+               m_skyboxTexture = skyboxComponents[0]->GetTexture();
+               if (m_skyboxTexture != m_oldSkyboxTexture)
+               {
+                  m_oldSkyboxTexture = m_skyboxTexture;
+                  m_bPrecomputeIBL = true;
+               }
+            }
+            else
+            {
+               m_skyboxTexture = nullptr;
+               if (m_oldSkyboxTexture != nullptr)
+               {
+                  m_oldSkyboxTexture = nullptr;
+                  m_bPrecomputeIBL = true;
+               }
+            }
+         });
+
+      acquireMeshRenderersAndMatTask.get();
+      acquireLightsTask.get();
+      acquireCamerasTask.get();
+      acquireSkyboxTask.get();
+   }
+
+   void RendererPBR::RenderMeshes(RendererDX11* renderer, bool bClearGBuffer, Meshes& meshes, size_t offset, size_t num, ID3D11DeviceContext& context, VertexShaderDX11* vertexShader, PixelShaderDX11* pixelShader, SamplerDX11* sampler, GBuffer* gBuffer, ConstantBufferDX11* transformBuffer, ConstantBufferDX11* materialParamsBuffer, RasterizerState* rasterizerState, Viewport* viewport, CameraRef camera)
+   {
+      OPTICK_EVENT();
+      auto& profiler = renderer->GetProfiler();
+      {
+         context.ClearState();
+         context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+         vertexShader->Bind(context);
+         pixelShader->Bind(context);
+         sampler->Bind(context, 0);
+
+         gBuffer->BindAsRenderTarget(context, bClearGBuffer, bClearGBuffer);
+         transformBuffer->Bind(context, 0, EShaderType::VertexShader);
+         materialParamsBuffer->Bind(context, 0, EShaderType::PixelShader);
+
+         rasterizerState->Bind(context);
+         viewport->Bind(context);
+
+         auto camTransform = camera->GetTransform();
+         Matrix viewMatrix = Matrix::CreateView(
+            camTransform->GetPosition(TransformSpace::World),
+            camTransform->GetForward(TransformSpace::World),
+            camTransform->GetUp(TransformSpace::World));
+         Matrix projMatrix = Matrix::CreatePerspectiveProj(
+            camera->GetFov(),
+            (viewport->GetWidth() / (float)viewport->GetHeight()),
+            camera->GetNearPlane(),
+            camera->GetFarPlane());
+
+         Material* material = nullptr;
+         for (auto meshItr = meshes.begin() + offset; meshItr != meshes.begin() + offset + num; ++meshItr)
+         {
+            auto meshComponent = (*meshItr);
+            Material* meshMaterial = meshComponent->GetMaterial();
+            if (meshMaterial->GetMaterialType() == EMaterialType::Opaque)
+            {
+               if (material != meshMaterial)
+               {
+                  material = meshMaterial;
+                  Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
+                  Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
+                  Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
+                  Texture2dDX11* specularMapTex = material->GetTexture2D(MaterialTextureProperty::Specular)->GetRawTexture();
+                  Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
+                  Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
+
+                  Vector4 baseColorFactor = material->GetVector4Factor(MaterialFactorProperty::BaseColor);
+                  Vector4 emissiveFactor = material->GetVector4Factor(MaterialFactorProperty::Emissive);
+                  float metallicFactor = material->GetScalarFactor(MaterialFactorProperty::Metallic);
+                  float roughnessFactor = material->GetScalarFactor(MaterialFactorProperty::Roughness);
+                  float specularFactor = material->GetScalarFactor(MaterialFactorProperty::Specular);
+                  Vector2 uvOffset = material->GetVector2Factor(MaterialFactorProperty::UVOffset);
+
+                  auto materialParams = materialParamsBuffer->Map<PackedMaterialParams>(context);
+                  materialParams->BaseColorFactor = baseColorFactor;
+                  materialParams->EmissiveColorFactor = emissiveFactor;
+                  materialParams->MetallicRoughnessUV = Vector4(metallicFactor, roughnessFactor, uvOffset.x, uvOffset.y);
+                  materialParams->SpecularFactor = specularFactor;
+                  materialParamsBuffer->UnMap(context);
+
+                  SAFE_TEX_BIND(baseColorTex, context, 0, EShaderType::PixelShader);
+                  SAFE_TEX_BIND(emissiveTex, context, 1, EShaderType::PixelShader);
+                  SAFE_TEX_BIND(metallicRoughnessTex, context, 2, EShaderType::PixelShader);
+                  SAFE_TEX_BIND(specularMapTex, context, 3, EShaderType::PixelShader);
+                  SAFE_TEX_BIND(aoTex, context, 4, EShaderType::PixelShader);
+                  SAFE_TEX_BIND(normalTex, context, 5, EShaderType::PixelShader);
+               }
+
+               /** Render Mesh */
+               Transform* transform = meshComponent->GetTransform();
+               Mesh* mesh = meshComponent->GetMesh();
+               Matrix worldMatrix = transform->GetWorldMatrix();
+               Matrix worldViewMatrix = worldMatrix * viewMatrix;
+               auto transforms = transformBuffer->Map<GeometryPassTransformBuffer>(context);
+               transforms->WorldMatrix = worldMatrix;
+               transforms->WorldViewMatrix = worldViewMatrix;
+               transforms->WorldViewProjMatrix = (worldViewMatrix * projMatrix);
+               transformBuffer->UnMap(context);
+               mesh->Bind(context, 0);
+               context.DrawIndexed(mesh->GetIndexCount(), 0, 0);
+               profiler.DrawCall();
+
+               auto nextMeshItr = (meshItr + 1);
+               if (nextMeshItr == meshes.end() || (*nextMeshItr)->GetMaterial() != material)
+               {
+                  Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
+                  Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
+                  Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
+                  Texture2dDX11* specularMapTex = material->GetTexture2D(MaterialTextureProperty::Specular)->GetRawTexture();
+                  Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
+                  Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
+                  SAFE_TEX_UNBIND(baseColorTex, context, 0, EShaderType::PixelShader);
+                  SAFE_TEX_UNBIND(emissiveTex, context, 1, EShaderType::PixelShader);
+                  SAFE_TEX_UNBIND(metallicRoughnessTex, context, 2, EShaderType::PixelShader);
+                  SAFE_TEX_UNBIND(specularMapTex, context, 3, EShaderType::PixelShader);
+                  SAFE_TEX_UNBIND(aoTex, context, 4, EShaderType::PixelShader);
+                  SAFE_TEX_UNBIND(normalTex, context, 5, EShaderType::PixelShader);
+               }
+            }
+         }
+
+         gBuffer->UnbindRenderTarget(context);
+         transformBuffer->Unbind(context, 0, EShaderType::VertexShader);
+         materialParamsBuffer->Unbind(context, 0, EShaderType::PixelShader);
+
+         sampler->Unbind(context, 0);
+         pixelShader->Unbind(context);
+         vertexShader->Unbind(context);
+      }
+   }
 }
