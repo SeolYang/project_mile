@@ -45,7 +45,7 @@ namespace Mile
       Vector4 BaseColorFactor = Vector4::One();
       Vector4 EmissiveColorFactor = Vector4::Zero();
       Vector4 MetallicRoughnessUV = Vector4::Zero();
-      float SpecularFactor;
+      float SpecularFactor = 0.0f;
    };
 
    DEFINE_CONSTANT_BUFFER(OneFloatConstantBuffer)
@@ -600,6 +600,7 @@ namespace Mile
             size_t remainMat = materialMap.size() % maximumThreadsNum;
             size_t matOffset = 0;
             /** Materials */
+            std::vector<size_t> matSwitchingCounts(maximumThreadsNum);
             while (matOffset < materialMap.size())
             {
                size_t matNum = materialMap.size() / maximumThreadsNum;
@@ -610,7 +611,7 @@ namespace Mile
                }
 
                /** Meshes */
-               scheduleTaskQueue.push(std::move(threadPool->AddTask([&materialMap, &renderTasks, &mutexes, matOffset, matNum, maximumThreadsNum]()
+               scheduleTaskQueue.push(std::move(threadPool->AddTask([&materialMap, &renderTasks, &mutexes, &matSwitchingCounts, matOffset, matNum, maximumThreadsNum]()
                   {
                      auto beginItr = materialMap.begin();
                      auto endItr = materialMap.begin();
@@ -634,26 +635,56 @@ namespace Mile
                                  --remain;
                               }
 
-                              size_t minSubThreadIdx = 0;
-                              size_t renderTaskSize = (std::numeric_limits<size_t>::max());
-                              for (size_t subThreadIdx = 0; subThreadIdx < renderTasks.size(); ++subThreadIdx)
+                              size_t minMatSwitchingCount = std::numeric_limits<size_t>::max();
+                              size_t minMatSwitchingSubThreadIdx = 0;
+                              static std::mutex countMutex;
+                              countMutex.lock();
                               {
-                                 std::lock_guard<std::mutex> checkGuard{ mutexes[subThreadIdx] };
-                                 if (renderTaskSize > renderTasks[subThreadIdx].size())
+                                 for (size_t subThreadIdx = 0; subThreadIdx < matSwitchingCounts.size(); ++subThreadIdx)
                                  {
-                                    renderTaskSize = renderTasks[subThreadIdx].size();
-                                    minSubThreadIdx = subThreadIdx;
+                                    size_t switchingCount = matSwitchingCounts[subThreadIdx];
+                                    if (switchingCount == 0)
+                                    {
+                                       minMatSwitchingSubThreadIdx = subThreadIdx;
+                                       break;
+                                    }
+                                    else if (switchingCount < minMatSwitchingCount)
+                                    {
+                                       minMatSwitchingCount = switchingCount;
+                                       minMatSwitchingSubThreadIdx = subThreadIdx;
+                                    }
+                                    else if (switchingCount == minMatSwitchingCount)
+                                    {
+                                       size_t leftRenderTaskNum = 0;
+                                       {
+                                          std::lock_guard<std::mutex> guard{ mutexes[subThreadIdx] };
+                                          leftRenderTaskNum = renderTasks[subThreadIdx].size();
+                                       }
+
+                                       size_t rightRenderTaskNum = 0;
+                                       {
+                                          std::lock_guard<std::mutex> guard{ mutexes[minMatSwitchingSubThreadIdx] };
+                                          rightRenderTaskNum = renderTasks[minMatSwitchingSubThreadIdx].size();
+                                       }
+
+                                       if (leftRenderTaskNum < rightRenderTaskNum)
+                                       {
+                                          minMatSwitchingSubThreadIdx = subThreadIdx;
+                                       }
+                                    }
                                  }
+
+                                 ++matSwitchingCounts[minMatSwitchingSubThreadIdx];
                               }
+                              countMutex.unlock();
 
                               {
-                                 std::lock_guard<std::mutex> guard{ mutexes[minSubThreadIdx] };
-                                 auto& renderTaskMeshes = renderTasks[minSubThreadIdx];
+                                 std::lock_guard<std::mutex> guard{ mutexes[minMatSwitchingSubThreadIdx] };
+                                 auto& renderTaskMeshes = renderTasks[minMatSwitchingSubThreadIdx];
                                  std::copy_n(targetMeshes.begin() + offset, num, std::back_inserter(renderTaskMeshes));
                               }
                               
                               offset += num;
-                              ++tasksNum;
                            }
                         }
 
@@ -673,23 +704,28 @@ namespace Mile
 
             for (size_t subThreadIdx = 0; subThreadIdx < renderTasks.size(); ++subThreadIdx)
             {
-               size_t threadIdx = subThreadIdx + 1; /** thread index = thread + 1(Main Thread) */
-               renderTaskQueue.push(std::make_pair(subThreadIdx, threadPool->AddTask([=, &renderTasks]()
-                  {
-                     std::string taskName = "GeometryPass_thread";
-                     taskName.append(std::to_string(threadIdx));
-                     auto& profiler = data.Renderer->GetProfiler();
-                     ScopedDeferredGPUProfile deferredProfile{ profiler, taskName, data.Renderer->GetDeferredContext(subThreadIdx) };
+               if (renderTasks[subThreadIdx].size() > 0)
+               {
+                  auto& profiler = data.Renderer->GetProfiler();
+                  size_t threadIdx = subThreadIdx + 1; /** thread index = thread + 1(Main Thread) */
+                  std::string taskName = "GeometryPass_thread";
+                  taskName.append(std::to_string(threadIdx));
 
-                     auto transformBuffer = data.TransformBuffers[subThreadIdx]->GetActual();
-                     auto materialParamsBuffer = data.MaterialBuffers[subThreadIdx]->GetActual();
-                     RendererPBR::RenderMeshes(
-                        data.Renderer,
-                        false, renderTasks[subThreadIdx], 0, renderTasks[subThreadIdx].size(),
-                        vertexShader, pixelShader, sampler,
-                        gBuffer, transformBuffer, materialParamsBuffer,
-                        rasterizerState, viewport, targetCamera, threadIdx);
-                  })));
+                  auto transformBuffer = data.TransformBuffers[subThreadIdx]->GetActual();
+                  auto materialParamsBuffer = data.MaterialBuffers[subThreadIdx]->GetActual();
+
+                  auto& renderTask = renderTasks[subThreadIdx];
+                  renderTaskQueue.push(std::make_pair(subThreadIdx, threadPool->AddTask([=, &profiler, &renderTask]()
+                     {
+                        ScopedDeferredGPUProfile deferredProfile{ profiler, taskName, data.Renderer->GetDeferredContext(subThreadIdx) };
+                        RendererPBR::RenderMeshes(
+                           data.Renderer,
+                           false, renderTask, 0, renderTask.size(),
+                           vertexShader, pixelShader, sampler,
+                           gBuffer, transformBuffer, materialParamsBuffer,
+                           rasterizerState, viewport, targetCamera, threadIdx);
+                     })));
+               }
             }
 
             profiler.Begin("GeometryPass");
@@ -2240,7 +2276,7 @@ namespace Mile
          ConstantBufferResource* ParamsBuffer = nullptr;
          MeshRefResource* QuadMeshRef = nullptr;
          RenderTargetRefResource* InputRef = nullptr;
-         std::array<RenderTargetRefResource*, 2> PingPongBufferRef; /** Latest output = (BlurAmount)%2 */
+         std::array<RenderTargetRefResource*, 2> PingPongBufferRef{ nullptr, }; /** Latest output = (BlurAmount)%2 */
       };
 
       auto gaussianBlurVSRes = m_frameGraph.AddExternalPermanentResource(
@@ -2374,7 +2410,7 @@ namespace Mile
          BlendStateResource* AdditiveBlendState = nullptr;
          ConstantBufferResource* ParamsBuffer = nullptr;
          MeshRefResource* QuadMeshRef = nullptr;
-         std::array<RenderTargetRefResource*, 2> PingPongBufferRef;
+         std::array<RenderTargetRefResource*, 2> PingPongBufferRef{ nullptr, };
          RenderTargetRefResource* OutputRef = nullptr;
       };
 
