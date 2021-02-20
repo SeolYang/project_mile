@@ -2631,13 +2631,13 @@ namespace Mile
       auto acquireMeshRenderersAndMatTask = threadPool->AddTask([&]()
          {
             OPTICK_EVENT("AcquireMeshRenderersAndMaterial");
-            m_meshes.resize(0);
             for (auto& meshes : m_materialMap)
             {
                meshes.second.resize(0);
             }
 
-            m_meshes = std::move(world.GetComponentsFromEntities<MeshRenderComponent>());
+            m_meshes.resize(0);
+            world.GetComponentsFromEntities<MeshRenderComponent>(m_meshes);
             for (auto renderComponent : m_meshes)
             {
                auto material = renderComponent->GetMaterial();
@@ -2650,12 +2650,14 @@ namespace Mile
       auto acquireLightsTask = threadPool->AddTask([&]()
          {
             OPTICK_EVENT("AcquireLights");
-            m_lights = std::move(world.GetComponentsFromEntities<LightComponent>());
+            m_lights.resize(0);
+            world.GetComponentsFromEntities<LightComponent>(m_lights);
          });
       auto acquireCamerasTask = threadPool->AddTask([&]()
          {
             OPTICK_EVENT("AcquireCameras");
-            m_cameras = std::move(world.GetComponentsFromEntities<CameraComponent>(false));
+            m_cameras.resize(0);
+            world.GetComponentsFromEntities<CameraComponent>(m_cameras, false);
          });
       auto acquireSkyboxTask = threadPool->AddTask([&]()
          {

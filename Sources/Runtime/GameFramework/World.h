@@ -79,6 +79,14 @@ namespace Mile
       std::vector<ComponentType*> GetComponentsFromEntities(bool onlyActivated = true) const
       {
          std::vector<ComponentType*> foundComponents;
+         GetComponentsFromEntities(foundComponents, onlyActivated);
+         return foundComponents;
+      }
+
+      template <typename ComponentType,
+         std::enable_if_t<std::is_base_of_v<Component, ComponentType>, bool> = true>
+         void GetComponentsFromEntities(std::vector<ComponentType*>& components, bool onlyActivated = true) const
+      {
          for (Entity* entity : m_entities)
          {
             if (entity != nullptr)
@@ -90,13 +98,11 @@ namespace Mile
                {
                   if ((onlyActivated && foundComponent->IsActivated()) || (!onlyActivated))
                   {
-                     foundComponents.push_back(foundComponent);
+                     components.push_back(foundComponent);
                   }
                }
             }
          }
-
-         return foundComponents;
       }
 
       bool LoadFrom(const String& filePath, bool bClearWorld = true);
