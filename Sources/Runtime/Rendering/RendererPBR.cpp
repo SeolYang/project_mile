@@ -594,13 +594,16 @@ namespace Mile
             //RendererPBR::RenderMeshes(data.Renderer, true, *meshes, 0, meshesNum, data.Renderer->GetImmediateContext(), vertexShader, pixelShader, sampler, gBuffer, data.TransformBuffers[0]->GetActual(), data.MaterialBuffers[0]->GetActual(), rasterizerState, viewport, targetCamera);
 
             /** Scheduling */
-            std::vector<std::mutex> mutexes(maximumThreadsNum);
-            std::queue<std::future<void>> scheduleTaskQueue;
-            std::vector<Meshes> renderTasks(maximumThreadsNum);
-            std::queue <std::pair<size_t, std::future<void>>> renderTaskQueue;
+            /** @todo 임시 구현이므로 좀더 나은 memory management 방법을 찾아서 구현하기 */
+            constexpr size_t UpperBoundOfThreadsNum = 16;
 
-            std::vector<size_t> matSwitchingCounts(maximumThreadsNum);
-            std::vector<size_t> threadDrawMeshCounts(maximumThreadsNum);
+            std::mutex mutexes[UpperBoundOfThreadsNum];
+            size_t matSwitchingCounts[UpperBoundOfThreadsNum] = { 0, };
+            size_t threadDrawMeshCounts[UpperBoundOfThreadsNum] = { 0, };
+            Meshes renderTasks[UpperBoundOfThreadsNum];
+
+            std::queue<std::future<void>> scheduleTaskQueue;
+            std::queue <std::pair<size_t, std::future<void>>> renderTaskQueue;
             for (auto& mapData : materialMap)
             {
                auto& targetMeshes = mapData.second;
@@ -620,7 +623,7 @@ namespace Mile
 
                      size_t minMatSwitchingCount = std::numeric_limits<size_t>::max();
                      size_t minMatSwitchingSubThreadIdx = 0;
-                     for (size_t subThreadIdx = 0; subThreadIdx < matSwitchingCounts.size(); ++subThreadIdx)
+                     for (size_t subThreadIdx = 0; subThreadIdx < maximumThreadsNum; ++subThreadIdx)
                      {
                         size_t switchingCount = matSwitchingCounts[subThreadIdx];
                         if (switchingCount == 0)
@@ -668,7 +671,7 @@ namespace Mile
             }
 
             /** Meshes */
-            for (size_t subThreadIdx = 0; subThreadIdx < renderTasks.size(); ++subThreadIdx)
+            for (size_t subThreadIdx = 0; subThreadIdx < maximumThreadsNum; ++subThreadIdx)
             {
                if (renderTasks[subThreadIdx].size() > 0)
                {
