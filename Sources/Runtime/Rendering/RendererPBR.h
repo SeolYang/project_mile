@@ -161,10 +161,6 @@ namespace Mile
 
       GBuffer* m_gBuffer;
       RenderTargetDX11* m_hdrBuffer;
-      RenderTargetDX11* m_extractedBrightness;
-      std::array<RenderTargetDX11*, 2> m_pingPongBuffers;
-      RenderTargetDX11* m_ssao;
-      RenderTargetDX11* m_blurredSSAO;
 
       /** External Resources; Don't delete in renderer! */
       /** Per Frame Datas */
@@ -191,11 +187,16 @@ namespace Mile
       ConstantBufferRef m_ssaoBaseDataBuffer;
       SSAOParams m_ssaoParams;
       float m_globalAOFactor;
+      RenderTargetDX11* m_ssao;
+      RenderTargetDX11* m_blurredSSAO;
+      Texture2dDX11* m_ssaoNoiseTex;
 
       ESkyboxType m_renderSkyboxType;
 
       BloomParams m_bloomParams;
       ToneMappingParams m_toneMappingParams;
+      RenderTargetDX11* m_extractedBrightness;
+      std::array<RenderTargetDX11*, 2> m_pingPongBuffers;
 
    };
 }

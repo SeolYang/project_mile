@@ -184,13 +184,13 @@ namespace Mile
       while (m_bIsRunning)
       {
          OPTICK_FRAME("MainThread");
+         OPTICK_EVENT();
          if (m_bShutdownFlag)
          {
             ShutDown();
          }
          else
          {
-            OPTICK_EVENT();
             m_timer->BeginFrame();
 
             this->Update();

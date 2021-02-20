@@ -43,7 +43,6 @@ Texture2D extraComponents				: register(t4);
 Texture2D texNoise						: register(t5);
 SamplerState Sampler						: register(s0);
 SamplerState NoiseSampler				: register(s1);
-SamplerState PositionSampler			: register(s2);
 
 VSOutput MileVS(in VSInput input)
 {
@@ -55,7 +54,7 @@ VSOutput MileVS(in VSInput input)
 
 float MilePS(in PSInput input) : SV_Target0
 {
-	float3 pos = posBuffer.Sample(PositionSampler, input.TexCoord).xyz;
+	float3 pos = posBuffer.Sample(Sampler, input.TexCoord).xyz;
 	float3 normal = normalize(normalBuffer.Sample(Sampler, input.TexCoord).xyz);
 	float3 randomVec = texNoise.Sample(NoiseSampler, input.TexCoord * NoiseScale).xyz;
 
@@ -77,7 +76,7 @@ float MilePS(in PSInput input) : SV_Target0
 		offset.xy = offset.xy * 0.5f + 0.5f;
 		offset.y = (1.0f - offset.y); // Convert to Direct3D Texture Coordinate
 
-		float sampleDepth = posBuffer.Sample(PositionSampler, offset.xy).z;
+		float sampleDepth = posBuffer.Sample(Sampler, offset.xy).z;
 		float occluded = (_sample.z + Bias <= sampleDepth ? 0.0f : 1.0f);
 		float intensity = smoothstep(0.0f, 1.0f, Radius / abs(pos.z - sampleDepth));
 		occlusion +=  occluded * intensity;

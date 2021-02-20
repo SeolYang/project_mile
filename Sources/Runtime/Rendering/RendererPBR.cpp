@@ -146,6 +146,7 @@ namespace Mile
       m_extractedBrightness(nullptr),
       m_ssao(nullptr),
       m_ssaoBaseDataBuffer(nullptr),
+      m_ssaoNoiseTex(nullptr),
       m_blurredSSAO(nullptr),
       m_pingPongBuffers({ nullptr, })
    {
@@ -154,6 +155,7 @@ namespace Mile
    RendererPBR::~RendererPBR()
    {
       m_frameGraph.Clear();
+      SafeDelete(m_ssaoNoiseTex);
       SafeDelete(m_ssaoBaseDataBuffer);
       SafeDelete(m_blurredSSAO);
       SafeDelete(m_ssao);
@@ -597,102 +599,65 @@ namespace Mile
             std::vector<Meshes> renderTasks(maximumThreadsNum);
             std::queue <std::pair<size_t, std::future<void>>> renderTaskQueue;
 
-            size_t remainMat = materialMap.size() % maximumThreadsNum;
-            size_t matOffset = 0;
-            /** Materials */
             std::vector<size_t> matSwitchingCounts(maximumThreadsNum);
-            while (matOffset < materialMap.size())
+            std::vector<size_t> threadDrawMeshCounts(maximumThreadsNum);
+            for (auto& mapData : materialMap)
             {
-               size_t matNum = materialMap.size() / maximumThreadsNum;
-               if (remainMat > 0)
+               auto& targetMeshes = mapData.second;
+               if (targetMeshes.size() > 0)
                {
-                  ++matNum;
-                  --remainMat;
-               }
-
-               /** Meshes */
-               scheduleTaskQueue.push(std::move(threadPool->AddTask([&materialMap, &renderTasks, &mutexes, &matSwitchingCounts, matOffset, matNum, maximumThreadsNum]()
+                  size_t tasksNum = 0;
+                  size_t offset = 0;
+                  size_t remain = targetMeshes.size() % maximumThreadsNum;
+                  while (offset < targetMeshes.size())
                   {
-                     auto beginItr = materialMap.begin();
-                     auto endItr = materialMap.begin();
-                     std::advance(beginItr, matOffset);
-                     std::advance(endItr, matOffset + matNum);
-
-                     while (beginItr != endItr)
+                     size_t num = targetMeshes.size() / maximumThreadsNum;
+                     if (remain > 0)
                      {
-                        auto& targetMeshes = beginItr->second;
-                        if (targetMeshes.size() > 0)
+                        ++num;
+                        --remain;
+                     }
+
+                     size_t minMatSwitchingCount = std::numeric_limits<size_t>::max();
+                     size_t minMatSwitchingSubThreadIdx = 0;
+                     for (size_t subThreadIdx = 0; subThreadIdx < matSwitchingCounts.size(); ++subThreadIdx)
+                     {
+                        size_t switchingCount = matSwitchingCounts[subThreadIdx];
+                        if (switchingCount == 0)
                         {
-                           size_t tasksNum = 0;
-                           size_t offset = 0;
-                           size_t remain = targetMeshes.size() % maximumThreadsNum;
-                           while (offset < targetMeshes.size())
+                           minMatSwitchingSubThreadIdx = subThreadIdx;
+                           break;
+                        }
+                        else if (switchingCount < minMatSwitchingCount)
+                        {
+                           minMatSwitchingCount = switchingCount;
+                           minMatSwitchingSubThreadIdx = subThreadIdx;
+                        }
+                        else if (switchingCount == minMatSwitchingCount)
+                        {
+                           if (threadDrawMeshCounts[subThreadIdx] < threadDrawMeshCounts[minMatSwitchingSubThreadIdx])
                            {
-                              size_t num = targetMeshes.size() / maximumThreadsNum;
-                              if (remain > 0)
-                              {
-                                 ++num;
-                                 --remain;
-                              }
-
-                              size_t minMatSwitchingCount = std::numeric_limits<size_t>::max();
-                              size_t minMatSwitchingSubThreadIdx = 0;
-                              static std::mutex countMutex;
-                              countMutex.lock();
-                              {
-                                 for (size_t subThreadIdx = 0; subThreadIdx < matSwitchingCounts.size(); ++subThreadIdx)
-                                 {
-                                    size_t switchingCount = matSwitchingCounts[subThreadIdx];
-                                    if (switchingCount == 0)
-                                    {
-                                       minMatSwitchingSubThreadIdx = subThreadIdx;
-                                       break;
-                                    }
-                                    else if (switchingCount < minMatSwitchingCount)
-                                    {
-                                       minMatSwitchingCount = switchingCount;
-                                       minMatSwitchingSubThreadIdx = subThreadIdx;
-                                    }
-                                    else if (switchingCount == minMatSwitchingCount)
-                                    {
-                                       size_t leftRenderTaskNum = 0;
-                                       {
-                                          std::lock_guard<std::mutex> guard{ mutexes[subThreadIdx] };
-                                          leftRenderTaskNum = renderTasks[subThreadIdx].size();
-                                       }
-
-                                       size_t rightRenderTaskNum = 0;
-                                       {
-                                          std::lock_guard<std::mutex> guard{ mutexes[minMatSwitchingSubThreadIdx] };
-                                          rightRenderTaskNum = renderTasks[minMatSwitchingSubThreadIdx].size();
-                                       }
-
-                                       if (leftRenderTaskNum < rightRenderTaskNum)
-                                       {
-                                          minMatSwitchingSubThreadIdx = subThreadIdx;
-                                       }
-                                    }
-                                 }
-
-                                 ++matSwitchingCounts[minMatSwitchingSubThreadIdx];
-                              }
-                              countMutex.unlock();
-
-                              {
-                                 std::lock_guard<std::mutex> guard{ mutexes[minMatSwitchingSubThreadIdx] };
-                                 auto& renderTaskMeshes = renderTasks[minMatSwitchingSubThreadIdx];
-                                 std::copy_n(targetMeshes.begin() + offset, num, std::back_inserter(renderTaskMeshes));
-                              }
-                              
-                              offset += num;
+                              minMatSwitchingSubThreadIdx = subThreadIdx;
                            }
                         }
-
-                        ++beginItr;
                      }
-                  })));
 
-               matOffset += matNum;
+                     ++matSwitchingCounts[minMatSwitchingSubThreadIdx];
+                     threadDrawMeshCounts[minMatSwitchingSubThreadIdx] += num;
+
+                     scheduleTaskQueue.push(std::move(threadPool->AddTask([&targetMeshes, &renderTasks, &mutexes, minMatSwitchingSubThreadIdx, offset, num]()
+                        {
+                           OPTICK_EVENT("SchedulingGeometryPassRenderTask");
+                           {
+                              std::lock_guard<std::mutex> guard{ mutexes[minMatSwitchingSubThreadIdx] };
+                              auto& renderTaskMeshes = renderTasks[minMatSwitchingSubThreadIdx];
+                              std::copy_n(targetMeshes.begin() + offset, num, std::back_inserter(renderTaskMeshes));
+                           }
+                        })));
+
+                     offset += num;
+                  }
+               }
             }
 
             while (!scheduleTaskQueue.empty())
@@ -702,6 +667,7 @@ namespace Mile
                task.get();
             }
 
+            /** Meshes */
             for (size_t subThreadIdx = 0; subThreadIdx < renderTasks.size(); ++subThreadIdx)
             {
                if (renderTasks[subThreadIdx].size() > 0)
@@ -717,6 +683,7 @@ namespace Mile
                   auto& renderTask = renderTasks[subThreadIdx];
                   renderTaskQueue.push(std::make_pair(subThreadIdx, threadPool->AddTask([=, &profiler, &renderTask]()
                      {
+                        OPTICK_EVENT("ExecuteGeometryPassRenderTask");
                         ScopedDeferredGPUProfile deferredProfile{ profiler, taskName, data.Renderer->GetDeferredContext(subThreadIdx) };
                         RendererPBR::RenderMeshes(
                            data.Renderer,
@@ -1132,7 +1099,7 @@ namespace Mile
             ConstantBufferDescriptor paramsBufferDesc;
             paramsBufferDesc.Renderer = this;
             paramsBufferDesc.Size = sizeof(OneFloatConstantBuffer);
-            data.PrefilterParamsBuffer = builder.Create<ConstantBufferResource>("PrefilterParamsConstantBuffer", paramsBufferDesc);
+            data.PrefilterParamsBuffer = builder.Create<ConstantBufferResource>("OneFlaotConstantBuffer", paramsBufferDesc);
 
             data.EnvironmentMapRef = builder.Read(diffuseIntegralPassData.EnvironmentMapRef);
 
@@ -1533,7 +1500,7 @@ namespace Mile
             paramsDesc.Renderer = this;
             paramsDesc.Size = sizeof(OneMatrixConstantBuffer);
             data.ConvertParamsBuffer = builder.Create<ConstantBufferResource>(
-               "ConvertParamsConstantBuffer",
+               "OneMatrixConstantBuffer",
                paramsDesc);
 
             data.Viewport = builder.Read(geometryPassData.OutputViewport);
@@ -1608,7 +1575,6 @@ namespace Mile
          BoolRefResource* SSAOEnabledRef = nullptr;
          SamplerResource* Sampler = nullptr;
          SamplerResource* NoiseSampler = nullptr;
-         SamplerResource* PositionSampler = nullptr;
 
          ViewportResource* Viewport = nullptr;
          DepthStencilStateResource* DepthDisableState = nullptr;
@@ -1618,7 +1584,7 @@ namespace Mile
          ConstantBufferRefResource* SSAOBaseDataBuffer = nullptr;
          ConstantBufferResource* SSAOParamsBuffer = nullptr;
 
-         Texture2dDX11Resource* NoiseTexture = nullptr;
+         Texture2dDX11RefResource* NoiseTextureRef = nullptr;
          GBufferResource* ViewspaceGBuffer = nullptr;
 
          MeshRefResource* QuadMeshRef = nullptr;
@@ -1639,6 +1605,8 @@ namespace Mile
 
       auto ssaoOutputRefRes = m_frameGraph.AddExternalPermanentResource("SSAO", RenderTargetRefDescriptor(), &m_ssao);
 
+      auto ssaoNoiseTexRefRes = m_frameGraph.AddExternalPermanentResource("SSAONoiseTexRef", Texture2dDX11RefDescriptor(), &m_ssaoNoiseTex);
+
       auto ssaoPass = m_frameGraph.AddCallbackPass<SSAOPassData>(
          "SSAOPass",
          [&](Elaina::RenderPassBuilder& builder, SSAOPassData& data)
@@ -1651,21 +1619,14 @@ namespace Mile
             ssaoEnabledDesc.Reference = &m_bSSAOEnabled;
             data.SSAOEnabledRef = builder.Create<BoolRefResource>("SSAOEnabledRef", ssaoEnabledDesc);
 
-            SamplerDescriptor samplerDesc;
-            samplerDesc.Renderer = this;
-            samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-            samplerDesc.AddressModeU = samplerDesc.AddressModeV = samplerDesc.AddressModeW = D3D11_TEXTURE_ADDRESS_CLAMP;
-            samplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
-            data.Sampler = builder.Create<SamplerResource>("SSAOSampler", samplerDesc);
+            data.Sampler = builder.Read(convertGBufferPassData.Sampler);
 
             SamplerDescriptor noiseSamplerDesc;
             noiseSamplerDesc.Renderer = this;
-            noiseSamplerDesc.Filter = samplerDesc.Filter;
+            noiseSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
             noiseSamplerDesc.AddressModeU = noiseSamplerDesc.AddressModeV = noiseSamplerDesc.AddressModeW = D3D11_TEXTURE_ADDRESS_WRAP;
             noiseSamplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
             data.NoiseSampler = builder.Create<SamplerResource>("NoiseSampler", noiseSamplerDesc);
-
-            data.PositionSampler = builder.Create<SamplerResource>("PositionSampler", samplerDesc);
 
             data.Viewport = builder.Read(lightingPassData.Viewport);
             data.DepthDisableState = builder.Read(lightingPassData.DepthDisableState);
@@ -1681,24 +1642,11 @@ namespace Mile
                "SSAOParamsConstantBuffer",
                ssaoParamsBufferDesc);
 
-            Texture2dDX11Descriptor noiseTexDesc;
-            noiseTexDesc.Renderer = this;
-            noiseTexDesc.Width = noiseTexDesc.Height = RendererPBRConstants::SSAONoiseTextureSize;
-            noiseTexDesc.Channels = 4;
-            noiseTexDesc.Format = static_cast<DXGI_FORMAT>(EColorFormat::R32G32B32A32_FLOAT);
-            noiseTexDesc.Data = (unsigned char*)(m_ssaoParams.Noise.data());
-            data.NoiseTexture = builder.Create<Texture2dDX11Resource>(
-               "SSAONoiseTexture",
-               noiseTexDesc);
-
+            data.NoiseTextureRef = builder.Read(ssaoNoiseTexRefRes);
             data.ViewspaceGBuffer = builder.Read(convertGBufferPassData.ConvertedGBuffer);
 
             data.QuadMeshRef = builder.Read(lightingPassData.QuadMeshRef);
 
-            RenderTargetDescriptor outputSSAODesc;
-            outputSSAODesc.Renderer = this;
-            outputSSAODesc.ResolutionReference = &m_outputRenderTarget;
-            outputSSAODesc.Format = EColorFormat::R32_FLOAT;
             data.OutputRef = builder.Write(ssaoOutputRefRes);
          },
          [](const SSAOPassData& data)
@@ -1717,13 +1665,12 @@ namespace Mile
                auto pixelShader = data.PixelShader->GetActual();
                auto sampler = data.Sampler->GetActual();
                auto noiseSampler = data.NoiseSampler->GetActual();
-               auto posSampler = data.PositionSampler->GetActual();
                auto viewport = data.Viewport->GetActual();
                auto depthDisableState = data.DepthDisableState->GetActual();
                auto camera = *data.CamRef->GetActual();
                auto ssaoBaseDataBuffer = *data.SSAOBaseDataBuffer->GetActual();
                auto ssaoParamsBuffer = data.SSAOParamsBuffer->GetActual();
-               auto noiseTexture = data.NoiseTexture->GetActual();
+               auto noiseTexture = *data.NoiseTextureRef->GetActual();
                auto viewspaceGBuffer = data.ViewspaceGBuffer->GetActual();
                auto quadMesh = *data.QuadMeshRef->GetActual();
                auto output = *data.OutputRef->GetActual();
@@ -1733,7 +1680,6 @@ namespace Mile
                pixelShader->Bind(immediateContext);
                sampler->Bind(immediateContext, 0);
                noiseSampler->Bind(immediateContext, 1);
-               posSampler->Bind(immediateContext, 2);
                viewport->Bind(immediateContext);
                depthDisableState->Bind(immediateContext);
                ssaoBaseDataBuffer->Bind(immediateContext, 0, EShaderType::PixelShader);
@@ -1766,7 +1712,6 @@ namespace Mile
                noiseTexture->Unbind(immediateContext, 5, EShaderType::PixelShader);
                ssaoParamsBuffer->Unbind(immediateContext, 1, EShaderType::PixelShader);
                ssaoBaseDataBuffer->Unbind(immediateContext, 0, EShaderType::PixelShader);
-               posSampler->Unbind(immediateContext, 2);
                noiseSampler->Unbind(immediateContext, 1);
                sampler->Unbind(immediateContext, 0);
                pixelShader->Unbind(immediateContext);
@@ -1916,19 +1861,9 @@ namespace Mile
             anisoSamplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
             data.AnisoSampler = builder.Create<SamplerResource>("AnisoSampler", anisoSamplerDesc);
 
-            SamplerDescriptor linClampSamplerDesc;
-            linClampSamplerDesc.Renderer = this;
-            linClampSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-            linClampSamplerDesc.AddressModeU = linClampSamplerDesc.AddressModeV = linClampSamplerDesc.AddressModeW = D3D11_TEXTURE_ADDRESS_WRAP;
-            linClampSamplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
-            data.LinearClampSampler = builder.Create<SamplerResource>("LinearClampSampler", linClampSamplerDesc);
+            data.LinearClampSampler = builder.Read(convertSkyboxToCubemapPassData.Sampler);
 
-            SamplerDescriptor ssaoSamplerDesc;
-            ssaoSamplerDesc.Renderer = this;
-            ssaoSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-            ssaoSamplerDesc.AddressModeU = ssaoSamplerDesc.AddressModeV = ssaoSamplerDesc.AddressModeW = D3D11_TEXTURE_ADDRESS_WRAP;
-            ssaoSamplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
-            data.SSAOSampler = builder.Create<SamplerResource>("SSAOSampler", anisoSamplerDesc);
+            data.SSAOSampler = builder.Read(ssaoPassData.NoiseSampler);
 
             data.GBufferRef = builder.Read(geometryPassData.OutputGBufferRef);
             data.IrradianceMapRef = builder.Read(diffuseIntegralPassData.OutputIrradianceMapRef);
@@ -2063,21 +1998,12 @@ namespace Mile
             VoidRefDescriptor skyboxRefDesc;
             skyboxRefDesc.Reference = (void*)&m_renderSkyboxType;
             data.SkyboxType = builder.Create<VoidRefResource>("SkyboxType", skyboxRefDesc);
-
-            SamplerDescriptor samplerDesc;
-            samplerDesc.Renderer = this;
-            samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-            samplerDesc.AddressModeU = samplerDesc.AddressModeV = samplerDesc.AddressModeW = D3D11_TEXTURE_ADDRESS_WRAP;
-            samplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
-            data.Sampler = builder.Create<SamplerResource>("SkyboxSampler", samplerDesc);
+            data.Sampler = builder.Read(convertSkyboxToCubemapPassData.Sampler);
 
             data.DepthLessEqualState = builder.Read(convertSkyboxToCubemapPassData.DepthLessEqualState);
             data.NoCullingState = builder.Read(convertSkyboxToCubemapPassData.NoCullingState);
 
-            ConstantBufferDescriptor transformBufferDesc;
-            transformBufferDesc.Renderer = this;
-            transformBufferDesc.Size = sizeof(OneMatrixConstantBuffer);
-            data.TransformConstantBuffer = builder.Create<ConstantBufferResource>("SkyboxTransformConstantBuffer", transformBufferDesc);
+            data.TransformConstantBuffer = builder.Write(convertGBufferPassData.ConvertParamsBuffer);
 
             data.EnvironmentMapRef = builder.Read(convertSkyboxToCubemapPassData.OutputEnvMapRef);
             data.IrradianceMapRef = builder.Read(diffuseIntegralPassData.OutputIrradianceMapRef);
@@ -2191,12 +2117,7 @@ namespace Mile
             data.VertexShader = builder.Read(extractBrightnessPassVSRes);
             data.PixelShader = builder.Read(extractBrightnessPassPSRes);
 
-            SamplerDescriptor samplerDesc;
-            samplerDesc.Renderer = this;
-            samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-            samplerDesc.AddressModeU = samplerDesc.AddressModeV = samplerDesc.AddressModeW = D3D11_TEXTURE_ADDRESS_CLAMP;
-            samplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
-            data.Sampler = builder.Create<SamplerResource>("ExtractBrightnessSampler", samplerDesc);
+            data.Sampler = builder.Read(convertSkyboxToCubemapPassData.Sampler);
 
             data.Viewport = builder.Read(skyboxPassData.Viewport);
             data.InputRef = builder.Read(skyboxPassData.OutputRef);
@@ -2205,10 +2126,7 @@ namespace Mile
             bloomParamRefDesc.Reference = &m_bloomParams;
             data.BloomParamsRef = builder.Create<VoidRefResource>("BloomParams", bloomParamRefDesc);
 
-            ConstantBufferDescriptor paramsBufferDesc;
-            paramsBufferDesc.Renderer = this;
-            paramsBufferDesc.Size = sizeof(OneFloatConstantBuffer);
-            data.ParamsBuffer = builder.Create<ConstantBufferResource>("ExtractBrightnessParamsConstantBuffer", paramsBufferDesc);
+            data.ParamsBuffer = builder.Write(prefilterEnvMapPassData.PrefilterParamsBuffer);
 
             data.DepthDisableState = builder.Read(ambientEmissivePassData.DepthDisableState);
             data.QuadMeshRef = builder.Read(ambientEmissivePassData.QuadMeshRef);
@@ -2431,10 +2349,7 @@ namespace Mile
             data.DepthDisableState = builder.Read(bloomGaussBlurPassData.DepthDisableState);
             data.AdditiveBlendState = builder.Read(lightingPassData.AdditiveBlendState);
 
-            ConstantBufferDescriptor paramsBufferDesc;
-            paramsBufferDesc.Renderer = this;
-            paramsBufferDesc.Size = sizeof(OneFloatConstantBuffer);
-            data.ParamsBuffer = builder.Create<ConstantBufferResource>("BlendPassConstantBuffer", paramsBufferDesc);
+            data.ParamsBuffer = builder.Write(prefilterEnvMapPassData.PrefilterParamsBuffer);
 
             data.QuadMeshRef = builder.Read(bloomGaussBlurPassData.QuadMeshRef);
             data.PingPongBufferRef[0] = builder.Read(bloomGaussBlurPassData.PingPongBufferRef[0]);
@@ -2628,14 +2543,25 @@ namespace Mile
       (*mappedBuffer) = m_ssaoBaseData;
       m_ssaoBaseDataBuffer->UnMap(GetImmediateContext());
 
-      size_t noiseTexRes2 = ((size_t)RendererPBRConstants::SSAONoiseTextureSize * (size_t)RendererPBRConstants::SSAONoiseTextureSize);
-      for (size_t idx = 0; idx < noiseTexRes2; ++idx)
+      if (m_ssaoNoiseTex == nullptr)
       {
-         m_ssaoParams.Noise[idx] = Vector4(
-            randomFloats(generator) * 2.0f - 1.0f,
-            randomFloats(generator) * 2.0f - 1.0f,
-            0.0f,
-            0.0f);
+         size_t noiseTexRes2 = ((size_t)RendererPBRConstants::SSAONoiseTextureSize * (size_t)RendererPBRConstants::SSAONoiseTextureSize);
+         for (size_t idx = 0; idx < noiseTexRes2; ++idx)
+         {
+            m_ssaoParams.Noise[idx] = Vector4(
+               randomFloats(generator) * 2.0f - 1.0f,
+               randomFloats(generator) * 2.0f - 1.0f,
+               0.0f,
+               0.0f);
+         }
+
+         Texture2dDX11Descriptor noiseTexDesc;
+         noiseTexDesc.Renderer = this;
+         noiseTexDesc.Width = noiseTexDesc.Height = RendererPBRConstants::SSAONoiseTextureSize;
+         noiseTexDesc.Channels = 4;
+         noiseTexDesc.Format = static_cast<DXGI_FORMAT>(EColorFormat::R32G32B32A32_FLOAT);
+         noiseTexDesc.Data = (unsigned char*)(m_ssaoParams.Noise.data());
+         m_ssaoNoiseTex = Elaina::Realize<Texture2dDX11Descriptor, Texture2dDX11>(noiseTexDesc);
       }
    }
 
