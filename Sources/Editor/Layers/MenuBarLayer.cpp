@@ -317,7 +317,7 @@ namespace Mile
       void MenuBarLayer::GPUProfiler()
       {
          Engine* engine = Engine::GetInstance();
-         const auto& profiler = Engine::GetRenderer()->GetProfiler();
+         auto& profiler = Engine::GetRenderer()->GetProfiler();
          ImGui::Begin("GPU Profiler");
 
          std::string fpsStr = (std::string("FPS : ") + std::to_string(engine->GetCurrentFPS()));
@@ -346,6 +346,12 @@ namespace Mile
 
          if (ImGui::CollapsingHeader("Profiles"))
          {
+            int latency = (int)profiler.GetQueryLatency();
+            if (ImGui::SliderInt("Latency (Frame) : ", &latency, 0, engine->GetMaxFPS()))
+            {
+               profiler.SetQueryLatency(latency);
+            }
+
             std::string profileOverallTime = Mile::Formatting("Overall\t%.03f", profiler.GetProfileOverallTime()).append(" ms");
             ImGui::Text(profileOverallTime.c_str());
 
