@@ -592,32 +592,104 @@ namespace Mile
             //RendererPBR::RenderMeshes(data.Renderer, true, *meshes, 0, meshesNum, data.Renderer->GetImmediateContext(), vertexShader, pixelShader, sampler, gBuffer, data.TransformBuffers[0]->GetActual(), data.MaterialBuffers[0]->GetActual(), rasterizerState, viewport, targetCamera);
 
             /** Scheduling */
-            std::queue <std::pair<size_t, std::future<void>>> taskQueue;
-            size_t matIdx = 0;
-            for (auto& matMapData : materialMap)
+            std::vector<std::mutex> mutexes(maximumThreadsNum);
+            std::queue<std::future<void>> scheduleTaskQueue;
+            std::vector<Meshes> renderTasks(maximumThreadsNum);
+            std::queue <std::pair<size_t, std::future<void>>> renderTaskQueue;
+
+            size_t remainMat = materialMap.size() % maximumThreadsNum;
+            size_t matOffset = 0;
+            /** Materials */
+            while (matOffset < materialMap.size())
             {
-               auto& targetMeshes = matMapData.second;
-               size_t subThreadIdx = matIdx % maximumThreadsNum;
+               size_t matNum = materialMap.size() / maximumThreadsNum;
+               if (remainMat > 0)
+               {
+                  ++matNum;
+                  --remainMat;
+               }
+
+               /** Meshes */
+               scheduleTaskQueue.push(std::move(threadPool->AddTask([&materialMap, &renderTasks, &mutexes, matOffset, matNum, maximumThreadsNum]()
+                  {
+                     auto beginItr = materialMap.begin();
+                     auto endItr = materialMap.begin();
+                     std::advance(beginItr, matOffset);
+                     std::advance(endItr, matOffset + matNum);
+
+                     while (beginItr != endItr)
+                     {
+                        auto& targetMeshes = beginItr->second;
+                        if (targetMeshes.size() > 0)
+                        {
+                           size_t tasksNum = 0;
+                           size_t offset = 0;
+                           size_t remain = targetMeshes.size() % maximumThreadsNum;
+                           while (offset < targetMeshes.size())
+                           {
+                              size_t num = targetMeshes.size() / maximumThreadsNum;
+                              if (remain > 0)
+                              {
+                                 ++num;
+                                 --remain;
+                              }
+
+                              size_t minSubThreadIdx = 0;
+                              size_t renderTaskSize = (std::numeric_limits<size_t>::max());
+                              for (size_t subThreadIdx = 0; subThreadIdx < renderTasks.size(); ++subThreadIdx)
+                              {
+                                 std::lock_guard<std::mutex> checkGuard{ mutexes[subThreadIdx] };
+                                 if (renderTaskSize > renderTasks[subThreadIdx].size())
+                                 {
+                                    renderTaskSize = renderTasks[subThreadIdx].size();
+                                    minSubThreadIdx = subThreadIdx;
+                                 }
+                              }
+
+                              {
+                                 std::lock_guard<std::mutex> guard{ mutexes[minSubThreadIdx] };
+                                 auto& renderTaskMeshes = renderTasks[minSubThreadIdx];
+                                 std::copy_n(targetMeshes.begin() + offset, num, std::back_inserter(renderTaskMeshes));
+                              }
+                              
+                              offset += num;
+                              ++tasksNum;
+                           }
+                        }
+
+                        ++beginItr;
+                     }
+                  })));
+
+               matOffset += matNum;
+            }
+
+            while (!scheduleTaskQueue.empty())
+            {
+               auto task{ std::move(scheduleTaskQueue.front()) };
+               scheduleTaskQueue.pop();
+               task.get();
+            }
+
+            for (size_t subThreadIdx = 0; subThreadIdx < renderTasks.size(); ++subThreadIdx)
+            {
                size_t threadIdx = subThreadIdx + 1; /** thread index = thread + 1(Main Thread) */
-               taskQueue.push(std::make_pair(subThreadIdx, threadPool->AddTask([=, &targetMeshes]()
+               renderTaskQueue.push(std::make_pair(subThreadIdx, threadPool->AddTask([=, &renderTasks]()
                   {
                      std::string taskName = "GeometryPass_thread";
                      taskName.append(std::to_string(threadIdx));
                      auto& profiler = data.Renderer->GetProfiler();
                      ScopedDeferredGPUProfile deferredProfile{ profiler, taskName, data.Renderer->GetDeferredContext(subThreadIdx) };
 
-
                      auto transformBuffer = data.TransformBuffers[subThreadIdx]->GetActual();
                      auto materialParamsBuffer = data.MaterialBuffers[subThreadIdx]->GetActual();
                      RendererPBR::RenderMeshes(
                         data.Renderer,
-                        false, targetMeshes, 0, targetMeshes.size(),
+                        false, renderTasks[subThreadIdx], 0, renderTasks[subThreadIdx].size(),
                         vertexShader, pixelShader, sampler,
                         gBuffer, transformBuffer, materialParamsBuffer,
                         rasterizerState, viewport, targetCamera, threadIdx);
                   })));
-
-               ++matIdx;
             }
 
             profiler.Begin("GeometryPass");
@@ -625,14 +697,13 @@ namespace Mile
             ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
             gBuffer->BindAsRenderTarget(immediateContext);
             gBuffer->UnbindRenderTarget(immediateContext);
-            while (!taskQueue.empty())
+            while (!renderTaskQueue.empty())
             {
-               auto task{ std::move(taskQueue.front()) };
-               taskQueue.pop();
+               auto renderTask{ std::move(renderTaskQueue.front()) };
+               renderTaskQueue.pop();
+               renderTask.second.get();
 
-               task.second.get();
-
-               ID3D11DeviceContext& deferredContext = data.Renderer->GetDeferredContext(task.first);
+               ID3D11DeviceContext& deferredContext = data.Renderer->GetDeferredContext(renderTask.first);
 
                ID3D11CommandList* commandList = nullptr;
                deferredContext.FinishCommandList(false, &commandList);
