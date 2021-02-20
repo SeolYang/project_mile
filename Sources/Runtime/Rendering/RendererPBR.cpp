@@ -509,6 +509,7 @@ namespace Mile
       auto targetCameraRefRes = m_frameGraph.AddExternalPermanentResource("CameraRef", CameraRefDescriptor(), &m_targetCamera);
       auto lightsRes = m_frameGraph.AddExternalPermanentResource("Lights", WorldDescriptor(), &m_lights);
       auto meshesRes = m_frameGraph.AddExternalPermanentResource("Meshes", WorldDescriptor(), &m_meshes);
+      auto materialMapRes = m_frameGraph.AddExternalPermanentResource("MaterialMap", WorldDescriptor(), &m_materialMap);
       auto outputRenderTargetRefRes = m_frameGraph.AddExternalPermanentResource("FinalOutputRef", RenderTargetRefDescriptor(), &m_outputRenderTarget);
 
       /** Geometry Pass */
@@ -518,7 +519,7 @@ namespace Mile
       struct GeometryPassData : public RenderPassDataBase
       {
          CameraRefResource* TargetCameraRef = nullptr;
-         MeshesDataResource* Meshes = nullptr;
+         MaterialMapResource* MaterialMap = nullptr;
          SamplerResource* Sampler = nullptr;
          std::vector<ConstantBufferResource*> TransformBuffers = { nullptr, };
          std::vector<ConstantBufferResource*> MaterialBuffers = { nullptr, };
@@ -541,7 +542,7 @@ namespace Mile
             data.Sampler = builder.Create<SamplerResource>("AnisoWrapAlwaysSampler", samplerDesc);
 
             data.TargetCameraRef = builder.Read(targetCameraRefRes);
-            data.Meshes = builder.Read(meshesRes);
+            data.MaterialMap = builder.Read(materialMapRes);
 
             ConstantBufferDescriptor transformBufferDesc;
             transformBufferDesc.Renderer = this;
@@ -582,43 +583,41 @@ namespace Mile
             auto rasterizerState = data.OutputRasterizerState->GetActual();
             auto viewport = data.OutputViewport->GetActual();
             auto targetCamera = (*data.TargetCameraRef->GetActual());
-            auto meshes = data.Meshes->GetActual();
+            auto& materialMap = *data.MaterialMap->GetActual();
 
             auto threadPool = Engine::GetThreadPool();
             size_t maximumThreadsNum = data.Renderer->GetMaximumThreads();
-            size_t meshesNum = meshes->size();
-            size_t meshesPerThread = max(1, (meshesNum / maximumThreadsNum));
-            size_t restMeshes = (meshesNum > maximumThreadsNum) ? meshesNum % maximumThreadsNum : 0;
-            size_t offset = 0;
 
             // @For performance test!
             //RendererPBR::RenderMeshes(data.Renderer, true, *meshes, 0, meshesNum, data.Renderer->GetImmediateContext(), vertexShader, pixelShader, sampler, gBuffer, data.TransformBuffers[0]->GetActual(), data.MaterialBuffers[0]->GetActual(), rasterizerState, viewport, targetCamera);
 
             /** Scheduling */
             std::queue <std::pair<size_t, std::future<void>>> taskQueue;
-            for (size_t subThreadIdx = 0; ((subThreadIdx < maximumThreadsNum) && (offset < meshesNum)); ++subThreadIdx)
+            size_t matIdx = 0;
+            for (auto& matMapData : materialMap)
             {
-               size_t num = meshesPerThread;
-               if (restMeshes > 0)
-               {
-                  --restMeshes;
-                  ++num;
-               }
-
+               auto& targetMeshes = matMapData.second;
+               size_t subThreadIdx = matIdx % maximumThreadsNum;
                size_t threadIdx = subThreadIdx + 1; /** thread index = thread + 1(Main Thread) */
-               taskQueue.push(std::make_pair(subThreadIdx, threadPool->AddTask([=]()
+               taskQueue.push(std::make_pair(subThreadIdx, threadPool->AddTask([=, &targetMeshes]()
                   {
+                     std::string taskName = "GeometryPass_thread";
+                     taskName.append(std::to_string(threadIdx));
+                     auto& profiler = data.Renderer->GetProfiler();
+                     ScopedDeferredGPUProfile deferredProfile{ profiler, taskName, data.Renderer->GetDeferredContext(subThreadIdx) };
+
+
                      auto transformBuffer = data.TransformBuffers[subThreadIdx]->GetActual();
                      auto materialParamsBuffer = data.MaterialBuffers[subThreadIdx]->GetActual();
                      RendererPBR::RenderMeshes(
                         data.Renderer,
-                        false, *meshes, offset, num,
+                        false, targetMeshes, 0, targetMeshes.size(),
                         vertexShader, pixelShader, sampler,
                         gBuffer, transformBuffer, materialParamsBuffer,
                         rasterizerState, viewport, targetCamera, threadIdx);
                   })));
 
-               offset += num;
+               ++matIdx;
             }
 
             profiler.Begin("GeometryPass");
@@ -765,7 +764,7 @@ namespace Mile
          {
             OPTICK_EVENT("ExecuteConvertSkyboxPass");
             auto& profiler = data.Renderer->GetProfiler();
-            ScopedProfile profile(profiler, "ConvertSkyboxPass");
+            ScopedGPUProfile profile(profiler, "ConvertSkyboxPass");
 
             BoolRef bIBLPrecomputeEnabledRef = (*data.IBLPrecomputeEnabledRef->GetActual());
             if (bIBLPrecomputeEnabledRef != nullptr && (*bIBLPrecomputeEnabledRef))
@@ -899,7 +898,7 @@ namespace Mile
          {
             OPTICK_EVENT("ExecuteDiffuseIntegralPass");
             auto& profiler = data.Renderer->GetProfiler();
-            ScopedProfile profile(profiler, "DiffuseIntegralPass");
+            ScopedGPUProfile profile(profiler, "DiffuseIntegralPass");
 
             BoolRef bIBLPrecomputeEnabledRef = (*data.IBLPrecomputeEnabledRef->GetActual());
             if (bIBLPrecomputeEnabledRef != nullptr && (*bIBLPrecomputeEnabledRef))
@@ -1037,7 +1036,7 @@ namespace Mile
          {
             OPTICK_EVENT("ExecutePrefilterEnvPass");
             auto& profiler = data.Renderer->GetProfiler();
-            ScopedProfile profile(profiler, "PrefilterEnvironmentMapPass");
+            ScopedGPUProfile profile(profiler, "PrefilterEnvironmentMapPass");
 
             BoolRef bIBLPrecomputeEnabledRef = (*data.IBLPrecomputeEnabledRef->GetActual());
             if (bIBLPrecomputeEnabledRef != nullptr && (*bIBLPrecomputeEnabledRef))
@@ -1172,7 +1171,7 @@ namespace Mile
          {
             OPTICK_EVENT("ExecuteIntegrateBRDFPass");
             auto& profiler = data.Renderer->GetProfiler();
-            ScopedProfile profile(profiler, "IntegrateBRDFPass");
+            ScopedGPUProfile profile(profiler, "IntegrateBRDFPass");
 
             BoolRef bIBLPrecomputeEnabledRef = (*data.IBLPrecomputeEnabledRef->GetActual());
             if (bIBLPrecomputeEnabledRef != nullptr && (*bIBLPrecomputeEnabledRef))
@@ -1307,7 +1306,7 @@ namespace Mile
          {
             OPTICK_EVENT("ExecuteLightingPass");
             auto& profiler = data.Renderer->GetProfiler();
-            ScopedProfile profile(profiler, "LightingPass");
+            ScopedGPUProfile profile(profiler, "LightingPass");
             ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
             immediateContext.ClearState();
             immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -1445,7 +1444,7 @@ namespace Mile
          {
             OPTICK_EVENT("ExecuteConvertGBufferPass");
             auto& profiler = data.Renderer->GetProfiler();
-            ScopedProfile profile(profiler, "ConvertGBufferPass");
+            ScopedGPUProfile profile(profiler, "ConvertGBufferPass");
             ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
             immediateContext.ClearState();
             immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -1599,7 +1598,7 @@ namespace Mile
          {
             OPTICK_EVENT("ExecuteSSAOPass");
             auto& profiler = data.Renderer->GetProfiler();
-            ScopedProfile profile(profiler, "SSAOPass");
+            ScopedGPUProfile profile(profiler, "SSAOPass");
             bool bSSAOEnabled = *(*data.SSAOEnabledRef->GetActual());
             if (bSSAOEnabled)
             {
@@ -1721,7 +1720,7 @@ namespace Mile
             if (bSSAOEnabled)
             {
                auto& profiler = data.Renderer->GetProfiler();
-               ScopedProfile profile(profiler, "SSAOBlurPass");
+               ScopedGPUProfile profile(profiler, "SSAOBlurPass");
                ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
                context.ClearState();
                context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -1849,7 +1848,7 @@ namespace Mile
          {
             OPTICK_EVENT("ExecuteAmbientEmissivePass");
             auto& profiler = data.Renderer->GetProfiler();
-            ScopedProfile profile(profiler, "AmbientEmissivePass");
+            ScopedGPUProfile profile(profiler, "AmbientEmissivePass");
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
             context.ClearState();
             context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -1985,7 +1984,7 @@ namespace Mile
             OPTICK_EVENT("ExecuteSkyboxPass");
             auto& profiler = data.Renderer->GetProfiler();
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
-            ScopedProfile profile(profiler, "SkyboxPass");
+            ScopedGPUProfile profile(profiler, "SkyboxPass");
             context.ClearState();
             context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -2114,7 +2113,7 @@ namespace Mile
             OPTICK_EVENT("ExecuteExtractBrightnessPass");
             auto& profiler = data.Renderer->GetProfiler();
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
-            ScopedProfile profile(profiler, "ExtractBrightnessPass");
+            ScopedGPUProfile profile(profiler, "ExtractBrightnessPass");
             context.ClearState();
             context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -2223,7 +2222,7 @@ namespace Mile
             OPTICK_EVENT("ExecuteBloomGaussBlurPass");
             auto& profiler = data.Renderer->GetProfiler();
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
-            ScopedProfile profile(profiler, "BloomGaussBlurPass");
+            ScopedGPUProfile profile(profiler, "BloomGaussBlurPass");
             context.ClearState();
             context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -2341,7 +2340,7 @@ namespace Mile
             OPTICK_EVENT("ExecuteBloomBlendPass");
             auto& profiler = data.Renderer->GetProfiler();
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
-            ScopedProfile profile(profiler, "BloomBlendPass");
+            ScopedGPUProfile profile(profiler, "BloomBlendPass");
             context.ClearState();
             context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -2431,7 +2430,7 @@ namespace Mile
             OPTICK_EVENT("ExecuteToneMappingPass");
             auto& profiler = data.Renderer->GetProfiler();
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
-            ScopedProfile profile(profiler, "ToneMappingPass");
+            ScopedGPUProfile profile(profiler, "ToneMappingPass");
             context.ClearState();
             context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -2647,13 +2646,6 @@ namespace Mile
                   m_materialMap[material].push_back(renderComponent);
                }
             }
-
-            m_meshes.resize(0);
-            for (auto& materialMapComp : m_materialMap)
-            {
-               Meshes& meshes = materialMapComp.second;
-               std::copy(meshes.begin(), meshes.end(), std::back_inserter(m_meshes));
-            }
          });
       auto acquireLightsTask = threadPool->AddTask([&]()
          {
@@ -2696,10 +2688,9 @@ namespace Mile
       acquireSkyboxTask.get();
    }
 
-   void RendererPBR::RenderMeshes(RendererDX11* renderer, bool bClearGBuffer, Meshes& meshes, size_t offset, size_t num, VertexShaderDX11* vertexShader, PixelShaderDX11* pixelShader, SamplerDX11* sampler, GBuffer* gBuffer, ConstantBufferDX11* transformBuffer, ConstantBufferDX11* materialParamsBuffer, RasterizerState* rasterizerState, Viewport* viewport, CameraRef camera, size_t threadIdx)
+   void RendererPBR::RenderMeshes(RendererDX11* renderer, bool bClearGBuffer, const Meshes& meshes, size_t offset, size_t num, VertexShaderDX11* vertexShader, PixelShaderDX11* pixelShader, SamplerDX11* sampler, GBuffer* gBuffer, ConstantBufferDX11* transformBuffer, ConstantBufferDX11* materialParamsBuffer, RasterizerState* rasterizerState, Viewport* viewport, CameraRef camera, size_t threadIdx)
    {
       OPTICK_EVENT();
-      auto& profiler = renderer->GetProfiler();
       {
          ID3D11DeviceContext& context = renderer->GetDeviceContext(threadIdx);
          context.ClearState();

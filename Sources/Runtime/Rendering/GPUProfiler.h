@@ -78,7 +78,7 @@ namespace Mile
 
    private:
       RendererDX11* m_renderer;
-      std::map<std::string, GPUProfileData> m_profiles;
+      std::unordered_map<std::string, GPUProfileData> m_profiles;
       std::map<std::string, double> m_profileTimes;
       UINT64 m_currentFrame;
       UINT64 m_queryLatency;
@@ -91,24 +91,24 @@ namespace Mile
       
    };
 
-   class MEAPI ScopedProfile
+   class MEAPI ScopedGPUProfile
    {
    public:
-      ScopedProfile(GPUProfiler& profiler, const std::string& profileName) :
+      ScopedGPUProfile(GPUProfiler& profiler, const std::string& profileName) :
          m_profiler(profiler),
          m_profileName(profileName)
       {
          m_profiler.Begin(profileName);
       }
 
-      ~ScopedProfile()
+      ~ScopedGPUProfile()
       {
          m_profiler.End(m_profileName);
       }
 
-      ScopedProfile() = delete;
-      ScopedProfile(const ScopedProfile&) = delete;
-      ScopedProfile(ScopedProfile&&) = delete;
+      ScopedGPUProfile() = delete;
+      ScopedGPUProfile(const ScopedGPUProfile&) = delete;
+      ScopedGPUProfile(ScopedGPUProfile&&) = delete;
 
    private:
       GPUProfiler& m_profiler;
@@ -116,25 +116,25 @@ namespace Mile
 
    };
 
-   class MEAPI ScopedContextProfile
+   class MEAPI ScopedDeferredGPUProfile
    {
    public:
-      ScopedContextProfile(GPUProfiler& profiler, const std::string& profileName, ID3D11DeviceContext& context, bool bIsDeferred = false) :
+      ScopedDeferredGPUProfile(GPUProfiler& profiler, const std::string& profileName, ID3D11DeviceContext& deferredContext) :
          m_profiler(profiler),
-         m_context(context),
+         m_context(deferredContext),
          m_profileName(profileName)
       {
-         m_profiler.Begin(profileName, m_context, bIsDeferred);
+         m_profiler.Begin(profileName, m_context, true);
       }
 
-      ~ScopedContextProfile()
+      ~ScopedDeferredGPUProfile()
       {
          m_profiler.End(m_profileName, m_context);
       }
 
-      ScopedContextProfile() = delete;
-      ScopedContextProfile(const ScopedContextProfile&) = delete;
-      ScopedContextProfile(ScopedContextProfile&&) = delete;
+      ScopedDeferredGPUProfile() = delete;
+      ScopedDeferredGPUProfile(const ScopedDeferredGPUProfile&) = delete;
+      ScopedDeferredGPUProfile(ScopedDeferredGPUProfile&&) = delete;
 
    private:
       GPUProfiler& m_profiler;

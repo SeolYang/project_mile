@@ -90,7 +90,7 @@ namespace Mile
       static void RenderMeshes(
          RendererDX11* renderer,
          bool bClearGBuffer,
-         Meshes& meshes,
+         const Meshes& meshes,
          size_t offset,
          size_t num,
          VertexShaderDX11* vertexShader, PixelShaderDX11* pixelShader, SamplerDX11* sampler, 
