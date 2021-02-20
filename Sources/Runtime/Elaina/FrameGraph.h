@@ -230,7 +230,7 @@ namespace Elaina
                            if ((*renderPassItr) == resource->Writers.back())
                            {
                               bFoundLastWriters = true;
-                              lastIndex = max(
+                              lastIndex = std::max(
                                  lastIndex,
                                  (size_t)std::distance(RenderPasses.begin(), renderPassItr));
                            }

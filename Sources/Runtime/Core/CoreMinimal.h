@@ -3,6 +3,7 @@
 #pragma warning(disable : 4996)
 #pragma warning(default : 4265)
 #pragma warning(push, 0)
+#define NOMINMAX
 #include <vector>
 #include <array>
 #include <map>
