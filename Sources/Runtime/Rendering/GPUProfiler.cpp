@@ -109,6 +109,10 @@ namespace Mile
             m_profileTimes[(*dataItr).first] = data.ElapsedTime;
             data.Reset();
          }
+         else if (!data.bIsOnQuery)
+         {
+            m_profileTimes[dataItr->first] = 0.0;
+         }
       }
    }
 }
