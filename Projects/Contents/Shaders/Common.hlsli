@@ -68,4 +68,9 @@ float3 ImportanceSampleGGX(float2 Xi, float3 N, float roughness)
    return normalize(sampleVec);
 }
 
+float LinearizeDepth(float z, float near, float far)
+{
+   return (2.0 * near) / (far + near - z * (far - near));
+}
+
 #endif
