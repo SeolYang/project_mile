@@ -81,6 +81,10 @@ namespace Mile
       }
 
       GUI::Vector3Input("Color", m_color, 0.01f, 0.0f, 1.0f);
-      GUI::FloatInput("Intensity", m_intensity, 0.01f, 0.0f, 100000.0f, true);
+
+      std::string intensityInputLabel = "Intensity (";
+      intensityInputLabel.append(LightIntensityUnitToString(LightIntensityUnitOf(m_type)));
+      intensityInputLabel.append(")");
+      GUI::FloatInput(intensityInputLabel.c_str(), m_intensity, 0.1f, 0.0f, 100000.0f, true);
    }
 }
