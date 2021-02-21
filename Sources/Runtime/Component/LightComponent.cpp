@@ -38,7 +38,7 @@ namespace Mile
    json LightComponent::Serialize() const
    {
       json serialized = Component::Serialize();
-      serialized["LightType"] = LightTypeToString(m_type);
+      serialized["LightType"] = static_cast<UINT32>(m_type);
       serialized["Color"] = m_color.Serialize();
       serialized["Intensity"] = m_intensity;
       return serialized;
@@ -47,7 +47,7 @@ namespace Mile
    void LightComponent::DeSerialize(const json& jsonData)
    {
       Component::DeSerialize(jsonData);
-      m_type = StringToLightType(GetValueSafelyFromJson<std::string>(jsonData, "LightType", ""));
+      m_type = static_cast<ELightType>(GetValueSafelyFromJson<UINT32>(jsonData, "LightType", 0));
 
       Vector3 tempColor;
       tempColor.DeSerialize(jsonData["Color"]);
@@ -58,8 +58,8 @@ namespace Mile
 
    void LightComponent::OnGUI()
    {
-      const char* items[] = { "Directional", "Point" };
-      static const char* currentItem = items[static_cast<UINT>(m_type)];
+      const char* items[] = { "Directional", "Point", "Spot" };
+      static const char* currentItem = items[static_cast<UINT32>(m_type)];
 
       if (ImGui::BeginCombo("Type", currentItem))
       {

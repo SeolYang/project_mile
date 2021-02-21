@@ -3,15 +3,15 @@
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
+#include "Rendering/Light.h"
 
 namespace Mile
 {
-   enum class MEAPI ELightType : UINT32
-   {
-      Directional,
-      Point,
-   };
-
+   /**
+   * @brief 라이트 컴포넌트는 사용되는 타입에 따라 빛의 세기를 표현하는데 정해진 단위를 따른다
+   * @Directional Light Lux(lx, lm/m^2)
+   * @Point Light/Spot Light  Lumen(lm)
+   */
    class MEAPI LightComponent : public Component
    {
       DeclareComponent(LightComponent);
@@ -33,42 +33,6 @@ namespace Mile
 
       virtual json Serialize() const override;
       virtual void DeSerialize(const json& jsonData) override;
-
-      static std::string LightTypeToString(ELightType type)
-      {
-         switch (type)
-         {
-         case ELightType::Directional:
-            return "Directional";
-         case ELightType::Point:
-            return "Point";
-         }
-
-         return "Unknown";
-      }
-
-      static ELightType StringToLightType(const std::string& str)
-      {
-         if (str == "Point")
-         {
-            return ELightType::Point;
-         }
-
-         return ELightType::Directional;
-      }
-
-      static unsigned int LightTypeToIndex(ELightType type)
-      {
-         switch (type)
-         {
-         case ELightType::Directional:
-            return 0;
-         case ELightType::Point:
-            return 1;
-         }
-
-         return 0;
-      }
 
       void OnGUI() override;
 
