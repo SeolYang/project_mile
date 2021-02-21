@@ -1,1 +1,337 @@
-{"Entities":[{"Children":[{"Children":[],"Components":[{"ClearColor":{"w":1.0,"x":0.13300000131130219,"y":0.13699999451637268,"z":0.15000000596046448},"FOV":45.0,"FarPlane":100.0,"IsActivated":true,"NearPlane":0.10000000149011612,"RenderTexture":"null","Type":"CameraComponent"}],"IsActivated":true,"Name":"Camera","Tag":"Default","Transform":{"Position":{"x":0.0,"y":0.0,"z":0.0},"Rotation":{"w":1.0,"x":0.0,"y":0.0,"z":0.0},"Scale":{"x":1.0,"y":1.0,"z":1.0}}}],"Components":[],"IsActivated":true,"Name":"CameraParent","Tag":"Default","Transform":{"Position":{"x":0.0,"y":5.0,"z":-10.0},"Rotation":{"w":0.965925931930542,"x":-0.2588190734386444,"y":0.0,"z":0.0},"Scale":{"x":1.0,"y":1.0,"z":1.0}}},{"Children":[],"Components":[{"Color":{"x":1.0,"y":1.0,"z":1.0},"Intensity":1.0,"IsActivated":true,"LightType":0,"Type":"LightComponent"}],"IsActivated":true,"Name":"Main Light","Tag":"Default","Transform":{"Position":{"x":0.0,"y":0.0,"z":0.0},"Rotation":{"w":0.7071068286895752,"x":-0.7071068286895752,"y":0.0,"z":0.0},"Scale":{"x":1.0,"y":1.0,"z":1.0}}},{"Children":[{"Children":[],"Components":[{"IsActivated":true,"Material":"Contents/Models/Lantern/Lantern_LanternPole_Lantern.material","Mesh":{"Model":"Contents/Models/Lantern/Lantern.gltf","Name":"LanternPole_Lantern","Type":0},"Type":"MeshRenderComponent"}],"IsActivated":true,"Name":"LanternPole_Lantern","Tag":"Default","Transform":{"Position":{"x":0.0,"y":0.0,"z":0.0},"Rotation":{"w":1.0,"x":0.0,"y":0.0,"z":0.0},"Scale":{"x":1.0,"y":1.0,"z":1.0}}}],"Components":[],"IsActivated":true,"Name":"Lantern","Tag":"Default","Transform":{"Position":{"x":-3.0,"y":-0.8999999761581421,"z":0.0},"Rotation":{"w":1.0,"x":0.0,"y":0.0,"z":0.0},"Scale":{"x":0.10000000149011612,"y":0.10000000149011612,"z":0.10000000149011612}}},{"Children":[{"Children":[],"Components":[{"IsActivated":true,"Material":"Contents/Models/DamagedHelmet/DamagedHelmet_mesh_helmet_LP_13930damagedHelmet.material","Mesh":{"Model":"Contents/Models/DamagedHelmet/DamagedHelmet.gltf","Name":"mesh_helmet_LP_13930damagedHelmet","Type":0},"Type":"MeshRenderComponent"}],"IsActivated":true,"Name":"mesh_helmet_LP_13930damagedHelmet","Tag":"Default","Transform":{"Position":{"x":0.0,"y":0.0,"z":0.0},"Rotation":{"w":1.0,"x":0.0,"y":0.0,"z":0.0},"Scale":{"x":1.0,"y":1.0,"z":1.0}}}],"Components":[],"IsActivated":true,"Name":"DamagedHelmet","Tag":"Default","Transform":{"Position":{"x":0.0,"y":0.0,"z":0.0},"Rotation":{"w":1.0,"x":0.0,"y":-0.0,"z":0.0},"Scale":{"x":1.0,"y":1.0,"z":1.0}}},{"Children":[],"Components":[{"IsActivated":true,"Material":"Contents/Materials/NonMetallicRough.material","Mesh":{"Model":"","Name":"Cube","Type":1},"Type":"MeshRenderComponent"}],"IsActivated":true,"Name":"Cube","Tag":"Default","Transform":{"Position":{"x":3.5,"y":0.0,"z":0.0},"Rotation":{"w":0.9914448857307434,"x":0.0,"y":0.13052619993686676,"z":0.0},"Scale":{"x":1.0,"y":1.0,"z":1.0}}},{"Children":[],"Components":[{"IsActivated":true,"Material":"Contents/Materials/Default.material","Mesh":{"Model":"","Name":"Quad","Type":2},"Type":"MeshRenderComponent"}],"IsActivated":true,"Name":"Plane","Tag":"Default","Transform":{"Position":{"x":0.0,"y":-1.0,"z":0.0},"Rotation":{"w":0.7071067690849304,"x":-0.7071067690849304,"y":-0.0,"z":-0.0},"Scale":{"x":30.0,"y":1.0,"z":30.0}}},{"Children":[],"Components":[{"IsActivated":true,"Path":"Contents/Textures/Barcelona_Rooftops/Barce_Rooftop_C_3k.hdr","Type":"SkyboxComponent"}],"IsActivated":true,"Name":"Skybox","Tag":"Default","Transform":{"Position":{"x":0.0,"y":0.0,"z":0.0},"Rotation":{"w":1.0,"x":0.0,"y":0.0,"z":0.0},"Scale":{"x":1.0,"y":1.0,"z":1.0}}}]}
+{
+  "Entities": [
+    {
+      "Children": [
+        {
+          "Children": [],
+          "Components": [
+            {
+              "ClearColor": {
+                "w": 1.0,
+                "x": 0.13300000131130219,
+                "y": 0.13699999451637268,
+                "z": 0.15000000596046448
+              },
+              "FOV": 45.0,
+              "FarPlane": 100.0,
+              "IsActivated": true,
+              "NearPlane": 0.10000000149011612,
+              "RenderTexture": "null",
+              "Type": "CameraComponent"
+            }
+          ],
+          "IsActivated": true,
+          "Name": "Camera",
+          "Tag": "Default",
+          "Transform": {
+            "Position": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "Rotation": {
+              "w": 1.0,
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "Scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            }
+          }
+        }
+      ],
+      "Components": [],
+      "IsActivated": true,
+      "Name": "CameraParent",
+      "Tag": "Default",
+      "Transform": {
+        "Position": {
+          "x": 0.0,
+          "y": 2.9000000953674316,
+          "z": -10.0
+        },
+        "Rotation": {
+          "w": 0.9940563440322876,
+          "x": -0.10886688530445099,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "Scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "Children": [],
+      "Components": [
+        {
+          "Color": {
+            "x": 1.0,
+            "y": 0.9568600058555603,
+            "z": 0.8669999837875366
+          },
+          "InnerAngle": 15.0,
+          "Intensity": 2.0,
+          "IsActivated": true,
+          "LightType": 0,
+          "OuterAngle": 15.0,
+          "Radius": 1.0,
+          "Type": "LightComponent"
+        }
+      ],
+      "IsActivated": true,
+      "Name": "Main Light",
+      "Tag": "Default",
+      "Transform": {
+        "Position": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "Rotation": {
+          "w": -0.3284122347831726,
+          "x": 0.2969515323638916,
+          "y": 0.6650761365890503,
+          "z": 0.601364254951477
+        },
+        "Scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "Children": [
+        {
+          "Children": [],
+          "Components": [
+            {
+              "IsActivated": true,
+              "Material": "Contents/Models/Lantern/Lantern_LanternPole_Lantern.material",
+              "Mesh": {
+                "Model": "Contents/Models/Lantern/Lantern.gltf",
+                "Name": "LanternPole_Lantern",
+                "Type": 0
+              },
+              "Type": "MeshRenderComponent"
+            }
+          ],
+          "IsActivated": true,
+          "Name": "LanternPole_Lantern",
+          "Tag": "Default",
+          "Transform": {
+            "Position": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "Rotation": {
+              "w": 1.0,
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "Scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            }
+          }
+        }
+      ],
+      "Components": [],
+      "IsActivated": true,
+      "Name": "Lantern",
+      "Tag": "Default",
+      "Transform": {
+        "Position": {
+          "x": -3.0,
+          "y": -1.0,
+          "z": 0.0
+        },
+        "Rotation": {
+          "w": 1.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "Scale": {
+          "x": 0.10000000149011612,
+          "y": 0.10000000149011612,
+          "z": 0.10000000149011612
+        }
+      }
+    },
+    {
+      "Children": [
+        {
+          "Children": [],
+          "Components": [
+            {
+              "IsActivated": true,
+              "Material": "Contents/Models/DamagedHelmet/DamagedHelmet_mesh_helmet_LP_13930damagedHelmet.material",
+              "Mesh": {
+                "Model": "Contents/Models/DamagedHelmet/DamagedHelmet.gltf",
+                "Name": "mesh_helmet_LP_13930damagedHelmet",
+                "Type": 0
+              },
+              "Type": "MeshRenderComponent"
+            }
+          ],
+          "IsActivated": true,
+          "Name": "mesh_helmet_LP_13930damagedHelmet",
+          "Tag": "Default",
+          "Transform": {
+            "Position": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "Rotation": {
+              "w": 1.0,
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "Scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            }
+          }
+        }
+      ],
+      "Components": [],
+      "IsActivated": true,
+      "Name": "DamagedHelmet",
+      "Tag": "Default",
+      "Transform": {
+        "Position": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "Rotation": {
+          "w": 1.0,
+          "x": 0.0,
+          "y": -0.0,
+          "z": 0.0
+        },
+        "Scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "Children": [],
+      "Components": [
+        {
+          "IsActivated": true,
+          "Material": "Contents/Materials/Metal.material",
+          "Mesh": {
+            "Model": "",
+            "Name": "Cube",
+            "Type": 1
+          },
+          "Type": "MeshRenderComponent"
+        }
+      ],
+      "IsActivated": true,
+      "Name": "Cube",
+      "Tag": "Default",
+      "Transform": {
+        "Position": {
+          "x": 3.5,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "Rotation": {
+          "w": 0.9914448857307434,
+          "x": 0.0,
+          "y": 0.13052619993686676,
+          "z": 0.0
+        },
+        "Scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "Children": [],
+      "Components": [
+        {
+          "IsActivated": true,
+          "Material": "Contents/Materials/NonMetallicRough.material",
+          "Mesh": {
+            "Model": "",
+            "Name": "Quad",
+            "Type": 2
+          },
+          "Type": "MeshRenderComponent"
+        }
+      ],
+      "IsActivated": true,
+      "Name": "Plane",
+      "Tag": "Default",
+      "Transform": {
+        "Position": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
+        },
+        "Rotation": {
+          "w": 0.7071067690849304,
+          "x": -0.7071067690849304,
+          "y": -0.0,
+          "z": -0.0
+        },
+        "Scale": {
+          "x": 30.0,
+          "y": 1.0,
+          "z": 30.0
+        }
+      }
+    },
+    {
+      "Children": [],
+      "Components": [
+        {
+          "IsActivated": true,
+          "Path": "Contents/Textures/Barcelona_Rooftops/Barce_Rooftop_C_3k.hdr",
+          "Type": "SkyboxComponent"
+        }
+      ],
+      "IsActivated": true,
+      "Name": "Skybox",
+      "Tag": "Default",
+      "Transform": {
+        "Position": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "Rotation": {
+          "w": 1.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "Scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        }
+      }
+    }
+  ]
+}
