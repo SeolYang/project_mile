@@ -20,8 +20,9 @@ namespace Mile
       void GraphicsDebugWindow::OnGUI()
       {
          /** @todo: code clean up */
+         ImGuiWindowFlags windowFlag = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
          ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
-         ImGui::Begin("Graphics Debugger", nullptr, ImGuiWindowFlags_MenuBar);
+         ImGui::Begin("Graphics Debugger", nullptr, windowFlag);
 
          RendererDX11* renderer = Engine::GetRenderer();
          if (renderer != nullptr)
@@ -39,7 +40,7 @@ namespace Mile
                {
                   if (ImGui::BeginMenuBar())
                   {
-                     if (ImGui::BeginMenu("Debug"))
+                     if (ImGui::BeginMenu("Views"))
                      {
                         bool bSelected = false;
                         if (gBuffer != nullptr)
