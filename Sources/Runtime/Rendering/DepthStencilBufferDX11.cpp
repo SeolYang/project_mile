@@ -29,7 +29,7 @@ namespace Mile
          ZeroMemory(&bufferDesc, sizeof(bufferDesc));
          bufferDesc.Width = width;
          bufferDesc.Height = height;
-         bufferDesc.MipLevels = 0;
+         bufferDesc.MipLevels = 1;
          bufferDesc.ArraySize = 1;
          bufferDesc.Format = bStencilEnable ? DXGI_FORMAT_R24G8_TYPELESS : DXGI_FORMAT_R32_TYPELESS;
          bufferDesc.SampleDesc.Count = 1;
@@ -60,8 +60,7 @@ namespace Mile
                ZeroMemory(&srvDesc, sizeof(srvDesc));
                srvDesc.Format = bStencilEnable ? DXGI_FORMAT_R24_UNORM_X8_TYPELESS : DXGI_FORMAT_R32_FLOAT;
                srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-               srvDesc.Texture2D.MipLevels = -1;
-               srvDesc.Texture2D.MostDetailedMip = 0;
+               srvDesc.Texture2D.MipLevels = 1;
 
                result = device.CreateShaderResourceView(m_depthStencilBuffer, &srvDesc, &m_srv);
                if (!FAILED(result))

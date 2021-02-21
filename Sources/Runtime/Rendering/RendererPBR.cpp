@@ -95,6 +95,12 @@ namespace Mile
       unsigned int SSAOEnabled = 0;
    };
 
+   DEFINE_CONSTANT_BUFFER(DebugDepthSSAOConstantBuffer)
+   {
+      unsigned int Type = 0;
+      Vector2 nearFar = Vector2(0.1f, 1000.0f);
+   };
+
    RendererPBR::RendererPBR(Context* context, size_t maximumThreads) :
       RendererDX11(context, maximumThreads),
       m_targetCamera(nullptr),
@@ -148,13 +154,21 @@ namespace Mile
       m_ssaoBaseDataBuffer(nullptr),
       m_ssaoNoiseTex(nullptr),
       m_blurredSSAO(nullptr),
-      m_pingPongBuffers({ nullptr, })
+      m_pingPongBuffers({ nullptr, }),
+      m_depthDebugBuffer(nullptr),
+      m_ssaoDebugBuffer(nullptr),
+      m_debugDepthSSAOVS(nullptr),
+      m_debugDepthSSAOPS(nullptr),
+      m_lightingDebugBuffer(nullptr)
    {
    }
 
    RendererPBR::~RendererPBR()
    {
       m_frameGraph.Clear();
+      SafeDelete(m_lightingDebugBuffer);
+      SafeDelete(m_depthDebugBuffer);
+      SafeDelete(m_ssaoDebugBuffer);
       SafeDelete(m_ssaoNoiseTex);
       SafeDelete(m_ssaoBaseDataBuffer);
       SafeDelete(m_blurredSSAO);
@@ -166,6 +180,8 @@ namespace Mile
       SafeDelete(m_extractedBrightness);
       SafeDelete(m_hdrBuffer);
       SafeDelete(m_gBuffer);
+      SafeDelete(m_debugDepthSSAOPS);
+      SafeDelete(m_debugDepthSSAOVS);
       SafeDelete(m_toneMappingPS);
       SafeDelete(m_toneMappingVS);
       SafeDelete(m_printTexturePS);
@@ -497,6 +513,24 @@ namespace Mile
       if (m_toneMappingPS == nullptr)
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load tone mapping pixel shader!"));
+         return false;
+      }
+
+      /** Debug Depth-SSAO Pass Shaders  */
+      ShaderDescriptor debugDepthSsaoDesc;
+      debugDepthSsaoDesc.Renderer = this;
+      debugDepthSsaoDesc.FilePath = TEXT("Contents/Shaders/DebugDepthSSAO.hlsl");
+      m_debugDepthSSAOVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(debugDepthSsaoDesc);
+      if (m_debugDepthSSAOVS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load depth ssao debug vertex shader!"));
+         return false;
+      }
+
+      m_debugDepthSSAOPS = Elaina::Realize<ShaderDescriptor, PixelShaderDX11>(debugDepthSsaoDesc);
+      if (m_debugDepthSSAOPS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load depth ssao debug pixel shader!"));
          return false;
       }
 
@@ -1296,6 +1330,9 @@ namespace Mile
       /** Lighting Pass; Deferred Shading - Lighting */
       struct LightingPassData : public RenderPassDataBase
       {
+         VertexShaderResource* DebugVertexShader = nullptr;
+         PixelShaderResource* DebugPixelShader = nullptr;
+
          SamplerResource* Sampler = nullptr;
 
          CameraRefResource* CamRef = nullptr;
@@ -1309,6 +1346,8 @@ namespace Mile
 
          MeshRefResource* QuadMeshRef = nullptr;
          RenderTargetRefResource* OutputRef = nullptr;
+         ConstantBufferResource* DebugParamsBuffer = nullptr;
+         RenderTargetRefResource* DebugOutputRef = nullptr;
       };
 
       auto lightingPassVSRes = m_frameGraph.AddExternalPermanentResource(
@@ -1326,7 +1365,11 @@ namespace Mile
          WorldDescriptor(),
          &m_lights);
 
+      auto printTextureVSRes = m_frameGraph.AddExternalPermanentResource("PrintTextureVertexShader", ShaderDescriptor(), m_printTextureVS);
+      auto printTexturePSRes = m_frameGraph.AddExternalPermanentResource("PrintTexturePixelShader", ShaderDescriptor(), m_printTexturePS);
+
       auto hdrBufferRefRes = m_frameGraph.AddExternalPermanentResource("HDRBufferRef", RenderTargetRefDescriptor(), &m_hdrBuffer);
+      auto lightingDebugBufferRefRes = m_frameGraph.AddExternalPermanentResource("LightingDebugBufferRef", RenderTargetRefDescriptor(), &m_lightingDebugBuffer);
 
       auto lightingPass = m_frameGraph.AddCallbackPass< LightingPassData>(
          "LightingPass",
@@ -1335,6 +1378,11 @@ namespace Mile
             data.Renderer = this;
             data.VertexShader = builder.Read(lightingPassVSRes);
             data.PixelShader = builder.Read(lightingPassPSRes);
+
+            data.DebugVertexShader = builder.Read(printTextureVSRes);
+            data.DebugPixelShader = builder.Read(printTexturePSRes);
+            data.DebugParamsBuffer = builder.Write(prefilterEnvMapPassData.PrefilterParamsBuffer);
+            data.DebugOutputRef = builder.Write(lightingDebugBufferRefRes);
 
             data.CamRef = builder.Read(geometryPassData.TargetCameraRef);
             data.LightsData = builder.Read(lightsDataRes);
@@ -1376,7 +1424,6 @@ namespace Mile
                blendStateDesc);
 
             data.QuadMeshRef = builder.Read(integrateBRDFPassData.QuadMeshRef);
-
             data.OutputRef = builder.Write(hdrBufferRefRes);
          },
          [](const LightingPassData& data)
@@ -1413,7 +1460,7 @@ namespace Mile
             gBuffer->BindAsShaderResource(immediateContext, 0, EShaderType::PixelShader);
             viewport->Bind(immediateContext);
             quadMesh->Bind(immediateContext, 0);
-            outputHDRBuffer->Clear(immediateContext, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+            outputHDRBuffer->Clear(immediateContext, Vector4(0.0f, 0.0f, 0.0f, 1.0f));
             outputHDRBuffer->BindAsRenderTarget(immediateContext);
 
             /** Render */
@@ -1448,9 +1495,33 @@ namespace Mile
             gBuffer->UnbindShaderResource(immediateContext, 0, EShaderType::PixelShader);
             lightParamsBuffer->Unbind(immediateContext, 1, EShaderType::PixelShader);
             camParamsBuffer->Unbind(immediateContext, 0, EShaderType::PixelShader);
-            sampler->Unbind(immediateContext, 0);
             pixelShader->Unbind(immediateContext);
             vertexShader->Unbind(immediateContext);
+
+            auto debugVertexShader = data.DebugVertexShader->GetActual();
+            auto debugPixelShader = data.DebugPixelShader->GetActual();
+            auto debugParamsBuffer = data.DebugParamsBuffer->GetActual();
+            auto debugOutput = *data.DebugOutputRef->GetActual();
+
+            debugVertexShader->Bind(immediateContext);
+            debugPixelShader->Bind(immediateContext);
+            debugParamsBuffer->Bind(immediateContext, 0, EShaderType::PixelShader);
+
+            auto mappedDebugParamsBuffer = debugParamsBuffer->Map<OneFloatConstantBuffer>(immediateContext);
+            (*mappedDebugParamsBuffer) = OneFloatConstantBuffer{1.0f};
+            debugParamsBuffer->UnMap(immediateContext);
+
+            debugOutput->Clear(immediateContext, Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+            debugOutput->BindAsRenderTarget(immediateContext);
+            outputHDRBuffer->BindAsShaderResource(immediateContext, 0, EShaderType::PixelShader);
+            data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
+            outputHDRBuffer->UnbindShaderResource(immediateContext, 0, EShaderType::PixelShader);
+            debugOutput->UnbindRenderTarget(immediateContext);
+
+            sampler->Unbind(immediateContext, 0);
+            debugParamsBuffer->Unbind(immediateContext, 0, EShaderType::PixelShader);
+            debugPixelShader->Unbind(immediateContext);
+            debugVertexShader->Unbind(immediateContext);
          });
 
       const auto& lightingPassData = lightingPass->GetData();
@@ -1886,7 +1957,6 @@ namespace Mile
             data.GlobalAOFactorRef = builder.Create<FloatRefResource>("GlobalAOFactorRef", globalAOFactorRefDesc);
 
             data.QuadMeshRef = builder.Read(ssaoBlurPassData.QuadMeshRef);
-
             data.OutputRef = builder.Write(lightingPassData.OutputRef);
          },
          [](const AmbientEmissivePassData& data)
@@ -2329,14 +2399,13 @@ namespace Mile
          ViewportResource* Viewport = nullptr;
          DepthStencilStateResource* DepthDisableState = nullptr;
          BlendStateResource* AdditiveBlendState = nullptr;
-         ConstantBufferResource* ParamsBuffer = nullptr;
          MeshRefResource* QuadMeshRef = nullptr;
+
+         ConstantBufferResource* ParamsBuffer = nullptr;
          std::array<RenderTargetRefResource*, 2> PingPongBufferRef{ nullptr, };
          RenderTargetRefResource* OutputRef = nullptr;
       };
 
-      auto printTextureVSRes = m_frameGraph.AddExternalPermanentResource("PrintTextureVertexShader", ShaderDescriptor(), m_printTextureVS);
-      auto printTexturePSRes = m_frameGraph.AddExternalPermanentResource("PrintTexturePixelShader", ShaderDescriptor(), m_printTexturePS);
       auto bloomBlendPass = m_frameGraph.AddCallbackPass<BloomBlendPassData>(
          "BloomBlendPass",
          [&](Elaina::RenderPassBuilder& builder, BloomBlendPassData& data)
@@ -2498,6 +2567,109 @@ namespace Mile
             vertexShader->Unbind(context);
          });
 
+      struct DebugDepthSSAOPassData : public RenderPassDataBase
+      {
+         SamplerResource* Sampler = nullptr;
+         ViewportResource* Viewport = nullptr;
+         DepthStencilStateResource* DepthDisableState = nullptr;
+         GBufferRefResource* InputGBufferRef = nullptr;
+         RenderTargetRefResource* InputSSAORef = nullptr;
+         MeshRefResource* QuadMeshRef = nullptr;
+         CameraRefResource* CamRef = nullptr;
+         ConstantBufferResource* TypeBuffer = nullptr;
+         RenderTargetRefResource* OutputDepthRef = nullptr;
+         RenderTargetRefResource* OutputSSAORef = nullptr;
+      };
+
+      auto debugDepthSSAOVSRes = m_frameGraph.AddExternalPermanentResource("DebugDepthSSAOVertexShader", ShaderDescriptor(), m_debugDepthSSAOVS);
+      auto debugDepthSSAOPSRes = m_frameGraph.AddExternalPermanentResource("DebugDepthSSAOPixelShader", ShaderDescriptor(), m_debugDepthSSAOPS);
+      auto debugDepthOutputRefRes = m_frameGraph.AddExternalPermanentResource("DebugDepthRef", RenderTargetRefDescriptor(), &m_depthDebugBuffer);
+      auto debugSSAOOutputRefRes = m_frameGraph.AddExternalPermanentResource("DebugDepthRef", RenderTargetRefDescriptor(), &m_ssaoDebugBuffer);
+
+      auto debugDepthSSAOPass = m_frameGraph.AddCallbackPass<DebugDepthSSAOPassData>("DebugDepthSSAOPass",
+         [&](Elaina::RenderPassBuilder& builder, DebugDepthSSAOPassData& data)
+         {
+            data.Renderer = this;
+            data.VertexShader = builder.Read(debugDepthSSAOVSRes);
+            data.PixelShader = builder.Read(debugDepthSSAOPSRes);
+            data.Sampler = builder.Read(bloomBlendPassData.Sampler);
+            data.Viewport = builder.Read(bloomBlendPassData.Viewport);
+            data.DepthDisableState = builder.Read(bloomBlendPassData.DepthDisableState);
+            data.QuadMeshRef = builder.Read(bloomBlendPassData.QuadMeshRef);
+            data.InputGBufferRef = builder.Read(geometryPassData.OutputGBufferRef);
+            data.InputSSAORef = builder.Read(blurredSSAORefRes);
+            data.OutputDepthRef = builder.Write(debugDepthOutputRefRes);
+            data.OutputSSAORef = builder.Write(debugSSAOOutputRefRes);
+
+            data.CamRef = builder.Read(geometryPassData.TargetCameraRef);
+
+            ConstantBufferDescriptor bufferDesc;
+            bufferDesc.Renderer = this;
+            bufferDesc.Size = sizeof(DebugDepthSSAOConstantBuffer);
+            data.TypeBuffer = builder.Create<ConstantBufferResource>("DebugTypeBuffer", bufferDesc);
+         },
+         [](const DebugDepthSSAOPassData& data)
+         {
+            OPTICK_EVENT("ExecuteToneMappingPass");
+            auto& profiler = data.Renderer->GetProfiler();
+            ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
+            ScopedGPUProfile profile(profiler, "ToneMappingPass");
+            context.ClearState();
+            context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            auto vertexShader = data.VertexShader->GetActual();
+            auto pixelShader = data.PixelShader->GetActual();
+            auto sampler = data.Sampler->GetActual();
+            auto viewport = data.Viewport->GetActual();
+            auto depthDisableState = data.DepthDisableState->GetActual();
+            auto quadMesh = *data.QuadMeshRef->GetActual();
+            auto debugTypeBuffer = data.TypeBuffer->GetActual();
+            auto camera = *data.CamRef->GetActual();
+
+            auto gBuffer = *data.InputGBufferRef->GetActual();
+            auto ssao = *data.InputSSAORef->GetActual();
+            auto outputDepth = *data.OutputDepthRef->GetActual();
+            auto outputSSAO = *data.OutputSSAORef->GetActual();
+
+            /** Binds */
+            vertexShader->Bind(context);
+            pixelShader->Bind(context);
+            sampler->Bind(context, 0);
+            viewport->Bind(context);
+            depthDisableState->Bind(context);
+            quadMesh->Bind(context, 0);
+            debugTypeBuffer->Bind(context, 0, EShaderType::PixelShader);
+
+            /** Render */
+            auto depthStencilBuffer = gBuffer->GetDepthStencilBufferDX11();
+
+            DebugDepthSSAOConstantBuffer* mappedBuffer = debugTypeBuffer->Map<DebugDepthSSAOConstantBuffer>(context);
+            (*mappedBuffer) = DebugDepthSSAOConstantBuffer{ 0, Vector2(camera->GetNearPlane(), camera->GetFarPlane()) };
+            debugTypeBuffer->UnMap(context);
+
+            outputDepth->BindAsRenderTarget(context);
+            depthStencilBuffer->BindAsShaderResource(context, 0, EShaderType::PixelShader);
+            data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
+            depthStencilBuffer->UnbindShaderResource(context, 0, EShaderType::PixelShader);
+            outputDepth->UnbindRenderTarget(context);
+
+            mappedBuffer = debugTypeBuffer->Map<DebugDepthSSAOConstantBuffer>(context);
+            (*mappedBuffer) = DebugDepthSSAOConstantBuffer{ 1 };
+            debugTypeBuffer->UnMap(context);
+
+            outputSSAO->BindAsRenderTarget(context);
+            ssao->BindAsShaderResource(context, 0, EShaderType::PixelShader);
+            data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
+            ssao->UnbindShaderResource(context, 0, EShaderType::PixelShader);
+            outputSSAO->UnbindRenderTarget(context);
+
+            /** Unbinds */
+            debugTypeBuffer->Unbind(context, 0, EShaderType::PixelShader);
+            sampler->Unbind(context, 0);
+            pixelShader->Unbind(context);
+            vertexShader->Unbind(context);
+         });
+
       m_frameGraph.Compile();
 
       Elaina::VisualizeParams visualizeParams;
@@ -2621,9 +2793,11 @@ namespace Mile
       SafeDelete(m_blurredSSAO);
       SafeDelete(m_pingPongBuffers[0]);
       SafeDelete(m_pingPongBuffers[1]);
+      SafeDelete(m_depthDebugBuffer);
+      SafeDelete(m_ssaoDebugBuffer);
+      SafeDelete(m_lightingDebugBuffer);
 
       auto renderRes = this->GetRenderResolution();
-
       GBufferDescriptor gBufferDesc;
       gBufferDesc.Renderer = this;
       gBufferDesc.Width = (unsigned int)renderRes.x;
@@ -2658,6 +2832,14 @@ namespace Mile
       outputSSAODesc.Format = EColorFormat::R32_FLOAT;
       m_ssao = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputSSAODesc);
       m_blurredSSAO = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputSSAODesc);
+
+      RenderTargetDescriptor debugBufferDesc;
+      debugBufferDesc.Renderer = this;
+      debugBufferDesc.ResolutionReference = &m_hdrBuffer;
+      debugBufferDesc.Format = EColorFormat::R8G8B8A8_UNORM;
+      m_depthDebugBuffer = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(debugBufferDesc);
+      m_ssaoDebugBuffer = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(debugBufferDesc);
+      m_lightingDebugBuffer = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(debugBufferDesc);
    }
 
    void RendererPBR::AcquireRenderResources(const World& world)

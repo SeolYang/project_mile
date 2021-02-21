@@ -2,6 +2,7 @@
 #include "Core/Layer.h"
 #include "Core/Logger.h"
 #include "Math/Vector2.h"
+#include "GraphicsDebugWindow.h"
 
 namespace Mile
 {
@@ -61,6 +62,9 @@ namespace Mile
 
          /** Tools */
          bool m_bIsGPUProfilerOpened;
+
+         GraphicsDebugWindow m_graphicsDebugWindow;
+         bool m_bIsGraphicsDebugWindowOpened;
 
       };
    }

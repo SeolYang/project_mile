@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Sources\Editor\EditorApp.h" />
+    <ClInclude Include="..\Sources\Editor\GraphicsDebugWindow.h" />
     <ClInclude Include="..\Sources\Editor\Layers\GameViewLayer.h" />
     <ClInclude Include="..\Sources\Editor\Layers\MenuBarLayer.h" />
     <ClInclude Include="..\Sources\Editor\Layers\WorldHierarchyLayer.h" />
@@ -27,6 +28,7 @@
   <ItemGroup>
     <ClCompile Include="..\Sources\Editor\EditorApp.cpp" />
     <ClCompile Include="..\Sources\Editor\EditorMain.cpp" />
+    <ClCompile Include="..\Sources\Editor\GraphicsDebugWindow.cpp" />
     <ClCompile Include="..\Sources\Editor\Layers\GameViewLayer.cpp" />
     <ClCompile Include="..\Sources\Editor\Layers\MenuBarLayer.cpp" />
     <ClCompile Include="..\Sources\Editor\Layers\WorldHierarchyLayer.cpp" />

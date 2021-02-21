@@ -44,25 +44,14 @@ namespace Mile
          ImGui::Begin("Game", nullptr, windowFlag);
          if (m_editorCameraRenderTex != nullptr)
          {
-            auto contentRegion = ImGui::GetContentRegionAvail();
+            auto renderTarget = m_editorCameraRenderTex->GetRenderTarget();
+            Vector2 imageRes{ (float)renderTarget->GetWidth(), (float)renderTarget->GetHeight() };
 
-            ImVec2 windowSize = ImGui::GetWindowSize();
-            float titleBarHeight = ImGui::GetCurrentWindow()->TitleBarHeight();
-            ImVec2 actualContentArea = ImVec2{ windowSize.x, windowSize.y - titleBarHeight };
+            GUI::ImageRelativeToWindow(m_editorCameraRenderTex->GetRenderTarget()->GetTexture()->GetSRV(), imageRes);
 
-            auto renderRes = renderer->GetRenderResolution();
-            Vector2 relativeOutputRes = FindResolutionWithAspectRatio(actualContentArea.x, actualContentArea.y, renderRes.x / renderRes.y);
-            if (renderRes.x < actualContentArea.x && renderRes.y < actualContentArea.y)
-            {
-               relativeOutputRes = renderRes;
-            }
-
-            ImVec2 outputRes{ relativeOutputRes.x, relativeOutputRes.y };
+            Vector2 renderRes = renderer->GetRenderResolution();
             m_editorCameraRenderTex->SetWidth((UINT32)renderRes.x);
             m_editorCameraRenderTex->SetHeight((UINT32)renderRes.y);
-            ImGui::SetCursorPosX((actualContentArea.x - outputRes.x) * 0.5f);
-            ImGui::SetCursorPosY((actualContentArea.y - outputRes.y) * 0.5f + titleBarHeight);
-            ImGui::Image((void*)m_editorCameraRenderTex->GetRenderTarget()->GetTexture()->GetSRV(), outputRes);
          }
          ImGui::End();
          ImGui::PopStyleColor();

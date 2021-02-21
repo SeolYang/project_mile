@@ -11,6 +11,7 @@
 #include "Rendering/RendererPBR.h"
 #include "Rendering/Texture2dDX11.h"
 #include "Rendering/GPUProfiler.h"
+#include "GraphicsDebugWindow.h"
 #include "EditorApp.h"
 
 namespace Mile
@@ -30,6 +31,7 @@ namespace Mile
          m_bIsEditorConfigOpend(false),
          m_bIsRendererConfigOpened(true),
          m_bIsGPUProfilerOpened(true),
+         m_bIsGraphicsDebugWindowOpened(true),
          Layer(context, TEXT("MenuBarLayer"))
       {
       }
@@ -68,6 +70,7 @@ namespace Mile
             if (ImGui::BeginMenu("Tools"))
             {
                ImGui::MenuItem("GPU Profiler", nullptr, &m_bIsGPUProfilerOpened);
+               ImGui::MenuItem("Graphics Debugger", nullptr, &m_bIsGraphicsDebugWindowOpened);
                ImGui::EndMenu();
             }
 
@@ -91,6 +94,11 @@ namespace Mile
             if (m_bIsGPUProfilerOpened)
             {
                GPUProfiler();
+            }
+
+            if (m_bIsGraphicsDebugWindowOpened)
+            {
+               m_graphicsDebugWindow.OnGUI();
             }
          }
       }

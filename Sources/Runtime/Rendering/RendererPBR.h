@@ -81,6 +81,13 @@ namespace Mile
       bool& SSAOEnabled() { return m_bSSAOEnabled; }
       bool IsSSAOEnabled() const { return m_bSSAOEnabled; }
 
+      GBuffer* GetGBuffer() const { return m_gBuffer; }
+      RenderTargetDX11* GetSSAOBuffer() const { return m_blurredSSAO; }
+      RenderTargetDX11* GetExtractedBrightnessBuffer() const { return m_extractedBrightness; }
+      RenderTargetDX11* GetDebugDepthBuffer() const { return m_depthDebugBuffer; }
+      RenderTargetDX11* GetDebugSSAOBuffer() const { return m_ssaoDebugBuffer; }
+      RenderTargetDX11* GetDebugLightingBuffer() const { return m_lightingDebugBuffer; }
+
    protected:
       void RenderImpl(const World& world) override;
       void OnRenderResolutionChanged() override;
@@ -159,6 +166,9 @@ namespace Mile
       VertexShaderDX11* m_toneMappingVS;
       PixelShaderDX11* m_toneMappingPS;
 
+      VertexShaderDX11* m_debugDepthSSAOVS;
+      PixelShaderDX11* m_debugDepthSSAOPS;
+
       GBuffer* m_gBuffer;
       RenderTargetDX11* m_hdrBuffer;
 
@@ -197,6 +207,11 @@ namespace Mile
       ToneMappingParams m_toneMappingParams;
       RenderTargetDX11* m_extractedBrightness;
       std::array<RenderTargetDX11*, 2> m_pingPongBuffers;
+
+      /** Debug */
+      RenderTargetDX11* m_depthDebugBuffer;
+      RenderTargetDX11* m_ssaoDebugBuffer;
+      RenderTargetDX11* m_lightingDebugBuffer;
 
    };
 }

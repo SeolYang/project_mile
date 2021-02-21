@@ -850,6 +850,9 @@
     <FxCompile Include="Contents\Shaders\PrintTexture.hlsl">
       <Filter>Shaders\PostProcess</Filter>
     </FxCompile>
+    <FxCompile Include="Contents\Shaders\DebugDepthSSAO.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ThirdParty\assimp\include\assimp\color4.inl">

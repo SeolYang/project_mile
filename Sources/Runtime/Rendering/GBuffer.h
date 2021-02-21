@@ -26,6 +26,11 @@ namespace Mile
 
       void UnbindDepthBuffer(ID3D11DeviceContext& deviceContext);
 
+      RenderTargetDX11* GetPositionBuffer() const { return m_positionBuffer; }
+      RenderTargetDX11* GetAlbedoBuffer() const { return m_albedoBuffer; }
+      RenderTargetDX11* GetEmissiveAOBuffer() const { return m_emissiveAOBuffer; }
+      RenderTargetDX11* GetNormalBuffer() const { return m_normalBuffer; }
+
    private:
       DepthStencilBufferDX11* m_depthStencilBuffer;
       RenderTargetDX11* m_positionBuffer;
