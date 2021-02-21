@@ -11,6 +11,8 @@ namespace Mile
       m_type(ELightType::Directional),
       m_color(Vector3(1.0f, 1.0f, 1.0f)),
       m_intensity(1.0f),
+      m_radius(1.0f),
+      m_outerAngle(15.0f),
       Component(entity)
    {
       m_bCanEverUpdate = false;
@@ -41,6 +43,9 @@ namespace Mile
       serialized["LightType"] = static_cast<UINT32>(m_type);
       serialized["Color"] = m_color.Serialize();
       serialized["Intensity"] = m_intensity;
+      serialized["Radius"] = m_radius;
+      serialized["InnerAngle"] = m_innerAngle;
+      serialized["OuterAngle"] = m_outerAngle;
       return serialized;
    }
 
@@ -54,6 +59,10 @@ namespace Mile
       SetColor(tempColor);
 
       m_intensity = GetValueSafelyFromJson<float>(jsonData, "Intensity", 1.0f);
+      m_radius = GetValueSafelyFromJson<float>(jsonData, "Radius", 1.0f);
+
+      SetOuterAngle(GetValueSafelyFromJson<float>(jsonData, "OuterAngle", 15.0f));
+      SetInnerAngle(GetValueSafelyFromJson<float>(jsonData, "InnerAngle", 15.0f));
    }
 
    void LightComponent::OnGUI()
@@ -86,5 +95,24 @@ namespace Mile
       intensityInputLabel.append(LightIntensityUnitToString(LightIntensityUnitOf(m_type)));
       intensityInputLabel.append(")");
       GUI::FloatInput(intensityInputLabel.c_str(), m_intensity, 0.1f, 0.0f, 100000.0f, true);
+
+      float tempAngle = m_outerAngle;
+      switch (m_type)
+      {
+      case Mile::ELightType::Spot:
+         if (ImGui::InputFloat("Outer Angle", &tempAngle))
+         {
+            SetOuterAngle(tempAngle);
+         }
+
+         tempAngle = m_innerAngle;
+         if (ImGui::InputFloat("Inner Angle", &tempAngle))
+         {
+            SetInnerAngle(tempAngle);
+         }
+      case Mile::ELightType::Point:
+         ImGui::InputFloat("Radius", &m_radius);
+         break;
+      }
    }
 }

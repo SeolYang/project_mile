@@ -70,10 +70,10 @@ namespace Mile
 
    DEFINE_CONSTANT_BUFFER(LightParamsConstantBuffer)
    {
-      Vector4 LightPos = Vector4::Zero();
-      Vector4 LightDirection = Vector4(0.0f, -1.0f, 0.0f, 0.0f);
-      Vector4 LightRadiance = Vector4::One();
-      float   LightIntensity = 1.0f;
+      Vector4 LightPosIntensity = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+      Vector4 LightDirectionRadius = Vector4(0.0f, -1.0f, 0.0f, 1.0f);
+      Vector3 LightColor = Vector3(0.0f, 0.0f, 0.0f);
+      Vector2 LightAngles = Vector2(15.f, 15.f);
       UINT32 LightType = 0;
    };
 
@@ -1371,7 +1371,7 @@ namespace Mile
       auto hdrBufferRefRes = m_frameGraph.AddExternalPermanentResource("HDRBufferRef", RenderTargetRefDescriptor(), &m_hdrBuffer);
       auto lightingDebugBufferRefRes = m_frameGraph.AddExternalPermanentResource("LightingDebugBufferRef", RenderTargetRefDescriptor(), &m_lightingDebugBuffer);
 
-      auto lightingPass = m_frameGraph.AddCallbackPass< LightingPassData>(
+      auto lightingPass = m_frameGraph.AddCallbackPass<LightingPassData>(
          "LightingPass",
          [&](Elaina::RenderPassBuilder& builder, LightingPassData& data)
          {
@@ -1476,13 +1476,16 @@ namespace Mile
                Vector3 lightDirection = lightTransform->GetForward(TransformSpace::World);
                Vector3 lightRadiance = lightComponent->GetColor();
                float lightIntensity = lightComponent->GetIntensity();
+               float lightRadius = lightComponent->GetRadius();
+               float lightInnerAngle = lightComponent->GetInnerAngleAsRadians();
+               float lightOuterAngle = lightComponent->GetOuterAngleAsRadians();
                auto mappedLightParamsBuffer = lightParamsBuffer->Map<LightParamsConstantBuffer>(immediateContext);
                (*mappedLightParamsBuffer) = LightParamsConstantBuffer
                {
-                  Vector4(lightPosition.x, lightPosition.y, lightPosition.z, 1.0f),
-                  Vector4(lightDirection.x, lightDirection.y, lightDirection.z, 0.0f),
-                  Vector4(lightRadiance.x, lightRadiance.y, lightRadiance.z, 1.0f),
-                  lightIntensity,
+                  Vector4(lightPosition.x, lightPosition.y, lightPosition.z, lightIntensity),
+                  Vector4(lightDirection.x, lightDirection.y, lightDirection.z, lightRadius),
+                  Vector3(lightRadiance.x, lightRadiance.y, lightRadiance.z),
+                  Vector2(lightInnerAngle, lightOuterAngle),
                   static_cast<UINT32>(lightComponent->GetLightType())
                };
                lightParamsBuffer->UnMap(immediateContext);

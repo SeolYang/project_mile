@@ -27,11 +27,14 @@ cbuffer CameraParamsBuffer : register(b0)
 
 cbuffer LightParamsBuffer : register(b1)
 {
-	float4 LightPos;
-	float4 LightDirection;
-	float4 LightColor;
-	float	 LightIntensity;
-	uint	 LightType;
+	float3 LightPos : packoffset(c0);
+	float	 LightIntensity : packoffset(c0.w);
+	float3 LightDirection : packoffset(c1);
+	float	 LightRadius : packoffset(c1.w);
+	float3 LightColor : packoffset(c2);
+	float  LightInnerAngle : packoffset(c2.w);
+	float	 LightOuterAngle : packoffset(c3);
+	uint	 LightType : packoffset(c3.y);
 };
 
 /* Textures & Samplers */
@@ -50,6 +53,29 @@ VSOutput MileVS(in VSInput input)
 	return output;
 }
 
+float SquareFalloffAttenuation(float distance, float lightRadius)
+{
+	float distanceSquare = (distance * distance);
+	float lightRadiusInv = 1.0f / lightRadius;
+	float factor = distanceSquare * lightRadiusInv * lightRadiusInv;
+	float smoothFactor = saturate(1.0f - (factor * factor));
+
+	return (smoothFactor * smoothFactor) / max(distanceSquare, 1e-4);
+}
+
+float SpotAngleAttenuation(float3 surfaceToLight, float3 lightDir, float innerAngle, float outerAngle)
+{
+	// Inner 안에 있을때는 최대 밝기
+	float cosOuterAngle = cos(outerAngle);
+	float cosInnerAngle = cos(innerAngle);
+	float spotScale = 1.0f / max(cosInnerAngle - cosOuterAngle, 1e-4);
+	float spotOffset = -cosOuterAngle * spotScale;
+
+	float dotDirs = dot(normalize(surfaceToLight), normalize(lightDir));
+	float attenuation = saturate(dotDirs * spotScale + spotOffset);
+	return (attenuation * attenuation);
+}
+
 float4 MilePS(in PSInput input) : SV_Target0
 {
 	float3 worldPos = posBuffer.Sample(AnisoSampler, input.TexCoord).xyz;
@@ -58,7 +84,7 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float metallic = extraComponents.Sample(AnisoSampler, input.TexCoord).b;
 
 	float distance = length(LightPos.rgb - worldPos);
-	float attenuation = 1.0f / (distance * distance);
+	float attenuation = SquareFalloffAttenuation(distance, LightRadius);
 
 	float3 N = normalize(normalBuffer.Sample(AnisoSampler, input.TexCoord).xyz);
 	float3 V = normalize(CameraPos - worldPos);
@@ -68,6 +94,10 @@ float4 MilePS(in PSInput input) : SV_Target0
 		L = normalize(-LightDirection.xyz);
 		attenuation = 1.0f;
 	}
+	else if (LightType == 2) // Spot Light
+	{
+		attenuation *= SpotAngleAttenuation(L, -LightDirection.xyz, LightInnerAngle, LightOuterAngle);
+	}
 
 	float3 H = normalize(V + L);
 	
@@ -75,7 +105,8 @@ float4 MilePS(in PSInput input) : SV_Target0
 	F0 = lerp(F0, albedo, metallic);
 	
 	float3 Lo = 0.0f;
-	float3 radiance = LightColor.rgb * attenuation * LightIntensity;
+	float NdotL = max(dot(N, L), 0.0f);
+	float3 radiance = LightColor.rgb * attenuation * (NdotL * LightIntensity);
 	
 	// Cook-Torrance BRDF
 	float NDF = DistributionGGX(N, H, roughness);
@@ -90,7 +121,6 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float3 kD = 1.0f - kS;
 	kD *= 1.0f - metallic;
 
-	float NdotL = max(dot(N, L), 0.0f);
-	Lo = (kD * albedo / PI + specular) * radiance * NdotL;
+	Lo = (kD * albedo / PI + specular) * radiance;
 	return float4(Lo, 1.0f);
 }

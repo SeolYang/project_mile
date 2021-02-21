@@ -1,8 +1,6 @@
 #pragma once
 #include "Component/ComponentRegister.h"
-#include "Math/Vector2.h"
-#include "Math/Vector3.h"
-#include "Math/Vector4.h"
+#include "Math/MathMinimal.h"
 #include "Rendering/Light.h"
 
 namespace Mile
@@ -31,6 +29,23 @@ namespace Mile
       Vector3 GetLightDirection() const;
       Vector3 GetLightPosition() const;
 
+      float GetRadius() const { return m_radius; }
+      float& Radius() { return m_radius; }
+
+      float GetInnerAngle() const { return m_innerAngle; }
+      float GetInnerAngleAsRadians() const { return Math::DegreeToRadian(m_innerAngle); }
+      void SetInnerAngle(float degree)
+      {
+         m_innerAngle = std::clamp(degree, 0.0f, m_outerAngle);
+      }
+
+      float GetOuterAngle() const { return m_outerAngle; }
+      float GetOuterAngleAsRadians() const { return Math::DegreeToRadian(m_outerAngle); }
+      void SetOuterAngle(float degree)
+      {
+         m_outerAngle = std::clamp(degree, 0.0f, 180.0f);
+      }
+
       virtual json Serialize() const override;
       virtual void DeSerialize(const json& jsonData) override;
 
@@ -40,6 +55,9 @@ namespace Mile
       ELightType	m_type;
       Vector3	   m_color;
       float       m_intensity;
+      float       m_radius;
+      float       m_innerAngle;
+      float       m_outerAngle;
 
    };
 }
