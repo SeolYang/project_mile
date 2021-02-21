@@ -2610,10 +2610,10 @@ namespace Mile
          },
          [](const DebugDepthSSAOPassData& data)
          {
-            OPTICK_EVENT("ExecuteToneMappingPass");
+            OPTICK_EVENT("ExecuteDebugDepthSSAO");
             auto& profiler = data.Renderer->GetProfiler();
             ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
-            ScopedGPUProfile profile(profiler, "ToneMappingPass");
+            ScopedGPUProfile profile(profiler, "DebugDepthSSAOPass");
             context.ClearState();
             context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
