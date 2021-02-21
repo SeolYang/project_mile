@@ -53,7 +53,7 @@ namespace Mile
       {
          if (space == TransformSpace::World && HasParent())
          {
-            return m_position * GetWorldRotTransMatrix();
+            return (m_position * m_parent->GetWorldRotTransMatrix());
          }
 
          return m_position;
