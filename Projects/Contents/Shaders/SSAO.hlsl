@@ -41,6 +41,7 @@ Texture2D emissiveAOBuffer				: register(t2);
 Texture2D normalBuffer					: register(t3);
 Texture2D extraComponents				: register(t4);
 Texture2D texNoise						: register(t5);
+Texture2D depthBuffer					: register(t6);
 SamplerState Sampler						: register(s0);
 SamplerState NoiseSampler				: register(s1);
 
@@ -54,35 +55,41 @@ VSOutput MileVS(in VSInput input)
 
 float MilePS(in PSInput input) : SV_Target0
 {
-	float3 pos = posBuffer.Sample(Sampler, input.TexCoord).xyz;
-	float3 normal = normalize(normalBuffer.Sample(Sampler, input.TexCoord).xyz);
-	float3 randomVec = texNoise.Sample(NoiseSampler, input.TexCoord * NoiseScale).xyz;
-
-	float3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
-	float3 bitangent = normalize(cross(normal, tangent));
-	float3x3 tangentFrame = float3x3(tangent, bitangent, normal);
-
-	const uint kernelSize = 64;
-	const float kernelSizeFloat = 64.0f;
-	float occlusion = 0.0f;
-	for (uint idx = 0; idx < kernelSize; ++idx)
+	float depth = depthBuffer.Sample(Sampler, input.TexCoord).x;
+	if (depth < 1.0f)
 	{
-		float3 _sample = mul(tangentFrame, Samples[idx].xyz);
-		_sample = pos + (_sample * Radius);
+		float3 pos = posBuffer.Sample(Sampler, input.TexCoord).xyz;
+		float3 normal = normalize(normalBuffer.Sample(Sampler, input.TexCoord).xyz);
+		float3 randomVec = texNoise.Sample(NoiseSampler, input.TexCoord * NoiseScale).xyz;
 
-		float4 offset = float4(_sample, 1.0f);
-		offset = mul(Projection, offset);
-		offset.xyz /= offset.w;
-		offset.xy = offset.xy * 0.5f + 0.5f;
-		offset.y = (1.0f - offset.y); // Convert to Direct3D Texture Coordinate
+		float3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
+		float3 bitangent = normalize(cross(normal, tangent));
+		float3x3 tangentFrame = float3x3(tangent, bitangent, normal);
 
-		float sampleDepth = posBuffer.Sample(Sampler, offset.xy).z;
-		float occluded = (_sample.z + Bias <= sampleDepth ? 0.0f : 1.0f);
-		float intensity = smoothstep(0.0f, 1.0f, Radius / abs(pos.z - sampleDepth));
-		occlusion +=  occluded * intensity;
+		const uint kernelSize = 64;
+		const float kernelSizeFloat = 64.0f;
+		float occlusion = 0.0f;
+		for (uint idx = 0; idx < kernelSize; ++idx)
+		{
+			float3 _sample = mul(tangentFrame, Samples[idx].xyz);
+			_sample = pos + (_sample * Radius);
+
+			float4 offset = float4(_sample, 1.0f);
+			offset = mul(Projection, offset);
+			offset.xyz /= offset.w;
+			offset.xy = offset.xy * 0.5f + 0.5f;
+			offset.y = (1.0f - offset.y); // Convert to Direct3D Texture Coordinate
+
+			float sampleDepth = posBuffer.Sample(Sampler, offset.xy).z;
+			float occluded = (_sample.z + Bias <= sampleDepth ? 0.0f : 1.0f);
+			float intensity = smoothstep(0.0f, 1.0f, Radius / abs(pos.z - sampleDepth));
+			occlusion += occluded * intensity;
+		}
+
+		occlusion = 1.0f - (occlusion / kernelSizeFloat);
+		occlusion = pow(occlusion, Magnitude);
+		return occlusion;
 	}
 
-	occlusion = 1.0f - (occlusion / kernelSizeFloat);
-	occlusion = pow(occlusion, Magnitude);
-	return float(occlusion);
+	return 0.0f;
 }

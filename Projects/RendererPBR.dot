@@ -84,7 +84,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "GBufferRef" [label="GBufferRef
 \nID : 7
-\nRefs : 5
+\nRefs : 6
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "AnisoWrapAlwaysSampler" [label="AnisoWrapAlwaysSampler
 \nID : 8
@@ -626,7 +626,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "FinalOutputRef" -> { } [color=yellow]
 "GeometryPassVS" -> { "Geometry Pass" } [color=yellow]
 "GeometryPassPS" -> { "Geometry Pass" } [color=yellow]
-"GBufferRef" -> { "LightingPass" "ConvertGBufferToViewSpacePass" "AmbientEmissivePass" "SkyboxPass" "DebugDepthSSAOPass" } [color=yellow]
+"GBufferRef" -> { "LightingPass" "ConvertGBufferToViewSpacePass" "SSAOPass" "AmbientEmissivePass" "SkyboxPass" "DebugDepthSSAOPass" } [color=yellow]
 "AnisoWrapAlwaysSampler" -> { } [color=yellow]
 "GeometryPassTransformConstantBuffers" -> { } [color=yellow]
 "GeometryPassPackedMaterialParamsConstantBuffers" -> { } [color=yellow]

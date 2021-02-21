@@ -1659,6 +1659,7 @@ namespace Mile
          ConstantBufferResource* SSAOParamsBuffer = nullptr;
 
          Texture2dDX11RefResource* NoiseTextureRef = nullptr;
+         GBufferRefResource* GBufferRef = nullptr;
          GBufferResource* ViewspaceGBuffer = nullptr;
 
          MeshRefResource* QuadMeshRef = nullptr;
@@ -1717,6 +1718,7 @@ namespace Mile
                ssaoParamsBufferDesc);
 
             data.NoiseTextureRef = builder.Read(ssaoNoiseTexRefRes);
+            data.GBufferRef = builder.Read(convertGBufferPassData.SourceGBufferRef);
             data.ViewspaceGBuffer = builder.Read(convertGBufferPassData.ConvertedGBuffer);
 
             data.QuadMeshRef = builder.Read(lightingPassData.QuadMeshRef);
@@ -1748,6 +1750,7 @@ namespace Mile
                auto viewspaceGBuffer = data.ViewspaceGBuffer->GetActual();
                auto quadMesh = *data.QuadMeshRef->GetActual();
                auto output = *data.OutputRef->GetActual();
+               auto depthBuffer = (*data.GBufferRef->GetActual())->GetDepthStencilBufferDX11();
 
                /** Binds */
                vertexShader->Bind(immediateContext);
@@ -1758,8 +1761,9 @@ namespace Mile
                depthDisableState->Bind(immediateContext);
                ssaoBaseDataBuffer->Bind(immediateContext, 0, EShaderType::PixelShader);
                ssaoParamsBuffer->Bind(immediateContext, 1, EShaderType::PixelShader);
-               noiseTexture->Bind(immediateContext, 5, EShaderType::PixelShader);
                viewspaceGBuffer->BindAsShaderResource(immediateContext, 0, EShaderType::PixelShader);
+               noiseTexture->Bind(immediateContext, 5, EShaderType::PixelShader);
+               depthBuffer->BindAsShaderResource(immediateContext, 6, EShaderType::PixelShader);
                quadMesh->Bind(immediateContext, 0);
                output->Clear(immediateContext, Vector4::Zero());
                output->BindAsRenderTarget(immediateContext);
@@ -1783,6 +1787,7 @@ namespace Mile
                /** Unbinds */
                output->UnbindRenderTarget(immediateContext);
                viewspaceGBuffer->UnbindShaderResource(immediateContext, 0, EShaderType::PixelShader);
+               depthBuffer->UnbindShaderResource(immediateContext, 6, EShaderType::PixelShader);
                noiseTexture->Unbind(immediateContext, 5, EShaderType::PixelShader);
                ssaoParamsBuffer->Unbind(immediateContext, 1, EShaderType::PixelShader);
                ssaoBaseDataBuffer->Unbind(immediateContext, 0, EShaderType::PixelShader);
