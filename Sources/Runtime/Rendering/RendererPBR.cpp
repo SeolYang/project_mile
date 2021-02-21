@@ -91,7 +91,7 @@ namespace Mile
    DEFINE_CONSTANT_BUFFER(AmbientParamsConstantBuffer)
    {
       Vector3 CameraPos = Vector3();
-      float Ao = 1.0f;
+      float AmbientIntensity = 1.0f;
       unsigned int SSAOEnabled = 0;
    };
 
@@ -135,7 +135,7 @@ namespace Mile
       m_bSSAOEnabled(true),
       m_ambientEmissivePassVS(nullptr),
       m_ambientEmissivePassPS(nullptr),
-      m_globalAOFactor(1.0f),
+      m_ambientIntensity(1.0f),
       m_skyboxPassVS(nullptr),
       m_skyboxPassPS(nullptr),
       m_renderSkyboxType(ESkyboxType::EnvironmentMap),
@@ -1910,7 +1910,7 @@ namespace Mile
          ConstantBufferResource* ParamsBuffer = nullptr;
          BoolRefResource* SSAOEnabledRef = nullptr;
          RenderTargetRefResource* BlurredSSAORef = nullptr;
-         FloatRefResource* GlobalAOFactorRef = nullptr;
+         FloatRefResource* AmbientIntensityRef = nullptr;
          MeshRefResource* QuadMeshRef = nullptr;
          RenderTargetRefResource* OutputRef = nullptr;
       };
@@ -1957,9 +1957,9 @@ namespace Mile
             data.SSAOEnabledRef = builder.Read(ssaoBlurPassData.SSAOEnabledRef);
             data.BlurredSSAORef = builder.Read(ssaoBlurPassData.OutputRef);
 
-            FloatRefDescriptor globalAOFactorRefDesc;
-            globalAOFactorRefDesc.Reference = &m_globalAOFactor;
-            data.GlobalAOFactorRef = builder.Create<FloatRefResource>("GlobalAOFactorRef", globalAOFactorRefDesc);
+            FloatRefDescriptor ambientIntensityDesc;
+            ambientIntensityDesc.Reference = &m_ambientIntensity;
+            data.AmbientIntensityRef = builder.Create<FloatRefResource>("AmbientIntensity", ambientIntensityDesc);
 
             data.QuadMeshRef = builder.Read(ssaoBlurPassData.QuadMeshRef);
             data.OutputRef = builder.Write(lightingPassData.OutputRef);
@@ -2014,9 +2014,9 @@ namespace Mile
             /** Update Constant Buffer */
             auto camTransform = camera->GetTransform();
             auto paramsBuffer = data.ParamsBuffer->GetActual();
-            float globalAOFactor = *(*data.GlobalAOFactorRef->GetActual());
+            float ambientIntensity = *(*data.AmbientIntensityRef->GetActual());
             auto mappedParamsBuffer = paramsBuffer->Map<AmbientParamsConstantBuffer>(context);
-            (*mappedParamsBuffer) = AmbientParamsConstantBuffer{ camTransform->GetPosition(TransformSpace::World), globalAOFactor, static_cast<unsigned int>(bSSAOEnabled) };
+            (*mappedParamsBuffer) = AmbientParamsConstantBuffer{ camTransform->GetPosition(TransformSpace::World), ambientIntensity, static_cast<unsigned int>(bSSAOEnabled) };
             paramsBuffer->UnMap(context);
             paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
 

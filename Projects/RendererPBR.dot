@@ -498,7 +498,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nID : 110
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"GlobalAOFactorRef" [label="GlobalAOFactorRef
+"AmbientIntensity" [label="AmbientIntensity
 \nID : 111
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
@@ -604,7 +604,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "SSAOPass" -> { "SSAO" } [color=firebrick1]
 "SSAOBlurPass" -> { } [color=aquamarine]
 "SSAOBlurPass" -> { "BlurredSSAO" } [color=firebrick1]
-"AmbientEmissivePass" -> { "AnisoSampler" "AmbientEmissiveParamsConstantBuffer" "GlobalAOFactorRef" } [color=aquamarine]
+"AmbientEmissivePass" -> { "AnisoSampler" "AmbientEmissiveParamsConstantBuffer" "AmbientIntensity" } [color=aquamarine]
 "AmbientEmissivePass" -> { "HDRBufferRef" } [color=firebrick1]
 "SkyboxPass" -> { "SkyboxType" } [color=aquamarine]
 "SkyboxPass" -> { "OneMatrixConstantBuffer" "HDRBufferRef" } [color=firebrick1]
@@ -730,7 +730,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "AmbientEmissivePassPixelShader" -> { "AmbientEmissivePass" } [color=yellow]
 "AnisoSampler" -> { } [color=yellow]
 "AmbientEmissiveParamsConstantBuffer" -> { } [color=yellow]
-"GlobalAOFactorRef" -> { } [color=yellow]
+"AmbientIntensity" -> { } [color=yellow]
 "SkyboxPassVertexShader" -> { "SkyboxPass" } [color=yellow]
 "SkyboxPassPixelShader" -> { "SkyboxPass" } [color=yellow]
 "SkyboxType" -> { } [color=yellow]

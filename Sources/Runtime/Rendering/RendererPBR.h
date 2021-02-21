@@ -75,8 +75,8 @@ namespace Mile
       ToneMappingParams& GetToneMappingParams() { return m_toneMappingParams; }
       ToneMappingParams GetToneMappingParams() const { return m_toneMappingParams; }
 
-      float& GetGlobalAmbientFactor() { return m_globalAOFactor; }
-      float GetGlobaoAmbientFactor() const { return m_globalAOFactor; }
+      float& GetAmbientIntensty() { return m_ambientIntensity; }
+      float GetAmbientIntensty() const { return m_ambientIntensity; }
 
       bool& SSAOEnabled() { return m_bSSAOEnabled; }
       bool IsSSAOEnabled() const { return m_bSSAOEnabled; }
@@ -196,7 +196,7 @@ namespace Mile
       SSAOBaseData m_ssaoBaseData;
       ConstantBufferRef m_ssaoBaseDataBuffer;
       SSAOParams m_ssaoParams;
-      float m_globalAOFactor;
+      float m_ambientIntensity;
       RenderTargetDX11* m_ssao;
       RenderTargetDX11* m_blurredSSAO;
       Texture2dDX11* m_ssaoNoiseTex;

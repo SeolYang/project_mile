@@ -266,10 +266,10 @@ namespace Mile
                      ImGui::TreePop();
                   }
 
-                  if (ImGui::TreeNode("Ambient Occlusion"))
+                  if (ImGui::TreeNode("Indirect Lighting"))
                   {
-                     float& ao = pbrRenderer->GetGlobalAmbientFactor();
-                     ImGui::SliderFloat("Ambient Occlusion", &ao, 0.0f, 1.0f);
+                     float& ambientIntensity = pbrRenderer->GetAmbientIntensty();
+                     ImGui::SliderFloat("Ambient Intensity", &ambientIntensity, 0.0f, 1.0f);
                      ImGui::TreePop();
                   }
 

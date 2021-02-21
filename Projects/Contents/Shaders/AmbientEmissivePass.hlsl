@@ -23,7 +23,7 @@ struct PSInput
 cbuffer AmbientParamsBuffer
 {
 	float3 CameraPos;
-	float  Ao;
+	float  AmbientIntensity;
 	unsigned int SSAOEnabled;
 };
 
@@ -62,11 +62,12 @@ float4 MilePS(in PSInput input) : SV_Target0
 
 	float4 emissiveAO = emissiveAOBuffer.Sample(LinearClampSampler, input.TexCoord).rgba;
 	float3 emissive = emissiveAO.rgb;
-	float ao = emissiveAO.a > 0.0f ? emissiveAO.a : Ao;
+	float ao = emissiveAO.a > 0.0f ? emissiveAO.a : AmbientIntensity;
 	if (SSAOEnabled == 1)
 	{
 		ao = ssaoInput.Sample(SSAOSampler, input.TexCoord).r;
 	}
+	ao *= AmbientIntensity;
 
 	float3 N = normalize(normalBuffer.Sample(LinearClampSampler, input.TexCoord).xyz);
 	float3 V = normalize(CameraPos - worldPos);
