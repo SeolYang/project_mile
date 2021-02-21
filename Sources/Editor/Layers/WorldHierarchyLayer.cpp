@@ -132,7 +132,7 @@ namespace Mile
 
                   if (GUI::Vector3Input("Rotation", m_tempEulerRotation))
                   {
-                     entitiyTransform->SetRotation(Math::EulerToQuaternion(m_tempEulerRotation));
+                     entitiyTransform->SetRotation(Math::EulerToQuaternionInOrder(m_tempEulerRotation));
                   }
 
                   auto scale = entitiyTransform->GetScale();

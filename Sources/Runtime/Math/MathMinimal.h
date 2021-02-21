@@ -52,6 +52,39 @@ namespace Mile
          return q;
       }
 
+      enum class ERotationOrder
+      {
+         XYZ,
+         XZY,
+         YXZ,
+         YZX,
+         ZXY,
+         ZYX
+      };
+
+      static Quaternion EulerToQuaternionInOrder(const Vector3& eulerAngle, ERotationOrder order = ERotationOrder::ZYX)
+      {
+         Quaternion xRot(eulerAngle.x, Vector3(1.0f, 0.0f, 0.0f));
+         Quaternion yRot(eulerAngle.y, Vector3(0.0f, 1.0f, 0.0f));
+         Quaternion zRot(eulerAngle.z, Vector3(0.0f, 0.0f, 1.0f));
+
+         switch (order)
+         {
+         case ERotationOrder::XYZ:
+            return xRot.Rotate(yRot).Rotate(zRot);
+         case ERotationOrder::XZY:
+            return xRot.Rotate(zRot).Rotate(yRot);
+         case ERotationOrder::YXZ:
+            return yRot.Rotate(xRot).Rotate(zRot);
+         case ERotationOrder::YZX:
+            return yRot.Rotate(zRot).Rotate(xRot);
+         case ERotationOrder::ZXY:
+            return zRot.Rotate(xRot).Rotate(yRot);
+         case ERotationOrder::ZYX:
+            return zRot.Rotate(yRot).Rotate(xRot);
+         }
+      }
+
       /* Quaternion To Degree Euler Angles */
       static Vector3 QuaternionToEulerAngles(const Quaternion& target)
       {
