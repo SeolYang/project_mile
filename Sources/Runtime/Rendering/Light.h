@@ -21,7 +21,7 @@ namespace Mile
       Nit /** nt (cd/m^2) */
    };
 
-   inline ELightIntensityUnit LightIntensityUnitOf(const ELightType& lightType)
+   inline static ELightIntensityUnit LightIntensityUnitOf(const ELightType& lightType)
    {
       switch (lightType)
       {
@@ -34,7 +34,7 @@ namespace Mile
       }
    }
 
-   inline std::string LightIntensityUnitToString(const ELightIntensityUnit& unit, bool bAsSymbol = false)
+   inline static std::string LightIntensityUnitToString(const ELightIntensityUnit& unit, bool bAsSymbol = false)
    {
       if (bAsSymbol)
       {
@@ -68,7 +68,7 @@ namespace Mile
       return std::string();
    }
 
-   inline float WattsToLumens(float Watt, float efficiency)
+   inline static float WattsToLumens(float Watt, float efficiency)
    {
       return Watt * (MaximumPossibleLuminousEfficacy * efficiency);
    }
