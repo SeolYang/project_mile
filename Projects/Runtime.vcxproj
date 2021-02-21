@@ -275,6 +275,7 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
     <ClInclude Include="..\Sources\Runtime\Rendering\GPUProfiler.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\IndexBufferDX11.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\InputLayoutDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\Light.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\Mesh.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\PixelShaderDX11.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\Quad.h" />

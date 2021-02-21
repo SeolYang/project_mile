@@ -582,6 +582,9 @@
     <ClInclude Include="..\Sources\Runtime\Rendering\GPUProfiler.h">
       <Filter>Sources\Rendering\Profiler</Filter>
     </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\Light.h">
+      <Filter>Sources\Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Sources\Runtime\Component\CameraComponent.cpp">
