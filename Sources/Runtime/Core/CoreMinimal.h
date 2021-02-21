@@ -68,6 +68,12 @@ namespace Mile
    using String = std::wstring;
    using Float = float;
 
+   enum class ETransformSpace
+   {
+      World,
+      Local
+   };
+
    static std::string BoolSerialize(bool value)
    {
       if (value)

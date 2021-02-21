@@ -80,6 +80,7 @@ namespace Mile
             return yRot.Rotate(zRot).Rotate(xRot);
          case ERotationOrder::ZXY:
             return zRot.Rotate(xRot).Rotate(yRot);
+         default:
          case ERotationOrder::ZYX:
             return zRot.Rotate(yRot).Rotate(xRot);
          }

@@ -28,6 +28,8 @@ namespace Mile
       private:
          World* m_target;
          Entity* m_selectedEntity;
+         ETransformSpace m_transformSpace;
+         Vector3 m_tempPosition;
          Vector3 m_tempEulerRotation;
 
       };

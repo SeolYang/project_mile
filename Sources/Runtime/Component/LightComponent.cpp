@@ -34,7 +34,7 @@ namespace Mile
    Vector3 LightComponent::GetLightPosition() const
    {
       auto transform = m_entity->GetTransform();
-      return transform->GetPosition(TransformSpace::World);
+      return transform->GetPosition(ETransformSpace::World);
    }
 
    json LightComponent::Serialize() const

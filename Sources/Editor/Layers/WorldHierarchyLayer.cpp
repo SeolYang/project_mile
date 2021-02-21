@@ -13,6 +13,7 @@ namespace Mile
       WorldHierarchyLayer::WorldHierarchyLayer(Context* context) :
          m_target(nullptr),
          m_selectedEntity(nullptr),
+         m_transformSpace(ETransformSpace::Local),
          Layer(context, TEXT("WorldHierarchyLayer"))
       {
       }
@@ -38,7 +39,8 @@ namespace Mile
             if (ImGui::IsItemClicked())
             {
                m_selectedEntity = targetRoot;
-               m_tempEulerRotation = Math::QuaternionToEulerAngles(m_selectedEntity->GetTransform()->GetRotation());
+               m_tempPosition = m_selectedEntity->GetTransform()->GetPosition(m_transformSpace);
+               m_tempEulerRotation = Math::QuaternionToEulerAngles(m_selectedEntity->GetTransform()->GetRotation(m_transformSpace));
                ME_LOG(MileWorldHierarchyLayer, Log, TEXT("Entity has been selected at hierarchy : ") + m_selectedEntity->GetName());
             }
 
@@ -123,22 +125,46 @@ namespace Mile
 
                if (ImGui::CollapsingHeader("Transform"))
                {
+                  const char* items[] = { "World", "Local" };
+                  static const char* currentItem = items[static_cast<UINT32>(m_transformSpace)];
+
+                  if (ImGui::BeginCombo("Space", currentItem))
+                  {
+                     for (UINT32 idx = 0; idx < IM_ARRAYSIZE(items); ++idx)
+                     {
+                        bool bSelected = (currentItem == items[idx]);
+                        if (ImGui::Selectable(items[idx], bSelected))
+                        {
+                           currentItem = items[idx];
+                           m_transformSpace = static_cast<ETransformSpace>(idx);
+                           m_tempEulerRotation = Math::QuaternionToEulerAngles(m_selectedEntity->GetTransform()->GetRotation(m_transformSpace));
+                           m_tempPosition = m_selectedEntity->GetTransform()->GetPosition(m_transformSpace);
+                        }
+                        if (bSelected)
+                        {
+                           ImGui::SetItemDefaultFocus();
+                        }
+                     }
+
+                     ImGui::EndCombo();
+                  }
+
                   Transform* entitiyTransform = m_selectedEntity->GetTransform();
-                  auto position = entitiyTransform->GetPosition();
+                  auto position = entitiyTransform->GetPosition(m_transformSpace);
                   if (GUI::Vector3Input("Position", position))
                   {
-                     entitiyTransform->SetPosition(position);
+                     entitiyTransform->SetPosition(position, m_transformSpace);
                   }
 
                   if (GUI::Vector3Input("Rotation", m_tempEulerRotation))
                   {
-                     entitiyTransform->SetRotation(Math::EulerToQuaternionInOrder(m_tempEulerRotation));
+                     entitiyTransform->SetRotation(Math::EulerToQuaternionInOrder(m_tempEulerRotation), m_transformSpace);
                   }
 
-                  auto scale = entitiyTransform->GetScale();
+                  auto scale = entitiyTransform->GetScale(m_transformSpace);
                   if (GUI::Vector3Input("Scale", scale))
                   {
-                     entitiyTransform->SetScale(scale);
+                     entitiyTransform->SetScale(scale, m_transformSpace);
                   }
 
                   ImGui::Spacing();

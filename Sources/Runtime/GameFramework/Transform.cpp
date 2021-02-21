@@ -15,14 +15,14 @@ namespace Mile
       return parentTrasnfrom;
    }
 
-   Vector3 Transform::GetForward(TransformSpace space) const
+   Vector3 Transform::GetForward(ETransformSpace space) const
    {
       Vector3 res = GetRotation(space).RotateVector(Vector3::Forward());
       res.Normalize();
       return res;
    }
 
-   Vector3 Transform::GetUp(TransformSpace space) const
+   Vector3 Transform::GetUp(ETransformSpace space) const
    {
       Vector3 res = GetRotation(space).RotateVector(Vector3::Up());
       res.Normalize();

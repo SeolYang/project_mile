@@ -1468,12 +1468,12 @@ namespace Mile
             for (const auto lightComponent : lightsData)
             {
                auto mappedCamParamsBuffer = camParamsBuffer->Map<OneVector3ConstantBuffer>(immediateContext);
-               (*mappedCamParamsBuffer) = OneVector3ConstantBuffer{ camTransform->GetPosition(TransformSpace::World) };
+               (*mappedCamParamsBuffer) = OneVector3ConstantBuffer{ camTransform->GetPosition(ETransformSpace::World) };
                camParamsBuffer->UnMap(immediateContext);
 
                Transform* lightTransform = lightComponent->GetTransform();
-               Vector3 lightPosition = lightTransform->GetPosition(TransformSpace::World);
-               Vector3 lightDirection = lightTransform->GetForward(TransformSpace::World);
+               Vector3 lightPosition = lightTransform->GetPosition(ETransformSpace::World);
+               Vector3 lightDirection = lightTransform->GetForward(ETransformSpace::World);
                Vector3 lightRadiance = lightComponent->GetColor();
                float lightIntensity = lightComponent->GetIntensity();
                float lightRadius = lightComponent->GetRadius();
@@ -1625,9 +1625,9 @@ namespace Mile
             /** Render */
             auto camTransform = camera->GetTransform();
             Matrix viewMatrix = Matrix::CreateView(
-               camTransform->GetPosition(TransformSpace::World),
-               camTransform->GetForward(TransformSpace::World),
-               camTransform->GetUp(TransformSpace::World));
+               camTransform->GetPosition(ETransformSpace::World),
+               camTransform->GetForward(ETransformSpace::World),
+               camTransform->GetUp(ETransformSpace::World));
 
             auto mappedConvertParams = convertParamsBuffer->Map<OneMatrixConstantBuffer>(immediateContext);
             (*mappedConvertParams) = OneMatrixConstantBuffer{ viewMatrix };
@@ -2019,7 +2019,7 @@ namespace Mile
             auto paramsBuffer = data.ParamsBuffer->GetActual();
             float ambientIntensity = *(*data.AmbientIntensityRef->GetActual());
             auto mappedParamsBuffer = paramsBuffer->Map<AmbientParamsConstantBuffer>(context);
-            (*mappedParamsBuffer) = AmbientParamsConstantBuffer{ camTransform->GetPosition(TransformSpace::World), ambientIntensity, static_cast<unsigned int>(bSSAOEnabled) };
+            (*mappedParamsBuffer) = AmbientParamsConstantBuffer{ camTransform->GetPosition(ETransformSpace::World), ambientIntensity, static_cast<unsigned int>(bSSAOEnabled) };
             paramsBuffer->UnMap(context);
             paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
 
@@ -2142,7 +2142,7 @@ namespace Mile
             /** Upload Constant Buffer datas */
             auto camera = *data.CamRef->GetActual();
             auto camTransform = camera->GetTransform();
-            Matrix viewMat = Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), camTransform->GetForward(TransformSpace::World), camTransform->GetUp(TransformSpace::World));
+            Matrix viewMat = Matrix::CreateView(Vector3(0.0f, 0.0f, 0.0f), camTransform->GetForward(ETransformSpace::World), camTransform->GetUp(ETransformSpace::World));
             Matrix projMat = Matrix::CreatePerspectiveProj(camera->GetFov(), output->GetAspectRatio(), 0.1f, 1000.0f);
             auto mappedTransformBuffer = transformBuffer->Map<OneMatrixConstantBuffer>(context);
             (*mappedTransformBuffer) = OneMatrixConstantBuffer{ viewMat * projMat };
@@ -2937,9 +2937,9 @@ namespace Mile
 
          auto camTransform = camera->GetTransform();
          Matrix viewMatrix = Matrix::CreateView(
-            camTransform->GetPosition(TransformSpace::World),
-            camTransform->GetForward(TransformSpace::World),
-            camTransform->GetUp(TransformSpace::World));
+            camTransform->GetPosition(ETransformSpace::World),
+            camTransform->GetForward(ETransformSpace::World),
+            camTransform->GetUp(ETransformSpace::World));
          Matrix projMatrix = Matrix::CreatePerspectiveProj(
             camera->GetFov(),
             (viewport->GetWidth() / (float)viewport->GetHeight()),
