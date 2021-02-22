@@ -46,23 +46,59 @@ namespace Mile
       return false;
    }
 
-   bool SamplerDX11::Bind(ID3D11DeviceContext& deviceContext, unsigned int bindSlot)
+   bool SamplerDX11::Bind(ID3D11DeviceContext& deviceContext, unsigned int bindSlot, EShaderType bindShader)
    {
       if (RenderObject::IsBindable())
       {
-         deviceContext.PSSetSamplers(bindSlot, 1, &m_sampler);
+         switch (bindShader)
+         {
+         case Mile::EShaderType::VertexShader:
+            deviceContext.VSSetSamplers(bindSlot, 1, &m_sampler);
+            break;
+         case Mile::EShaderType::HullShader:
+            deviceContext.HSSetSamplers(bindSlot, 1, &m_sampler);
+            break;
+         case Mile::EShaderType::DomainShader:
+            deviceContext.DSSetSamplers(bindSlot, 1, &m_sampler);
+            break;
+         case Mile::EShaderType::GeometryShader:
+            deviceContext.GSSetSamplers(bindSlot, 1, &m_sampler);
+            break;
+         default:
+         case Mile::EShaderType::PixelShader:
+            deviceContext.PSSetSamplers(bindSlot, 1, &m_sampler);
+            break;
+         }
          return true;
       }
 
       return false;
    }
 
-   void SamplerDX11::Unbind(ID3D11DeviceContext& deviceContext, unsigned int boundSlot)
+   void SamplerDX11::Unbind(ID3D11DeviceContext& deviceContext, unsigned int boundSlot, EShaderType bondShader)
    {
       if (RenderObject::IsBindable())
       {
          ID3D11SamplerState* nullSampler = nullptr;
-         deviceContext.PSSetSamplers(boundSlot, 1, &nullSampler);
+         switch (bondShader)
+         {
+         case Mile::EShaderType::VertexShader:
+            deviceContext.VSSetSamplers(boundSlot, 1, &nullSampler);
+            break;
+         case Mile::EShaderType::HullShader:
+            deviceContext.HSSetSamplers(boundSlot, 1, &nullSampler);
+            break;
+         case Mile::EShaderType::DomainShader:
+            deviceContext.DSSetSamplers(boundSlot, 1, &nullSampler);
+            break;
+         case Mile::EShaderType::GeometryShader:
+            deviceContext.GSSetSamplers(boundSlot, 1, &nullSampler);
+            break;
+         default:
+         case Mile::EShaderType::PixelShader:
+            deviceContext.PSSetSamplers(boundSlot, 1, &nullSampler);
+            break;
+         }
       }
    }
 }

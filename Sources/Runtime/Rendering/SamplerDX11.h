@@ -10,8 +10,8 @@ namespace Mile
       virtual ~SamplerDX11();
 
       bool Init(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE AddressModeU, D3D11_TEXTURE_ADDRESS_MODE AddressModeV, D3D11_TEXTURE_ADDRESS_MODE AddressModeW, D3D11_COMPARISON_FUNC compFunc);
-      bool Bind(ID3D11DeviceContext& deviceContext, unsigned int bindSlot);
-      void Unbind(ID3D11DeviceContext& deviceContext, unsigned int boundSlot);
+      bool Bind(ID3D11DeviceContext& deviceContext, unsigned int bindSlot, EShaderType bindShader = EShaderType::PixelShader);
+      void Unbind(ID3D11DeviceContext& deviceContext, unsigned int boundSlot, EShaderType boundShader = EShaderType::PixelShader);
 
    private:
       ID3D11SamplerState* m_sampler;
