@@ -814,17 +814,8 @@
     <FxCompile Include="Contents\Shaders\SkyboxPass.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Contents\Shaders\IrradianceConvolution.hlsl">
-      <Filter>Shaders\PBS</Filter>
-    </FxCompile>
     <FxCompile Include="Contents\Shaders\ToneMapping.hlsl">
       <Filter>Shaders\PostProcess</Filter>
-    </FxCompile>
-    <FxCompile Include="Contents\Shaders\Prefiltering.hlsl">
-      <Filter>Shaders\PBS</Filter>
-    </FxCompile>
-    <FxCompile Include="Contents\Shaders\IntegrateBRDF.hlsl">
-      <Filter>Shaders\PBS</Filter>
     </FxCompile>
     <FxCompile Include="Contents\Shaders\Blending.hlsl">
       <Filter>Shaders\PostProcess</Filter>
@@ -855,6 +846,15 @@
     </FxCompile>
     <FxCompile Include="Contents\Shaders\DebugDepthSSAO.hlsl">
       <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\SpecularConvolution.hlsl">
+      <Filter>Shaders\PBS</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\DiffuseIrradiance.hlsl">
+      <Filter>Shaders\PBS</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\PrecomputeBRDFIntegrationMap.hlsl">
+      <Filter>Shaders\PBS</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

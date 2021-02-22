@@ -285,7 +285,7 @@ namespace Mile
       /** Diffuse Integral Pass Shaders */
       ShaderDescriptor diffuseIntegralPassDesc;
       diffuseIntegralPassDesc.Renderer = this;
-      diffuseIntegralPassDesc.FilePath = TEXT("Contents/Shaders/IrradianceConvolution.hlsl");
+      diffuseIntegralPassDesc.FilePath = TEXT("Contents/Shaders/DiffuseIrradiance.hlsl");
       m_diffuseIntegralPassVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(diffuseIntegralPassDesc);
       if (m_diffuseIntegralPassVS == nullptr)
       {
@@ -303,7 +303,7 @@ namespace Mile
       /** Prefiltering Environment Map Pass Shaders */
       ShaderDescriptor prefilterEnvPassDesc;
       prefilterEnvPassDesc.Renderer = this;
-      prefilterEnvPassDesc.FilePath = TEXT("Contents/Shaders/Prefiltering.hlsl");
+      prefilterEnvPassDesc.FilePath = TEXT("Contents/Shaders/SpecularConvolution.hlsl");
       m_prefilterEnvPassVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(prefilterEnvPassDesc);
       if (m_prefilterEnvPassVS == nullptr)
       {
@@ -321,7 +321,7 @@ namespace Mile
       /** Integrate BRDF Pass Shaders */
       ShaderDescriptor integrateBRDFPassDesc;
       integrateBRDFPassDesc.Renderer = this;
-      integrateBRDFPassDesc.FilePath = TEXT("Contents/Shaders/IntegrateBRDF.hlsl");
+      integrateBRDFPassDesc.FilePath = TEXT("Contents/Shaders/PrecomputeBRDFIntegrationMap.hlsl");
       m_integrateBRDFPassVS = Elaina::Realize<ShaderDescriptor, VertexShaderDX11>(integrateBRDFPassDesc);
       if (m_integrateBRDFPassVS == nullptr)
       {
@@ -1180,7 +1180,7 @@ namespace Mile
 
                outputPrefilteredEnvMap->GenerateMips(immediateContext);
                /** Render */
-               auto prefilteredEnvMapMaxMips = outputPrefilteredEnvMap->GetMaxMipLevels();
+               auto prefilteredEnvMapMaxMips = outputPrefilteredEnvMap->GetMaxMipLevels() - 1;
                for (unsigned int mipLevel = 0; mipLevel < prefilteredEnvMapMaxMips; ++mipLevel)
                {
                   float roughness = (mipLevel / static_cast<float>(prefilteredEnvMapMaxMips - 1));
