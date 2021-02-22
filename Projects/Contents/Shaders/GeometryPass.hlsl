@@ -45,9 +45,8 @@ struct PSOutput
 Texture2D baseColorMap				: register(t0);
 Texture2D emissiveMap				: register(t1);
 Texture2D metallicRoughnessMap	: register(t2);
-Texture2D specularMap				: register(t3);
-Texture2D aoMap						: register(t4);
-Texture2D normalMap					: register(t5);
+Texture2D aoMap						: register(t3);
+Texture2D normalMap					: register(t4);
 SamplerState Sampler					: register(s0);
 
 /* Constant Buffers (Vertex Shader) */
@@ -107,14 +106,6 @@ PSOutput MilePS(in PSInput input)
 	float metallic = metallicRoughnessMap.Sample(Sampler, uv).b;
 	metallic = clamp(metallicFactor + metallic, 0.0f, 1.0f);
 
-	/* Specular */
-	float specular = specularMap.Sample(Sampler, uv).r;
-	specular = clamp(specularFactor + specular, 0.0f, 1.0f);
-
-	/* Reflectivity */
-	const float reflectivityThreshold = 0.01f;
-	float reflectivity = metallic > reflectivityThreshold ? metallic : specular;
-	
 	/* AO */
 	float ao = aoMap.Sample(Sampler, uv).r;
 	
@@ -134,7 +125,7 @@ PSOutput MilePS(in PSInput input)
 	output.Albedo = float4(albedo, 1.0f);
 	output.EmissiveAO = float4(emissive, ao);
 	output.Normal = float4(normal, 1.0f);
-	output.ExtraComponents = float4(reflectivity, roughness, metallic, specular);
+	output.ExtraComponents = float4(0.0f, roughness, metallic, specularFactor);
 
 	return output;
 }

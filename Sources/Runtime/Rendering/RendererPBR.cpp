@@ -40,14 +40,6 @@ namespace Mile
       Matrix WorldViewProjMatrix = Matrix::Identity;
    };
 
-   DEFINE_CONSTANT_BUFFER(PackedMaterialParams)
-   {
-      Vector4 BaseColorFactor = Vector4::One();
-      Vector4 EmissiveColorFactor = Vector4::Zero();
-      Vector4 MetallicRoughnessUV = Vector4::Zero();
-      float SpecularFactor = 0.0f;
-   };
-
    DEFINE_CONSTANT_BUFFER(OneFloatConstantBuffer)
    {
       float Value = 0.0f;
@@ -2957,33 +2949,8 @@ namespace Mile
                if (material != meshMaterial)
                {
                   material = meshMaterial;
-                  Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
-                  Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
-                  Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
-                  Texture2dDX11* specularMapTex = material->GetTexture2D(MaterialTextureProperty::Specular)->GetRawTexture();
-                  Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
-                  Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
-
-                  Vector4 baseColorFactor = material->GetVector4Factor(MaterialFactorProperty::BaseColor);
-                  Vector4 emissiveFactor = material->GetVector4Factor(MaterialFactorProperty::Emissive);
-                  float metallicFactor = material->GetScalarFactor(MaterialFactorProperty::Metallic);
-                  float roughnessFactor = material->GetScalarFactor(MaterialFactorProperty::Roughness);
-                  float specularFactor = material->GetScalarFactor(MaterialFactorProperty::Specular);
-                  Vector2 uvOffset = material->GetVector2Factor(MaterialFactorProperty::UVOffset);
-
-                  auto materialParams = materialParamsBuffer->Map<PackedMaterialParams>(context);
-                  materialParams->BaseColorFactor = baseColorFactor;
-                  materialParams->EmissiveColorFactor = emissiveFactor;
-                  materialParams->MetallicRoughnessUV = Vector4(metallicFactor, roughnessFactor, uvOffset.x, uvOffset.y);
-                  materialParams->SpecularFactor = specularFactor;
-                  materialParamsBuffer->UnMap(context);
-
-                  SAFE_TEX_BIND(baseColorTex, context, 0, EShaderType::PixelShader);
-                  SAFE_TEX_BIND(emissiveTex, context, 1, EShaderType::PixelShader);
-                  SAFE_TEX_BIND(metallicRoughnessTex, context, 2, EShaderType::PixelShader);
-                  SAFE_TEX_BIND(specularMapTex, context, 3, EShaderType::PixelShader);
-                  SAFE_TEX_BIND(aoTex, context, 4, EShaderType::PixelShader);
-                  SAFE_TEX_BIND(normalTex, context, 5, EShaderType::PixelShader);
+                  material->BindTextures(context, 0, EShaderType::PixelShader);
+                  material->UpdateConstantBuffer(context, materialParamsBuffer);
                }
 
                /** Render Mesh */
@@ -3003,18 +2970,7 @@ namespace Mile
                auto nextMeshItr = (meshItr + 1);
                if (nextMeshItr == meshes.end() || (*nextMeshItr)->GetMaterial() != material)
                {
-                  Texture2dDX11* baseColorTex = material->GetTexture2D(MaterialTextureProperty::BaseColor)->GetRawTexture();
-                  Texture2dDX11* emissiveTex = material->GetTexture2D(MaterialTextureProperty::Emissive)->GetRawTexture();
-                  Texture2dDX11* metallicRoughnessTex = material->GetTexture2D(MaterialTextureProperty::MetallicRoughness)->GetRawTexture();
-                  Texture2dDX11* specularMapTex = material->GetTexture2D(MaterialTextureProperty::Specular)->GetRawTexture();
-                  Texture2dDX11* aoTex = material->GetTexture2D(MaterialTextureProperty::AO)->GetRawTexture();
-                  Texture2dDX11* normalTex = material->GetTexture2D(MaterialTextureProperty::Normal)->GetRawTexture();
-                  SAFE_TEX_UNBIND(baseColorTex, context, 0, EShaderType::PixelShader);
-                  SAFE_TEX_UNBIND(emissiveTex, context, 1, EShaderType::PixelShader);
-                  SAFE_TEX_UNBIND(metallicRoughnessTex, context, 2, EShaderType::PixelShader);
-                  SAFE_TEX_UNBIND(specularMapTex, context, 3, EShaderType::PixelShader);
-                  SAFE_TEX_UNBIND(aoTex, context, 4, EShaderType::PixelShader);
-                  SAFE_TEX_UNBIND(normalTex, context, 5, EShaderType::PixelShader);
+                  material->UnbindTextures(context, 0, EShaderType::PixelShader);
                }
             }
          }

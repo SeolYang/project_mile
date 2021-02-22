@@ -3,17 +3,25 @@
 #include "Core/Logger.h"
 #include "Math/Vector2.h"
 #include "Math/Vector4.h"
+#include "Rendering/RenderingCore.h"
 
 namespace Mile
 {
    DECLARE_LOG_CATEGORY_EXTERN(MileMaterial, Log);
+
+   DEFINE_CONSTANT_BUFFER(PackedMaterialParams)
+   {
+      Vector4 BaseColorFactor = Vector4::One();
+      Vector4 EmissiveColorFactor = Vector4::Zero();
+      Vector4 MetallicRoughnessUV = Vector4::Zero();
+      float SpecularFactor = 0.0f;
+   };
 
    enum class MaterialTextureProperty
    {
       BaseColor,
       Emissive,
       MetallicRoughness,
-      Specular,
       AO,
       Normal,
    };
@@ -36,6 +44,7 @@ namespace Mile
    };
 
    class Texture2D;
+   class ConstantBufferDX11;
    class MEAPI Material : public Resource
    {
    public:
@@ -60,12 +69,15 @@ namespace Mile
       virtual json Serialize() const override;
       virtual void DeSerialize(const json& jsonData) override;
 
+      void BindTextures(ID3D11DeviceContext& context, unsigned int bindSlot, EShaderType shaderType);
+      void UnbindTextures(ID3D11DeviceContext& context, unsigned int boundSlot, EShaderType shaderType);
+      void UpdateConstantBuffer(ID3D11DeviceContext& context, ConstantBufferDX11* buffer) const;
+
    private:
       EMaterialType m_materialType;
       Texture2D* m_baseColor;
       Texture2D* m_emissive;
       Texture2D* m_metallicRoughness;
-      Texture2D* m_specularMap;
       Texture2D* m_ao;
       Texture2D* m_normal;
 

@@ -1,6 +1,8 @@
 #include "Resource/Material.h"
 #include "Resource/ResourceManager.h"
 #include "Resource/Texture2D.h"
+#include "Rendering/Texture2dDX11.h"
+#include "Rendering/ConstantBufferDX11.h"
 #include "Core/Context.h"
 
 namespace Mile
@@ -12,7 +14,6 @@ namespace Mile
       m_baseColor(nullptr),
       m_emissive(nullptr),
       m_metallicRoughness(nullptr),
-      m_specularMap(nullptr),
       m_ao(nullptr),
       m_normal(nullptr),
       m_baseColorFactor(Vector4(0.0f, 0.0f, 0.0f, 1.0f)),
@@ -20,13 +21,12 @@ namespace Mile
       m_metallicFactor(0.0f),
       m_roughnessFactor(0.0f),
       m_uvOffset(Vector2(0.0f, 0.0f)),
-      m_specularFactor(0.0f),
+      m_specularFactor(0.5f),
       Resource(context, filePath, ResourceType::Material)
    {
       SetTexture2D(MaterialTextureProperty::BaseColor, nullptr);
       SetTexture2D(MaterialTextureProperty::Emissive, nullptr);
       SetTexture2D(MaterialTextureProperty::MetallicRoughness, nullptr);
-      SetTexture2D(MaterialTextureProperty::Specular, nullptr);
       SetTexture2D(MaterialTextureProperty::AO, nullptr);
       SetTexture2D(MaterialTextureProperty::Normal, nullptr);
    }
@@ -86,8 +86,6 @@ namespace Mile
       case MaterialTextureProperty::MetallicRoughness:
          m_metallicRoughness = texture;
          break;
-      case MaterialTextureProperty::Specular:
-         m_specularMap = texture;
          break;
       case MaterialTextureProperty::AO:
          m_ao = texture;
@@ -108,8 +106,6 @@ namespace Mile
          return m_emissive;
       case MaterialTextureProperty::MetallicRoughness:
          return m_metallicRoughness;
-      case MaterialTextureProperty::Specular:
-         return m_specularMap;
       case MaterialTextureProperty::Normal:
          return m_normal;
       case MaterialTextureProperty::AO:
@@ -235,7 +231,6 @@ namespace Mile
       serialized["MetallicFactor"] = m_metallicFactor;
       serialized["RoughnessFactor"] = m_roughnessFactor;
 
-      serialized["Specular"] = WString2String(m_specularMap->GetPath());
       serialized["SpecularFactor"] = m_specularFactor;
 
       serialized["UVOffset"] = m_uvOffset.Serialize();
@@ -281,11 +276,7 @@ namespace Mile
       m_metallicFactor = GetValueSafelyFromJson(jsonData, "MetallicFactor", 0.0f);
       m_roughnessFactor = GetValueSafelyFromJson(jsonData, "RoughnessFactor", 0.0f);
 
-      SetTexture2D(
-         MaterialTextureProperty::Specular,
-         resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "Specular"))));
-
-      m_specularFactor = GetValueSafelyFromJson(jsonData, "SpecularFactor", 0.0f);
+      m_specularFactor = GetValueSafelyFromJson(jsonData, "SpecularFactor", 0.5f);
 
       m_uvOffset.DeSerialize(GetValueSafelyFromJson<json>(
          jsonData,
@@ -299,5 +290,33 @@ namespace Mile
       SetTexture2D(
          MaterialTextureProperty::Normal,
          resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "Normal"))));
+   }
+
+   void Material::BindTextures(ID3D11DeviceContext& context, unsigned int bindSlot, EShaderType shaderType)
+   {
+      SAFE_TEX_BIND(m_baseColor->GetRawTexture(), context, 0, shaderType);
+      SAFE_TEX_BIND(m_emissive->GetRawTexture(), context, 1, shaderType);
+      SAFE_TEX_BIND(m_metallicRoughness->GetRawTexture(), context, 2, shaderType);
+      SAFE_TEX_BIND(m_ao->GetRawTexture(), context, 3, shaderType);
+      SAFE_TEX_BIND(m_normal->GetRawTexture(), context, 4, shaderType);
+   }
+
+   void Material::UnbindTextures(ID3D11DeviceContext& context, unsigned int boundSlot, EShaderType shaderType)
+   {
+      SAFE_TEX_UNBIND(m_baseColor->GetRawTexture(), context, 0, shaderType);
+      SAFE_TEX_UNBIND(m_emissive->GetRawTexture(), context, 1, shaderType);
+      SAFE_TEX_UNBIND(m_metallicRoughness->GetRawTexture(), context, 2, shaderType);
+      SAFE_TEX_UNBIND(m_ao->GetRawTexture(), context, 3, shaderType);
+      SAFE_TEX_UNBIND(m_normal->GetRawTexture(), context, 4, shaderType);
+   }
+
+   void Material::UpdateConstantBuffer(ID3D11DeviceContext& context, ConstantBufferDX11* buffer) const
+   {
+      auto materialParamsBuffer = buffer->Map<PackedMaterialParams>(context);
+      materialParamsBuffer->BaseColorFactor = m_baseColorFactor;
+      materialParamsBuffer->EmissiveColorFactor = m_emissiveFactor;
+      materialParamsBuffer->MetallicRoughnessUV = Vector4(m_metallicFactor, m_roughnessFactor, m_uvOffset.x, m_uvOffset.y);
+      materialParamsBuffer->SpecularFactor = m_specularFactor;
+      buffer->UnMap(context);
    }
 }
