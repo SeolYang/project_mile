@@ -26,6 +26,21 @@ namespace Mile
       float GetIntensity() const { return m_intensity; }
       float& Intensity() { return m_intensity; }
 
+      float GetLuminousIntensity() const
+      {
+         switch (m_type)
+         {
+         case ELightType::Directional:
+            return m_intensity;
+         case ELightType::Point:
+            return m_intensity / (4.0f * Math::Pi);
+         case ELightType::Spot:
+            return (m_intensity / Math::Pi);
+         }
+
+         return 0.0f;
+      }
+
       Vector3 GetLightDirection() const;
       Vector3 GetLightPosition() const;
 

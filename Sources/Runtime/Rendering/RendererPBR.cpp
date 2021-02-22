@@ -1475,7 +1475,7 @@ namespace Mile
                Vector3 lightPosition = lightTransform->GetPosition(ETransformSpace::World);
                Vector3 lightDirection = lightTransform->GetForward(ETransformSpace::World);
                Vector3 lightRadiance = lightComponent->GetColor();
-               float lightIntensity = lightComponent->GetIntensity();
+               float lightIntensity = lightComponent->GetLuminousIntensity();
                float lightRadius = lightComponent->GetRadius();
                float lightInnerAngle = lightComponent->GetInnerAngleAsRadians();
                float lightOuterAngle = lightComponent->GetOuterAngleAsRadians();
