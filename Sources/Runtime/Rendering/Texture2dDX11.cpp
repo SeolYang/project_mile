@@ -36,10 +36,11 @@ namespace Mile
          unsigned int bytePerChannel = sizeof(unsigned char);
          switch (format)
          {
-         case DXGI_FORMAT_R32G32B32A32_FLOAT:
          case DXGI_FORMAT_R16G16B16A16_FLOAT:
+            bytePerChannel = 2;
+         case DXGI_FORMAT_R32G32B32A32_FLOAT:
          case DXGI_FORMAT_R32G32B32_FLOAT:
-            bytePerChannel = sizeof(float);
+            bytePerChannel = 4;
             break;
          }
 
