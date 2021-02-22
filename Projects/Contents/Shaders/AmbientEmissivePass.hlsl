@@ -24,6 +24,7 @@ cbuffer AmbientParamsBuffer
 {
 	float3 CameraPos;
 	float  AmbientIntensity;
+	float MaxReflectionLod;
 	unsigned int SSAOEnabled;
 };
 

@@ -178,7 +178,7 @@ namespace Mile
    {
       auto quadMesh = new Quad(this);
       auto cubeMesh = new Cube(this);
-      if (cubeMesh->Init() && quadMesh->Init())
+      if (cubeMesh->Init(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f)) && quadMesh->Init())
       {
          m_quad = quadMesh;
          m_cube = cubeMesh;
