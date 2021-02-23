@@ -86,6 +86,14 @@ namespace Mile
          return sum;
       }
 
+      void ClearDatas() 
+      {
+         m_profileTimes.clear();
+         m_drawCalls.resize(0);
+         m_vertices.resize(0); 
+         m_triangles.resize(0); 
+      }
+
    private:
       RendererDX11* m_renderer;
       std::unordered_map<std::string, GPUProfileData> m_profiles;
