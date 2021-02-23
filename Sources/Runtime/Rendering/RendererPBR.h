@@ -33,9 +33,9 @@ namespace Mile
    struct MEAPI SSAOParams
    {
       std::vector<Vector4> Noise = std::vector<Vector4>(RendererPBRConstants::SSAONoiseTextureSize * RendererPBRConstants::SSAONoiseTextureSize);
-      float Radius = 2.0f;
-      float Bias = 0.01f;
-      float Magnitude = 1.1f;
+      float Radius = 0.89f;
+      float Bias = 0.0f;
+      float Magnitude = 1.0f;
    };
 
    struct MEAPI BloomParams
