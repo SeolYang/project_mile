@@ -201,7 +201,9 @@ namespace Mile
             ImGui::Text((std::string("Current FPS : ") + std::to_string(engine->GetCurrentFPS())).c_str());
             ImGui::Text((std::string("Current Deltatime : ") + std::to_string(engine->GetTimer()->GetDeltaTime())).c_str());
 
-            ImGui::NewLine();
+            ImGui::Spacing();
+            ImGui::Separator();
+            ImGui::Spacing();
             if (ImGui::Button("Save Configs"))
             {
                SaveEngineConfig();
@@ -244,13 +246,17 @@ namespace Mile
                   ImGui::TreePop();
                }
 
+               ImGui::Spacing();
+
                bool bIsVsyncEnabled = m_renderer->IsVsyncEnabled();
                if (ImGui::Checkbox("Vsync", &bIsVsyncEnabled))
                {
                   m_renderer->SetVsync(bIsVsyncEnabled);
                }
 
+               ImGui::Spacing();
                ImGui::Separator();
+               ImGui::Spacing();
             }
 
             auto pbrRenderer = dynamic_cast<RendererPBR*>(m_renderer);
@@ -258,6 +264,7 @@ namespace Mile
             {
                if (ImGui::CollapsingHeader("RendererPBR", ImGuiTreeNodeFlags_DefaultOpen))
                {
+                  ImGui::Spacing();
                   if (ImGui::TreeNode("Tone Mapping"))
                   {
                      auto& toneMappingParams = pbrRenderer->GetToneMappingParams();
@@ -296,7 +303,9 @@ namespace Mile
                      ImGui::TreePop();
                   }
 
+                  ImGui::Spacing();
                   ImGui::Separator();
+                  ImGui::Spacing();
                }
             }
          }
@@ -327,7 +336,7 @@ namespace Mile
          Engine* engine = Engine::GetInstance();
          auto& profiler = Engine::GetRenderer()->GetProfiler();
          ImGui::Begin("GPU Profiler");
-
+         ImGui::Spacing();
          std::string fpsStr = (std::string("FPS : ") + std::to_string(engine->GetCurrentFPS()));
          ImGui::Text(fpsStr.c_str());
 
@@ -351,15 +360,18 @@ namespace Mile
 
          std::string deltaTimeStr = (std::string("Deltatime : ") + std::to_string(engine->GetTimer()->GetDeltaTimeMS())) + std::string(" ms");
          ImGui::Text(deltaTimeStr.c_str());
+         ImGui::Spacing();
 
          if (ImGui::CollapsingHeader("Profiles", ImGuiTreeNodeFlags_DefaultOpen))
          {
+            ImGui::Spacing();
             int latency = (int)profiler.GetQueryLatency();
             if (ImGui::SliderInt("Latency (Frame) : ", &latency, 0, engine->GetMaxFPS()))
             {
                profiler.SetQueryLatency(latency);
             }
-
+            ImGui::Spacing();
+            ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
             if (ImGui::BeginChild("ProfileDatas", ImVec2(0, 0), true))
             {
                ImGui::Columns(6, nullptr);
@@ -430,6 +442,7 @@ namespace Mile
                }
                ImGui::EndChild();
             }
+            ImGui::PopStyleColor();
          }
 
          ImGui::End();
@@ -438,6 +451,10 @@ namespace Mile
       void MenuBarLayer::EditorConfig()
       {
          ImGui::Begin("Editor Configurations");
+
+         ImGui::Spacing();
+         ImGui::Separator();
+         ImGui::Spacing();
 
          const char* items[] = { "Mint", "BlueGrey", "Cherry", "DarkCharcoal", "LightBlue", "ClassicSteam", "GoldBlack", "UE4Like" };
          static const char* currentItem = items[m_editorApp->GetTheme()];
@@ -460,6 +477,10 @@ namespace Mile
 
             ImGui::EndCombo();
          }
+
+         ImGui::Spacing();
+         ImGui::Separator();
+         ImGui::Spacing();
 
          if (ImGui::Button("Save Configs"))
          {
