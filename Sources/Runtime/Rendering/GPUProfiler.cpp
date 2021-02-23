@@ -3,6 +3,8 @@
 
 namespace Mile
 {
+   std::mutex ScopedDeferredGPUProfile::m_globalMutex;
+
    GPUProfiler::GPUProfiler(RendererDX11* renderer) :
       m_renderer(renderer),
       m_currentFrame(0),

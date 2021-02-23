@@ -124,12 +124,16 @@ namespace Mile
          m_context(deferredContext),
          m_profileName(profileName)
       {
+         m_globalMutex.lock();
          m_profiler.Begin(profileName, m_context, true);
+         m_globalMutex.unlock();
       }
 
       ~ScopedDeferredGPUProfile()
       {
+         m_globalMutex.lock();
          m_profiler.End(m_profileName, m_context);
+         m_globalMutex.unlock();
       }
 
       ScopedDeferredGPUProfile() = delete;
@@ -137,6 +141,7 @@ namespace Mile
       ScopedDeferredGPUProfile(ScopedDeferredGPUProfile&&) = delete;
 
    private:
+      static std::mutex m_globalMutex;
       GPUProfiler& m_profiler;
       std::string m_profileName;
       ID3D11DeviceContext& m_context;
