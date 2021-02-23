@@ -82,6 +82,7 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float3 albedo = albedoBuffer.Sample(AnisoSampler, input.TexCoord).rgb;
 	float roughness = extraComponents.Sample(AnisoSampler, input.TexCoord).g;
 	float metallic = extraComponents.Sample(AnisoSampler, input.TexCoord).b;
+	float specularFactor = 0.08 * extraComponents.Sample(AnisoSampler, input.TexCoord).a;
 
 	float distance = length(LightPos.rgb - worldPos);
 	float attenuation = SquareFalloffAttenuation(distance, LightRadius);
@@ -101,7 +102,7 @@ float4 MilePS(in PSInput input) : SV_Target0
 
 	float3 H = normalize(V + L);
 	
-	float3 F0 = 0.04f;
+	float3 F0 = specularFactor.xxx;
 	F0 = lerp(F0, albedo, metallic);
 	
 	float3 Lo = 0.0f;
@@ -116,11 +117,13 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float3 nominator = NDF * G * F;
 	float denominator = 4.0f * max(dot(N, V), 0.0f) * max(dot(N, L), 0.0f);
 	float3 specular = nominator / max(denominator, 0.001f);
-	
+
+	// Lambert Diffuse BRDF
 	float3 kS = F;
 	float3 kD = 1.0f - kS;
 	kD *= 1.0f - metallic;
+	float3 diffuse = (kD * albedo) / PI;
 
-	Lo = (kD * albedo / PI + specular) * radiance;
+	Lo = (diffuse + specular) * radiance;
 	return float4(Lo, 1.0f);
 }
