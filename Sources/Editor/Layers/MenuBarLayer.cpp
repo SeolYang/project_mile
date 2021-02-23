@@ -225,7 +225,7 @@ namespace Mile
          if (m_renderer != nullptr)
          {
             /** Display */
-            if (ImGui::CollapsingHeader("Display"))
+            if (ImGui::CollapsingHeader("Display", ImGuiTreeNodeFlags_DefaultOpen))
             {
                //ImGui::Spacing();
                if (ImGui::TreeNode("Render Resolution"))
@@ -256,7 +256,7 @@ namespace Mile
             auto pbrRenderer = dynamic_cast<RendererPBR*>(m_renderer);
             if (pbrRenderer != nullptr)
             {
-               if (ImGui::CollapsingHeader("RendererPBR"))
+               if (ImGui::CollapsingHeader("RendererPBR", ImGuiTreeNodeFlags_DefaultOpen))
                {
                   if (ImGui::TreeNode("Tone Mapping"))
                   {
@@ -352,7 +352,7 @@ namespace Mile
          std::string deltaTimeStr = (std::string("Deltatime : ") + std::to_string(engine->GetTimer()->GetDeltaTimeMS())) + std::string(" ms");
          ImGui::Text(deltaTimeStr.c_str());
 
-         if (ImGui::CollapsingHeader("Profiles"))
+         if (ImGui::CollapsingHeader("Profiles", ImGuiTreeNodeFlags_DefaultOpen))
          {
             int latency = (int)profiler.GetQueryLatency();
             if (ImGui::SliderInt("Latency (Frame) : ", &latency, 0, engine->GetMaxFPS()))

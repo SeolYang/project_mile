@@ -78,7 +78,7 @@ namespace Mile
          OPTICK_EVENT();
          ImGui::Begin("Hierarchy");
          std::string worldName = WString2String(m_target->GetWorldName());
-         if (ImGui::TreeNode(worldName.c_str()))
+         if (ImGui::TreeNodeEx(worldName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
          {
             if (m_target != nullptr)
             {
@@ -123,7 +123,7 @@ namespace Mile
                ImGui::Separator();
                ImGui::Spacing();
 
-               if (ImGui::CollapsingHeader("Transform"))
+               if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
                {
                   const char* items[] = { "World", "Local" };
                   static const char* currentItem = items[static_cast<UINT32>(m_transformSpace)];
@@ -176,10 +176,9 @@ namespace Mile
                for (auto component : components)
                {
                   String typeStr = component->GetType();
-                  if (ImGui::CollapsingHeader(WString2String(typeStr).c_str()))
+                  if (ImGui::CollapsingHeader(WString2String(typeStr).c_str(), ImGuiTreeNodeFlags_DefaultOpen))
                   {
                      component->OnGUI();
-
                      ImGui::Spacing();
                      ImGui::Separator();
                      ImGui::Spacing();
