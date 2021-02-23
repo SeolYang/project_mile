@@ -19,6 +19,11 @@ struct PSInput
 };
 
 /* Constant Buffers (Vertex Shader) **/
+cbuffer ConvertParamsBuffer
+{
+	float LuminanceMultiplier;
+};
+
 cbuffer TransfromBuffer
 {
 	float4x4 ViewProj;
@@ -52,6 +57,6 @@ VSOutput MileVS(in VSInput input)
 float4 MilePS(in PSInput input) : SV_Target0
 {
 	float2 uv = SampleSphericalMap(normalize(input.PositionWS).xyz);
-	float3 color = EquirectangularMap.Sample(LinearWrapSampler, uv).rgb;
+	float3 color = EquirectangularMap.Sample(LinearWrapSampler, uv).rgb * LuminanceMultiplier;
 	return float4(color, 1.0);
 }

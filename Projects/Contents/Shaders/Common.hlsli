@@ -2,7 +2,6 @@
 #define __COMMON_INCLUDED__
 
 static const float PI = 3.14159265359;
-static const uint SAMPLE_COUNT = 1024u;
 
 float4x4 remove_translation(float4x4 m)
 {

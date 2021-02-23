@@ -53,4 +53,10 @@ namespace Mile
 
       SetTexture(texture);
    }
+
+   void SkyLightComponent::OnGUI()
+   {
+      ImGui::InputFloat("Luminance Multiplier", &m_luminanceMultiplier);
+      ImGui::Checkbox("Realtime", &m_bRealtime);
+   }
 }

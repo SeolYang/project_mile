@@ -780,6 +780,7 @@ namespace Mile
          SkyLightRefResource* SkyLightRef = nullptr;
          std::array<MatrixResource*, CUBE_FACES> CaptureViews{ nullptr, };
          ViewportResource* CaptureViewport = nullptr;
+         ConstantBufferResource* ConvertParamsBuffer = nullptr;
          ConstantBufferResource* CaptureTransformBuffer = nullptr;
          RasterizerStateResource* NoCullingState = nullptr;
          DepthStencilStateResource* DepthLessEqualState = nullptr;
@@ -845,6 +846,11 @@ namespace Mile
             viewportDesc.Height = RendererPBRConstants::ConvertedEnvMapSize;
             data.CaptureViewport = builder.Create<ViewportResource>("CaptureViewport", viewportDesc);
 
+            ConstantBufferDescriptor convertParamsDesc;
+            convertParamsDesc.Renderer = this;
+            convertParamsDesc.Size = sizeof(OneFloatConstantBuffer);
+            data.ConvertParamsBuffer = builder.Create<ConstantBufferResource>("CubemapConvertParamsBuffer", convertParamsDesc);
+
             ConstantBufferDescriptor captureTransformDesc;
             captureTransformDesc.Renderer = this;
             captureTransformDesc.Size = sizeof(OneMatrixConstantBuffer);
@@ -887,10 +893,22 @@ namespace Mile
                {
                   skyTexture = skyLight->GetTexture();
                }
+
+               auto convertParamsBuffer = data.ConvertParamsBuffer->GetActual();
+               float luminanceMultiplier = 0.0f;
+               if (skyLight != nullptr)
+               {
+                  luminanceMultiplier = skyLight->GetLuminanceMultiplier();
+               }
+               auto mappedConvertParamsBuffer = convertParamsBuffer->Map<OneFloatConstantBuffer>(immediateContext);
+               (*mappedConvertParamsBuffer) = OneFloatConstantBuffer{ luminanceMultiplier };
+               convertParamsBuffer->UnMap(immediateContext);
+
                auto transformBuffer = data.CaptureTransformBuffer->GetActual();
 
                /** Binds */
                vertexShader->Bind(immediateContext);
+               convertParamsBuffer->Bind(immediateContext, 0, EShaderType::PixelShader);
                transformBuffer->Bind(immediateContext, 0, EShaderType::VertexShader);
                pixelShader->Bind(immediateContext);
                sampler->Bind(immediateContext, 0);
@@ -932,6 +950,7 @@ namespace Mile
                }
                sampler->Unbind(immediateContext, 0);
                pixelShader->Unbind(immediateContext);
+               convertParamsBuffer->Unbind(immediateContext, 0, EShaderType::PixelShader);
                transformBuffer->Unbind(immediateContext, 0, EShaderType::VertexShader);
                vertexShader->Unbind(immediateContext);
             }
@@ -1094,6 +1113,7 @@ namespace Mile
       prefilteredEnvMapDesc.Renderer = this;
       prefilteredEnvMapDesc.Size = RendererPBRConstants::PrefilteredEnvMapSize;
       m_prefilteredEnvMap = Elaina::Realize<DynamicCubemapDescriptor, DynamicCubemap>(prefilteredEnvMapDesc);
+      m_prefilteredEnvMap->GenerateMips(GetImmediateContext());
 
       auto prefilteredEnvMapRefRes = m_frameGraph.AddExternalPermanentResource(
          "PrefilteredEnvironmentMapRef",
@@ -1176,7 +1196,6 @@ namespace Mile
                envMap->Bind(immediateContext, 0, EShaderType::PixelShader);
                cubeMesh->Bind(immediateContext, 0);
 
-               outputPrefilteredEnvMap->GenerateMips(immediateContext);
                /** Render */
                auto prefilteredEnvMapMaxMips = outputPrefilteredEnvMap->GetMaxMipLevels() - 1;
                for (unsigned int mipLevel = 0; mipLevel < prefilteredEnvMapMaxMips; ++mipLevel)
@@ -1940,12 +1959,11 @@ namespace Mile
             anisoSamplerDesc.AddressModeU = anisoSamplerDesc.AddressModeV = anisoSamplerDesc.AddressModeW = D3D11_TEXTURE_ADDRESS_WRAP;
             anisoSamplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
             data.AnisoSampler = builder.Create<SamplerResource>("AnisoSampler", anisoSamplerDesc);
-
             data.LinearClampSampler = builder.Read(convertSkyboxToCubemapPassData.Sampler);
-
             data.SSAOSampler = builder.Read(ssaoPassData.NoiseSampler);
 
             data.GBufferRef = builder.Read(geometryPassData.OutputGBufferRef);
+            
             data.IrradianceMapRef = builder.Read(diffuseIntegralPassData.OutputIrradianceMapRef);
             data.PrefilteredMapRef = builder.Read(prefilterEnvMapPassData.OutputPrefilteredEnvMapRef);
             data.BrdfLUTRef = builder.Read(integrateBRDFPassData.OutputBrdfLUTRef);
@@ -2016,6 +2034,7 @@ namespace Mile
             auto camTransform = camera->GetTransform();
             auto paramsBuffer = data.ParamsBuffer->GetActual();
             float ambientIntensity = *(*data.AmbientIntensityRef->GetActual());
+
             auto mappedParamsBuffer = paramsBuffer->Map<AmbientParamsConstantBuffer>(context);
             (*mappedParamsBuffer) = AmbientParamsConstantBuffer{ camTransform->GetPosition(ETransformSpace::World), ambientIntensity, (float)(prefilteredMap->GetMaxMipLevels() - 2), static_cast<unsigned int>(bSSAOEnabled) };
             paramsBuffer->UnMap(context);

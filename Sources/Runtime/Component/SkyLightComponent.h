@@ -25,6 +25,11 @@ namespace Mile
       bool IsComputeAsRealtime() const { return m_bRealtime; }
       bool& Realtime() { return m_bRealtime; }
 
+      float GetLuminanceMultiplier() const { return m_luminanceMultiplier; }
+      float& LuminanceMultiplier() { return m_luminanceMultiplier; }
+
+      void OnGUI() override;
+
    private:
       Texture2D* m_skybox;
       float m_luminanceMultiplier;

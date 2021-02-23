@@ -274,71 +274,71 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nID : 54
 \nRefs : 1
 \nTransient", style=filled, fillcolor=peachpuff]
-"CaptureTransformBuffer" [label="CaptureTransformBuffer
+"CubemapConvertParamsBuffer" [label="CubemapConvertParamsBuffer
 \nID : 55
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"NoCullingState" [label="NoCullingState
+"CaptureTransformBuffer" [label="CaptureTransformBuffer
 \nID : 56
-\nRefs : 3
+\nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"DepthLessEqualState" [label="DepthLessEqualState
+"NoCullingState" [label="NoCullingState
 \nID : 57
 \nRefs : 3
 \nTransient", style=filled, fillcolor=peachpuff]
-"DiffuseIntegralPassVertexShader" [label="DiffuseIntegralPassVertexShader
+"DepthLessEqualState" [label="DepthLessEqualState
 \nID : 58
-\nRefs : 1
-\nExternal Permanent", style=filled, fillcolor=palegreen]
-"DiffuseIntegralPassPixelShader" [label="DiffuseIntegralPassPixelShader
+\nRefs : 3
+\nTransient", style=filled, fillcolor=peachpuff]
+"DiffuseIntegralPassVertexShader" [label="DiffuseIntegralPassVertexShader
 \nID : 59
 \nRefs : 1
 \nExternal Permanent", style=filled, fillcolor=palegreen]
-"IrradianceMapRef" [label="IrradianceMapRef
+"DiffuseIntegralPassPixelShader" [label="DiffuseIntegralPassPixelShader
 \nID : 60
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"IrradianceMapRef" [label="IrradianceMapRef
+\nID : 61
 \nRefs : 2
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "PrefilterEnvironmentMapPassVertexShader" [label="PrefilterEnvironmentMapPassVertexShader
-\nID : 61
-\nRefs : 1
-\nExternal Permanent", style=filled, fillcolor=palegreen]
-"PrefilterEnvironmentMapPassPixelShader" [label="PrefilterEnvironmentMapPassPixelShader
 \nID : 62
 \nRefs : 1
 \nExternal Permanent", style=filled, fillcolor=palegreen]
-"PrefilteredEnvironmentMapRef" [label="PrefilteredEnvironmentMapRef
+"PrefilterEnvironmentMapPassPixelShader" [label="PrefilterEnvironmentMapPassPixelShader
 \nID : 63
 \nRefs : 1
 \nExternal Permanent", style=filled, fillcolor=palegreen]
-"Viewport_Mip0" [label="Viewport_Mip0
+"PrefilteredEnvironmentMapRef" [label="PrefilteredEnvironmentMapRef
 \nID : 64
-\nRefs : 0
-\nTransient", style=filled, fillcolor=peachpuff]
-"Viewport_Mip1" [label="Viewport_Mip1
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"Viewport_Mip0" [label="Viewport_Mip0
 \nID : 65
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"Viewport_Mip2" [label="Viewport_Mip2
+"Viewport_Mip1" [label="Viewport_Mip1
 \nID : 66
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"Viewport_Mip3" [label="Viewport_Mip3
+"Viewport_Mip2" [label="Viewport_Mip2
 \nID : 67
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"Viewport_Mip4" [label="Viewport_Mip4
+"Viewport_Mip3" [label="Viewport_Mip3
 \nID : 68
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"Viewport_Mip5" [label="Viewport_Mip5
+"Viewport_Mip4" [label="Viewport_Mip4
 \nID : 69
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"Viewport_Mip6" [label="Viewport_Mip6
+"Viewport_Mip5" [label="Viewport_Mip5
 \nID : 70
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"Viewport_Mip7" [label="Viewport_Mip7
+"Viewport_Mip6" [label="Viewport_Mip6
 \nID : 71
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
@@ -584,11 +584,11 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nTransient", style=filled, fillcolor=peachpuff]
 "Geometry Pass" -> { "AnisoWrapAlwaysSampler" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "Viewport" "DefaultRasterizerState" } [color=aquamarine]
 "Geometry Pass" -> { "GBufferRef" } [color=firebrick1]
-"ConvertTextureToCubemap" -> { "LinearClampAlwaysSampler" "IBLPrecomputeEnabledRef" "CubeCaptureViews" "CubeCaptureViews" "CubeCaptureViews" "CubeCaptureViews" "CubeCaptureViews" "CubeCaptureViews" "CaptureViewport" "CaptureTransformBuffer" "NoCullingState" "DepthLessEqualState" } [color=aquamarine]
+"ConvertTextureToCubemap" -> { "LinearClampAlwaysSampler" "IBLPrecomputeEnabledRef" "CubeCaptureViews" "CubeCaptureViews" "CubeCaptureViews" "CubeCaptureViews" "CubeCaptureViews" "CubeCaptureViews" "CaptureViewport" "CubemapConvertParamsBuffer" "CaptureTransformBuffer" "NoCullingState" "DepthLessEqualState" } [color=aquamarine]
 "ConvertTextureToCubemap" -> { "EnvironmentMapRef" } [color=firebrick1]
 "DiffuseConvolutionPass" -> { } [color=aquamarine]
 "DiffuseConvolutionPass" -> { "CaptureTransformBuffer" "IrradianceMapRef" } [color=firebrick1]
-"PrefilterEnvironmentMapPass" -> { "Viewport_Mip0" "Viewport_Mip1" "Viewport_Mip2" "Viewport_Mip3" "Viewport_Mip4" "Viewport_Mip5" "Viewport_Mip6" "Viewport_Mip7" "OneVector2ConstantBuffer" } [color=aquamarine]
+"PrefilterEnvironmentMapPass" -> { "Viewport_Mip0" "Viewport_Mip1" "Viewport_Mip2" "Viewport_Mip3" "Viewport_Mip4" "Viewport_Mip5" "Viewport_Mip6" "OneVector2ConstantBuffer" } [color=aquamarine]
 "PrefilterEnvironmentMapPass" -> { "CaptureTransformBuffer" "PrefilteredEnvironmentMapRef" } [color=firebrick1]
 "IntegrateBRDFsPass" -> { "DepthDisableState" "LUTViewport" } [color=aquamarine]
 "IntegrateBRDFsPass" -> { "BrdfLUTRef" } [color=firebrick1]
@@ -670,6 +670,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "CubeCaptureViews" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
 "CubeCaptureViews" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" } [color=yellow]
 "CaptureViewport" -> { "DiffuseConvolutionPass" } [color=yellow]
+"CubemapConvertParamsBuffer" -> { } [color=yellow]
 "CaptureTransformBuffer" -> { } [color=yellow]
 "NoCullingState" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" "SkyboxPass" } [color=yellow]
 "DepthLessEqualState" -> { "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" "SkyboxPass" } [color=yellow]
@@ -686,7 +687,6 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "Viewport_Mip4" -> { } [color=yellow]
 "Viewport_Mip5" -> { } [color=yellow]
 "Viewport_Mip6" -> { } [color=yellow]
-"Viewport_Mip7" -> { } [color=yellow]
 "OneVector2ConstantBuffer" -> { } [color=yellow]
 "IntegrateBRDFsPassVertexShader" -> { "IntegrateBRDFsPass" } [color=yellow]
 "IntegrateBRDFsPassPixelShader" -> { "IntegrateBRDFsPass" } [color=yellow]
