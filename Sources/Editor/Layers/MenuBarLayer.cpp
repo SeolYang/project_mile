@@ -371,76 +371,64 @@ namespace Mile
             }
             ImGui::Spacing();
             ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-            if (ImGui::BeginChild("ProfileDatas", ImVec2(0, 0), true))
+
+            const auto& profileDatas = profiler.GetProfileTimes();
+            if (ImGui::BeginTable("ProfileData", 6, 
+               ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersOuter | 
+               ImGuiTableFlags_BordersInner | ImGuiTableFlags_SizingFixedSame | 
+               ImGuiTableFlags_RowBg | ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY))
             {
-               ImGui::Columns(6, nullptr);
+               ImGui::TableSetupColumn("Name");
+               ImGui::TableSetupColumn("Recent(ms)");
+               ImGui::TableSetupColumn("Min(ms)");
+               ImGui::TableSetupColumn("Max(ms)");
+               ImGui::TableSetupColumn("Avg(ms)");
+               ImGui::TableSetupColumn("Samples");
+               ImGui::TableHeadersRow();
+
+               ImGui::TableNextRow();
+               ImGui::TableSetColumnIndex(0);
+               ImGui::Text("Overall");
+               ImGui::TableNextColumn();
+               ImGui::Text(Mile::Formatting("%.03f ms", profiler.GetProfileOverallTime()).c_str());
+
+               for (const auto& data : profileDatas)
                {
-                  const auto& profileDatas = profiler.GetProfileTimes();
+                  const auto& accData = data.second;
+                  ImGui::TableNextRow();
+                  ImGui::TableSetColumnIndex(0);
 
-                  ImGui::Text("Name");
-                  ImGui::Text("Overall");
-                  for (const auto& data : profileDatas)
-                  {
-                     ImGui::Text(data.first.c_str());
-                  }
+                  ImGui::Text(data.first.c_str());
 
-                  ImGui::NextColumn();
+                  ImGui::TableNextColumn();
 
-                  ImGui::Text("Recent(ms)");
-                  ImGui::Text(Mile::Formatting("%.03f ms", profiler.GetProfileOverallTime()).c_str());
-                  for (const auto& data : profileDatas)
-                  {
-                     const auto& accData = data.second;
-                     std::string profileStr = Mile::Formatting("%.03f ms", accData.RecentElapsed);
-                     ImGui::Text(profileStr.c_str());
-                  }
+                  std::string profileStr = Mile::Formatting("%.03f ms", accData.RecentElapsed);
+                  ImGui::Text(profileStr.c_str());
 
-                  ImGui::NextColumn();
+                  ImGui::TableNextColumn();
 
-                  ImGui::Text("Min(ms)");
-                  ImGui::Text(" ");
-                  for (const auto& data : profileDatas)
-                  {
-                     const auto& accData = data.second;
-                     std::string profileStr = Mile::Formatting("%.03f ms", accData.MinTime);
-                     ImGui::Text(profileStr.c_str());
-                  }
+                  profileStr = Mile::Formatting("%.03f ms", accData.MinTime);
+                  ImGui::Text(profileStr.c_str());
 
-                  ImGui::NextColumn();
+                  ImGui::TableNextColumn();
 
-                  ImGui::Text("Max(ms)");
-                  ImGui::Text(" ");
-                  for (const auto& data : profileDatas)
-                  {
-                     const auto& accData = data.second;
-                     std::string profileStr = Mile::Formatting("%.03f ms", accData.MaxTime);
-                     ImGui::Text(profileStr.c_str());
-                  }
+                  profileStr = Mile::Formatting("%.03f ms", accData.MaxTime);
+                  ImGui::Text(profileStr.c_str());
 
-                  ImGui::NextColumn();
+                  ImGui::TableNextColumn();
 
-                  ImGui::Text("Avg(ms)");
-                  ImGui::Text(" ");
-                  for (const auto& data : profileDatas)
-                  {
-                     const auto& accData = data.second;
-                     std::string profileStr = Mile::Formatting("%.03f ms", accData.AvgTime);
-                     ImGui::Text(profileStr.c_str());
-                  }
+                  profileStr = Mile::Formatting("%.03f ms", accData.AvgTime);
+                  ImGui::Text(profileStr.c_str());
 
-                  ImGui::NextColumn();
+                  ImGui::TableNextColumn();
 
-                  ImGui::Text("Samples");
-                  ImGui::Text(" ");
-                  for (const auto& data : profileDatas)
-                  {
-                     const auto& accData = data.second;
-                     std::string profileStr = Mile::Formatting("%.0f", accData.Samples);
-                     ImGui::Text(profileStr.c_str());
-                  }
+                  profileStr = Mile::Formatting("%.0f", accData.Samples);
+                  ImGui::Text(profileStr.c_str());
                }
-               ImGui::EndChild();
+
+               ImGui::EndTable();
             }
+
             ImGui::PopStyleColor();
          }
 
