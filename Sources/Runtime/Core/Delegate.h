@@ -131,15 +131,15 @@ namespace Mile
 }
 
 #define DECLARE_DELEGATE_RetVal_Params(DelegateName, RetVal, ...) \
-class MEAPI DelegateName : public Mile::Delegate<RetVal, __VA_ARGS__> \
+class MEAPI DelegateName##Delegate : public Mile::Delegate<RetVal, __VA_ARGS__> \
 { \
 }
 #define DECLARE_DELEGATE_Params(DelegateName, ...) DECLARE_DELEGATE_RetVal_Params(DelegateName, void, __VA_ARGS__)
 #define DECLARE_DELEGATE(DelegateName) DECLARE_DELEGATE_RetVal_Params(DelegateName, void)
 
-
 #define DECLARE_MULTICAST_DELEGATE(DelegateName) DECLARE_MULTICAST_DELEGATE_Params(DelegateName)
 #define DECLARE_MULTICAST_DELEGATE_Params(DelegateName, ...) \
-class MEAPI DelegateName : public Mile::MulticastDelegate<__VA_ARGS__> \
+DECLARE_DELEGATE_Params(DelegateName, __VA_ARGS__); \
+class MEAPI DelegateName##MulticastDelegate : public Mile::MulticastDelegate<__VA_ARGS__> \
 { \
 }

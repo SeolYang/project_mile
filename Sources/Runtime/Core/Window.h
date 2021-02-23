@@ -14,10 +14,8 @@
 namespace Mile
 {
    DECLARE_LOG_CATEGORY_EXTERN(MileWindow, Log);
-   DECLARE_MULTICAST_DELEGATE_Params(OnWindowResizeMulticastDelegate, unsigned int, unsigned int);
-   DECLARE_MULTICAST_DELEGATE(OnWindowMinimizedMulticastDelegate);
-   DECLARE_DELEGATE_Params(OnWindowResizeDelegate, unsigned int, unsigned int);
-   DECLARE_DELEGATE(OnWindowMinimizedDelegate);
+   DECLARE_MULTICAST_DELEGATE_Params(OnWindowResize, unsigned int, unsigned int);
+   DECLARE_MULTICAST_DELEGATE(OnWindowMinimized);
 
    enum class EWindowStyle
    {
