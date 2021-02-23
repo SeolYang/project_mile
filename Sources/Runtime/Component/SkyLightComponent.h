@@ -22,17 +22,17 @@ namespace Mile
       void SetTexture(const String& resourcePath);
       Texture2D* GetTexture() const { return m_skybox; }
 
-      bool IsComputeAsRealtime() const { return m_bRealtime; }
-      bool& Realtime() { return m_bRealtime; }
+      bool IsRealtimeCapture() const { return m_bRealtime; }
+      bool& IsRealtimeCapture() { return m_bRealtime; }
 
-      float GetLuminanceMultiplier() const { return m_luminanceMultiplier; }
-      float& LuminanceMultiplier() { return m_luminanceMultiplier; }
+      float IntensityScale() const { return m_intensityScale; }
+      float& InensityScale() { return m_intensityScale; }
 
       void OnGUI() override;
 
    private:
       Texture2D* m_skybox;
-      float m_luminanceMultiplier;
+      float m_intensityScale;
       bool m_bRealtime;
 
    };

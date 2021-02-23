@@ -1,5 +1,6 @@
 #include "Component/SkyLightComponent.h"
 #include "Core/Engine.h"
+#include "Core/ImGuiHelper.h"
 #include "Resource/ResourceManager.h"
 #include "Resource/Texture2D.h"
 
@@ -10,7 +11,7 @@ namespace Mile
 
    SkyLightComponent::SkyLightComponent(Entity* entity) :
       Component(entity),
-      m_luminanceMultiplier(1.0f),
+      m_intensityScale(1.0f),
       m_bRealtime(false),
       m_skybox(nullptr)
    {
@@ -20,7 +21,9 @@ namespace Mile
    {
       json serialized = Component::Serialize();
       serialized["Path"] = WString2String(m_skybox->GetPath());
-      serialized["Realtime"] = m_bRealtime;
+      serialized["RealtimeCapture"] = m_bRealtime;
+      serialized["IntensityScale"] = m_intensityScale;
+
       return serialized;
    }
 
@@ -28,7 +31,8 @@ namespace Mile
    {
       Component::DeSerialize(jsonData);
       SetTexture(String2WString(GetValueSafelyFromJson(jsonData, "Path", std::string())));
-      m_bRealtime = GetValueSafelyFromJson(jsonData, "Realtime", false);
+      m_bRealtime = GetValueSafelyFromJson(jsonData, "RealtimeCapture", false);
+      m_intensityScale = GetValueSafelyFromJson(jsonData, "IntensityScale", 1.0f);
    }
 
    void SkyLightComponent::SetTexture(Texture2D* texture)
@@ -56,7 +60,18 @@ namespace Mile
 
    void SkyLightComponent::OnGUI()
    {
-      ImGui::InputFloat("Luminance Multiplier", &m_luminanceMultiplier);
-      ImGui::Checkbox("Realtime", &m_bRealtime);
+      ImGui::Columns(2);
+      {
+         ImGui::Text("Intensity Scale");
+         ImGui::Text("Real Time Capture");
+
+         ImGui::NextColumn();
+         ImGui::InputFloat("##Intensity Scale", &m_intensityScale);
+         ImGui::Checkbox("##RealtimeCapture", &m_bRealtime);
+
+         ImGui::EndColumns();
+      }
+
+      ImGui::Spacing();
    }
 }

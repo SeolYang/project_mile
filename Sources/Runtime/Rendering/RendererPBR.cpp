@@ -897,7 +897,7 @@ namespace Mile
                float luminanceMultiplier = 0.0f;
                if (skyLight != nullptr)
                {
-                  luminanceMultiplier = skyLight->GetLuminanceMultiplier();
+                  luminanceMultiplier = skyLight->IntensityScale();
                }
                auto mappedConvertParamsBuffer = convertParamsBuffer->Map<OneFloatConstantBuffer>(immediateContext);
                (*mappedConvertParamsBuffer) = OneFloatConstantBuffer{ luminanceMultiplier };
@@ -2918,7 +2918,7 @@ namespace Mile
                   m_iblStage = 0;
                }
 
-               if (m_skyLight->IsComputeAsRealtime() && m_iblStage == 9)
+               if (m_skyLight->IsRealtimeCapture() && m_iblStage == 9)
                {
                   m_iblStage = 0;
                }
