@@ -9,7 +9,7 @@ namespace Mile
 
    namespace RendererPBRConstants
    {
-      constexpr unsigned int ConvertedEnvMapSize = 256;
+      constexpr unsigned int ConvertedEnvMapSize = 512;
       constexpr unsigned int IrradianceMapSize = 32;
       constexpr unsigned int PrefilteredEnvMapSize = 128;
       constexpr unsigned int BRDFLUTSize = 512;

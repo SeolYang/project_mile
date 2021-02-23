@@ -191,7 +191,6 @@ namespace Mile
          {
             ImGui::Text("Maximum framerate per second");
             ImGui::InputInt("Target FPS", &m_fps);
-            ImGui::SameLine();
             if (ImGui::Button("Apply"))
             {
                engine->SetMaxFPS(m_fps);
