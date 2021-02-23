@@ -9,10 +9,10 @@ namespace Mile
 
    namespace RendererPBRConstants
    {
-      constexpr unsigned int ConvertedEnvMapSize = 1024;
+      constexpr unsigned int ConvertedEnvMapSize = 256;
       constexpr unsigned int IrradianceMapSize = 32;
       constexpr unsigned int PrefilteredEnvMapSize = 128;
-      constexpr unsigned int BRDFLUTSize = 128;
+      constexpr unsigned int BRDFLUTSize = 512;
       constexpr unsigned int SSAOKernelSize = 64;
       constexpr unsigned int SSAONoiseTextureSize = 4;
    }
@@ -184,7 +184,13 @@ namespace Mile
       /** Skybox/IBL */
       SkyLightComponent* m_skyLight;
       SkyLightComponent* m_oldSkyLight;
-      bool m_bPrecomputeIBL;
+      /** 
+      * Frame 0 : Convert to cubemap
+      * Frame 1 : Diffuse Irradiance
+      * Frame 2~7 : Precompute Specular IBL; (+x, -x, +y, -y, +z, -z)
+      * Frame 8 : BRDF integration
+      */
+      unsigned int m_iblStage;
 
       DynamicCubemapRef m_environmentMap;
       DynamicCubemapRef m_irradianceMap;

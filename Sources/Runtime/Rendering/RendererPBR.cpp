@@ -104,7 +104,6 @@ namespace Mile
       m_convertSkyboxPassPS(nullptr),
       m_skyLight(nullptr),
       m_oldSkyLight(nullptr),
-      m_bPrecomputeIBL(true),
       m_quadMesh(nullptr),
       m_cubeMesh(nullptr),
       m_environmentMap(nullptr),
@@ -152,7 +151,8 @@ namespace Mile
       m_ssaoDebugBuffer(nullptr),
       m_debugDepthSSAOVS(nullptr),
       m_debugDepthSSAOPS(nullptr),
-      m_lightingDebugBuffer(nullptr)
+      m_lightingDebugBuffer(nullptr),
+      m_iblStage(0)
    {
    }
 
@@ -776,7 +776,7 @@ namespace Mile
       struct ConvertSkyboxPassData : public RenderPassDataBase
       {
          SamplerResource* Sampler = nullptr;
-         BoolRefResource* IBLPrecomputeEnabledRef = nullptr;
+         VoidRefResource* IBLStageRef = nullptr;
          SkyLightRefResource* SkyLightRef = nullptr;
          std::array<MatrixResource*, CUBE_FACES> CaptureViews{ nullptr, };
          ViewportResource* CaptureViewport = nullptr;
@@ -833,7 +833,7 @@ namespace Mile
             samplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
             data.Sampler = builder.Create<SamplerResource>("LinearClampAlwaysSampler", samplerDesc);
 
-            data.IBLPrecomputeEnabledRef = builder.Create<BoolRefResource>("IBLPrecomputeEnabledRef", BoolRefDescriptor{ &m_bPrecomputeIBL });
+            data.IBLStageRef = builder.Create<VoidRefResource>("IBLStageRef", VoidRefDescriptor{ &m_iblStage });
             data.SkyLightRef = builder.Read(skyLightRefRes);
             for (size_t idx = 0; idx < CUBE_FACES; ++idx)
             {
@@ -872,13 +872,12 @@ namespace Mile
          },
          [](const ConvertSkyboxPassData& data)
          {
-            OPTICK_EVENT("ExecuteConvertSkyboxPass");
-            auto& profiler = data.Renderer->GetProfiler();
-            ScopedGPUProfile profile(profiler, "ConvertSkyboxPass");
-
-            BoolRef bIBLPrecomputeEnabledRef = (*data.IBLPrecomputeEnabledRef->GetActual());
-            if (bIBLPrecomputeEnabledRef != nullptr && (*bIBLPrecomputeEnabledRef))
+            unsigned int* iblStageRef = (unsigned int*)(*data.IBLStageRef->GetActual());
+            if ((*iblStageRef) == 0)
             {
+               OPTICK_EVENT("ExecuteConvertSkyboxPass");
+               auto& profiler = data.Renderer->GetProfiler();
+               ScopedGPUProfile profile(profiler, "ConvertSkyboxPass");
                ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
                immediateContext.ClearState();
                immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -953,6 +952,8 @@ namespace Mile
                convertParamsBuffer->Unbind(immediateContext, 0, EShaderType::PixelShader);
                transformBuffer->Unbind(immediateContext, 0, EShaderType::VertexShader);
                vertexShader->Unbind(immediateContext);
+
+               ++(*iblStageRef);
             }
          });
 
@@ -961,7 +962,7 @@ namespace Mile
       /** Solve Diffuse Integral */
       struct DiffuseIntegralPassData : public RenderPassDataBase
       {
-         BoolRefResource* IBLPrecomputeEnabledRef = nullptr;
+         VoidRefResource* IBLStageRef = nullptr;
 
          SamplerResource* Sampler = nullptr;
          ViewportResource* Viewport = nullptr;
@@ -1004,7 +1005,7 @@ namespace Mile
             data.VertexShader = builder.Read(diffuseIntegralPassVSRes);
             data.PixelShader = builder.Read(diffuseIntegralPassPSRes);
 
-            data.IBLPrecomputeEnabledRef = builder.Read(convertSkyboxToCubemapPassData.IBLPrecomputeEnabledRef);
+            data.IBLStageRef = builder.Read(convertSkyboxToCubemapPassData.IBLStageRef);
 
             data.Sampler = builder.Read(convertSkyboxToCubemapPassData.Sampler);
             data.Viewport = builder.Read(convertSkyboxToCubemapPassData.CaptureViewport);
@@ -1024,13 +1025,12 @@ namespace Mile
          },
          [](const DiffuseIntegralPassData& data)
          {
-            OPTICK_EVENT("ExecuteDiffuseIntegralPass");
-            auto& profiler = data.Renderer->GetProfiler();
-            ScopedGPUProfile profile(profiler, "DiffuseIntegralPass");
-
-            BoolRef bIBLPrecomputeEnabledRef = (*data.IBLPrecomputeEnabledRef->GetActual());
-            if (bIBLPrecomputeEnabledRef != nullptr && (*bIBLPrecomputeEnabledRef))
+            unsigned int* iblStageRef = (unsigned int*)(*data.IBLStageRef->GetActual());
+            if ((*iblStageRef) == 1)
             {
+               OPTICK_EVENT("ExecuteDiffuseIntegralPass");
+               auto& profiler = data.Renderer->GetProfiler();
+               ScopedGPUProfile profile(profiler, "DiffuseIntegralPass");
                ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
                immediateContext.ClearState();
                immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -1075,6 +1075,8 @@ namespace Mile
                sampler->Unbind(immediateContext, 0);
                pixelShader->Unbind(immediateContext);
                vertexShader->Unbind(immediateContext);
+
+               ++(*iblStageRef);
             }
          });
 
@@ -1083,7 +1085,7 @@ namespace Mile
       /** ComputePrefilteredEnvMap */
       struct PrefilterEnvPassData : public RenderPassDataBase
       {
-         BoolRefResource* IBLPrecomputeEnabledRef = nullptr;
+         VoidRefResource* IBLStageRef = nullptr;
 
          SamplerResource* Sampler = nullptr;
          std::vector<ViewportResource*> MipViewports;
@@ -1128,7 +1130,7 @@ namespace Mile
             data.VertexShader = builder.Read(prefilterPassVSRes);
             data.PixelShader = builder.Read(prefilterPassPSRes);
 
-            data.IBLPrecomputeEnabledRef = builder.Read(diffuseIntegralPassData.IBLPrecomputeEnabledRef);
+            data.IBLStageRef = builder.Read(diffuseIntegralPassData.IBLStageRef);
 
             data.Sampler = builder.Read(diffuseIntegralPassData.Sampler);
             unsigned int maxMipLevels = m_prefilteredEnvMap->GetMaxMipLevels();
@@ -1163,13 +1165,13 @@ namespace Mile
          },
          [](const PrefilterEnvPassData& data)
          {
-            OPTICK_EVENT("ExecutePrefilterEnvPass");
-            auto& profiler = data.Renderer->GetProfiler();
-            ScopedGPUProfile profile(profiler, "PrefilterEnvironmentMapPass");
-
-            BoolRef bIBLPrecomputeEnabledRef = (*data.IBLPrecomputeEnabledRef->GetActual());
-            if (bIBLPrecomputeEnabledRef != nullptr && (*bIBLPrecomputeEnabledRef))
+            unsigned int* iblStageRef = (unsigned int*)(*data.IBLStageRef->GetActual());
+            if ((*iblStageRef) > 1 && (*iblStageRef) < 8)
             {
+               OPTICK_EVENT("ExecutePrefilterEnvPass");
+               auto& profiler = data.Renderer->GetProfiler();
+               ScopedGPUProfile profile(profiler, "PrefilterEnvironmentMapPass");
+
                ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
                immediateContext.ClearState();
                immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -1207,16 +1209,14 @@ namespace Mile
                   (*mappedParamsBuffer) = OneVector2ConstantBuffer{ Vector2(roughness, (float)outputPrefilteredEnvMap->GetWidth()) };
                   paramsBuffer->UnMap(immediateContext);
 
-                  for (unsigned int faceIdx = 0; faceIdx < CUBE_FACES; ++faceIdx)
-                  {
-                     auto mappedTrasnformBuffer = transformBuffer->Map<OneMatrixConstantBuffer>(immediateContext);
-                     (*mappedTrasnformBuffer) = OneMatrixConstantBuffer{ *data.CaptureViews[faceIdx]->GetActual() };
-                     transformBuffer->UnMap(immediateContext);
+                  unsigned int targetCubeFace = (*iblStageRef) - 2;
+                  auto mappedTrasnformBuffer = transformBuffer->Map<OneMatrixConstantBuffer>(immediateContext);
+                  (*mappedTrasnformBuffer) = OneMatrixConstantBuffer{ *data.CaptureViews[targetCubeFace]->GetActual() };
+                  transformBuffer->UnMap(immediateContext);
 
-                     outputPrefilteredEnvMap->BindAsRenderTarget(immediateContext, faceIdx, mipLevel);
-                     data.Renderer->DrawIndexed(cubeMesh->GetVertexCount(), cubeMesh->GetIndexCount());
-                     outputPrefilteredEnvMap->UnbindAsRenderTarget(immediateContext);
-                  }
+                  outputPrefilteredEnvMap->BindAsRenderTarget(immediateContext, targetCubeFace, mipLevel);
+                  data.Renderer->DrawIndexed(cubeMesh->GetVertexCount(), cubeMesh->GetIndexCount());
+                  outputPrefilteredEnvMap->UnbindAsRenderTarget(immediateContext);
                }
 
                /** Unbinds */
@@ -1226,6 +1226,8 @@ namespace Mile
                sampler->Unbind(immediateContext, 0);
                pixelShader->Unbind(immediateContext);
                vertexShader->Unbind(immediateContext);
+
+               ++(*iblStageRef);
             }
          });
 
@@ -1234,7 +1236,7 @@ namespace Mile
       /** Integrate BRDF */
       struct IntegrateBRDFPassData : public RenderPassDataBase
       {
-         BoolRefResource* IBLPrecomputeEnabledRef = nullptr;
+         VoidRefResource* IBLStageRef = nullptr;
 
          SamplerResource* Sampler = nullptr;
 
@@ -1280,7 +1282,7 @@ namespace Mile
             data.PixelShader = builder.Read(integrateBRDFPassPSRes);
             data.Sampler = builder.Read(prefilterEnvMapPassData.Sampler);
 
-            data.IBLPrecomputeEnabledRef = builder.Read(prefilterEnvMapPassData.IBLPrecomputeEnabledRef);
+            data.IBLStageRef = builder.Read(prefilterEnvMapPassData.IBLStageRef);
 
             DepthStencilStateDescriptor dsStateDesc;
             dsStateDesc.Renderer = this;
@@ -1297,13 +1299,13 @@ namespace Mile
          },
          [](const IntegrateBRDFPassData& data)
          {
-            OPTICK_EVENT("ExecuteIntegrateBRDFPass");
-            auto& profiler = data.Renderer->GetProfiler();
-            ScopedGPUProfile profile(profiler, "IntegrateBRDFPass");
-
-            BoolRef bIBLPrecomputeEnabledRef = (*data.IBLPrecomputeEnabledRef->GetActual());
-            if (bIBLPrecomputeEnabledRef != nullptr && (*bIBLPrecomputeEnabledRef))
+            unsigned int* iblStageRef = (unsigned int*)(*data.IBLStageRef->GetActual());
+            if ((*iblStageRef) == 8)
             {
+               OPTICK_EVENT("ExecuteIntegrateBRDFPass");
+               auto& profiler = data.Renderer->GetProfiler();
+               ScopedGPUProfile profile(profiler, "IntegrateBRDFPass");
+
                ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
                immediateContext.ClearState();
                immediateContext.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -1338,7 +1340,7 @@ namespace Mile
                pixelShader->Unbind(immediateContext);
                vertexShader->Unbind(immediateContext);
 
-               (*bIBLPrecomputeEnabledRef) = false;
+               ++(*iblStageRef);
             }
          });
 
@@ -2870,6 +2872,7 @@ namespace Mile
    void RendererPBR::AcquireRenderResources(const World& world)
    {
       OPTICK_EVENT();
+      ID3D11DeviceContext& immediateContext = GetImmediateContext();
       auto threadPool = Engine::GetThreadPool();
       auto acquireMeshRenderersAndMatTask = threadPool->AddTask([&]()
          {
@@ -2912,20 +2915,25 @@ namespace Mile
                if (m_skyLight != m_oldSkyLight)
                {
                   m_oldSkyLight = m_skyLight;
-                  m_bPrecomputeIBL = true;
+                  m_iblStage = 0;
                }
 
-               m_bPrecomputeIBL |= m_skyLight->IsComputeAsRealtime();
+               if (m_skyLight->IsComputeAsRealtime() && m_iblStage == 9)
+               {
+                  m_iblStage = 0;
+               }
             }
             else
             {
                if (m_skyLight != nullptr)
                {
-                  m_bPrecomputeIBL = true;
+                  m_skyLight = nullptr;
+                  m_oldSkyLight = nullptr;
+                  m_environmentMap->ClearAll(immediateContext, Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+                  m_irradianceMap->ClearAll(immediateContext, Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+                  m_prefilteredEnvMap->ClearAll(immediateContext, Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+                  m_brdfLUT->Clear(immediateContext, Vector4(0.0f, 0.0f, 0.0f, 1.0f));
                }
-
-               m_skyLight = nullptr;
-               m_oldSkyLight = nullptr;
             }
          });
 
