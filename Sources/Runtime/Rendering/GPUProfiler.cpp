@@ -108,12 +108,18 @@ namespace Mile
                data.ElapsedTime = ((data.ElapsedTimeHz / frequency) * 1000.0);
             }
 
-            m_profileTimes[(*dataItr).first] = data.ElapsedTime;
+            auto& accData = m_profileTimes[(*dataItr).first];
+            accData.RecentElapsed = data.ElapsedTime;
+            accData.AccumulatedTime += data.ElapsedTime;
+            accData.MaxTime = std::max(accData.MaxTime, data.ElapsedTime);
+            accData.MinTime = std::min(accData.MinTime, data.ElapsedTime);
+            accData.Samples += 1.0;
+            accData.AvgTime = accData.AccumulatedTime / accData.Samples;
             data.Reset();
          }
          else if (!data.bIsOnQuery)
          {
-            m_profileTimes[dataItr->first] = 0.0;
+            m_profileTimes[dataItr->first].RecentElapsed = 0.0;
          }
       }
    }

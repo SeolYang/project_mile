@@ -7,6 +7,16 @@ namespace Mile
    class MEAPI GPUProfiler
    {
    public:
+      struct MEAPI GPUProfilDataeAccumulation
+      {
+         double RecentElapsed = 0.0;
+         double AccumulatedTime = 0.0;
+         double Samples = 0.0;
+         double AvgTime = 0.0f;
+         double MaxTime = 0.0f;
+         double MinTime = DBL_MAX;
+      };
+
       struct MEAPI GPUProfileData
       {
          bool bIsOnQuery = false;
@@ -69,7 +79,7 @@ namespace Mile
          {
             if (!(*m_profiles.find(data.first)).second.bIsDeferred)
             {
-               sum += data.second;
+               sum += data.second.RecentElapsed;
             }
          }
 
@@ -79,7 +89,7 @@ namespace Mile
    private:
       RendererDX11* m_renderer;
       std::unordered_map<std::string, GPUProfileData> m_profiles;
-      std::map<std::string, double> m_profileTimes;
+      std::map<std::string, GPUProfilDataeAccumulation> m_profileTimes;
       UINT64 m_currentFrame;
       UINT64 m_queryLatency;
       std::vector<UINT64> m_drawCalls;

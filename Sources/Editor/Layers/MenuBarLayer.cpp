@@ -360,14 +360,16 @@ namespace Mile
                profiler.SetQueryLatency(latency);
             }
 
-            std::string profileOverallTime = Mile::Formatting("Overall\t%.03f", profiler.GetProfileOverallTime()).append(" ms");
+            ImGui::Text("Recent(ms)\tMin(ms)\tMax(ms)\tAvg(ms)");
+            std::string profileOverallTime = Mile::Formatting("Overall\t%.03f ms", profiler.GetProfileOverallTime());
             ImGui::Text(profileOverallTime.c_str());
 
             const auto& profileDatas = profiler.GetProfileTimes();
             for (const auto& data : profileDatas)
             {
+               const auto& accData = data.second;
                std::string profileStr = data.first;
-               profileStr.append(Mile::Formatting("\t%.03f", data.second).append(" ms"));
+               profileStr.append(Mile::Formatting("\t:\t%.03f ms\t%.03f ms\t%.03f ms\t%.03f ms", accData.RecentElapsed, accData.MinTime, accData.MaxTime, accData.AvgTime));
                ImGui::Text(profileStr.c_str());
             }
          }
