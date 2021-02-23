@@ -60,18 +60,15 @@ namespace Mile
 
    void SkyLightComponent::OnGUI()
    {
-      ImGui::Columns(2);
-      {
-         ImGui::Text("Intensity Scale");
-         ImGui::Text("Real Time Capture");
+      ImGui::Spacing();
+      ImGui::Text("Intensity Scale");
+      ImGui::Spacing(); ImGui::Spacing();
+      ImGui::Text("Real Time Capture");
 
-         ImGui::NextColumn();
-         ImGui::InputFloat("##Intensity Scale", &m_intensityScale);
-         ImGui::Checkbox("##RealtimeCapture", &m_bRealtime);
-
-         ImGui::EndColumns();
-      }
+      ImGui::NextColumn();
 
       ImGui::Spacing();
+      ImGui::InputFloat("##Intensity Scale", &m_intensityScale);
+      ImGui::Checkbox("##RealtimeCapture", &m_bRealtime);
    }
 }

@@ -63,10 +63,22 @@ namespace Mile
 
    void CameraComponent::OnGUI()
    {
-      GUI::FloatInput("Field Of View", m_fov, 1.0f, 10.0f, 90.0f, true);
-      GUI::FloatInput("Near", m_nearPlane, 0.1f, 0.01f, FLT_MAX);
-      GUI::FloatInput("Far", m_farPlane, 0.1f, 0.01f, FLT_MAX);
-      GUI::Vector4Input("Clear Color", m_clearColor, 0.1f, 0.0f, 1.0f);
-      /** @todo Render Texture */
+      ImGui::Spacing();
+      ImGui::Text("Field Of View");
+      ImGui::Spacing(); ImGui::Spacing();
+      ImGui::Text("Near Plane");
+      ImGui::Spacing(); ImGui::Spacing();
+      ImGui::Text("Far Plane");
+      ImGui::Spacing(); ImGui::Spacing();
+      ImGui::Text("Clear Color");
+
+      ImGui::NextColumn();
+
+      ImGui::Spacing();
+      GUI::FloatInput("##Field Of View", m_fov, 1.0f, 10.0f, 90.0f, true);
+      GUI::FloatInput("##Near", m_nearPlane, 0.1f, 0.01f, FLT_MAX);
+      GUI::FloatInput("##Far", m_farPlane, 0.1f, 0.01f, FLT_MAX);
+      GUI::Vector4Input("##Clear Color", m_clearColor, 0.1f, 0.0f, 1.0f);
+      /** @todo Add Render Texture */
    }
 }

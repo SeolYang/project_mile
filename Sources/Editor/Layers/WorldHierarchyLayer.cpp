@@ -125,47 +125,72 @@ namespace Mile
 
                if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
                {
-                  const char* items[] = { "World", "Local" };
-                  static const char* currentItem = items[static_cast<UINT32>(m_transformSpace)];
-
-                  if (ImGui::BeginCombo("Space", currentItem))
+                  ImGui::Columns(2, "ss");
                   {
-                     for (UINT32 idx = 0; idx < IM_ARRAYSIZE(items); ++idx)
+                     // Property Names
                      {
-                        bool bSelected = (currentItem == items[idx]);
-                        if (ImGui::Selectable(items[idx], bSelected))
-                        {
-                           currentItem = items[idx];
-                           m_transformSpace = static_cast<ETransformSpace>(idx);
-                           m_tempEulerRotation = Math::QuaternionToEulerAngles(m_selectedEntity->GetTransform()->GetRotation(m_transformSpace));
-                           m_tempPosition = m_selectedEntity->GetTransform()->GetPosition(m_transformSpace);
-                        }
-                        if (bSelected)
-                        {
-                           ImGui::SetItemDefaultFocus();
-                        }
+                        ImGui::Spacing();
+                        ImGui::Text("Transform Space");
+                        ImGui::Spacing();
+                        ImGui::Spacing();
+                        ImGui::Text("Position");
+                        ImGui::Spacing();
+                        ImGui::Spacing();
+                        ImGui::Text("Rotation");
+                        ImGui::Spacing();
+                        ImGui::Spacing();
+                        ImGui::Text("Scale");
                      }
 
-                     ImGui::EndCombo();
-                  }
+                     ImGui::NextColumn();
 
-                  Transform* entitiyTransform = m_selectedEntity->GetTransform();
-                  auto position = entitiyTransform->GetPosition(m_transformSpace);
-                  if (GUI::Vector3Input("Position", position))
-                  {
-                     entitiyTransform->SetPosition(position, m_transformSpace);
-                  }
+                     // Properties
+                     {
+                        const char* items[] = { "World", "Local" };
+                        static const char* currentItem = items[static_cast<UINT32>(m_transformSpace)];
 
-                  if (GUI::Vector3Input("Rotation", m_tempEulerRotation))
-                  {
-                     entitiyTransform->SetRotation(Math::EulerToQuaternionInOrder(m_tempEulerRotation), m_transformSpace);
-                  }
+                        ImGui::Spacing();
+                        if (ImGui::BeginCombo("##Space", currentItem))
+                        {
+                           for (UINT32 idx = 0; idx < IM_ARRAYSIZE(items); ++idx)
+                           {
+                              bool bSelected = (currentItem == items[idx]);
+                              if (ImGui::Selectable(items[idx], bSelected))
+                              {
+                                 currentItem = items[idx];
+                                 m_transformSpace = static_cast<ETransformSpace>(idx);
+                                 m_tempEulerRotation = Math::QuaternionToEulerAngles(m_selectedEntity->GetTransform()->GetRotation(m_transformSpace));
+                                 m_tempPosition = m_selectedEntity->GetTransform()->GetPosition(m_transformSpace);
+                              }
+                              if (bSelected)
+                              {
+                                 ImGui::SetItemDefaultFocus();
+                              }
+                           }
 
-                  auto scale = entitiyTransform->GetScale(m_transformSpace);
-                  if (GUI::Vector3Input("Scale", scale))
-                  {
-                     entitiyTransform->SetScale(scale, m_transformSpace);
+                           ImGui::EndCombo();
+                        }
+
+                        Transform* entitiyTransform = m_selectedEntity->GetTransform();
+                        auto position = entitiyTransform->GetPosition(m_transformSpace);
+                        if (GUI::Vector3Input("##Position", position))
+                        {
+                           entitiyTransform->SetPosition(position, m_transformSpace);
+                        }
+
+                        if (GUI::Vector3Input("##Rotation", m_tempEulerRotation))
+                        {
+                           entitiyTransform->SetRotation(Math::EulerToQuaternionInOrder(m_tempEulerRotation), m_transformSpace);
+                        }
+
+                        auto scale = entitiyTransform->GetScale(m_transformSpace);
+                        if (GUI::Vector3Input("##Scale", scale))
+                        {
+                           entitiyTransform->SetScale(scale, m_transformSpace);
+                        }
+                     }
                   }
+                  ImGui::EndColumns();
 
                   ImGui::Spacing();
                   ImGui::Separator();
@@ -175,10 +200,13 @@ namespace Mile
                auto& components = m_selectedEntity->GetComponents();
                for (auto component : components)
                {
-                  String typeStr = component->GetType();
-                  if (ImGui::CollapsingHeader(WString2String(typeStr).c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+                  std::string typeStr = WString2String(component->GetType());
+                  if (ImGui::CollapsingHeader(typeStr.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
                   {
+                     ImGui::Columns(2, (typeStr.append("_col")).c_str());
                      component->OnGUI();
+                     ImGui::EndColumns();
+
                      ImGui::Spacing();
                      ImGui::Separator();
                      ImGui::Spacing();
