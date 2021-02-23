@@ -21,7 +21,7 @@ struct PSInput
 
 float2 IntegrateBRDF(float NdotV, float roughness)
 {
-   const uint SAMPLE_COUNT = 128u;
+   const uint SAMPLE_COUNT = 1024;
    float3 V;
    V.x = sqrt(1.0f - (NdotV * NdotV));
    V.y = 0.0f;

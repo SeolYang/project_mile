@@ -48,7 +48,7 @@ VSOutput MileVS(in VSInput input)
 
 float4 MilePS(in PSInput input) : SV_Target0
 {
-	const uint SAMPLE_COUNT = 64u;
+	const uint SAMPLE_COUNT = 1024;
 	float3 N = normalize(input.PositionWS);
 	float3 R = N;
 	float3 V = R;
