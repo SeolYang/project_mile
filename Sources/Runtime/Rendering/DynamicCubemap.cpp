@@ -20,12 +20,6 @@ namespace Mile
             SafeRelease(m_rtvs[idx][mipLevel]);
          }
       }
-
-      for (unsigned int mipLevel = 0; mipLevel <= m_maxMipLevels; ++mipLevel)
-      {
-         SafeDelete(m_depthStencils[mipLevel]);
-      }
-
    }
    
    bool DynamicCubemap::Init(unsigned int size)
@@ -74,20 +68,6 @@ namespace Mile
                }
             }
 
-            m_depthStencils.resize(static_cast<size_t>(m_maxMipLevels) + 1);
-            for (unsigned int mipLevel = 0; mipLevel <= m_maxMipLevels; ++mipLevel)
-            {
-               float depthStencilSize = std::exp2(static_cast<float>(m_maxMipLevels - mipLevel));
-               m_depthStencils[mipLevel] = new DepthStencilBufferDX11(renderer);
-               if (!m_depthStencils[mipLevel]->Init(
-                  static_cast<unsigned int>(depthStencilSize),
-                  static_cast<unsigned int>(depthStencilSize),
-                  false))
-               {
-                  return false;
-               }
-            }
-
             if (!FAILED(result))
             {
                if (InitSRV(desc, true))
@@ -102,27 +82,13 @@ namespace Mile
       return false;
    }
 
-   bool DynamicCubemap::BindAsRenderTarget(ID3D11DeviceContext& deviceContext, unsigned int faceIdx, unsigned int mipLevel, bool clearRenderTarget, bool clearDepth)
+   bool DynamicCubemap::BindAsRenderTarget(ID3D11DeviceContext& deviceContext, unsigned int faceIdx, unsigned int mipLevel)
    {
       if (RenderObject::IsBindable())
       {
          if (faceIdx < 6)
          {
-            ID3D11DepthStencilView* dsv = m_depthStencils[mipLevel]->GetDSV();
-            if (clearRenderTarget)
-            {
-               float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-               deviceContext.ClearRenderTargetView(m_rtvs[faceIdx][mipLevel], clearColor);
-            }
-            if (clearDepth)
-            {
-               if (dsv != nullptr)
-               {
-                  deviceContext.ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
-               }
-            }
-
-            deviceContext.OMSetRenderTargets(1, &m_rtvs[faceIdx][mipLevel], dsv);
+            deviceContext.OMSetRenderTargets(1, &m_rtvs[faceIdx][mipLevel], nullptr);
             return true;
          }
       }
@@ -135,6 +101,25 @@ namespace Mile
       if (RenderObject::IsBindable())
       {
          deviceContext.OMSetRenderTargets(0, nullptr, nullptr);
+      }
+   }
+
+   void DynamicCubemap::Clear(ID3D11DeviceContext& context, unsigned int faceIdx, unsigned int mipLevel, const Vector4& clearColor)
+   {
+      if (RenderObject::IsBindable())
+      {
+         context.ClearRenderTargetView(m_rtvs[faceIdx][mipLevel], clearColor.elements);
+      }
+   }
+
+   void DynamicCubemap::ClearAll(ID3D11DeviceContext& context, const Vector4& clearColor)
+   {
+      for (unsigned int cubeFace = 0; cubeFace < 6; ++cubeFace)
+      {
+         for (unsigned int mipLevel = 0; mipLevel < m_rtvs[cubeFace].size(); ++mipLevel)
+         {
+            Clear(context, cubeFace, mipLevel, clearColor);
+         }
       }
    }
 }
