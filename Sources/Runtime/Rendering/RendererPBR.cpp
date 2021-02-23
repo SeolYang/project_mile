@@ -22,7 +22,7 @@
 #include "Component/CameraComponent.h"
 #include "Component/LightComponent.h"
 #include "Component/MeshRenderComponent.h"
-#include "Component/SkyboxComponent.h"
+#include "Component/SkyLightComponent.h"
 #include "Resource/ResourceManager.h"
 #include "Resource/RenderTexture.h"
 #include "Resource/Material.h"
@@ -102,8 +102,8 @@ namespace Mile
       m_geometryPassPS(nullptr),
       m_convertSkyboxPassVS(nullptr),
       m_convertSkyboxPassPS(nullptr),
-      m_skyboxTexture(nullptr),
-      m_oldSkyboxTexture(nullptr),
+      m_skyLight(nullptr),
+      m_oldSkyLight(nullptr),
       m_bPrecomputeIBL(true),
       m_quadMesh(nullptr),
       m_cubeMesh(nullptr),
@@ -777,7 +777,7 @@ namespace Mile
       {
          SamplerResource* Sampler = nullptr;
          BoolRefResource* IBLPrecomputeEnabledRef = nullptr;
-         Texture2DRefResource* SkyboxTextureRef = nullptr;
+         SkyLightRefResource* SkyLightRef = nullptr;
          std::array<MatrixResource*, CUBE_FACES> CaptureViews{ nullptr, };
          ViewportResource* CaptureViewport = nullptr;
          ConstantBufferResource* CaptureTransformBuffer = nullptr;
@@ -787,10 +787,10 @@ namespace Mile
          DynamicCubemapRefResource* OutputEnvMapRef = nullptr;
       };
 
-      auto skyboxTextureRefRes = m_frameGraph.AddExternalPermanentResource(
-         "SkyboxTextureRef",
-         Texture2DRefDescriptor(),
-         &m_skyboxTexture);
+      auto skyLightRefRes = m_frameGraph.AddExternalPermanentResource(
+         "SkyLightRef",
+         SkyLightRefDesc(),
+         &m_skyLight);
 
       auto cubeMeshRefRes = m_frameGraph.AddExternalPermanentResource(
          "CubeMeshRef",
@@ -833,7 +833,7 @@ namespace Mile
             data.Sampler = builder.Create<SamplerResource>("LinearClampAlwaysSampler", samplerDesc);
 
             data.IBLPrecomputeEnabledRef = builder.Create<BoolRefResource>("IBLPrecomputeEnabledRef", BoolRefDescriptor{ &m_bPrecomputeIBL });
-            data.SkyboxTextureRef = builder.Read(skyboxTextureRefRes);
+            data.SkyLightRef = builder.Read(skyLightRefRes);
             for (size_t idx = 0; idx < CUBE_FACES; ++idx)
             {
                data.CaptureViews[idx] = builder.Create<MatrixResource>("CubeCaptureViews", MatrixDescriptor{ captureViews[idx] });
@@ -881,7 +881,12 @@ namespace Mile
                auto pixelShader = data.PixelShader->GetActual();
                auto sampler = data.Sampler->GetActual();
                auto viewport = data.CaptureViewport->GetActual();
-               auto skyboxTexture = (*data.SkyboxTextureRef->GetActual());
+               auto skyLight = (*data.SkyLightRef->GetActual());
+               Texture2D* skyTexture = nullptr;
+               if (skyLight != nullptr)
+               {
+                  skyTexture = skyLight->GetTexture();
+               }
                auto transformBuffer = data.CaptureTransformBuffer->GetActual();
 
                /** Binds */
@@ -890,13 +895,13 @@ namespace Mile
                pixelShader->Bind(immediateContext);
                sampler->Bind(immediateContext, 0);
                viewport->Bind(immediateContext);
-               Texture2dDX11* skyboxTextureDX11 = nullptr;
-               if (skyboxTexture != nullptr)
+               Texture2dDX11* rawSkyTexture = nullptr;
+               if (skyTexture != nullptr)
                {
-                  skyboxTextureDX11 = skyboxTexture->GetRawTexture();
-                  if (skyboxTextureDX11 != nullptr)
+                  rawSkyTexture = skyTexture->GetRawTexture();
+                  if (rawSkyTexture != nullptr)
                   {
-                     skyboxTextureDX11->Bind(immediateContext, 0, EShaderType::PixelShader);
+                     rawSkyTexture->Bind(immediateContext, 0, EShaderType::PixelShader);
                   }
                }
 
@@ -921,9 +926,9 @@ namespace Mile
                outputEnvMap->GenerateMips(immediateContext);
 
                /** Unbinds */
-               if (skyboxTextureDX11 != nullptr)
+               if (rawSkyTexture != nullptr)
                {
-                  skyboxTextureDX11->Unbind(immediateContext, 0, EShaderType::PixelShader);
+                  rawSkyTexture->Unbind(immediateContext, 0, EShaderType::PixelShader);
                }
                sampler->Unbind(immediateContext, 0);
                pixelShader->Unbind(immediateContext);
@@ -2878,35 +2883,37 @@ namespace Mile
             m_cameras.resize(0);
             world.GetComponentsFromEntities<CameraComponent>(m_cameras, false);
          });
-      auto acquireSkyboxTask = threadPool->AddTask([&]()
+      auto acquireSkyLightTask = threadPool->AddTask([&]()
          {
-            OPTICK_EVENT("AcquireSkybox");
-            m_skyboxTexture = nullptr;
-            auto skyboxComponents{ std::move(world.GetComponentsFromEntities<SkyboxComponent>()) };
-            if (skyboxComponents.size() > 0)
+            OPTICK_EVENT("AcquireSkyLight");
+            auto skyLights{ std::move(world.GetComponentsFromEntities<SkyLightComponent>()) };
+            if (skyLights.size() > 0)
             {
-               m_skyboxTexture = skyboxComponents[0]->GetTexture();
-               if (m_skyboxTexture != m_oldSkyboxTexture)
+               m_skyLight = skyLights[0];
+               if (m_skyLight != m_oldSkyLight)
                {
-                  m_oldSkyboxTexture = m_skyboxTexture;
+                  m_oldSkyLight = m_skyLight;
                   m_bPrecomputeIBL = true;
                }
+
+               m_bPrecomputeIBL |= m_skyLight->IsComputeAsRealtime();
             }
             else
             {
-               m_skyboxTexture = nullptr;
-               if (m_oldSkyboxTexture != nullptr)
+               if (m_skyLight != nullptr)
                {
-                  m_oldSkyboxTexture = nullptr;
                   m_bPrecomputeIBL = true;
                }
+
+               m_skyLight = nullptr;
+               m_oldSkyLight = nullptr;
             }
          });
 
       acquireMeshRenderersAndMatTask.get();
       acquireLightsTask.get();
       acquireCamerasTask.get();
-      acquireSkyboxTask.get();
+      acquireSkyLightTask.get();
    }
 
    void RendererPBR::RenderMeshes(RendererDX11* renderer, bool bClearGBuffer, const Meshes& meshes, size_t offset, size_t num, VertexShaderDX11* vertexShader, PixelShaderDX11* pixelShader, SamplerDX11* sampler, GBuffer* gBuffer, ConstantBufferDX11* transformBuffer, ConstantBufferDX11* materialParamsBuffer, RasterizerState* rasterizerState, Viewport* viewport, CameraRef camera, size_t threadIdx)

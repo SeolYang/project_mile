@@ -23,7 +23,7 @@
 #include "Component/CameraComponent.h"
 #include "Component/LightComponent.h"
 #include "Component/MeshRenderComponent.h"
-#include "Component/SkyboxComponent.h"
+#include "Component/SkyLightComponent.h"
 #include "Resource/ResourceManager.h"
 #include "Resource/RenderTexture.h"
 #include "Resource/Material.h"
@@ -36,6 +36,12 @@ namespace Elaina
    CameraRef* Realize(const CameraRefDescriptor& descriptor)
    {
       return new CameraRef(descriptor.Reference);
+   }
+
+   template<>
+   SkyLightRef* Realize(const SkyLightRefDesc& desc)
+   {
+      return new SkyLightRef(desc.Reference);
    }
 
    template<>

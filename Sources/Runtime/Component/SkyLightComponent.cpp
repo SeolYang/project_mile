@@ -1,33 +1,37 @@
-#include "Component/SkyboxComponent.h"
+#include "Component/SkyLightComponent.h"
 #include "Core/Engine.h"
 #include "Resource/ResourceManager.h"
 #include "Resource/Texture2D.h"
 
 namespace Mile
 {
-   DefineComponent(SkyboxComponent);
-   DEFINE_LOG_CATEGORY(MileSkyboxComponent);
+   DefineComponent(SkyLightComponent);
+   DEFINE_LOG_CATEGORY(MileSkyLightComponent);
 
-   SkyboxComponent::SkyboxComponent(Entity* entity) :
+   SkyLightComponent::SkyLightComponent(Entity* entity) :
       Component(entity),
+      m_luminanceMultiplier(1.0f),
+      m_bRealtime(false),
       m_skybox(nullptr)
    {
    }
 
-   json SkyboxComponent::Serialize() const
+   json SkyLightComponent::Serialize() const
    {
       json serialized = Component::Serialize();
       serialized["Path"] = WString2String(m_skybox->GetPath());
+      serialized["Realtime"] = m_bRealtime;
       return serialized;
    }
 
-   void SkyboxComponent::DeSerialize(const json& jsonData)
+   void SkyLightComponent::DeSerialize(const json& jsonData)
    {
       Component::DeSerialize(jsonData);
       SetTexture(String2WString(GetValueSafelyFromJson(jsonData, "Path", std::string())));
+      m_bRealtime = GetValueSafelyFromJson(jsonData, "Realtime", false);
    }
 
-   void SkyboxComponent::SetTexture(Texture2D* texture)
+   void SkyLightComponent::SetTexture(Texture2D* texture)
    {
       if (texture == nullptr)
       {
@@ -39,12 +43,12 @@ namespace Mile
       }
    }
 
-   void SkyboxComponent::SetTexture(const String& resourcePath)
+   void SkyLightComponent::SetTexture(const String& resourcePath)
    {
       auto texture = Engine::GetResourceManager()->Load<Texture2D>(resourcePath);
       if (texture == nullptr)
       {
-         ME_LOG(MileSkyboxComponent, Warning, (TEXT("Failed to load skybox texture from : ") + resourcePath));
+         ME_LOG(MileSkyLightComponent, Warning, (TEXT("Failed to load skybox texture from : ") + resourcePath));
       }
 
       SetTexture(texture);

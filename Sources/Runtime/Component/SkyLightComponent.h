@@ -4,14 +4,14 @@
 
 namespace Mile
 {
-   DECLARE_LOG_CATEGORY_EXTERN(MileSkyboxComponent, Log);
+   DECLARE_LOG_CATEGORY_EXTERN(MileSkyLightComponent, Log);
 
    class Texture2D;
-   class MEAPI SkyboxComponent : public Component
+   class MEAPI SkyLightComponent : public Component
    {
    public:
-      DeclareComponent(SkyboxComponent);
-      SkyboxComponent(Entity* entity);
+      DeclareComponent(SkyLightComponent);
+      SkyLightComponent(Entity* entity);
 
       void OnCreate() override { SetTexture(nullptr); }
 
@@ -22,8 +22,13 @@ namespace Mile
       void SetTexture(const String& resourcePath);
       Texture2D* GetTexture() const { return m_skybox; }
 
+      bool IsComputeAsRealtime() const { return m_bRealtime; }
+      bool& Realtime() { return m_bRealtime; }
+
    private:
       Texture2D* m_skybox;
+      float m_luminanceMultiplier;
+      bool m_bRealtime;
 
    };
 }

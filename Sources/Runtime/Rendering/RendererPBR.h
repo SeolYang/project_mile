@@ -57,6 +57,7 @@ namespace Mile
       IrradianceMap,
    };
 
+   class SkyLightComponent;
    class MEAPI RendererPBR : public RendererDX11
    {
    public:
@@ -181,8 +182,8 @@ namespace Mile
       RenderTargetDX11* m_outputRenderTarget;
 
       /** Skybox/IBL */
-      Texture2D* m_skyboxTexture;
-      Texture2D* m_oldSkyboxTexture;
+      SkyLightComponent* m_skyLight;
+      SkyLightComponent* m_oldSkyLight;
       bool m_bPrecomputeIBL;
 
       DynamicCubemapRef m_environmentMap;

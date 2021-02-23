@@ -218,7 +218,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nID : 40
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"SkyboxTextureRef" [label="SkyboxTextureRef
+"SkyLightRef" [label="SkyLightRef
 \nID : 41
 \nRefs : 1
 \nExternal Permanent", style=filled, fillcolor=palegreen]
@@ -656,7 +656,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "GeometryPassPackedMaterialParamsConstantBuffers" -> { } [color=yellow]
 "Viewport" -> { "LightingPass" "ConvertGBufferToViewSpacePass" "SSAOPass" "SSAOBlurPass" "AmbientEmissivePass" "SkyboxPass" "ExtractBrightnessPass" "BloomGaussBlurPass" "BloomBlendPass" "ToneMappingPass" "DebugDepthSSAOPass" } [color=yellow]
 "DefaultRasterizerState" -> { } [color=yellow]
-"SkyboxTextureRef" -> { "ConvertTextureToCubemap" } [color=yellow]
+"SkyLightRef" -> { "ConvertTextureToCubemap" } [color=yellow]
 "CubeMeshRef" -> { "ConvertTextureToCubemap" "DiffuseConvolutionPass" "PrefilterEnvironmentMapPass" "SkyboxPass" } [color=yellow]
 "ConvertSkyboxPassVertexShader" -> { "ConvertTextureToCubemap" } [color=yellow]
 "ConvertSkyboxPassPixelShader" -> { "ConvertTextureToCubemap" } [color=yellow]

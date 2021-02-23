@@ -18,6 +18,14 @@ namespace Mile
       World* TargetWorld = nullptr;
    };
 
+   class SkyLightComponent;
+   using SkyLightRef = SkyLightComponent*;
+   struct SkyLightRefDesc
+   {
+      SkyLightRef Reference = nullptr;
+   };
+   using SkyLightRefResource = Elaina::FrameResource<SkyLightRefDesc, SkyLightRef>;
+
    class LightComponent;
    using Lights = std::vector<LightComponent*>;
    using LightsDataResource = Elaina::FrameResource<WorldDescriptor, Lights>;

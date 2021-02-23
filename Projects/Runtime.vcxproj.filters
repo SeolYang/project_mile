@@ -573,9 +573,6 @@
     <ClInclude Include="..\Sources\Runtime\Rendering\RendererPBR.h">
       <Filter>Sources\Rendering\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Component\SkyboxComponent.h">
-      <Filter>Sources\Component</Filter>
-    </ClInclude>
     <ClInclude Include="..\Sources\Runtime\Rendering\FrameResources.h">
       <Filter>Sources\Rendering</Filter>
     </ClInclude>
@@ -583,6 +580,9 @@
       <Filter>Sources\Rendering\Profiler</Filter>
     </ClInclude>
     <ClInclude Include="..\Sources\Runtime\Rendering\Light.h">
+      <Filter>Sources\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Component\SkyLightComponent.h">
       <Filter>Sources\Component</Filter>
     </ClInclude>
   </ItemGroup>
@@ -788,9 +788,6 @@
     <ClCompile Include="..\Sources\Runtime\Rendering\RendererPBR.cpp">
       <Filter>Sources\Rendering\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Component\SkyboxComponent.cpp">
-      <Filter>Sources\Component</Filter>
-    </ClCompile>
     <ClCompile Include="..\Sources\Runtime\Rendering\FrameResourceRealizeImpl.hpp">
       <Filter>Sources\Rendering</Filter>
     </ClCompile>
@@ -799,6 +796,9 @@
     </ClCompile>
     <ClCompile Include="..\Sources\Runtime\Rendering\GPUProfiler.cpp">
       <Filter>Sources\Rendering\Profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Component\SkyLightComponent.cpp">
+      <Filter>Sources\Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
