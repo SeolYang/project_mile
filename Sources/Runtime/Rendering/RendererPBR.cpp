@@ -1128,8 +1128,8 @@ namespace Mile
             data.TransformBuffer = builder.Write(diffuseIntegralPassData.TransformBuffer);
             ConstantBufferDescriptor paramsBufferDesc;
             paramsBufferDesc.Renderer = this;
-            paramsBufferDesc.Size = sizeof(OneFloatConstantBuffer);
-            data.PrefilterParamsBuffer = builder.Create<ConstantBufferResource>("OneFlaotConstantBuffer", paramsBufferDesc);
+            paramsBufferDesc.Size = sizeof(OneVector2ConstantBuffer);
+            data.PrefilterParamsBuffer = builder.Create<ConstantBufferResource>("OneVector2ConstantBuffer", paramsBufferDesc);
 
             data.EnvironmentMapRef = builder.Read(diffuseIntegralPassData.EnvironmentMapRef);
 
@@ -1179,8 +1179,8 @@ namespace Mile
                   float roughness = (mipLevel / static_cast<float>(prefilteredEnvMapMaxMips - 1));
                   auto viewport = data.MipViewports[mipLevel]->GetActual();
                   viewport->Bind(immediateContext);
-                  auto mappedParamsBuffer = paramsBuffer->Map<OneFloatConstantBuffer>(immediateContext);
-                  (*mappedParamsBuffer) = OneFloatConstantBuffer{ roughness };
+                  auto mappedParamsBuffer = paramsBuffer->Map<OneVector2ConstantBuffer>(immediateContext);
+                  (*mappedParamsBuffer) = OneVector2ConstantBuffer{ Vector2(roughness, (float)outputPrefilteredEnvMap->GetWidth()) };
                   paramsBuffer->UnMap(immediateContext);
 
                   for (unsigned int faceIdx = 0; faceIdx < CUBE_FACES; ++faceIdx)
@@ -2012,7 +2012,7 @@ namespace Mile
             auto paramsBuffer = data.ParamsBuffer->GetActual();
             float ambientIntensity = *(*data.AmbientIntensityRef->GetActual());
             auto mappedParamsBuffer = paramsBuffer->Map<AmbientParamsConstantBuffer>(context);
-            (*mappedParamsBuffer) = AmbientParamsConstantBuffer{ camTransform->GetPosition(ETransformSpace::World), ambientIntensity, (float)(prefilteredMap->GetMaxMipLevels() - 1), static_cast<unsigned int>(bSSAOEnabled) };
+            (*mappedParamsBuffer) = AmbientParamsConstantBuffer{ camTransform->GetPosition(ETransformSpace::World), ambientIntensity, (float)(prefilteredMap->GetMaxMipLevels() - 2), static_cast<unsigned int>(bSSAOEnabled) };
             paramsBuffer->UnMap(context);
             paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
 
@@ -2860,7 +2860,7 @@ namespace Mile
             for (auto renderComponent : m_meshes)
             {
                auto material = renderComponent->GetMaterial();
-               if (material != nullptr)
+               if (material != nullptr && renderComponent->GetMesh() != nullptr)
                {
                   m_materialMap[material].push_back(renderComponent);
                }

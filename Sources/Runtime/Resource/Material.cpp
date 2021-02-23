@@ -3,13 +3,13 @@
 #include "Resource/Texture2D.h"
 #include "Rendering/Texture2dDX11.h"
 #include "Rendering/ConstantBufferDX11.h"
-#include "Core/Context.h"
+#include "Core/Engine.h"
 
 namespace Mile
 {
    DEFINE_LOG_CATEGORY(MileMaterial);
 
-   Material::Material(Context* context, const String& filePath) :
+   Material::Material(ResourceManager* resMng) :
       m_materialType(EMaterialType::Opaque),
       m_baseColor(nullptr),
       m_emissive(nullptr),
@@ -22,59 +22,42 @@ namespace Mile
       m_roughnessFactor(0.0f),
       m_uvOffset(Vector2(0.0f, 0.0f)),
       m_specularFactor(0.5f),
-      Resource(context, filePath, ResourceType::Material)
+      Resource(resMng, ResourceType::Material)
    {
-      SetTexture2D(MaterialTextureProperty::BaseColor, nullptr);
-      SetTexture2D(MaterialTextureProperty::Emissive, nullptr);
-      SetTexture2D(MaterialTextureProperty::MetallicRoughness, nullptr);
-      SetTexture2D(MaterialTextureProperty::AO, nullptr);
-      SetTexture2D(MaterialTextureProperty::Normal, nullptr);
    }
 
-   bool Material::Init()
+   bool Material::Init(const String& filePath)
    {
-      if (m_context == nullptr || m_bIsInitialized)
+      if (Resource::Init(filePath))
       {
-         ME_LOG(MileMaterial, Warning, TEXT("Already Initialized material."));
-         return false;
+         std::ifstream stream(this->m_path);
+         if (!stream.is_open())
+         {
+            ME_LOG(MileMaterial, Warning, TEXT("Failed to open stream from ") + m_path);
+         }
+
+         std::string jsonStr;
+         std::string temp;
+         while (std::getline(stream, temp))
+         {
+            jsonStr += temp;
+            jsonStr += '\n';
+         }
+         stream.close();
+
+         if (!jsonStr.empty())
+         {
+            this->DeSerialize(json::parse(jsonStr));
+            SucceedInit();
+            return true;
+         }
       }
 
-      std::ifstream stream(this->m_path);
-      if (!stream.is_open())
-      {
-         ME_LOG(MileMaterial, Warning, TEXT("Failed to load material from ") + m_path);
-         return false;
-      }
-
-      std::string jsonStr;
-      std::string temp;
-      while (std::getline(stream, temp))
-      {
-         jsonStr += temp;
-         jsonStr += '\n';
-      }
-      stream.close();
-
-      this->DeSerialize(json::parse(jsonStr));
-      return true;
+      return false;
    }
 
    void Material::SetTexture2D(MaterialTextureProperty prop, Texture2D* texture)
    {
-      if (texture == nullptr)
-      {
-         assert(m_context != nullptr);
-         ResourceManager* resMng = m_context->GetSubSystem<ResourceManager>();
-         if (resMng != nullptr)
-         {
-            texture = resMng->Load<Texture2D>(TEXT("Contents/Textures/default_black.png"));
-         }
-         else
-         {
-            ME_LOG(MileMaterial, Fatal, TEXT("ResourceManager does not exist!"));
-         }
-      }
-
       switch (prop)
       {
       case MaterialTextureProperty::BaseColor:
@@ -207,12 +190,17 @@ namespace Mile
 
    bool Material::SaveTo(const String& filePath)
    {
-      json serialized = this->Serialize();
-      std::ofstream stream(filePath);
-      stream << serialized.dump();
-      stream.close();
+      if (Resource::SaveTo(filePath))
+      {
+         json serialized = this->Serialize();
+         std::ofstream stream(filePath);
+         stream << serialized.dump();
+         stream.close();
 
-      return true;
+         return true;
+      }
+
+      return false;
    }
 
    json Material::Serialize() const
@@ -221,13 +209,22 @@ namespace Mile
 
       serialized["Type"] = static_cast<unsigned int>(m_materialType);
 
-      serialized["BaseColor"] = WString2String(m_baseColor->GetPath());
+      if (m_baseColor != nullptr)
+      {
+         serialized["BaseColor"] = WString2String(m_baseColor->GetPath());
+      }
       serialized["BaseColorFactor"] = m_baseColorFactor.Serialize();
 
-      serialized["Emissive"] = WString2String(m_emissive->GetPath());
+      if (m_emissive != nullptr)
+      {
+         serialized["Emissive"] = WString2String(m_emissive->GetPath());
+      }
       serialized["EmissiveFactor"] = m_emissiveFactor.Serialize();
 
-      serialized["MetallicRoughness"] = WString2String(m_metallicRoughness->GetPath());
+      if (m_metallicRoughness != nullptr)
+      {
+         serialized["MetallicRoughness"] = WString2String(m_metallicRoughness->GetPath());
+      }
       serialized["MetallicFactor"] = m_metallicFactor;
       serialized["RoughnessFactor"] = m_roughnessFactor;
 
@@ -235,17 +232,23 @@ namespace Mile
 
       serialized["UVOffset"] = m_uvOffset.Serialize();
 
-      serialized["AO"] = WString2String(m_ao->GetPath());
-      serialized["Normal"] = WString2String(m_normal->GetPath());
+      if (m_ao != nullptr)
+      {
+         serialized["AO"] = WString2String(m_ao->GetPath());
+      }
+
+      if (m_normal != nullptr)
+      {
+         serialized["Normal"] = WString2String(m_normal->GetPath());
+      }
 
       return serialized;
    }
 
    void Material::DeSerialize(const json& jsonData)
    {
-      assert(m_context != nullptr);
-      ResourceManager * resMng = m_context->GetSubSystem<ResourceManager>();
-      if (resMng == nullptr)
+      assert(m_resMng != nullptr);
+      if (m_resMng == nullptr)
       {
          ME_LOG(MileMaterial, Fatal, TEXT("ResourceManager does not exist!"));
          return;
@@ -253,7 +256,7 @@ namespace Mile
 
       SetTexture2D(
          MaterialTextureProperty::BaseColor,
-         resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "BaseColor"))));
+         m_resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "BaseColor"))));
 
       m_baseColorFactor.DeSerialize(GetValueSafelyFromJson<json>(
          jsonData, 
@@ -262,7 +265,7 @@ namespace Mile
 
       SetTexture2D(
          MaterialTextureProperty::Emissive,
-         resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "Emissive"))));
+         m_resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "Emissive"))));
 
       m_emissiveFactor.DeSerialize(GetValueSafelyFromJson<json>(
          jsonData,
@@ -271,7 +274,7 @@ namespace Mile
 
       SetTexture2D(
          MaterialTextureProperty::MetallicRoughness,
-         resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "MetallicRoughness"))));
+         m_resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "MetallicRoughness"))));
 
       m_metallicFactor = GetValueSafelyFromJson(jsonData, "MetallicFactor", 0.0f);
       m_roughnessFactor = GetValueSafelyFromJson(jsonData, "RoughnessFactor", 0.0f);
@@ -285,29 +288,29 @@ namespace Mile
 
       SetTexture2D(
          MaterialTextureProperty::AO,
-         resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "AO"))));
+         m_resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "AO"))));
 
       SetTexture2D(
          MaterialTextureProperty::Normal,
-         resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "Normal"))));
+         m_resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "Normal"))));
    }
 
    void Material::BindTextures(ID3D11DeviceContext& context, unsigned int bindSlot, EShaderType shaderType)
    {
-      SAFE_TEX_BIND(m_baseColor->GetRawTexture(), context, 0, shaderType);
-      SAFE_TEX_BIND(m_emissive->GetRawTexture(), context, 1, shaderType);
-      SAFE_TEX_BIND(m_metallicRoughness->GetRawTexture(), context, 2, shaderType);
-      SAFE_TEX_BIND(m_ao->GetRawTexture(), context, 3, shaderType);
-      SAFE_TEX_BIND(m_normal->GetRawTexture(), context, 4, shaderType);
+      SAFE_TEX_BIND(m_baseColor == nullptr ? nullptr : m_baseColor->GetRawTexture(), context, 0, shaderType);
+      SAFE_TEX_BIND(m_emissive == nullptr ? nullptr : m_emissive->GetRawTexture(), context, 1, shaderType);
+      SAFE_TEX_BIND(m_metallicRoughness == nullptr ? nullptr : m_metallicRoughness->GetRawTexture(), context, 2, shaderType);
+      SAFE_TEX_BIND(m_ao == nullptr ? nullptr : m_ao->GetRawTexture(), context, 3, shaderType);
+      SAFE_TEX_BIND(m_normal == nullptr ? nullptr : m_normal->GetRawTexture(), context, 4, shaderType);
    }
 
    void Material::UnbindTextures(ID3D11DeviceContext& context, unsigned int boundSlot, EShaderType shaderType)
    {
-      SAFE_TEX_UNBIND(m_baseColor->GetRawTexture(), context, 0, shaderType);
-      SAFE_TEX_UNBIND(m_emissive->GetRawTexture(), context, 1, shaderType);
-      SAFE_TEX_UNBIND(m_metallicRoughness->GetRawTexture(), context, 2, shaderType);
-      SAFE_TEX_UNBIND(m_ao->GetRawTexture(), context, 3, shaderType);
-      SAFE_TEX_UNBIND(m_normal->GetRawTexture(), context, 4, shaderType);
+      SAFE_TEX_UNBIND(m_baseColor == nullptr ? nullptr : m_baseColor->GetRawTexture(), context, 0, shaderType);
+      SAFE_TEX_UNBIND(m_emissive == nullptr ? nullptr : m_emissive->GetRawTexture(), context, 1, shaderType);
+      SAFE_TEX_UNBIND(m_metallicRoughness == nullptr ? nullptr : m_metallicRoughness->GetRawTexture(), context, 2, shaderType);
+      SAFE_TEX_UNBIND(m_ao == nullptr ? nullptr : m_ao->GetRawTexture(), context, 3, shaderType);
+      SAFE_TEX_UNBIND(m_normal == nullptr ? nullptr : m_normal->GetRawTexture(), context, 4, shaderType);
    }
 
    void Material::UpdateConstantBuffer(ID3D11DeviceContext& context, ConstantBufferDX11* buffer) const

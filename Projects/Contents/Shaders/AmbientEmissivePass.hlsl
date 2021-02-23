@@ -84,8 +84,7 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float3 irradiance = irradianceMap.Sample(LinearClampSampler, N).rgb;
 	float3 diffuse = irradiance * albedo;
 
-	const float MAX_REFLECTION_LOD = 6.0f;
-	float3 prefilteredColor = prefilteredMap.SampleLevel(LinearClampSampler, R, roughness * MAX_REFLECTION_LOD).rgb;
+	float3 prefilteredColor = prefilteredMap.SampleLevel(LinearClampSampler, R, roughness * MaxReflectionLod).rgb;
 	float2 brdf = brdfLUT.Sample(LinearClampSampler, float2(max(dot(N, V), 0.0f), roughness)).rg;
 	float3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 

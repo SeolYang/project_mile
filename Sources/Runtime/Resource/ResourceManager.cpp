@@ -1,10 +1,12 @@
 #include "Resource/ResourceManager.h"
 #include "Resource/ResourceCache.h"
+#include "Resource/ModelLoader.h"
 #include "Core/Context.h"
 
 namespace Mile
 {
    ResourceManager::ResourceManager(Context* context) :
+      m_modelLoader(nullptr),
       SubSystem(context)
    {
    }
@@ -25,6 +27,8 @@ namespace Mile
             return false;
          }
 
+         m_modelLoader = new ModelLoader(this);
+
          ME_LOG(MileResourceManager, ELogVerbosity::Log, TEXT("Resource Manager Initialized!"));
          SubSystem::InitSucceed();
          return true;
@@ -39,6 +43,7 @@ namespace Mile
    {
       if (IsInitialized())
       {
+         SafeDelete(m_modelLoader);
          ClearCache();
          ME_LOG(MileResourceManager, ELogVerbosity::Log, TEXT("Resource Manager deinitialized."));
          SubSystem::DeInit();
@@ -54,5 +59,10 @@ namespace Mile
    {
       m_cache->Clear();
       ME_LOG(MileResourceManager, ELogVerbosity::Log, TEXT("Resource cache has been cleared."));
+   }
+
+   ModelLoader& ResourceManager::GetModelLoader() const
+   {
+      return (*m_modelLoader);
    }
 }

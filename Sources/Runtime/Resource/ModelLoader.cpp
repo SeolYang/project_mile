@@ -3,10 +3,11 @@
 #include "Resource/Model.h"
 #include "Resource/Material.h"
 #include "Resource/Texture2D.h"
-#include "Core/Context.h"
 #include "Core/Logger.h"
+#include "Core/Engine.h"
 #include "Component/MeshRenderComponent.h"
 #include "GameFramework/Entity.h"
+#include "Rendering/RendererDX11.h"
 #include "Rendering/Mesh.h"
 #include "Math/Vector3.h"
 #include "Math/Vector4.h"
@@ -17,38 +18,26 @@ namespace Mile
 {
    DEFINE_LOG_CATEGORY(MileModelLoader);
 
-   Context* ModelLoader::contextInst = nullptr;
-   RendererDX11* ModelLoader::rendererInst = nullptr;
-
-   Entity* ModelLoader::LoadModel(Context* context, Model* target, const String& filePath)
+   ModelLoader::ModelLoader(ResourceManager* resMng) :
+      m_resMng(resMng),
+      m_renderer(nullptr)
    {
-      if (context == nullptr)
-      {
-         return false;
-      }
+   }
 
-      if (context != contextInst)
-      {
-         contextInst = context;
-         rendererInst = nullptr;
-      }
+   Entity* ModelLoader::LoadModel(Model* target, const String& filePath)
+   {
+      m_renderer = Engine::GetRenderer();
 
-      if (rendererInst == nullptr)
-      {
-         rendererInst = context->GetSubSystem<RendererDX11>();
-      }
+      auto modelLoadParams = target->GetLoadParameters();
 
       Assimp::Importer importer;
       auto scene = importer.ReadFile(WString2String(filePath),
-         aiProcess_CalcTangentSpace |
-         aiProcess_Triangulate |
-         aiProcess_GenSmoothNormals |
-         //aiProcess_SplitLargeMeshes |
-         aiProcess_ConvertToLeftHanded |
-         aiProcess_SortByPType |
-         //aiProcess_GenUVCoords |
-         aiProcess_MakeLeftHanded |
-         aiProcess_PreTransformVertices);
+         (modelLoadParams.CalcTangentSpace ? aiProcess_CalcTangentSpace : 0x0) |
+         (modelLoadParams.Triangulate ? aiProcess_Triangulate : 0x0) |
+         (modelLoadParams.GenSmoothNormals ? aiProcess_GenSmoothNormals : 0x0) |
+         (modelLoadParams.ConvertToLeftHanded ? aiProcess_ConvertToLeftHanded : 0x0) |
+         (modelLoadParams.GenUVs ? aiProcess_GenUVCoords : 0x0) |
+         (modelLoadParams.PreTransformVertices ? aiProcess_PreTransformVertices : 0x0));
 
       Entity* res = new Entity(nullptr, TEXT("model"));
       ReconstructEntityWithAiNode(scene, scene->mRootNode, target, res);
@@ -146,7 +135,7 @@ namespace Mile
 
       auto meshName = String2WString(mesh->mName.C_Str());
       entity->SetName(meshName);
-      Mesh* newMesh = new Mesh(rendererInst,
+      Mesh* newMesh = new Mesh(m_renderer,
          meshName,
          target->GetPath());
       newMesh->Init(verticies, indices);
@@ -156,8 +145,7 @@ namespace Mile
       renderComponent->SetMesh(newMesh);
 
       /* Material Setup  */
-      auto resMng = contextInst->GetSubSystem<ResourceManager>();
-      if (resMng == nullptr)
+      if (m_resMng == nullptr)
       {
          ME_LOG(MileModelLoader, Fatal, TEXT("ResourceManager does not exist!"));
       }
@@ -168,10 +156,10 @@ namespace Mile
          + meshName
          + TEXT(".material");
 
-      Material* foundedMat = resMng->Load<Material>(matPath);
+      Material* foundedMat = m_resMng->Load<Material>(matPath);
       if (foundedMat == nullptr)
       {
-         foundedMat = resMng->Create<Material>(target->GetFolder()
+         foundedMat = m_resMng->Create<Material>(target->GetFolder()
             + target->GetName()
             + TEXT("_")
             + meshName
@@ -195,23 +183,23 @@ namespace Mile
 
             foundedMat->SetTexture2D(
                MaterialTextureProperty::BaseColor,
-               resMng->Load<Texture2D>(target->GetFolder() + String2WString(baseColor.C_Str())));
+               m_resMng->Load<Texture2D>(target->GetFolder() + String2WString(baseColor.C_Str())));
             foundedMat->SetTexture2D(
                MaterialTextureProperty::Emissive,
-               resMng->Load<Texture2D>(target->GetFolder() + String2WString(emissive.C_Str())));
+               m_resMng->Load<Texture2D>(target->GetFolder() + String2WString(emissive.C_Str())));
             foundedMat->SetTexture2D(
                MaterialTextureProperty::MetallicRoughness,
-               resMng->Load<Texture2D>(target->GetFolder() + String2WString(metallicRoughness.C_Str())));
+               m_resMng->Load<Texture2D>(target->GetFolder() + String2WString(metallicRoughness.C_Str())));
             foundedMat->SetTexture2D(
                MaterialTextureProperty::Normal,
-               resMng->Load<Texture2D>(target->GetFolder() + String2WString(normal.C_Str())));
+               m_resMng->Load<Texture2D>(target->GetFolder() + String2WString(normal.C_Str())));
             foundedMat->SetTexture2D(
                MaterialTextureProperty::AO,
-               resMng->Load<Texture2D>(target->GetFolder() + String2WString(ao.C_Str())));
+               m_resMng->Load<Texture2D>(target->GetFolder() + String2WString(ao.C_Str())));
          }
 
-         foundedMat->Save();
-         foundedMat->Init();
+         foundedMat->SaveTo(matPath);
+         foundedMat->Init(matPath);
       }
 
       renderComponent->SetMaterial(foundedMat);

@@ -3,6 +3,7 @@
 #include "Core/Config.h"
 #include "Resource/ResourceManager.h"
 #include "Resource/PlainText.h"
+#include "Resource/Model.h"
 
 namespace Mile
 {
@@ -180,6 +181,8 @@ namespace Mile
          this->m_loadedData = res;
          this->m_name = m_loadedData->GetName();
          this->DeSerialize(json::parse(res->GetData().empty() ? "{}" : res->GetData()));
+         auto model = resMng->Load<Model>(TEXT("Contents/Models/Sponza/glTF/Sponza.gltf"));
+         Model::Instantiate(model, this, TEXT("Sponza"));
          ME_LOG(MileWorld, Log, TEXT("World loaded. : ") + filePath);
          return true;
       }

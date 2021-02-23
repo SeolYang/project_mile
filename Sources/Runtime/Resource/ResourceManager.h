@@ -7,6 +7,7 @@ namespace Mile
 {
    DECLARE_LOG_CATEGORY_STATIC(MileResourceManager, ELogVerbosity::Log);
 
+   class ModelLoader;
    class MEAPI ResourceManager : public SubSystem
    {
    public:
@@ -32,8 +33,8 @@ namespace Mile
                return GetByPath<Ty>(relativePath);
             }
 
-            auto newResource = new Ty(context, relativePath);
-            if (newResource->Init())
+            auto newResource = new Ty(this);
+            if (newResource->Init(relativePath))
             {
                m_cache->Add(static_cast<ResourcePtr>(newResource));
                ME_LOG(MileResourceManager, ELogVerbosity::Log, TEXT("Successfully load resource from : ") + relativePath);
@@ -90,7 +91,8 @@ namespace Mile
                return res;
             }
 
-            auto newResource = new Ty(context, relativePath);
+            auto newResource = new Ty(this);
+            newResource->SetPath(relativePath);
             if (bSaveResource)
             {
                if (newResource->Save())
@@ -106,7 +108,6 @@ namespace Mile
                return newResource;
             }
 
-
             ME_LOG(MileResourceManager, Fatal, TEXT("Failed to create resource! : ") + relativePath);
             SafeDelete(newResource);
          }
@@ -118,8 +119,11 @@ namespace Mile
 
       void ClearCache();
 
+      ModelLoader& GetModelLoader() const;
+
    private:
       ResourceCachePtr    m_cache;
+      ModelLoader* m_modelLoader;
 
    };
 }

@@ -11,7 +11,7 @@ namespace Mile
    {
       constexpr unsigned int ConvertedEnvMapSize = 1024;
       constexpr unsigned int IrradianceMapSize = 32;
-      constexpr unsigned int PrefilteredEnvMapSize = 1024;
+      constexpr unsigned int PrefilteredEnvMapSize = 256;
       constexpr unsigned int BRDFLUTSize = 512;
       constexpr unsigned int SSAOKernelSize = 64;
       constexpr unsigned int SSAONoiseTextureSize = 4;

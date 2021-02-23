@@ -19,13 +19,15 @@ namespace Mile
       json serialized = Component::Serialize();
 
       json meshData;
-      meshData["Model"] = WString2String(m_mesh->GetModelPath());
-      meshData["Name"] = WString2String(m_mesh->GetName());
-      meshData["Type"] = static_cast<int>(m_mesh->GetMeshType());
+      if (m_mesh != nullptr)
+      {
+         meshData["Model"] = WString2String(m_mesh->GetModelPath());
+         meshData["Name"] = WString2String(m_mesh->GetName());
+         meshData["Type"] = static_cast<int>(m_mesh->GetMeshType());
+         serialized["Mesh"] = meshData;
+      }
 
-      serialized["Mesh"] = meshData;
       serialized["Material"] = WString2String(m_material->GetPath());
-
       return serialized;
    }
 

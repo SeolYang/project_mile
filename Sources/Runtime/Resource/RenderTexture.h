@@ -12,20 +12,20 @@ namespace Mile
    class MEAPI RenderTexture : public Resource
    {
    public:
-      RenderTexture(Context* context, const String& path) :
+      RenderTexture(ResourceManager* resMng) :
          m_bIsDirty(true),
          m_width(1),
          m_height(1),
          m_colorFormat(EColorFormat::R8G8B8A8_UNORM),
          m_bEnableStencil(true),
          m_renderTarget(nullptr),
-         Resource(context, path, ResourceType::RenderTexture)
+         Resource(resMng, ResourceType::RenderTexture)
       {
       }
 
       virtual ~RenderTexture();
 
-      virtual bool Init() override;
+      virtual bool Init(const String& filePath) override;
       virtual bool SaveTo(const String& filePath) override;
 
       void SetWidth(UINT32 width) 

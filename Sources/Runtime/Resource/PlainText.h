@@ -10,15 +10,12 @@ namespace Mile
    class MEAPI PlainText : public Resource
    {
    public:
-      PlainText(Context* context, const String& path)
-         : Resource(
-            context,
-            path,
-            ResourceType::PlainText)
+      PlainText(ResourceManager* resMng) : 
+         Resource(resMng, ResourceType::PlainText)
       {
       }
 
-      virtual bool Init() override;
+      virtual bool Init(const String& filePath) override;
       virtual bool SaveTo(const String& filePath) override;
 
       StrType GetData() const { return m_data; }

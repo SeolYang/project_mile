@@ -1,0 +1,8 @@
+{
+    "CalcTangentSpace": true,
+    "ConvertToLeftHanded": true,
+    "GenSmoothNormals": false,
+    "GenUVs": true,
+    "PreTransformVertices": false,
+    "Triangulate": true
+}

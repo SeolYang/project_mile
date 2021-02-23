@@ -27,7 +27,8 @@ cbuffer TransfromBuffer
 /* Constant Buffers (Pixel Shader) **/
 cbuffer PrefilteringParams
 {
-	float Roughness;
+	float Roughness : packoffset(c0);
+	float EnvironmentMapSize : packoffset(c0.y);
 }
 
 /* Textures & Samplers */
@@ -67,8 +68,7 @@ float4 MilePS(in PSInput input) : SV_Target0
 			float HdotV = max(dot(H, V), 0.0f);
 			float pdf = ((D * NdotH) / (4.0f * HdotV)) + 0.0001f;
 
-			float resolution = 512.0f;
-			float saTexel = 4.0f * PI / (6.0f * resolution * resolution);
+			float saTexel = 4.0f * PI / (6.0f * EnvironmentMapSize * EnvironmentMapSize);
 			float saSample = 1.0f / (float(SAMPLE_COUNT) * pdf + 0.0001f);
 
 			float mipLevel = Roughness == 0.0f ? 0.0f : 0.5f * log2(saSample / saTexel);

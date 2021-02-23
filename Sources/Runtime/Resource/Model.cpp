@@ -1,4 +1,5 @@
 #include "Resource/Model.h"
+#include "Resource/ResourceManager.h"
 #include "Resource/ModelLoader.h"
 #include "Rendering/Mesh.h"
 #include "GameFramework/Entity.h"
@@ -8,9 +9,9 @@ namespace Mile
 {
    DEFINE_LOG_CATEGORY(MileModel);
 
-   Model::Model(Context* context, const String& filePath) :
+   Model::Model(ResourceManager* resMng) :
       m_instance(nullptr),
-      Resource(context, filePath, ResourceType::Model)
+      Resource(resMng, ResourceType::Model)
    {
    }
 
@@ -23,22 +24,25 @@ namespace Mile
       }
    }
 
-   bool Model::Init()
+   bool Model::Init(const String& filePath)
    {
-      if (m_context == nullptr || m_instance != nullptr)
+      if (Resource::Init(filePath))
       {
-         return false;
+         ModelLoader& loader = m_resMng->GetModelLoader();
+         LoadMetafile();
+         m_instance = loader.LoadModel(this, m_path);
+         if (m_instance == nullptr)
+         {
+            ME_LOG(MileModel, Warning, TEXT("Failed to load model from ") + m_path);
+            return false;
+         }
+
+         m_serializedInstance = m_instance->Serialize().dump();
+         SucceedInit();
+         return true;
       }
 
-      m_instance = ModelLoader::LoadModel(m_context, this, m_path);
-      if (m_instance == nullptr)
-      {
-         ME_LOG(MileModel, Warning, TEXT("Failed to load model from ") + m_path);
-         return false;
-      }
-
-      m_serializedInstance = m_instance->Serialize().dump();
-      return true;
+      return false;
    }
 
    void Model::AddMesh(Mesh* mesh)
@@ -57,6 +61,43 @@ namespace Mile
       }
 
       return nullptr;
+   }
+
+   void Model::LoadMetafile()
+   {
+      auto metaPath = GetMetaPath();
+      std::ifstream stream(metaPath);
+      if (!stream.is_open())
+      {
+         ME_LOG(MileModel, Warning, TEXT("Failed to open stream from ") + metaPath);
+      }
+
+      std::string jsonStr;
+      std::string temp;
+      while (std::getline(stream, temp))
+      {
+         jsonStr += temp;
+         jsonStr += '\n';
+      }
+      stream.close();
+
+      if (!jsonStr.empty())
+      {
+         m_loadParams.DeSerialize(json::parse(jsonStr));
+      }
+   }
+
+   void Model::SaveMetafile()
+   {
+      auto metaPath = GetMetaPath();
+      std::ofstream stream(metaPath);
+      if (!stream.is_open())
+      {
+         ME_LOG(MileModel, Warning, TEXT("Failed to open stream from ") + metaPath);
+      }
+
+      stream << m_loadParams.Serialize().dump(4);
+      stream.close();
    }
 
    Entity* Model::Instantiate(Model* target, World* targetWorld, const String& entityName)

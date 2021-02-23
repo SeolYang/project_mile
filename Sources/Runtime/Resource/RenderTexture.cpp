@@ -15,42 +15,48 @@ namespace Mile
       SafeDelete(m_renderTarget);
    }
 
-   bool RenderTexture::Init()
+   bool RenderTexture::Init(const String& filePath)
    {
-      if (m_context == nullptr || m_bIsInitialized)
+      if (Resource::Init(filePath))
       {
-         ME_LOG(MileRenderTexture, Warning, TEXT("Already intiiailized RenderTexture or Context does not exist!"));
-         return false;
+         std::ifstream stream(this->m_path);
+         if (!stream.is_open())
+         {
+            ME_LOG(MileRenderTexture, Warning, TEXT("Failed to load render texture from ") + m_path);
+            return false;
+         }
+
+         std::string jsonStr;
+         std::string temp;
+         while (std::getline(stream, temp))
+         {
+            jsonStr += temp;
+            jsonStr += '\n';
+         }
+         stream.close();
+
+         this->DeSerialize(json::parse(jsonStr));
+         SucceedInit();
+         return true;
       }
 
-      std::ifstream stream(this->m_path);
-      if (!stream.is_open())
-      {
-         ME_LOG(MileRenderTexture, Warning, TEXT("Failed to load render texture from ") + m_path);
-         return false;
-      }
-
-      std::string jsonStr;
-      std::string temp;
-      while (std::getline(stream, temp))
-      {
-         jsonStr += temp;
-         jsonStr += '\n';
-      }
-      stream.close();
-
-      this->DeSerialize(json::parse(jsonStr));
-      return true;
+      ME_LOG(MileRenderTexture, Warning, TEXT("Already intiiailized RenderTexture or Context does not exist!"));
+      return false;
    }
 
    bool RenderTexture::SaveTo(const String& filePath)
    {
-      json serialized = this->Serialize();
-      std::ofstream stream(filePath);
-      stream << serialized.dump();
-      stream.close();
+      if (Resource::SaveTo(filePath))
+      {
+         json serialized = this->Serialize();
+         std::ofstream stream(filePath);
+         stream << serialized.dump();
+         stream.close();
 
-      return true;
+         return true;
+      }
+
+      return false;
    }
 
    RenderTargetDX11* RenderTexture::GetRenderTarget()

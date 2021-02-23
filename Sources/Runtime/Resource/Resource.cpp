@@ -5,18 +5,13 @@
 namespace Mile
 {
    unsigned int Resource::ResCount = 0;
-   Resource::Resource(Context* context, const String& path, ResourceType resourceType) :
-      m_context(context),
-      m_path(path),
-      m_name(GetFileNameFromPath(path)),
-      m_ext(GetFileExtensionFromPath(m_path)),
-      m_folder(GetFolderFromPath(path)),
-      m_resourceType(resourceType),
+   Resource::Resource(ResourceManager* resMng, ResourceType resourceType) :
+      m_resMng(resMng),
       m_bIsInitialized(false),
+      m_resourceType(resourceType),
       m_id(ResCount)
    {
       ++ResCount;
-      std::transform(m_ext.begin(), m_ext.end(), m_ext.begin(), ::towlower);
    }
 
    String Resource::GetFileNameFromPath(const String& filePath, bool includeExt)

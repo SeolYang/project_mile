@@ -1,0 +1,22 @@
+{
+  "AO": "Contents/Textures/default_black.png",
+  "BaseColor": "Contents/Textures/default_white.png",
+  "BaseColorFactor": {
+    "w": 0.0,
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+  },
+  "Emissive": "Contents/Textures/default_black.png",
+  "EmissiveFactor": {
+    "w": 0.0,
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+  },
+  "MetallicFactor": 1.0,
+  "MetallicRoughness": "Contents/Textures/default_black.png",
+  "Normal": "Contents/Textures/default_black.png",
+  "RoughnessFactor": 0.0,
+  "Type": 0
+}

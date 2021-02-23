@@ -48,9 +48,9 @@ namespace Mile
    class MEAPI Material : public Resource
    {
    public:
-      Material(Context* context, const String& filePath);
+      Material(ResourceManager* resMng);
 
-      virtual bool Init() override;
+      virtual bool Init(const String& filePath) override;
       virtual bool SaveTo(const String& filePath) override;
 
       void SetTexture2D(MaterialTextureProperty prop, Texture2D* texture);

@@ -10,10 +10,10 @@ namespace Mile
    class MEAPI Texture2D : public Resource
    {
    public:
-      Texture2D(Context* context, const String& filePath);
+      Texture2D(ResourceManager* resMng);
       virtual ~Texture2D();
 
-      virtual bool Init() override;
+      virtual bool Init(const String& filePath) override;
       virtual bool Save(const String& filePath);
 
       unsigned char* GetRawData() const { return m_rawData; }
