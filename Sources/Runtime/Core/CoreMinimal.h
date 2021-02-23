@@ -43,6 +43,7 @@ using json = nlohmann::json;
 
 #include <FreeImage.h>
 
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <imgui_impl_win32.h>
