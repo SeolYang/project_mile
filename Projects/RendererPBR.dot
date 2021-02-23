@@ -446,7 +446,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nID : 97
 \nRefs : 1
 \nExternal Permanent", style=filled, fillcolor=palegreen]
-"SSAO" [label="SSAO
+"SSAORef" [label="SSAORef
 \nID : 98
 \nRefs : 1
 \nExternal Permanent", style=filled, fillcolor=palegreen]
@@ -597,7 +597,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "ConvertGBufferToViewSpacePass" -> { "PointClampSampler" "OneMatrixConstantBuffer" "ViewSpaceGBuffer" } [color=aquamarine]
 "ConvertGBufferToViewSpacePass" -> { } [color=firebrick1]
 "SSAOPass" -> { "SSAOEnabledRef" "NoiseSampler" "SSAOParamsConstantBuffer" } [color=aquamarine]
-"SSAOPass" -> { "SSAO" } [color=firebrick1]
+"SSAOPass" -> { "SSAORef" } [color=firebrick1]
 "SSAOBlurPass" -> { } [color=aquamarine]
 "SSAOBlurPass" -> { "BlurredSSAO" } [color=firebrick1]
 "AmbientEmissivePass" -> { "AnisoSampler" "AmbientEmissiveParamsConstantBuffer" "AmbientIntensity" } [color=aquamarine]
@@ -713,7 +713,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "SSAOPassVertexShader" -> { "SSAOPass" } [color=yellow]
 "SSAOPassPixelShader" -> { "SSAOPass" } [color=yellow]
 "SSAOBaseDataConstantBufferRef" -> { "SSAOPass" } [color=yellow]
-"SSAO" -> { "SSAOBlurPass" } [color=yellow]
+"SSAORef" -> { "SSAOBlurPass" } [color=yellow]
 "SSAONoiseTexRef" -> { "SSAOPass" } [color=yellow]
 "SSAOEnabledRef" -> { "SSAOBlurPass" "AmbientEmissivePass" } [color=yellow]
 "NoiseSampler" -> { "AmbientEmissivePass" } [color=yellow]

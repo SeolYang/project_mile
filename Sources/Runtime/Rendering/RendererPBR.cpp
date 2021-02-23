@@ -1700,7 +1700,7 @@ namespace Mile
 
       auto ssaoBaseDataBufferRefRes = m_frameGraph.AddExternalPermanentResource("SSAOBaseDataConstantBufferRef", ConstantBufferRefDescriptor(), &m_ssaoBaseDataBuffer);
 
-      auto ssaoOutputRefRes = m_frameGraph.AddExternalPermanentResource("SSAO", RenderTargetRefDescriptor(), &m_ssao);
+      auto ssaoOutputRefRes = m_frameGraph.AddExternalPermanentResource("SSAORef", RenderTargetRefDescriptor(), &m_ssao);
 
       auto ssaoNoiseTexRefRes = m_frameGraph.AddExternalPermanentResource("SSAONoiseTexRef", Texture2dDX11RefDescriptor(), &m_ssaoNoiseTex);
 
