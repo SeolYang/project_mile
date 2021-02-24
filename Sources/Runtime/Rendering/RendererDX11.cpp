@@ -19,21 +19,21 @@ namespace Mile
       m_backBuffer(nullptr),
       m_backBufferDepthStencil(nullptr),
       m_renderResolution(Vector2(1920.0f, 1080.0f)),
-      m_onWindowResize(nullptr),
       m_bVsyncEnabled(false),
       m_quad(nullptr),
       m_cube(nullptr),
-      m_profiler(new GPUProfiler(this))
+      m_profiler(new GPUProfiler(this)),
+      OnWindowResize(nullptr)
    {
    }
 
    RendererDX11::~RendererDX11()
    {
+      SafeDelete(OnWindowResize);
       SafeDelete(m_profiler);
       SafeDelete(m_quad);
       SafeDelete(m_cube);
 
-      SafeDelete(m_onWindowResize);
       SafeDelete(m_backBufferDepthStencil);
       SafeDelete(m_backBuffer);
       SafeRelease(m_swapChain);
@@ -167,9 +167,9 @@ namespace Mile
       }
 
       /** Initialize Delegates */
-      m_onWindowResize = new OnWindowResizeDelegate();
-      m_onWindowResize->Bind(&RendererDX11::OnWindowReisze, this);
-      window.OnWindowResize.Add(m_onWindowResize);
+      OnWindowResize = new OnWindowResizeDelegate();
+      OnWindowResize->Bind(&RendererDX11::OnWindowReiszeCallback, this);
+      window.OnWindowResize.Add(OnWindowResize);
 
       return true;
    }
@@ -213,7 +213,7 @@ namespace Mile
       }
    }
 
-   void RendererDX11::OnWindowReisze(unsigned int width, unsigned int height)
+   void RendererDX11::OnWindowReiszeCallback(unsigned int width, unsigned int height)
    {
       SafeDelete(m_backBufferDepthStencil);
       SafeDelete(m_backBuffer);

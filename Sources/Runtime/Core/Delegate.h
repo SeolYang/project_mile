@@ -5,6 +5,9 @@ namespace Mile
 {
    DECLARE_LOG_CATEGORY_EXTERN(MileDelegate, Log);
 
+   template<typename... Params>
+   class MulticastDelegate;
+
    /**
    * @todo const function 을 지원하는 delegate 추가
    */
@@ -66,56 +69,161 @@ namespace Mile
 
    };
 
-   /**
-    * 모든 Delegate 들은 자신을 생성한 클래스/오브젝트에서 메모리 해제 책임이 있고,
-    * 메모리 해제 직전 MulticastDelegate 에 등록(Add)한 Delegate 핸들을 Remove로
-    * 제거해주어야 합니다.
-    */
+   template<typename... Params>
+   class MEAPI Delegate<void, Params...>
+   {
+   public:
+      using FuncType = std::function<void(Params...)>;
+
+   public:
+      Delegate() :
+         m_bIsBound(false)
+      {
+      }
+
+      virtual ~Delegate()
+      {
+         for (auto caster : m_casters)
+         {
+            caster->Remove(this);
+         }
+      }
+
+      void BindLambda(const FuncType& lambda)
+      {
+         m_callback = lambda;
+         m_bIsBound = true;
+      }
+
+      template <typename T>
+      void Bind(void(T::* func)(Params...), T* ptr)
+      {
+         BindLambda([ptr, func](Params... args) { (ptr->*func)(args...); });
+      }
+
+      void Unbind()
+      {
+         if (m_bIsBound)
+         {
+            m_callback = FuncType();
+            m_bIsBound = false;
+         }
+      }
+
+      void Execute(Params... args)
+      {
+         m_callback(args...);
+      }
+
+      void ExecuteIfBound(Params... args)
+      {
+         if (IsBound())
+         {
+            Execute(args...);
+         }
+      }
+
+      bool IsBound() const { return m_bIsBound; }
+
+   private:
+      void SubscribeCaster(MulticastDelegate<Params...>* caster)
+      {
+         if (caster != nullptr)
+         {
+            auto itr = std::find(m_casters.begin(), m_casters.end(), caster);
+            if (itr == m_casters.end())
+            {
+               m_casters.push_back(caster);
+            }
+         }
+      }
+      void UnsubscribeCaster(MulticastDelegate<Params...>* caster)
+      {
+         if (caster != nullptr)
+         {
+            auto itr = std::find(m_casters.begin(), m_casters.end(), caster);
+            if (itr != m_casters.end())
+            {
+               m_casters.erase(itr);
+            }
+         }
+      }
+
+   private:
+      FuncType m_callback;
+      bool m_bIsBound;
+
+      friend MulticastDelegate<Params...>;
+      std::vector<MulticastDelegate<Params...>*> m_casters;
+
+   };
+
    template<typename... Params>
    class MEAPI MulticastDelegate
    {
    public:
       using FuncType = std::function<void(Params...)>;
-      using DelegateHandle = Delegate<void, Params...>;
+      using Listener = Delegate<void, Params...>;
 
    public:
-      void Add(DelegateHandle* target)
+      MulticastDelegate()
       {
-         if (!HasDelegate(target))
+      }
+
+      virtual ~MulticastDelegate()
+      {
+         for (auto listener : m_listeners)
          {
-            m_delegates.push_back(target);
-         }
-         else
-         {
-            ME_LOG(MileDelegate, Warning, TEXT("Trying duplicated addition to MulticastDelegate."));
+            listener->UnsubscribeCaster(this);
          }
       }
 
-      void Remove(DelegateHandle* target)
+      void Add(Listener* target)
       {
-         for (auto itr = m_delegates.begin(); itr != m_delegates.end(); ++itr)
+         if (!HasListener(target) && target != nullptr)
          {
-            if ((*itr) == target)
+            m_listeners.push_back(target);
+            target->SubscribeCaster(this);
+         }
+         else
+         {
+            ME_LOG(MileDelegate, Warning, TEXT("Trying to add duplicated or null listener to MulticastDelegate."));
+         }
+      }
+
+      void Remove(Listener* target)
+      {
+         if (target != nullptr)
+         {
+            for (auto itr = m_listeners.begin(); itr != m_listeners.end(); ++itr)
             {
-               m_delegates.erase(itr);
-               return;
+               if ((*itr) == target)
+               {
+                  m_listeners.erase(itr);
+                  target->UnsubscribeCaster(this);
+                  return;
+               }
             }
+         }
+         else
+         {
+            ME_LOG(MileDelegate, Warning, TEXT("Trying to remove null listener from MulticastDelegate."));
          }
       }
 
       void Broadcast(Params... args)
       {
-         for (auto delegateHandle : m_delegates)
+         for (auto listener : m_listeners)
          {
-            delegateHandle->ExecuteIfBound(args...);
+            listener->ExecuteIfBound(args...);
          }
       }
 
-      bool HasDelegate(DelegateHandle* target) const
+      bool HasListener(Listener* target) const
       {
-         for (auto delegateHandle : m_delegates)
+         for (auto listener : m_listeners)
          {
-            if (target == delegateHandle)
+            if (target == listener)
             {
                return true;
             }
@@ -125,7 +233,7 @@ namespace Mile
       }
 
    private:
-      std::vector<DelegateHandle*> m_delegates;
+      std::vector<Listener*> m_listeners;
 
    };
 }

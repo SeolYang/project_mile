@@ -1,7 +1,6 @@
 #pragma once
 #include "Rendering/RenderingCore.h"
 #include "Core/Logger.h"
-#include "Core/Delegate.h"
 
 namespace Mile
 {
@@ -13,7 +12,6 @@ namespace Mile
    class Cube;
    class RenderTargetDX11;
    class DepthStencilBufferDX11;
-   class OnWindowResizeDelegate;
    class GPUProfiler;
 
    /**
@@ -96,8 +94,6 @@ namespace Mile
       void Render(const World& world);
       void Present();
 
-      void OnWindowReisze(unsigned int width, unsigned int height);
-
       void SetBackBufferAsRenderTarget(ID3D11DeviceContext& deviceContext);
 
       Quad* GetPrimitiveQuad() const { return m_quad; }
@@ -109,10 +105,11 @@ namespace Mile
       void DrawIndexed(UINT vertexCount, UINT indexCount, UINT startIndexLocation = 0, UINT basedVertexLocation = 0);
       void ThreadSafeDrawIndexed(size_t threadIdx, UINT vertexCount, UINT indexCount, UINT startIndexLocation = 0, UINT basedVertexLocation = 0);
 
+      void OnWindowReiszeCallback(unsigned int width, unsigned int height);
+
    protected:
       virtual void RenderImpl(const World& world) { }
       virtual void OnRenderResolutionChanged() { };
-
 
    private:
       bool InitLowLevelAPI(Window& window);
@@ -132,8 +129,8 @@ namespace Mile
       DepthStencilBufferDX11* m_backBufferDepthStencil;
 
       /** Application level */
+      class OnWindowResizeDelegate* OnWindowResize;
       Vector2 m_renderResolution;
-      OnWindowResizeDelegate* m_onWindowResize;
       bool m_bVsyncEnabled;
 
       /** Primitive */
