@@ -61,7 +61,13 @@ namespace Mile
       void End(const std::string& name, ID3D11DeviceContext& context);
 
       /** Thread-safe draw call count increment, Thread0 == Main Thread */
-      void DrawCall(UINT64 vertices, UINT64 triangles, size_t threadIdx = 0) { ++m_drawCalls[threadIdx]; m_vertices[threadIdx] += vertices; m_triangles[threadIdx] += triangles; }
+      void DrawCall(UINT64 vertices, UINT64 triangles, size_t threadIdx = 0)
+      {
+         ++m_drawCalls[threadIdx];
+         m_vertices[threadIdx] += vertices;
+         m_triangles[threadIdx] += triangles;
+      }
+
       UINT64 GetLatestDrawCalls() const { return m_latestDrawCalls; }
       UINT64 GetLatestVertices() const { return m_latestDrawVertices; }
       UINT64 GetLatestTriangles() const { return m_latestDrawTriangles; }
@@ -89,9 +95,9 @@ namespace Mile
       void ClearDatas() 
       {
          m_profileTimes.clear();
-         m_drawCalls.resize(0);
-         m_vertices.resize(0); 
-         m_triangles.resize(0); 
+         std::fill(m_drawCalls.begin(), m_drawCalls.end(), 0);
+         std::fill(m_vertices.begin(), m_vertices.end(), 0);
+         std::fill(m_triangles.begin(), m_triangles.end(), 0);
       }
 
    private:
@@ -100,6 +106,8 @@ namespace Mile
       std::map<std::string, GPUProfilDataeAccumulation> m_profileTimes;
       UINT64 m_currentFrame;
       UINT64 m_queryLatency;
+
+      /** Drawcall profile */
       std::vector<UINT64> m_drawCalls;
       std::vector<UINT64> m_vertices;
       std::vector<UINT64> m_triangles;
