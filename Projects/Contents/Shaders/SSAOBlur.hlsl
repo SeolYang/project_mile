@@ -49,5 +49,5 @@ float MilePS(in PSInput input) : SV_Target0
 		}
 	}
 
-	return (result / (3.0f * 3.0f));
+	return (result / (4.0f * 4.0f));
 }

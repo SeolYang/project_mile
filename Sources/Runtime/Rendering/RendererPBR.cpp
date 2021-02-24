@@ -553,6 +553,7 @@ namespace Mile
          std::vector<ConstantBufferResource*> TransformBuffers = { nullptr, };
          std::vector<ConstantBufferResource*> MaterialBuffers = { nullptr, };
          ViewportResource* OutputViewport = nullptr;
+         ViewportResource* HalfViewport = nullptr;
          RasterizerStateResource* OutputRasterizerState = nullptr;
          GBufferRefResource* OutputGBufferRef = nullptr;
       };
@@ -596,6 +597,7 @@ namespace Mile
             viewportDesc.Renderer = this;
             viewportDesc.OutputRenderTargetReference = &m_outputRenderTarget;
             data.OutputViewport = builder.Create<ViewportResource>("Viewport", viewportDesc);
+            data.HalfViewport = builder.Create<ViewportResource>("HalfViewport", viewportDesc);
 
             RasterizerStateDescriptor rasterizerStateDesc;
             rasterizerStateDesc.Renderer = this;
@@ -611,8 +613,12 @@ namespace Mile
             auto gBuffer = *data.OutputGBufferRef->GetActual();
             auto rasterizerState = data.OutputRasterizerState->GetActual();
             auto viewport = data.OutputViewport->GetActual();
+            auto halfViewport = data.HalfViewport->GetActual();
             auto targetCamera = (*data.TargetCameraRef->GetActual());
             auto& materialMap = *data.MaterialMap->GetActual();
+
+            halfViewport->SetWidth(halfViewport->GetWidth() / 2);
+            halfViewport->SetHeight(halfViewport->GetHeight() / 2);
 
             auto threadPool = Engine::GetThreadPool();
             size_t maximumThreadsNum = data.Renderer->GetMaximumThreads();
@@ -1725,7 +1731,7 @@ namespace Mile
             noiseSamplerDesc.CompFunc = D3D11_COMPARISON_ALWAYS;
             data.NoiseSampler = builder.Create<SamplerResource>("NoiseSampler", noiseSamplerDesc);
 
-            data.Viewport = builder.Read(lightingPassData.Viewport);
+            data.Viewport = builder.Read(geometryPassData.HalfViewport);
             data.DepthDisableState = builder.Read(lightingPassData.DepthDisableState);
 
             data.CamRef = builder.Read(lightingPassData.CamRef);
@@ -1891,20 +1897,26 @@ namespace Mile
                vertexShader->Bind(context);
                pixelShader->Bind(context);
                sampler->Bind(context, 0);
-               source->BindAsShaderResource(context, 0, EShaderType::PixelShader);
                viewport->Bind(context);
                depthDisableState->Bind(context);
-               output->Clear(context, Vector4::Zero());
-               output->BindAsRenderTarget(context);
-
                quadMesh->Bind(context, 0);
 
                /** Render */
+               output->Clear(context, Vector4::Zero());
+               output->BindAsRenderTarget(context);
+               source->BindAsShaderResource(context, 0, EShaderType::PixelShader);
                data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
-
-               /** Unbinds */
                output->UnbindRenderTarget(context);
                source->UnbindShaderResource(context, 0, EShaderType::PixelShader);
+
+               source->Clear(context, Vector4::Zero());
+               source->BindAsRenderTarget(context);
+               output->BindAsShaderResource(context, 0, EShaderType::PixelShader);
+               data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
+               source->UnbindRenderTarget(context);
+               output->UnbindShaderResource(context, 0, EShaderType::PixelShader);
+
+               /** Unbinds */
                sampler->Unbind(context, 0);
                pixelShader->Unbind(context);
                vertexShader->Unbind(context);
@@ -1950,7 +1962,7 @@ namespace Mile
             data.VertexShader = builder.Read(ambientEmissivePassVSRes);
             data.PixelShader = builder.Read(ambientEmissivePassPSRes);
 
-            data.Viewport = builder.Read(ssaoBlurPassData.Viewport);
+            data.Viewport = builder.Read(geometryPassData.OutputViewport);
             data.DepthDisableState = builder.Read(ssaoBlurPassData.DepthDisableState);
 
             data.AdditiveBlendState = builder.Read(lightingPassData.AdditiveBlendState);
@@ -1976,7 +1988,7 @@ namespace Mile
             paramsBufferDesc.Size = sizeof(AmbientParamsConstantBuffer);
             data.ParamsBuffer = builder.Create<ConstantBufferResource>("AmbientEmissiveParamsConstantBuffer", paramsBufferDesc);
             data.SSAOEnabledRef = builder.Read(ssaoBlurPassData.SSAOEnabledRef);
-            data.BlurredSSAORef = builder.Read(ssaoBlurPassData.OutputRef);
+            data.BlurredSSAORef = builder.Read(ssaoBlurPassData.SourceRef);
 
             FloatRefDescriptor ambientIntensityDesc;
             ambientIntensityDesc.Reference = &m_ambientIntensity;
@@ -2624,7 +2636,7 @@ namespace Mile
             data.DepthDisableState = builder.Read(bloomBlendPassData.DepthDisableState);
             data.QuadMeshRef = builder.Read(bloomBlendPassData.QuadMeshRef);
             data.InputGBufferRef = builder.Read(geometryPassData.OutputGBufferRef);
-            data.InputSSAORef = builder.Read(blurredSSAORefRes);
+            data.InputSSAORef = builder.Read(ssaoBlurPassData.SourceRef);
             data.OutputDepthRef = builder.Write(debugDepthOutputRefRes);
             data.OutputSSAORef = builder.Write(debugSSAOOutputRefRes);
 
@@ -2710,8 +2722,8 @@ namespace Mile
    {
       OPTICK_EVENT();
       Vector2 renderRes = GetRenderResolution();
-      unsigned int width = (unsigned int)renderRes.x;
-      unsigned int height = (unsigned int)renderRes.y;
+      unsigned int width = (unsigned int)renderRes.x / 2;
+      unsigned int height = (unsigned int)renderRes.y / 2;
       m_ssaoBaseData.NoiseScale = Vector2(width / (float)RendererPBRConstants::SSAONoiseTextureSize, height / (float)RendererPBRConstants::SSAONoiseTextureSize);
 
       std::uniform_real_distribution<float> randomFloats(0.0f, 1.0f);
@@ -2855,7 +2867,8 @@ namespace Mile
 
       RenderTargetDescriptor outputSSAODesc;
       outputSSAODesc.Renderer = this;
-      outputSSAODesc.ResolutionReference = &m_hdrBuffer;
+      outputSSAODesc.Width = outputHDRBufferDesc.Width / 2;
+      outputSSAODesc.Height = outputHDRBufferDesc.Height / 2;
       outputSSAODesc.Format = EColorFormat::R32_FLOAT;
       m_ssao = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputSSAODesc);
       m_blurredSSAO = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputSSAODesc);
