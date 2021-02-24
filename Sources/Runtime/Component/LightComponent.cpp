@@ -71,31 +71,13 @@ namespace Mile
       intensityInputLabel.append(LightIntensityUnitToString(LightIntensityUnitOf(m_type)));
       intensityInputLabel.append(")");
 
-      ImGui::Spacing();
-      ImGui::Text("Light Type");
-      ImGui::Spacing(); ImGui::Spacing();
-      ImGui::Text("Light Color");
-      ImGui::Spacing(); ImGui::Spacing();
-      ImGui::Text(intensityInputLabel.c_str());
-      ImGui::Spacing(); ImGui::Spacing();
-
-      switch (m_type)
-      {
-      case Mile::ELightType::Spot:
-         ImGui::Text("Outer Angle");
-         ImGui::Spacing(); ImGui::Spacing();
-         ImGui::Text("Inner Angle");
-         ImGui::Spacing(); ImGui::Spacing();
-      case Mile::ELightType::Point:
-         ImGui::Text("Light Radius");
-         break;
-      }
-
-      ImGui::NextColumn();
-
       const char* items[] = { "Directional", "Point", "Spot" };
       static const char* currentItem = items[static_cast<UINT32>(m_type)];
-      ImGui::Spacing();
+      
+      ImGui::TableNextRow();
+      ImGui::TableSetColumnIndex(0);
+      ImGui::Text("Light Type");
+      ImGui::TableSetColumnIndex(1);
       if (ImGui::BeginCombo("##Type", currentItem))
       {
          for (UINT32 idx = 0; idx < IM_ARRAYSIZE(items); ++idx)
@@ -115,25 +97,45 @@ namespace Mile
          ImGui::EndCombo();
       }
 
+      ImGui::TableNextRow();
+      ImGui::TableSetColumnIndex(0);
+      ImGui::Text("Light Type");
+      ImGui::TableSetColumnIndex(1);
       GUI::Vector3Input("##Color", m_color, 0.01f, 0.0f, 1.0f);
 
+      ImGui::TableNextRow();
+      ImGui::TableSetColumnIndex(0);
+      ImGui::Text(intensityInputLabel.c_str());
+      ImGui::TableSetColumnIndex(1);
       GUI::FloatInput(("##" + intensityInputLabel).c_str(), m_intensity, 0.1f, 0.0f, 100000.0f, true);
 
       float tempAngle = m_outerAngle;
       switch (m_type)
       {
       case Mile::ELightType::Spot:
+         ImGui::TableNextRow();
+         ImGui::TableSetColumnIndex(0);
+         ImGui::Text("Outer Angle");
+         ImGui::TableSetColumnIndex(1);
          if (ImGui::InputFloat("##Outer Angle", &tempAngle))
          {
             SetOuterAngle(tempAngle);
          }
 
          tempAngle = m_innerAngle;
+         ImGui::TableNextRow();
+         ImGui::TableSetColumnIndex(0);
+         ImGui::Text("Inner Angle");
+         ImGui::TableSetColumnIndex(1);
          if (ImGui::InputFloat("##Inner Angle", &tempAngle))
          {
             SetInnerAngle(tempAngle);
          }
       case Mile::ELightType::Point:
+         ImGui::TableNextRow();
+         ImGui::TableSetColumnIndex(0);
+         ImGui::Text("Radius");
+         ImGui::TableSetColumnIndex(1);
          ImGui::InputFloat("##Radius", &m_radius);
          break;
       }
