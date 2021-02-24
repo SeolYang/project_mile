@@ -80,12 +80,11 @@ namespace Mile
       GUI::Vector3Input("Light Color", m_color, 0.01f, 0.0f, 1.0f);
       GUI::FloatInput(intensityInputLabel, m_intensity, 10.0f, 0.0f, 100000.0f, true);
 
-      float tempAngle = m_outerAngle;
       switch (m_type)
       {
       case Mile::ELightType::Spot:
          GUI::FloatInput("Outer Angle", m_outerAngle, 10.0f, 0.0f, 180.0f);
-         GUI::FloatInput("Inner Angle", m_outerAngle, 10.0f, 0.0f, 180.0f);
+         GUI::FloatInput("Inner Angle", m_innerAngle, 10.0f, 0.0f, 180.0f);
       case Mile::ELightType::Point:
          GUI::FloatInput("Radius", m_radius, 1.0f, 0.0f, FLT_MAX);
          break;
