@@ -182,6 +182,7 @@ namespace Mile
          this->m_name = m_loadedData->GetName();
          this->DeSerialize(json::parse(res->GetData().empty() ? "{}" : res->GetData()));
          ME_LOG(MileWorld, Log, TEXT("World loaded. : ") + filePath);
+         OnWorldLoaded.Broadcast();
          return true;
       }
 
@@ -243,5 +244,6 @@ namespace Mile
       m_name = TEXT("Untitled");
 
       ME_LOG(MileWorld, Log, TEXT("World has been cleared."));
+      OnWorldCleared.Broadcast();
    }
 }

@@ -1,11 +1,14 @@
 #pragma once
 #include "Core/Logger.h"
+#include "Core/Delegate.h"
 #include "Component/Component.h"
 #include "GameFramework/Entity.h"
 
 namespace Mile
 {
    DECLARE_LOG_CATEGORY_EXTERN(MileWorld, Log);
+   DECLARE_MULTICAST_DELEGATE(OnWorldLoaded);
+   DECLARE_MULTICAST_DELEGATE(OnWorldCleared);
 
    template<typename Ty>
    class PlainText;
@@ -124,6 +127,10 @@ namespace Mile
       String m_name;
       std::vector<Entity*> m_entities;
       PlainText<std::string>* m_loadedData;
+
+   public:
+      OnWorldLoadedMulticastDelegate OnWorldLoaded;
+      OnWorldClearedMulticastDelegate OnWorldCleared;
 
    };
 }
