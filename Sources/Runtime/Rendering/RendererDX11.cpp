@@ -4,7 +4,9 @@
 #include "Rendering/Quad.h"
 #include "Rendering/Cube.h"
 #include "Rendering/GPUProfiler.h"
+#include "Core/Engine.h"
 #include "Core/Window.h"
+#include "GameFramework/World.h"
 
 namespace Mile
 {
@@ -23,12 +25,16 @@ namespace Mile
       m_quad(nullptr),
       m_cube(nullptr),
       m_profiler(new GPUProfiler(this)),
-      OnWindowResize(nullptr)
+      OnWindowResize(nullptr),
+      OnWorldCleared(nullptr),
+      OnWorldLoaded(nullptr)
    {
    }
 
    RendererDX11::~RendererDX11()
    {
+      SafeDelete(OnWorldLoaded);
+      SafeDelete(OnWorldCleared);
       SafeDelete(OnWindowResize);
       SafeDelete(m_profiler);
       SafeDelete(m_quad);
@@ -171,6 +177,20 @@ namespace Mile
       OnWindowResize->Bind(&RendererDX11::OnWindowReiszeCallback, this);
       window.OnWindowResize.Add(OnWindowResize);
 
+      auto resetProfilerLambda = [&]()
+      {
+         auto& profiler = this->GetProfiler();
+         profiler.ClearDatas();
+      };
+
+      auto& world = *Engine::GetWorld();
+      OnWorldLoaded = new OnWorldLoadedDelegate();
+      OnWorldLoaded->BindLambda(resetProfilerLambda);
+      world.OnWorldLoaded.Add(OnWorldLoaded);
+
+      OnWorldCleared = new OnWorldClearedDelegate();
+      OnWorldCleared->BindLambda(resetProfilerLambda);
+      world.OnWorldCleared.Add(OnWorldCleared);
       return true;
    }
 

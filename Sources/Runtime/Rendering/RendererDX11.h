@@ -133,6 +133,9 @@ namespace Mile
       Vector2 m_renderResolution;
       bool m_bVsyncEnabled;
 
+      class OnWorldLoadedDelegate* OnWorldLoaded;
+      class OnWorldClearedDelegate* OnWorldCleared;
+
       /** Primitive */
       Quad* m_quad;
       Cube* m_cube;
