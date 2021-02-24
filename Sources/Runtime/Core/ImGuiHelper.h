@@ -645,6 +645,8 @@ namespace Mile
       MEAPI bool Vector3Input(const std::string& name, Vector3& target, float speed = 0.1f, float _min = -FLT_MAX, float _max = FLT_MAX, bool enableLog = false);
       MEAPI bool Vector4Input(const std::string& name, Vector4& target, float speed = 0.1f, float _min = -FLT_MAX, float _max = FLT_MAX, bool enableLog = false);
       MEAPI bool FloatInput(const std::string& name, float& target, float speed = 0.1f, float _min = -FLT_MAX, float _max = FLT_MAX, bool enableLog = false);
+      MEAPI bool Checkbox(const std::string& name, bool& value);
+      MEAPI bool Combobox(const std::string& name, const std::vector<std::string>& items, const std::string& currentItem, unsigned int& enumValue);
 
       static ImVector<ImRect> s_GroupPanelLabelStack;
 

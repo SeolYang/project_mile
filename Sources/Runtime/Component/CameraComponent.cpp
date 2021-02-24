@@ -63,29 +63,10 @@ namespace Mile
 
    void CameraComponent::OnGUI()
    {
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
-      ImGui::Text("Field Of View");
-      ImGui::TableSetColumnIndex(1);
-      GUI::FloatInput("##Field Of View", m_fov, 1.0f, 10.0f, 90.0f, true);
-
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
-      ImGui::Text("Near Plane");
-      ImGui::TableSetColumnIndex(1);
-      GUI::FloatInput("##Near", m_nearPlane, 0.1f, 0.01f, FLT_MAX);
-
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
-      ImGui::Text("Far Plane");
-      ImGui::TableSetColumnIndex(1);
-      GUI::FloatInput("##Far", m_farPlane, 0.1f, 0.01f, FLT_MAX);
-
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
-      ImGui::Text("Clear Color");
-      ImGui::TableSetColumnIndex(1);
-      GUI::Vector4Input("##Clear Color", m_clearColor, 0.1f, 0.0f, 1.0f);
-      /** @todo Add Render Texture */
+      /** @TODO Add Render Texture */
+      GUI::FloatInput("Field Of View", m_fov, 1.0f, 10.0f, 90.0f, true);
+      GUI::FloatInput("Near Plane", m_nearPlane, 1.0f, 0.0f, FLT_MAX);
+      GUI::FloatInput("Far Plane", m_farPlane, 1.0f, 0.0f, FLT_MAX);
+      GUI::Vector4Input("Clear Color", m_clearColor, 0.1f, 0.0f, 1.0f);
    }
 }

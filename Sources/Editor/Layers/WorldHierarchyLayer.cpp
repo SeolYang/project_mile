@@ -130,61 +130,28 @@ namespace Mile
                   ImGui::Spacing();
                   if (ImGui::BeginTable("TransformTable", 2, tableFlag))
                   {
-                     const char* items[] = { "World", "Local" };
-                     static const char* currentItem = items[static_cast<UINT32>(m_transformSpace)];
-
-                     ImGui::TableNextRow();
-                     ImGui::TableSetColumnIndex(0);
-                     ImGui::Text("Transform Space");
-                     ImGui::TableSetColumnIndex(1);
-                     if (ImGui::BeginCombo("##Space", currentItem))
+                     unsigned int selectedSpace = static_cast<unsigned int>(m_transformSpace);
+                     std::vector<std::string> transformSpaceItems = { "World", "Local" };
+                     std::string transformSpaceItem = transformSpaceItems[selectedSpace];
+                     if (GUI::Combobox("Space", transformSpaceItems, transformSpaceItem, selectedSpace))
                      {
-                        for (UINT32 idx = 0; idx < IM_ARRAYSIZE(items); ++idx)
-                        {
-                           bool bSelected = (currentItem == items[idx]);
-                           if (ImGui::Selectable(items[idx], bSelected))
-                           {
-                              currentItem = items[idx];
-                              m_transformSpace = static_cast<ETransformSpace>(idx);
-                              m_tempEulerRotation = Math::QuaternionToEulerAngles(m_selectedEntity->GetTransform()->GetRotation(m_transformSpace));
-                              m_tempPosition = m_selectedEntity->GetTransform()->GetPosition(m_transformSpace);
-                           }
-                           if (bSelected)
-                           {
-                              ImGui::SetItemDefaultFocus();
-                           }
-                        }
-
-                        ImGui::EndCombo();
+                        m_transformSpace = static_cast<ETransformSpace>(selectedSpace);
                      }
 
                      Transform* entitiyTransform = m_selectedEntity->GetTransform();
                      auto position = entitiyTransform->GetPosition(m_transformSpace);
-
-                     ImGui::TableNextRow();
-                     ImGui::TableSetColumnIndex(0);
-                     ImGui::Text("Position");
-                     ImGui::TableSetColumnIndex(1);
-                     if (GUI::Vector3Input("##Position", position))
+                     if (GUI::Vector3Input("Position", position))
                      {
                         entitiyTransform->SetPosition(position, m_transformSpace);
                      }
 
-                     ImGui::TableNextRow();
-                     ImGui::TableSetColumnIndex(0);
-                     ImGui::Text("Rotation");
-                     ImGui::TableSetColumnIndex(1);
-                     if (GUI::Vector3Input("##Rotation", m_tempEulerRotation))
+                     if (GUI::Vector3Input("Rotation", m_tempEulerRotation))
                      {
                         entitiyTransform->SetRotation(Math::EulerToQuaternionInOrder(m_tempEulerRotation), m_transformSpace);
                      }
 
-                     ImGui::TableNextRow();
-                     ImGui::TableSetColumnIndex(0);
-                     ImGui::Text("Scale");
-                     ImGui::TableSetColumnIndex(1);
                      auto scale = entitiyTransform->GetScale(m_transformSpace);
-                     if (GUI::Vector3Input("##Scale", scale))
+                     if (GUI::Vector3Input("Scale", scale))
                      {
                         entitiyTransform->SetScale(scale, m_transformSpace);
                      }

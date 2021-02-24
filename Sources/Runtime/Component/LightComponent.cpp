@@ -71,72 +71,23 @@ namespace Mile
       intensityInputLabel.append(LightIntensityUnitToString(LightIntensityUnitOf(m_type)));
       intensityInputLabel.append(")");
 
-      const char* items[] = { "Directional", "Point", "Spot" };
-      static const char* currentItem = items[static_cast<UINT32>(m_type)];
-      
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
-      ImGui::Text("Light Type");
-      ImGui::TableSetColumnIndex(1);
-      if (ImGui::BeginCombo("##Type", currentItem))
-      {
-         for (UINT32 idx = 0; idx < IM_ARRAYSIZE(items); ++idx)
-         {
-            bool bSelected = (currentItem == items[idx]);
-            if (ImGui::Selectable(items[idx], bSelected))
-            {
-               currentItem = items[idx];
-               m_type = static_cast<ELightType>(idx);
-            }
-            if (bSelected)
-            {
-               ImGui::SetItemDefaultFocus();
-            }
-         }
+      unsigned int selectedType = static_cast<unsigned int>(m_type);
+      std::vector<std::string> typeComboboxItems{ "Directional", "Point", "Spot" };
+      std::string typeComboboxItem = typeComboboxItems[selectedType];
+      GUI::Combobox("Light Type", typeComboboxItems, typeComboboxItem, selectedType);
+      m_type = static_cast<ELightType>(selectedType);
 
-         ImGui::EndCombo();
-      }
-
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
-      ImGui::Text("Light Type");
-      ImGui::TableSetColumnIndex(1);
-      GUI::Vector3Input("##Color", m_color, 0.01f, 0.0f, 1.0f);
-
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
-      ImGui::Text(intensityInputLabel.c_str());
-      ImGui::TableSetColumnIndex(1);
-      GUI::FloatInput(("##" + intensityInputLabel).c_str(), m_intensity, 0.1f, 0.0f, 100000.0f, true);
+      GUI::Vector3Input("Light Color", m_color, 0.01f, 0.0f, 1.0f);
+      GUI::FloatInput(intensityInputLabel, m_intensity, 10.0f, 0.0f, 100000.0f, true);
 
       float tempAngle = m_outerAngle;
       switch (m_type)
       {
       case Mile::ELightType::Spot:
-         ImGui::TableNextRow();
-         ImGui::TableSetColumnIndex(0);
-         ImGui::Text("Outer Angle");
-         ImGui::TableSetColumnIndex(1);
-         if (ImGui::InputFloat("##Outer Angle", &tempAngle))
-         {
-            SetOuterAngle(tempAngle);
-         }
-
-         tempAngle = m_innerAngle;
-         ImGui::TableNextRow();
-         ImGui::TableSetColumnIndex(0);
-         ImGui::Text("Inner Angle");
-         ImGui::TableSetColumnIndex(1);
-         if (ImGui::InputFloat("##Inner Angle", &tempAngle))
-         {
-            SetInnerAngle(tempAngle);
-         }
+         GUI::FloatInput("Outer Angle", m_outerAngle, 10.0f, 0.0f, 180.0f);
+         GUI::FloatInput("Inner Angle", m_outerAngle, 10.0f, 0.0f, 180.0f);
       case Mile::ELightType::Point:
-         ImGui::TableNextRow();
-         ImGui::TableSetColumnIndex(0);
-         ImGui::Text("Radius");
-         ImGui::TableSetColumnIndex(1);
-         ImGui::InputFloat("##Radius", &m_radius);
+         GUI::FloatInput("Radius", m_radius, 1.0f, 0.0f, FLT_MAX);
          break;
       }
    }
