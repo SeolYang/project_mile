@@ -13,7 +13,7 @@ namespace Mile
       m_nearPlane(1.0f),
       m_farPlane(500.0f),
       m_aperture(1.0f),
-      m_shutterSpeed(1.0f),
+      m_shutterSpeed(0.001f),
       m_sensitivity(100.0f),
       m_clearColor(Vector4(0.133f, 0.137f, 0.15f, 1.0f)),
       m_renderTexture(nullptr),
@@ -52,7 +52,7 @@ namespace Mile
       m_farPlane = GetValueSafelyFromJson(jsonData, "FarPlane", 500.0f);
       m_clearColor.DeSerialize(jsonData["ClearColor"]);
       m_aperture = GetValueSafelyFromJson(jsonData, "Aperture", 1.0f);
-      m_shutterSpeed = GetValueSafelyFromJson(jsonData, "ShutterSpeed", 1.0f);
+      m_shutterSpeed = GetValueSafelyFromJson(jsonData, "ShutterSpeed", 0.001f);
       m_sensitivity = GetValueSafelyFromJson(jsonData, "Sensitivity", 100.0f);
 
       std::string renderTexture = GetValueSafelyFromJson(jsonData, "RenderTexture", std::string());
@@ -78,7 +78,7 @@ namespace Mile
       GUI::FloatInput("Far Plane", m_farPlane, 1.0f, 0.0f, FLT_MAX);
       GUI::Vector4Input("Clear Color", m_clearColor, 0.1f, 0.0f, 1.0f);
       GUI::FloatInput("Aperture", m_aperture, 0.1f, 1.4f, 4.0f, false, "f/%.03f");
-      GUI::FloatInput("Shutter Speed", m_shutterSpeed, 0.1f, 0.0f, FLT_MAX, false, "%0.3f seconds");
+      GUI::FloatInput("Shutter Speed", m_shutterSpeed, 0.1f, 0.0f, FLT_MAX, false, "%0.5f seconds");
       GUI::FloatInput("Sensitivity", m_sensitivity, 0.1f, 0.0f, FLT_MAX, false, "%0.3f ISO");
    }
 }

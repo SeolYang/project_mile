@@ -11,7 +11,7 @@ namespace Mile
 
    SkyLightComponent::SkyLightComponent(Entity* entity) :
       Component(entity),
-      m_intensityScale(1.0f),
+      m_intensityScale(1000.0f),
       m_bRealtime(false),
       m_skybox(nullptr)
    {
@@ -32,7 +32,7 @@ namespace Mile
       Component::DeSerialize(jsonData);
       SetTexture(String2WString(GetValueSafelyFromJson(jsonData, "Path", std::string())));
       m_bRealtime = GetValueSafelyFromJson(jsonData, "RealtimeCapture", false);
-      m_intensityScale = GetValueSafelyFromJson(jsonData, "IntensityScale", 1.0f);
+      m_intensityScale = GetValueSafelyFromJson(jsonData, "IntensityScale", 1000.0f);
    }
 
    void SkyLightComponent::SetTexture(Texture2D* texture)
@@ -60,7 +60,7 @@ namespace Mile
 
    void SkyLightComponent::OnGUI()
    {
-      GUI::FloatInput("Intensity Scale", m_intensityScale, 1.f, 0.0f, 1000.0f, true);
+      GUI::FloatInput("Intensity Scale", m_intensityScale, 1000.f, 0.0f, 1000.0f, true);
       GUI::Checkbox("Real Time Capture", m_bRealtime);
    }
 }
