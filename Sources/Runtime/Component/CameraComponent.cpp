@@ -3,6 +3,7 @@
 #include "Core/ImGuiHelper.h"
 #include "Resource/ResourceManager.h"
 #include "Resource/RenderTexture.h"
+#include "Rendering/Light.h"
 
 namespace Mile
 {
@@ -70,6 +71,11 @@ namespace Mile
       }
    }
 
+   float CameraComponent::GetExposureNormalizationFactor() const
+   {
+      return ExposureNormalizationFactor(EV100(m_aperture, m_shutterSpeed, m_sensitivity));
+   }
+
    void CameraComponent::OnGUI()
    {
       /** @TODO Add Render Texture */
@@ -77,7 +83,7 @@ namespace Mile
       GUI::FloatInput("Near Plane", m_nearPlane, 1.0f, 0.0f, FLT_MAX);
       GUI::FloatInput("Far Plane", m_farPlane, 1.0f, 0.0f, FLT_MAX);
       GUI::Vector4Input("Clear Color", m_clearColor, 0.1f, 0.0f, 1.0f);
-      GUI::FloatInput("Aperture", m_aperture, 0.1f, 1.4f, 4.0f, false, "f/%.03f");
+      GUI::FloatInput("Aperture", m_aperture, 0.1f, 1.0f, 16.0f, false, "f/%.03f");
       GUI::FloatInput("Shutter Speed", m_shutterSpeed, 0.1f, 0.0f, FLT_MAX, false, "%0.5f seconds");
       GUI::FloatInput("Sensitivity", m_sensitivity, 0.1f, 0.0f, FLT_MAX, false, "%0.3f ISO");
    }

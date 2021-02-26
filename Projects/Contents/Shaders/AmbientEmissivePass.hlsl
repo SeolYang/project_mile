@@ -25,6 +25,7 @@ cbuffer AmbientParamsBuffer
 	float3 CameraPos;
 	float  AmbientIntensity;
 	float MaxReflectionLod;
+	float EV100;
 	unsigned int SSAOEnabled;
 };
 
@@ -32,7 +33,7 @@ cbuffer AmbientParamsBuffer
 /* G-Buffer */
 Texture2D posBuffer						: register(t0);
 Texture2D albedoBuffer					: register(t1);
-Texture2D emissiveAOBuffer				: register(t2);
+Texture2D emissiveBuffer				: register(t2);
 Texture2D normalBuffer					: register(t3);
 Texture2D extraComponents				: register(t4);
 /* IBL */
@@ -61,12 +62,11 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float roughness = extraComponents.Sample(LinearClampSampler, input.TexCoord).g;
 	float metallic = extraComponents.Sample(LinearClampSampler, input.TexCoord).b;
 
-	float4 emissiveAO = emissiveAOBuffer.Sample(LinearClampSampler, input.TexCoord).rgba;
-	float3 emissive = emissiveAO.rgb;
-	float ao = emissiveAO.a > 0.0f ? emissiveAO.a : AmbientIntensity;
+	float4 emissive = emissiveBuffer.Sample(LinearClampSampler, input.TexCoord).rgba;
+	float ao = 1.0f;
 	if (SSAOEnabled == 1)
 	{
-		ao = ssaoInput.Sample(SSAOSampler, input.TexCoord).r;
+		ao *= ssaoInput.Sample(SSAOSampler, input.TexCoord).r;
 	}
 	ao *= AmbientIntensity;
 
@@ -89,7 +89,6 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
 	float3 ambient = (kD * diffuse + specular) * ao;
-	float3 color = ambient + emissive;
-
+	float3 color = ambient + (emissive.rgb * pow(2.0f, EV100 + emissive.a - 3.0f));
 	return float4(color, 1.0);
 }

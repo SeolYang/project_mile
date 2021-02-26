@@ -35,7 +35,7 @@ struct PSOutput
 {
 	float4 Position				: SV_Target0;
 	float4 Albedo					: SV_Target1;
-	float4 EmissiveAO				: SV_Target2;
+	float4 Emissive				: SV_Target2;
 	float4 Normal					: SV_Target3;
 	/* R : Reflectivity, G : ROUGHNESS, B : METALLIC, A : Specular */
 	float4 ExtraComponents		: SV_Target4;
@@ -96,7 +96,7 @@ PSOutput MilePS(in PSInput input)
 	albedo += baseColorFactor;
 	
 	/* Emissive */
-	float3 emissive = pow(emissiveMap.Sample(Sampler, uv).rgb, 2.2) * emissiveIntensity;
+	float3 emissive = pow(emissiveMap.Sample(Sampler, uv).rgb, 2.2);
 	
 	/* Metallic-Roughness */
 	float roughness = metallicRoughnessMap.Sample(Sampler, uv).g;
@@ -122,9 +122,9 @@ PSOutput MilePS(in PSInput input)
 	PSOutput output;
 	output.Position = float4(input.PositionWS, 1.0f);
 	output.Albedo = float4(albedo, 1.0f);
-	output.EmissiveAO = float4(emissive, ao);
+	output.Emissive = float4(emissive, emissiveIntensity);
 	output.Normal = float4(normal, 1.0f);
-	output.ExtraComponents = float4(0.0f, roughness, metallic, specularFactor);
+	output.ExtraComponents = float4(ao, roughness, metallic, specularFactor);
 
 	return output;
 }

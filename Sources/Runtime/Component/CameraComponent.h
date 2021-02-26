@@ -71,6 +71,8 @@ namespace Mile
       float Sensitivity() const { return m_sensitivity; }
       float& Sensitivity() { return m_sensitivity; }
 
+      float GetExposureNormalizationFactor() const;
+
       void OnGUI() override;
 
    private:

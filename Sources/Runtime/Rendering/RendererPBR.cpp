@@ -85,6 +85,7 @@ namespace Mile
       Vector3 CameraPos = Vector3();
       float AmbientIntensity = 1.0f;
       float MaxReflectionLod = 4.0f;
+      float EV100 = 0.0f;
       unsigned int SSAOEnabled = 0;
    };
 
@@ -2048,9 +2049,14 @@ namespace Mile
             auto camTransform = camera->GetTransform();
             auto paramsBuffer = data.ParamsBuffer->GetActual();
             float ambientIntensity = *(*data.AmbientIntensityRef->GetActual());
+            float ev100 = camera->GetExposureNormalizationFactor();
 
             auto mappedParamsBuffer = paramsBuffer->Map<AmbientParamsConstantBuffer>(context);
-            (*mappedParamsBuffer) = AmbientParamsConstantBuffer{ camTransform->GetPosition(ETransformSpace::World), ambientIntensity, (float)(prefilteredMap->GetMaxMipLevels() - 2), static_cast<unsigned int>(bSSAOEnabled) };
+            (*mappedParamsBuffer) = AmbientParamsConstantBuffer{ 
+               camTransform->GetPosition(ETransformSpace::World), 
+               ambientIntensity, (float)(prefilteredMap->GetMaxMipLevels() - 2), 
+               ev100,
+               static_cast<unsigned int>(bSSAOEnabled) };
             paramsBuffer->UnMap(context);
             paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
 
