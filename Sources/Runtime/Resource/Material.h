@@ -12,9 +12,9 @@ namespace Mile
    DEFINE_CONSTANT_BUFFER(PackedMaterialParams)
    {
       Vector4 BaseColorFactor = Vector4::One();
-      Vector4 EmissiveColorFactor = Vector4::Zero();
       Vector4 MetallicRoughnessUV = Vector4::Zero();
       float SpecularFactor = 0.0f;
+      float EmissiveFactor = 0.0f;
    };
 
    enum class MaterialTextureProperty
@@ -83,7 +83,7 @@ namespace Mile
 
       Vector2  m_uvOffset;
       Vector4  m_baseColorFactor;
-      Vector4  m_emissiveFactor;
+      float    m_emissiveFactor;
       float		m_metallicFactor;
       float		m_roughnessFactor;
       float    m_specularFactor;

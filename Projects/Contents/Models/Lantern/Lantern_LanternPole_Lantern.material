@@ -1,1 +1,21 @@
-{"AO":"Contents/Textures/default_black.png","BaseColor":"Contents/Models/Lantern/Lantern_baseColor.png","BaseColorFactor":{"w":0.0,"x":0.0,"y":0.0,"z":0.0},"Emissive":"Contents/Models/Lantern/Lantern_emissive.png","EmissiveFactor":{"w":0.0,"x":0.0,"y":0.0,"z":0.0},"MetallicFactor":0.0,"MetallicRoughness":"Contents/Models/Lantern/Lantern_roughnessMetallic.png","Normal":"Contents/Models/Lantern/Lantern_normal.png","RoughnessFactor":0.0,"Specular":"Contents/Textures/default_black.png","SpecularFactor":0.0,"Type":0,"UVOffset":{"x":0.0,"y":0.0}}
+{
+  "BaseColor": "Contents/Models/Lantern/Lantern_baseColor.png",
+  "BaseColorFactor": {
+    "w": 1.0,
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+  },
+  "Emissive": "Contents/Models/Lantern/Lantern_emissive.png",
+  "EmissiveFactor": 1000.0,
+  "MetallicFactor": 0.0,
+  "MetallicRoughness": "Contents/Models/Lantern/Lantern_roughnessMetallic.png",
+  "Normal": "Contents/Models/Lantern/Lantern_normal.png",
+  "RoughnessFactor": 0.0,
+  "SpecularFactor": 0.5,
+  "Type": 0,
+  "UVOffset": {
+    "x": 0.0,
+    "y": 0.0
+  }
+}

@@ -61,11 +61,11 @@ cbuffer TransformBuffer
 cbuffer MaterialBuffer
 {
 	float4	baseColorFactor	: packoffset(c0);
-	float4	emissiveFactor		: packoffset(c1);
-	float		metallicFactor		: packoffset(c2);
-	float		roughnessFactor	: packoffset(c2.y);
-	float2	uvOffset				: packoffset(c2.z);
-	float		specularFactor		: packoffset(c3);
+	float		metallicFactor		: packoffset(c1);
+	float		roughnessFactor	: packoffset(c1.y);
+	float2	uvOffset				: packoffset(c1.z);
+	float		specularFactor		: packoffset(c2);
+	float		emissiveIntensity : packoffset(c2.y);
 }
 
 /* Shader Programs */
@@ -96,8 +96,7 @@ PSOutput MilePS(in PSInput input)
 	albedo += baseColorFactor;
 	
 	/* Emissive */
-	float3 emissive = pow(emissiveMap.Sample(Sampler, uv).rgb, 2.2);
-	emissive += emissiveFactor;
+	float3 emissive = pow(emissiveMap.Sample(Sampler, uv).rgb, 2.2) * emissiveIntensity;
 	
 	/* Metallic-Roughness */
 	float roughness = metallicRoughnessMap.Sample(Sampler, uv).g;

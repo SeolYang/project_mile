@@ -2204,322 +2204,6 @@ namespace Mile
 
       const auto& skyboxPassData = skyboxPass->GetData();
 
-      /** Extract Brightness Pass */
-      struct ExtractBrightnessPassData : public RenderPassDataBase
-      {
-         SamplerResource* Sampler = nullptr;
-         ViewportResource* Viewport = nullptr;
-         RenderTargetRefResource* InputRef = nullptr;
-         VoidRefResource* BloomParamsRef = nullptr;
-         ConstantBufferResource* ParamsBuffer = nullptr;
-         DepthStencilStateResource* DepthDisableState = nullptr;
-         MeshRefResource* QuadMeshRef = nullptr;
-         RenderTargetRefResource* OutputRef = nullptr;
-      };
-
-      auto extractBrightnessPassVSRes = m_frameGraph.AddExternalPermanentResource("ExtractBrightnessPassVertexShader", ShaderDescriptor(), m_extractBrightnessPassVS);
-      auto extractBrightnessPassPSRes = m_frameGraph.AddExternalPermanentResource("ExtractBrightnessPassPixelShader", ShaderDescriptor(), m_extractBrightnessPassPS);
-
-      auto extractedBrightnessRefRes = m_frameGraph.AddExternalPermanentResource("ExtracterBrightnessRef", RenderTargetRefDescriptor(), &m_extractedBrightness);
-      auto extractBrightnessPass = m_frameGraph.AddCallbackPass<ExtractBrightnessPassData>(
-         "ExtractBrightnessPass",
-         [&](Elaina::RenderPassBuilder& builder, ExtractBrightnessPassData& data)
-         {
-            data.Renderer = this;
-            data.VertexShader = builder.Read(extractBrightnessPassVSRes);
-            data.PixelShader = builder.Read(extractBrightnessPassPSRes);
-
-            data.Sampler = builder.Read(convertSkyboxToCubemapPassData.Sampler);
-
-            data.Viewport = builder.Read(skyboxPassData.Viewport);
-            data.InputRef = builder.Read(skyboxPassData.OutputRef);
-
-            VoidRefDescriptor bloomParamRefDesc;
-            bloomParamRefDesc.Reference = &m_bloomParams;
-            data.BloomParamsRef = builder.Create<VoidRefResource>("BloomParams", bloomParamRefDesc);
-
-            data.ParamsBuffer = builder.Write(prefilterEnvMapPassData.PrefilterParamsBuffer);
-
-            data.DepthDisableState = builder.Read(ambientEmissivePassData.DepthDisableState);
-            data.QuadMeshRef = builder.Read(ambientEmissivePassData.QuadMeshRef);
-
-            data.OutputRef = builder.Write(extractedBrightnessRefRes);
-         },
-         [](const ExtractBrightnessPassData& data)
-         {
-            OPTICK_EVENT("ExecuteExtractBrightnessPass");
-            auto& profiler = data.Renderer->GetProfiler();
-            ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
-            ScopedGPUProfile profile(profiler, "ExtractBrightnessPass");
-            context.ClearState();
-            context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-            auto vertexShader = data.VertexShader->GetActual();
-            auto pixelShader = data.PixelShader->GetActual();
-            auto sampler = data.Sampler->GetActual();
-            auto input = *data.InputRef->GetActual();
-            auto bloomParams = (BloomParams*)(*data.BloomParamsRef->GetActual());
-            auto paramsBuffer = data.ParamsBuffer->GetActual();
-            auto depthDisableState = data.DepthDisableState->GetActual();
-            auto quadMesh = *data.QuadMeshRef->GetActual();
-            auto viewport = data.Viewport->GetActual();
-            auto output = *data.OutputRef->GetActual();
-
-            /** Binds */
-            vertexShader->Bind(context);
-            pixelShader->Bind(context);
-            sampler->Bind(context, 0);
-            input->BindAsShaderResource(context, 0, EShaderType::PixelShader);
-            paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
-            depthDisableState->Bind(context);
-            quadMesh->Bind(context, 0);
-            viewport->Bind(context);
-            output->Clear(context, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
-            output->BindAsRenderTarget(context);
-
-            /** Update Constant Buffer */
-            auto mappedParamsBuffer = paramsBuffer->Map<OneFloatConstantBuffer>(context);
-            (*mappedParamsBuffer) = OneFloatConstantBuffer{ bloomParams->BrightnessThreshold };
-            paramsBuffer->UnMap(context);
-
-            /** Render */
-            data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
-
-            /** Unbinds */
-            output->UnbindRenderTarget(context);
-            paramsBuffer->Unbind(context, 0, EShaderType::PixelShader);
-            input->UnbindShaderResource(context, 0, EShaderType::PixelShader);
-            sampler->Unbind(context, 0);
-            pixelShader->Unbind(context);
-            vertexShader->Unbind(context);
-         });
-
-      const auto& extractBrightnessPassData = extractBrightnessPass->GetData();
-
-      /** Bloom - Gaussian Blur Pass */
-      struct BloomGaussBlurPassData : public RenderPassDataBase
-      {
-         VoidRefResource* BloomParamsRef = nullptr;
-         SamplerResource* Sampler = nullptr;
-         ViewportResource* Viewport = nullptr;
-         DepthStencilStateResource* DepthDisableState = nullptr;
-         ConstantBufferResource* ParamsBuffer = nullptr;
-         MeshRefResource* QuadMeshRef = nullptr;
-         RenderTargetRefResource* InputRef = nullptr;
-         std::array<RenderTargetRefResource*, 2> PingPongBufferRef{ nullptr, }; /** Latest output = (BlurAmount)%2 */
-      };
-
-      auto gaussianBlurVSRes = m_frameGraph.AddExternalPermanentResource(
-         "GaussianBlurVertexShader",
-         ShaderDescriptor(),
-         m_gaussBloomPassVS);
-
-      auto gaussianBlurPSRes = m_frameGraph.AddExternalPermanentResource(
-         "GaussianBlurPixelShader",
-         ShaderDescriptor(),
-         m_gaussBloomPassPS);
-
-      std::array<RenderTargetRefResource*, 2> pingPongBuffersRefRes{ nullptr, };
-      for (size_t idx = 0; idx < m_pingPongBuffers.size(); ++idx)
-      {
-         pingPongBuffersRefRes[idx] =
-            m_frameGraph.AddExternalPermanentResource(
-               "PingPongBufferRef_" + std::to_string(idx),
-               RenderTargetRefDescriptor(), &m_pingPongBuffers[idx]);
-      }
-
-      auto bloomGaussBlurPass = m_frameGraph.AddCallbackPass<BloomGaussBlurPassData>(
-         "BloomGaussBlurPass",
-         [&](Elaina::RenderPassBuilder& builder, BloomGaussBlurPassData& data)
-         {
-            data.Renderer = this;
-            data.VertexShader = builder.Read(gaussianBlurVSRes);
-            data.PixelShader = builder.Read(gaussianBlurPSRes);
-
-            data.BloomParamsRef = builder.Read(extractBrightnessPassData.BloomParamsRef);
-            data.Sampler = builder.Read(extractBrightnessPassData.Sampler);
-            data.Viewport = builder.Read(extractBrightnessPassData.Viewport);
-            data.DepthDisableState = builder.Read(extractBrightnessPassData.DepthDisableState);
-
-            data.QuadMeshRef = builder.Read(extractBrightnessPassData.QuadMeshRef);
-            data.InputRef = builder.Read(extractBrightnessPassData.OutputRef);
-
-            ConstantBufferDescriptor paramsBufferDesc;
-            paramsBufferDesc.Renderer = this;
-            paramsBufferDesc.Size = sizeof(OneUINTConstantBuffer);
-            data.ParamsBuffer = builder.Create<ConstantBufferResource>("GaussianBlurParamsConstantBuffer", paramsBufferDesc);
-
-            for (size_t idx = 0; idx < data.PingPongBufferRef.size(); ++idx)
-            {
-               data.PingPongBufferRef[idx] = builder.Write(pingPongBuffersRefRes[idx]);
-            }
-         },
-         [](const BloomGaussBlurPassData& data)
-         {
-            OPTICK_EVENT("ExecuteBloomGaussBlurPass");
-            auto& profiler = data.Renderer->GetProfiler();
-            ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
-            ScopedGPUProfile profile(profiler, "BloomGaussBlurPass");
-            context.ClearState();
-            context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-            auto vertexShader = data.VertexShader->GetActual();
-            auto pixelShader = data.PixelShader->GetActual();
-            auto sampler = data.Sampler->GetActual();
-            auto bloomParams = (BloomParams*)(*data.BloomParamsRef->GetActual());
-            auto viewport = data.Viewport->GetActual();
-            auto depthDisableState = data.DepthDisableState->GetActual();
-            auto quadMesh = *data.QuadMeshRef->GetActual();
-            auto paramsBuffer = data.ParamsBuffer->GetActual();
-            auto input = *data.InputRef->GetActual();
-            std::array<RenderTargetDX11*, 2> pingPongBuffer{ *data.PingPongBufferRef[0]->GetActual(), *data.PingPongBufferRef[1]->GetActual() };
-
-            /** Binds */
-            vertexShader->Bind(context);
-            pixelShader->Bind(context);
-            sampler->Bind(context, 0);
-            viewport->Bind(context);
-            depthDisableState->Bind(context);
-            quadMesh->Bind(context, 0);
-            paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
-
-            /** Render */
-            auto latestInput = input;
-            auto latestOutput = pingPongBuffer[0];
-            bool bHorizontal = true;
-            for (unsigned int epoch = 0; epoch < bloomParams->BlurAmount; ++epoch)
-            {
-               if (epoch > 0)
-               {
-                  bHorizontal = !bHorizontal;
-                  unsigned int swap = epoch % 2;
-                  switch (swap)
-                  {
-                  case 0:
-                     latestInput = pingPongBuffer[1];
-                     latestOutput = pingPongBuffer[0];
-                     break;
-
-                  case 1:
-                     latestInput = pingPongBuffer[0];
-                     latestOutput = pingPongBuffer[1];
-                     break;
-                  }
-               }
-
-               latestInput->BindAsShaderResource(context, 0, EShaderType::PixelShader);
-               latestOutput->Clear(context, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
-               latestOutput->BindAsRenderTarget(context);
-
-               auto mappedParamsBuffer = paramsBuffer->Map<OneUINTConstantBuffer>(context);
-               (*mappedParamsBuffer) = OneUINTConstantBuffer{ static_cast<unsigned int>(bHorizontal ? 1 : 0) };
-               paramsBuffer->UnMap(context);
-
-               data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
-
-               latestOutput->UnbindRenderTarget(context);
-               latestInput->UnbindShaderResource(context, 0, EShaderType::PixelShader);
-            }
-
-            /** Unbinds */
-            paramsBuffer->Unbind(context, 0, EShaderType::PixelShader);
-            sampler->Unbind(context, 0);
-            pixelShader->Unbind(context);
-            vertexShader->Unbind(context);
-         });
-
-      const auto& bloomGaussBlurPassData = bloomGaussBlurPass->GetData();
-
-      /** Bloom - Blend */
-      struct BloomBlendPassData : public RenderPassDataBase
-      {
-         VoidRefResource* BloomParamsRef = nullptr;
-         SamplerResource* Sampler = nullptr;
-         ViewportResource* Viewport = nullptr;
-         DepthStencilStateResource* DepthDisableState = nullptr;
-         BlendStateResource* AdditiveBlendState = nullptr;
-         MeshRefResource* QuadMeshRef = nullptr;
-
-         ConstantBufferResource* ParamsBuffer = nullptr;
-         std::array<RenderTargetRefResource*, 2> PingPongBufferRef{ nullptr, };
-         RenderTargetRefResource* OutputRef = nullptr;
-      };
-
-      auto bloomBlendPass = m_frameGraph.AddCallbackPass<BloomBlendPassData>(
-         "BloomBlendPass",
-         [&](Elaina::RenderPassBuilder& builder, BloomBlendPassData& data)
-         {
-            data.Renderer = this;
-            data.VertexShader = builder.Read(printTextureVSRes);
-            data.PixelShader = builder.Read(printTexturePSRes);
-
-            data.Sampler = builder.Read(bloomGaussBlurPassData.Sampler);
-
-            data.BloomParamsRef = builder.Read(bloomGaussBlurPassData.BloomParamsRef);
-            data.Viewport = builder.Read(bloomGaussBlurPassData.Viewport);
-            data.DepthDisableState = builder.Read(bloomGaussBlurPassData.DepthDisableState);
-            data.AdditiveBlendState = builder.Read(lightingPassData.AdditiveBlendState);
-
-            data.ParamsBuffer = builder.Write(prefilterEnvMapPassData.PrefilterParamsBuffer);
-
-            data.QuadMeshRef = builder.Read(bloomGaussBlurPassData.QuadMeshRef);
-            data.PingPongBufferRef[0] = builder.Read(bloomGaussBlurPassData.PingPongBufferRef[0]);
-            data.PingPongBufferRef[1] = builder.Read(bloomGaussBlurPassData.PingPongBufferRef[1]);
-
-            data.OutputRef = builder.Write(skyboxPassData.OutputRef);
-         },
-         [](const BloomBlendPassData& data)
-         {
-            OPTICK_EVENT("ExecuteBloomBlendPass");
-            auto& profiler = data.Renderer->GetProfiler();
-            ID3D11DeviceContext& context = data.Renderer->GetImmediateContext();
-            ScopedGPUProfile profile(profiler, "BloomBlendPass");
-            context.ClearState();
-            context.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-            auto vertexShader = data.VertexShader->GetActual();
-            auto pixelShader = data.PixelShader->GetActual();
-            auto sampler = data.Sampler->GetActual();
-            auto bloomParams = (BloomParams*)(*data.BloomParamsRef->GetActual());
-            auto viewport = data.Viewport->GetActual();
-            auto depthDisableState = data.DepthDisableState->GetActual();
-            auto additiveBlendState = data.AdditiveBlendState->GetActual();
-            auto paramsBuffer = data.ParamsBuffer->GetActual();
-            auto quadMesh = *data.QuadMeshRef->GetActual();
-            auto input = *data.PingPongBufferRef[bloomParams->BlurAmount % 2]->GetActual();
-            auto output = *data.OutputRef->GetActual();
-
-            /** Binds */
-            vertexShader->Bind(context);
-            pixelShader->Bind(context);
-            sampler->Bind(context, 0);
-            viewport->Bind(context);
-            depthDisableState->Bind(context);
-            additiveBlendState->Bind(context);
-            paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
-            quadMesh->Bind(context, 0);
-            input->BindAsShaderResource(context, 0, EShaderType::PixelShader);
-            output->BindAsRenderTarget(context);
-
-            /** Update Constant Buffers */
-            auto mappedParamsBuffer = paramsBuffer->Map<OneFloatConstantBuffer>(context);
-            (*mappedParamsBuffer) = OneFloatConstantBuffer{ bloomParams->Intensity };
-            paramsBuffer->UnMap(context);
-
-            /** Render */
-            data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
-
-            /** Unbinds */
-            output->UnbindRenderTarget(context);
-            input->UnbindShaderResource(context, 0, EShaderType::PixelShader);
-            paramsBuffer->Unbind(context, 0, EShaderType::PixelShader);
-            sampler->Unbind(context, 0);
-            pixelShader->Unbind(context);
-            vertexShader->Unbind(context);
-         });
-
-      const auto& bloomBlendPassData = bloomBlendPass->GetData();
-
       /** Tone Mapping Pass */
       struct ToneMappingPassData : public RenderPassDataBase
       {
@@ -2543,9 +2227,9 @@ namespace Mile
             data.Renderer = this;
             data.VertexShader = builder.Read(toneMappingVSRes);
             data.PixelShader = builder.Read(toneMappingPSRes);
-            data.Sampler = builder.Read(bloomBlendPassData.Sampler);
-            data.Viewport = builder.Read(bloomBlendPassData.Viewport);
-            data.DepthDisableState = builder.Read(bloomBlendPassData.DepthDisableState);
+            data.Sampler = builder.Read(lightingPassData.Sampler);
+            data.Viewport = builder.Read(lightingPassData.Viewport);
+            data.DepthDisableState = builder.Read(lightingPassData.DepthDisableState);
 
             VoidRefDescriptor paramsDesc;
             paramsDesc.Reference = &m_toneMappingParams;
@@ -2557,8 +2241,8 @@ namespace Mile
             toneMappingBufferDesc.Renderer = this;
             toneMappingBufferDesc.Size = sizeof(OneVector2ConstantBuffer);
             data.ParamsBuffer = builder.Create<ConstantBufferResource>("ToneMappingConstantBuffer", toneMappingBufferDesc);
-            data.QuadMeshRef = builder.Read(bloomBlendPassData.QuadMeshRef);
-            data.InputRef = builder.Read(bloomBlendPassData.OutputRef);
+            data.QuadMeshRef = builder.Read(lightingPassData.QuadMeshRef);
+            data.InputRef = builder.Read(skyboxPassData.OutputRef);
             data.OutputRef = builder.Write(outputRenderTargetRefRes);
          },
          [](const ToneMappingPassData& data)
@@ -2611,6 +2295,8 @@ namespace Mile
             vertexShader->Unbind(context);
          });
 
+      auto toneMappingPassData = toneMappingPass->GetData();
+
       struct DebugDepthSSAOPassData : public RenderPassDataBase
       {
          SamplerResource* Sampler = nullptr;
@@ -2636,10 +2322,10 @@ namespace Mile
             data.Renderer = this;
             data.VertexShader = builder.Read(debugDepthSSAOVSRes);
             data.PixelShader = builder.Read(debugDepthSSAOPSRes);
-            data.Sampler = builder.Read(bloomBlendPassData.Sampler);
-            data.Viewport = builder.Read(bloomBlendPassData.Viewport);
-            data.DepthDisableState = builder.Read(bloomBlendPassData.DepthDisableState);
-            data.QuadMeshRef = builder.Read(bloomBlendPassData.QuadMeshRef);
+            data.Sampler = builder.Read(toneMappingPassData.Sampler);
+            data.Viewport = builder.Read(toneMappingPassData.Viewport);
+            data.DepthDisableState = builder.Read(toneMappingPassData.DepthDisableState);
+            data.QuadMeshRef = builder.Read(toneMappingPassData.QuadMeshRef);
             data.InputGBufferRef = builder.Read(geometryPassData.OutputGBufferRef);
             data.InputSSAORef = builder.Read(ssaoBlurPassData.SourceRef);
             data.OutputDepthRef = builder.Write(debugDepthOutputRefRes);

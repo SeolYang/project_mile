@@ -17,7 +17,7 @@ namespace Mile
       m_ao(nullptr),
       m_normal(nullptr),
       m_baseColorFactor(Vector4(0.0f, 0.0f, 0.0f, 1.0f)),
-      m_emissiveFactor(Vector4(0.0f, 0.0f, 0.0f, 1.0f)),
+      m_emissiveFactor(0.0f),
       m_metallicFactor(0.0f),
       m_roughnessFactor(0.0f),
       m_uvOffset(Vector2(0.0f, 0.0f)),
@@ -111,6 +111,8 @@ namespace Mile
       case MaterialFactorProperty::Specular:
          m_specularFactor = factor;
          break;
+      case MaterialFactorProperty::Emissive:
+         m_emissiveFactor = factor;
       default:
          ME_LOG(MileMaterial, Warning, TEXT("Wrong property passed as scalar factor."));
          break;
@@ -127,6 +129,8 @@ namespace Mile
          return m_roughnessFactor;
       case MaterialFactorProperty::Specular:
          return m_specularFactor;
+      case MaterialFactorProperty::Emissive:
+         return m_emissiveFactor;
       }
 
       ME_LOG(MileMaterial, Warning, TEXT("Couldn't find out property from scalar factors."));
@@ -140,9 +144,6 @@ namespace Mile
       case MaterialFactorProperty::BaseColor:
          m_baseColorFactor = factor;
          break;
-      case MaterialFactorProperty::Emissive:
-         m_emissiveFactor = factor;
-         break;
       default:
          ME_LOG(MileMaterial, Warning, TEXT("Wrong property passed as Vector4 factor."));
          break;
@@ -155,8 +156,6 @@ namespace Mile
       {
       case MaterialFactorProperty::BaseColor:
          return m_baseColorFactor;;
-      case MaterialFactorProperty::Emissive:
-         return m_emissiveFactor;
       }
 
       ME_LOG(MileMaterial, Warning, TEXT("Couldn't find out property from Vector4 factors."));
@@ -219,7 +218,7 @@ namespace Mile
       {
          serialized["Emissive"] = WString2String(m_emissive->GetPath());
       }
-      serialized["EmissiveFactor"] = m_emissiveFactor.Serialize();
+      serialized["EmissiveFactor"] = m_emissiveFactor;
 
       if (m_metallicRoughness != nullptr)
       {
@@ -267,10 +266,9 @@ namespace Mile
          MaterialTextureProperty::Emissive,
          m_resMng->Load<Texture2D>(String2WString(GetValueSafelyFromJson<std::string>(jsonData, "Emissive"))));
 
-      m_emissiveFactor.DeSerialize(GetValueSafelyFromJson<json>(
+      m_emissiveFactor = GetValueSafelyFromJson<json>(
          jsonData,
-         "EmissiveFactor",
-         m_emissiveFactor.Serialize()));
+         "EmissiveFactor", 0.0f);
 
       SetTexture2D(
          MaterialTextureProperty::MetallicRoughness,
@@ -317,9 +315,9 @@ namespace Mile
    {
       auto materialParamsBuffer = buffer->Map<PackedMaterialParams>(context);
       materialParamsBuffer->BaseColorFactor = m_baseColorFactor;
-      materialParamsBuffer->EmissiveColorFactor = m_emissiveFactor;
       materialParamsBuffer->MetallicRoughnessUV = Vector4(m_metallicFactor, m_roughnessFactor, m_uvOffset.x, m_uvOffset.y);
       materialParamsBuffer->SpecularFactor = m_specularFactor;
+      materialParamsBuffer->EmissiveFactor = m_emissiveFactor;
       buffer->UnMap(context);
    }
 }
