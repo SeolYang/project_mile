@@ -77,8 +77,8 @@ namespace Mile
       GUI::FloatInput("Near Plane", m_nearPlane, 1.0f, 0.0f, FLT_MAX);
       GUI::FloatInput("Far Plane", m_farPlane, 1.0f, 0.0f, FLT_MAX);
       GUI::Vector4Input("Clear Color", m_clearColor, 0.1f, 0.0f, 1.0f);
-      GUI::FloatInput("Aperture(f-stops)", m_aperture, 1.4f, 4.0f);
-      GUI::FloatInput("Shutter Speed(seconds)", m_shutterSpeed, 0.1f, 0.0f);
-      GUI::FloatInput("Sensitivity(ISO)", m_sensitivity, 0.1f, 0.0f);
+      GUI::FloatInput("Aperture", m_aperture, 0.1f, 1.4f, 4.0f, false, "f/%.03f");
+      GUI::FloatInput("Shutter Speed", m_shutterSpeed, 0.1f, 0.0f, FLT_MAX, false, "%0.3f seconds");
+      GUI::FloatInput("Sensitivity", m_sensitivity, 0.1f, 0.0f, FLT_MAX, false, "%0.3f ISO");
    }
 }
