@@ -26,7 +26,7 @@ namespace Mile
          ImGui::Image((void*)srv, outputRes);
       }
 
-      bool Vector3Input(const std::string& name, Vector3& target, float speed, float _min, float _max, bool enableLog)
+      bool Vector3Input(const std::string& name, Vector3& target, float speed, float _min, float _max, bool enableLog, const char* format)
       {
          std::string prefix = "##";
 
@@ -34,10 +34,10 @@ namespace Mile
          ImGui::TableSetColumnIndex(0);
          ImGui::Text(name.c_str());
          ImGui::TableSetColumnIndex(1);
-         return ImGui::DragFloat3((prefix.append(name)).c_str(), &target.x, speed, _min, _max, "%.03f", enableLog ? ImGuiSliderFlags_Logarithmic : 0);
+         return ImGui::DragFloat3((prefix.append(name)).c_str(), &target.x, speed, _min, _max, format, enableLog ? ImGuiSliderFlags_Logarithmic : 0);
       }
 
-      bool Vector4Input(const std::string& name, Vector4& target, float speed, float _min, float _max, bool enableLog)
+      bool Vector4Input(const std::string& name, Vector4& target, float speed, float _min, float _max, bool enableLog, const char* format)
       {
          std::string prefix = "##";
 
@@ -45,10 +45,10 @@ namespace Mile
          ImGui::TableSetColumnIndex(0);
          ImGui::Text(name.c_str());
          ImGui::TableSetColumnIndex(1);
-          return ImGui::DragFloat4((prefix.append(name)).c_str(), &target.x, speed, _min, _max, "%.03f", enableLog ? ImGuiSliderFlags_Logarithmic : 0);
+          return ImGui::DragFloat4((prefix.append(name)).c_str(), &target.x, speed, _min, _max, format, enableLog ? ImGuiSliderFlags_Logarithmic : 0);
       }
 
-      bool FloatInput(const std::string& name, float& target, float speed, float _min, float _max, bool enableLog)
+      bool FloatInput(const std::string& name, float& target, float speed, float _min, float _max, bool enableLog, const char* format)
       {
          std::string prefix = "##";
 
@@ -56,7 +56,7 @@ namespace Mile
          ImGui::TableSetColumnIndex(0);
          ImGui::Text(name.c_str());
          ImGui::TableSetColumnIndex(1);
-         return ImGui::DragFloat((prefix.append(name)).c_str(), &target, 0.1f, _min, _max, "%.03f", enableLog ? ImGuiSliderFlags_Logarithmic : 0);
+         return ImGui::DragFloat((prefix.append(name)).c_str(), &target, 0.1f, _min, _max, format, enableLog ? ImGuiSliderFlags_Logarithmic : 0);
       }
 
       bool Checkbox(const std::string& name, bool& value)
