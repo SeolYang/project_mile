@@ -7,7 +7,7 @@
     "z": 0.0
   },
   "Emissive": "Contents/Models/Lantern/Lantern_emissive.png",
-  "EmissiveFactor": 1.0,
+  "EmissiveFactor": 1500.0,
   "MetallicFactor": 0.0,
   "MetallicRoughness": "Contents/Models/Lantern/Lantern_roughnessMetallic.png",
   "Normal": "Contents/Models/Lantern/Lantern_normal.png",

@@ -7,7 +7,7 @@
     "z": 0.0
   },
   "Emissive": "Contents/Models/DamagedHelmet/Default_emissive.jpg",
-  "EmissiveFactor": 14.0,
+  "EmissiveFactor": 1000.0,
   "MetallicFactor": 0.0,
   "MetallicRoughness": "Contents/Models/DamagedHelmet/Default_metalRoughness.jpg",
   "Normal": "Contents/Models/DamagedHelmet/Default_normal.jpg",

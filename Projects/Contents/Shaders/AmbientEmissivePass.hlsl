@@ -89,6 +89,6 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
 	float3 ambient = (kD * diffuse + specular) * ao;
-	float3 color = ambient + (emissive.rgb * pow(2.0f, EV100 + emissive.a - 3.0f));
+	float3 color = ambient + (emissive.rgb * emissive.a);
 	return float4(color, 1.0);
 }
