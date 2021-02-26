@@ -67,9 +67,8 @@ namespace Mile
 
    void LightComponent::OnGUI()
    {
-      std::string intensityInputLabel = "Light Intensity (";
-      intensityInputLabel.append(LightIntensityUnitToString(LightIntensityUnitOf(m_type)));
-      intensityInputLabel.append(")");
+      std::string intensityUnit = "%.03f ";
+      intensityUnit.append(LightIntensityUnitToString(LightIntensityUnitOf(m_type), true));
 
       unsigned int selectedType = static_cast<unsigned int>(m_type);
       std::vector<std::string> typeComboboxItems{ "Directional", "Point", "Spot" };
@@ -78,7 +77,7 @@ namespace Mile
       m_type = static_cast<ELightType>(selectedType);
 
       GUI::Vector3Input("Light Color", m_color, 0.01f, 0.0f, 1.0f);
-      GUI::FloatInput(intensityInputLabel, m_intensity, 10.0f, 0.0f, 100000.0f, true);
+      GUI::FloatInput("Light Intensity", m_intensity, 10.0f, 0.0f, 100000.0f, true, intensityUnit.c_str());
 
       switch (m_type)
       {
