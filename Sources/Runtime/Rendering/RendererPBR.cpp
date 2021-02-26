@@ -2527,6 +2527,7 @@ namespace Mile
          ViewportResource* Viewport = nullptr;
          DepthStencilStateResource* DepthDisableState = nullptr;
          VoidRefResource* Params = nullptr;
+         CameraRefResource* CamRef = nullptr;
          ConstantBufferResource* ParamsBuffer = nullptr;
          MeshRefResource* QuadMeshRef = nullptr;
          RenderTargetRefResource* InputRef = nullptr;
@@ -2549,6 +2550,8 @@ namespace Mile
             VoidRefDescriptor paramsDesc;
             paramsDesc.Reference = &m_toneMappingParams;
             data.Params = builder.Create<VoidRefResource>("ToneMappingParams", paramsDesc);
+
+            data.CamRef = builder.Read(geometryPassData.TargetCameraRef);
 
             ConstantBufferDescriptor toneMappingBufferDesc;
             toneMappingBufferDesc.Renderer = this;
@@ -2577,6 +2580,7 @@ namespace Mile
             auto quadMesh = *data.QuadMeshRef->GetActual();
             auto input = *data.InputRef->GetActual();
             auto output = *data.OutputRef->GetActual();
+            auto camera = *data.CamRef->GetActual();
 
             /** Binds */
             vertexShader->Bind(context);
@@ -2591,7 +2595,8 @@ namespace Mile
 
             /** Update Constant Buffers */
             auto mappedParamsBuffer = paramsBuffer->Map<OneVector2ConstantBuffer>(context);
-            (*mappedParamsBuffer) = OneVector2ConstantBuffer{ Vector2(params->ExposureFactor, params->GammaFactor) };
+            float ev100 = EV100(camera->Aperture(), camera->ShutterSpeed(), camera->Sensitivity());
+            (*mappedParamsBuffer) = OneVector2ConstantBuffer{ Vector2(ExposureNormalizationFactor(ev100), params->GammaFactor) };
             paramsBuffer->UnMap(context);
 
             /** Render */

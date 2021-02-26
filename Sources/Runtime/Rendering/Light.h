@@ -72,4 +72,26 @@ namespace Mile
    {
       return Watt * (MaximumPossibleLuminousEfficacy * efficiency);
    }
+
+   /** 
+   * @params   aperture       f-stops
+   * @params   shutterSpeed   seconds
+   * @params   sensitivity    ISO
+   */
+   inline static float EV100(float aperture, float shutterSpeed, float sensitivity)
+   {
+      // EV = log_2(N^2/t) + log_2(100.0f/S)
+      // EV_100 = log_2(N^2/t)
+      // EC(Exposure Compensation) = log_2(Sensitivity/100.0f);
+      // EV_100' = EV_100 - EC = log_2(N^2/t) - log_2(Sensitivity/100.0f) = log_2((N^2/t) / (Sensitivity/100.0f)) = log_2((N^2/t) * (100.0f/Sensitivity))
+      float ev = (aperture * aperture) / shutterSpeed;
+      float ec = 100.0f / sensitivity;
+      return std::log2(ev * ec);
+   }
+
+   /** Saturation based speed relation */
+   inline static float ExposureNormalizationFactor(float ev100)
+   {
+      return 1.0f / (std::pow(2.0f, ev100) * 1.2f);
+   }
 }

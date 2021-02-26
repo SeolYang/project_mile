@@ -12,6 +12,9 @@ namespace Mile
       m_fov(45.0f),
       m_nearPlane(1.0f),
       m_farPlane(500.0f),
+      m_aperture(1.0f),
+      m_shutterSpeed(1.0f),
+      m_sensitivity(100.0f),
       m_clearColor(Vector4(0.133f, 0.137f, 0.15f, 1.0f)),
       m_renderTexture(nullptr),
       Component(entity)
@@ -26,6 +29,9 @@ namespace Mile
       serialized["NearPlane"] = m_nearPlane;
       serialized["FarPlane"] = m_farPlane;
       serialized["ClearColor"] = m_clearColor.Serialize();
+      serialized["Aperture"] = m_aperture;
+      serialized["ShutterSpeed"] = m_shutterSpeed;
+      serialized["Sensitivity"] = m_sensitivity;
       if (m_renderTexture == nullptr)
       {
          serialized["RenderTexture"] = NULL_TEXT_STD;
@@ -45,6 +51,9 @@ namespace Mile
       m_nearPlane = GetValueSafelyFromJson(jsonData, "NearPlane", 1.0f);
       m_farPlane = GetValueSafelyFromJson(jsonData, "FarPlane", 500.0f);
       m_clearColor.DeSerialize(jsonData["ClearColor"]);
+      m_aperture = GetValueSafelyFromJson(jsonData, "Aperture", 1.0f);
+      m_shutterSpeed = GetValueSafelyFromJson(jsonData, "ShutterSpeed", 1.0f);
+      m_sensitivity = GetValueSafelyFromJson(jsonData, "Sensitivity", 100.0f);
 
       std::string renderTexture = GetValueSafelyFromJson(jsonData, "RenderTexture", std::string());
       if (renderTexture == NULL_TEXT_STD)
@@ -68,5 +77,8 @@ namespace Mile
       GUI::FloatInput("Near Plane", m_nearPlane, 1.0f, 0.0f, FLT_MAX);
       GUI::FloatInput("Far Plane", m_farPlane, 1.0f, 0.0f, FLT_MAX);
       GUI::Vector4Input("Clear Color", m_clearColor, 0.1f, 0.0f, 1.0f);
+      GUI::FloatInput("Aperture(f-stops)", m_aperture, 1.4f, 4.0f);
+      GUI::FloatInput("Shutter Speed(seconds)", m_shutterSpeed, 0.1f, 0.0f);
+      GUI::FloatInput("Sensitivity(ISO)", m_sensitivity, 0.1f, 0.0f);
    }
 }

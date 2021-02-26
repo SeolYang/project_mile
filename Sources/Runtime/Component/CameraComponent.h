@@ -62,12 +62,25 @@ namespace Mile
       virtual json Serialize() const override;
       virtual void DeSerialize(const json& jsonData) override;
 
+      float Aperture() const { return m_aperture; }
+      float& Aperture() { return m_aperture; }
+
+      float ShutterSpeed() const { return m_shutterSpeed; }
+      float& ShutterSpeed() { return m_shutterSpeed; }
+
+      float Sensitivity() const { return m_sensitivity; }
+      float& Sensitivity() { return m_sensitivity; }
+
       void OnGUI() override;
 
    private:
       float m_fov;
       float m_nearPlane;
       float m_farPlane;
+
+      float m_aperture;
+      float m_shutterSpeed;
+      float m_sensitivity;
 
       Vector4 m_clearColor;
 
