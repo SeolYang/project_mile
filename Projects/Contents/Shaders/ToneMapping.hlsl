@@ -46,7 +46,7 @@ float4 MilePS(in PSInput input) : SV_Target0
 
 	/** Exposure Tone Mapping */
 	//mappedColor = float3(1.0f, 1.0f, 1.0f) - exp(-color * ExposureFactor);
-	mappedColor = color * ExposureFactor;
+	mappedColor = color * 1.0f;
 
 	/** Gamma Correction */
 	mappedColor = pow(mappedColor, (1.0f / GammaFactor));

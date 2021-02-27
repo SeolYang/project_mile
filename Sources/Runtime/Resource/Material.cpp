@@ -311,13 +311,13 @@ namespace Mile
       SAFE_TEX_UNBIND(m_normal == nullptr ? nullptr : m_normal->GetRawTexture(), context, 4, shaderType);
    }
 
-   void Material::UpdateConstantBuffer(ID3D11DeviceContext& context, ConstantBufferDX11* buffer) const
+   void Material::UpdateConstantBuffer(ID3D11DeviceContext& context, ConstantBufferDX11* buffer, float exposure) const
    {
       auto materialParamsBuffer = buffer->Map<PackedMaterialParams>(context);
       materialParamsBuffer->BaseColorFactor = m_baseColorFactor;
       materialParamsBuffer->MetallicRoughnessUV = Vector4(m_metallicFactor, m_roughnessFactor, m_uvOffset.x, m_uvOffset.y);
       materialParamsBuffer->SpecularFactor = m_specularFactor;
-      materialParamsBuffer->EmissiveFactor = m_emissiveFactor;
+      materialParamsBuffer->EmissiveFactor = m_emissiveFactor* exposure;
       buffer->UnMap(context);
    }
 }

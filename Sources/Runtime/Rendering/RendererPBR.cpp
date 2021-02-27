@@ -83,9 +83,8 @@ namespace Mile
    DEFINE_CONSTANT_BUFFER(AmbientParamsConstantBuffer)
    {
       Vector3 CameraPos = Vector3();
-      float AmbientIntensity = 1.0f;
+      float PreExposedIBLIntensity = 1.0f;
       float MaxReflectionLod = 4.0f;
-      float EV100 = 0.0f;
       unsigned int SSAOEnabled = 0;
    };
 
@@ -787,7 +786,6 @@ namespace Mile
          SkyLightRefResource* SkyLightRef = nullptr;
          std::array<MatrixResource*, CUBE_FACES> CaptureViews{ nullptr, };
          ViewportResource* CaptureViewport = nullptr;
-         ConstantBufferResource* ConvertParamsBuffer = nullptr;
          ConstantBufferResource* CaptureTransformBuffer = nullptr;
          RasterizerStateResource* NoCullingState = nullptr;
          DepthStencilStateResource* DepthLessEqualState = nullptr;
@@ -853,11 +851,6 @@ namespace Mile
             viewportDesc.Height = RendererPBRConstants::ConvertedEnvMapSize;
             data.CaptureViewport = builder.Create<ViewportResource>("CaptureViewport", viewportDesc);
 
-            ConstantBufferDescriptor convertParamsDesc;
-            convertParamsDesc.Renderer = this;
-            convertParamsDesc.Size = sizeof(OneFloatConstantBuffer);
-            data.ConvertParamsBuffer = builder.Create<ConstantBufferResource>("CubemapConvertParamsBuffer", convertParamsDesc);
-
             ConstantBufferDescriptor captureTransformDesc;
             captureTransformDesc.Renderer = this;
             captureTransformDesc.Size = sizeof(OneMatrixConstantBuffer);
@@ -900,21 +893,10 @@ namespace Mile
                   skyTexture = skyLight->GetTexture();
                }
 
-               auto convertParamsBuffer = data.ConvertParamsBuffer->GetActual();
-               float luminanceMultiplier = 0.0f;
-               if (skyLight != nullptr)
-               {
-                  luminanceMultiplier = skyLight->IntensityScale();
-               }
-               auto mappedConvertParamsBuffer = convertParamsBuffer->Map<OneFloatConstantBuffer>(immediateContext);
-               (*mappedConvertParamsBuffer) = OneFloatConstantBuffer{ luminanceMultiplier };
-               convertParamsBuffer->UnMap(immediateContext);
-
                auto transformBuffer = data.CaptureTransformBuffer->GetActual();
 
                /** Binds */
                vertexShader->Bind(immediateContext);
-               convertParamsBuffer->Bind(immediateContext, 0, EShaderType::PixelShader);
                transformBuffer->Bind(immediateContext, 0, EShaderType::VertexShader);
                pixelShader->Bind(immediateContext);
                sampler->Bind(immediateContext, 0);
@@ -956,7 +938,6 @@ namespace Mile
                }
                sampler->Unbind(immediateContext, 0);
                pixelShader->Unbind(immediateContext);
-               convertParamsBuffer->Unbind(immediateContext, 0, EShaderType::PixelShader);
                transformBuffer->Unbind(immediateContext, 0, EShaderType::VertexShader);
                vertexShader->Unbind(immediateContext);
 
@@ -1501,7 +1482,7 @@ namespace Mile
                Vector3 lightPosition = lightTransform->GetPosition(ETransformSpace::World);
                Vector3 lightDirection = lightTransform->GetForward(ETransformSpace::World);
                Vector3 lightRadiance = lightComponent->GetColor();
-               float lightIntensity = lightComponent->GetLuminousIntensity();
+               float lightIntensity = lightComponent->GetLuminousIntensity() * camera->GetExposureNormalizationFactor();
                float lightRadius = lightComponent->GetRadius();
                float lightInnerAngle = lightComponent->GetInnerAngleAsRadians();
                float lightOuterAngle = lightComponent->GetOuterAngleAsRadians();
@@ -1942,6 +1923,7 @@ namespace Mile
          DynamicCubemapRefResource* PrefilteredMapRef = nullptr;
          RenderTargetRefResource* BrdfLUTRef = nullptr;
          CameraRefResource* CamRef = nullptr;
+         SkyLightRefResource* SkyLightRef = nullptr;
          ConstantBufferResource* ParamsBuffer = nullptr;
          BoolRefResource* SSAOEnabledRef = nullptr;
          RenderTargetRefResource* BlurredSSAORef = nullptr;
@@ -1983,6 +1965,7 @@ namespace Mile
             data.PrefilteredMapRef = builder.Read(prefilterEnvMapPassData.OutputPrefilteredEnvMapRef);
             data.BrdfLUTRef = builder.Read(integrateBRDFPassData.OutputBrdfLUTRef);
             data.CamRef = builder.Read(ssaoPassData.CamRef);
+            data.SkyLightRef = builder.Read(convertSkyboxToCubemapPassData.SkyLightRef);
 
             ConstantBufferDescriptor paramsBufferDesc;
             paramsBufferDesc.Renderer = this;
@@ -2020,6 +2003,7 @@ namespace Mile
             auto prefilteredMap = *data.PrefilteredMapRef->GetActual();
             auto brdfLUT = *data.BrdfLUTRef->GetActual();
             auto camera = *data.CamRef->GetActual();
+            auto skyLight = *data.SkyLightRef->GetActual();
             bool bSSAOEnabled = *(*data.SSAOEnabledRef->GetActual());
             auto blurredSSAO = *data.BlurredSSAORef->GetActual();
             auto quadMesh = *data.QuadMeshRef->GetActual();
@@ -2048,14 +2032,17 @@ namespace Mile
             /** Update Constant Buffer */
             auto camTransform = camera->GetTransform();
             auto paramsBuffer = data.ParamsBuffer->GetActual();
-            float ambientIntensity = *(*data.AmbientIntensityRef->GetActual());
             float ev100 = camera->GetExposureNormalizationFactor();
+            float preExposedIBLIntensity = 0.0f;
+            if (skyLight != nullptr)
+            {
+               preExposedIBLIntensity = skyLight->InensityScale() * ev100;
+            }
 
             auto mappedParamsBuffer = paramsBuffer->Map<AmbientParamsConstantBuffer>(context);
             (*mappedParamsBuffer) = AmbientParamsConstantBuffer{ 
                camTransform->GetPosition(ETransformSpace::World), 
-               ambientIntensity, (float)(prefilteredMap->GetMaxMipLevels() - 2), 
-               ev100,
+               preExposedIBLIntensity, (float)(prefilteredMap->GetMaxMipLevels() - 2),
                static_cast<unsigned int>(bSSAOEnabled) };
             paramsBuffer->UnMap(context);
             paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
@@ -2092,6 +2079,8 @@ namespace Mile
          DepthStencilStateResource* DepthLessEqualState = nullptr;
          RasterizerStateResource* NoCullingState = nullptr;
          ConstantBufferResource* TransformConstantBuffer = nullptr;
+         ConstantBufferResource* ParamsBuffer = nullptr;
+         SkyLightRefResource* SkyLightRef = nullptr;
          RenderTargetRefResource* OutputRef = nullptr;
       };
 
@@ -2123,6 +2112,12 @@ namespace Mile
 
             data.TransformConstantBuffer = builder.Write(convertGBufferPassData.ConvertParamsBuffer);
 
+            ConstantBufferDescriptor paramsBufferDesc;
+            paramsBufferDesc.Renderer = this;
+            paramsBufferDesc.Size = sizeof(OneFloatConstantBuffer);
+            data.ParamsBuffer = builder.Create<ConstantBufferResource>("PreExposedIBLIntensity", paramsBufferDesc);
+            data.SkyLightRef = builder.Read(convertSkyboxToCubemapPassData.SkyLightRef);
+
             data.EnvironmentMapRef = builder.Read(convertSkyboxToCubemapPassData.OutputEnvMapRef);
             data.IrradianceMapRef = builder.Read(diffuseIntegralPassData.OutputIrradianceMapRef);
 
@@ -2146,6 +2141,8 @@ namespace Mile
             auto depthLessEqualState = data.DepthLessEqualState->GetActual();
             auto noCullingState = data.NoCullingState->GetActual();
             auto transformBuffer = data.TransformConstantBuffer->GetActual();
+            auto paramsBuffer = data.ParamsBuffer->GetActual();
+            auto skyLight = *data.SkyLightRef->GetActual();
             auto envMap = *data.EnvironmentMapRef->GetActual();
             auto irrdianceMap = *data.IrradianceMapRef->GetActual();
             auto cubeMesh = *data.CubeMeshRef->GetActual();
@@ -2160,6 +2157,7 @@ namespace Mile
             depthLessEqualState->Bind(context);
             noCullingState->Bind(context);
             transformBuffer->Bind(context, 0, EShaderType::VertexShader);
+            paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
             cubeMesh->Bind(context, 0);
             viewport->Bind(context);
             auto gBufferDepthStencil = gBuffer->GetDepthStencilBufferDX11();
@@ -2185,6 +2183,15 @@ namespace Mile
             (*mappedTransformBuffer) = OneMatrixConstantBuffer{ viewMat * projMat };
             transformBuffer->UnMap(context);
 
+            float preExposedIBLIntensity = 1.0f;
+            if (skyLight != nullptr)
+            {
+               preExposedIBLIntensity = skyLight->IntensityScale() * camera->GetExposureNormalizationFactor();
+            }
+            auto mappedParamsBuffer = paramsBuffer->Map<OneFloatConstantBuffer>(context);
+            (*mappedParamsBuffer) = OneFloatConstantBuffer{ preExposedIBLIntensity };
+            paramsBuffer->UnMap(context);
+
             /** Render */
             data.Renderer->DrawIndexed(cubeMesh->GetVertexCount(), cubeMesh->GetIndexCount());
 
@@ -2202,6 +2209,7 @@ namespace Mile
 
             output->UnbindRenderTarget(context);
             output->SetDepthStencilBuffer(nullptr);
+            paramsBuffer->Unbind(context, 0, EShaderType::PixelShader);
             transformBuffer->Unbind(context, 0, EShaderType::VertexShader);
             sampler->Unbind(context, 0);
             pixelShader->Unbind(context);
@@ -2694,7 +2702,7 @@ namespace Mile
                {
                   material = meshMaterial;
                   material->BindTextures(context, 0, EShaderType::PixelShader);
-                  material->UpdateConstantBuffer(context, materialParamsBuffer);
+                  material->UpdateConstantBuffer(context, materialParamsBuffer, camera->GetExposureNormalizationFactor());
                }
 
                /** Render Mesh */

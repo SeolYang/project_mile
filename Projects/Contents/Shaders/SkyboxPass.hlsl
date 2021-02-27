@@ -23,6 +23,12 @@ cbuffer TransformBuffer
 	float4x4 ViewProj;
 };
 
+/* Pixel Shader CB **/
+cbuffer IntensityBuffer
+{
+	float PreExposedIBLIntensity;
+};
+
 TextureCube EnvironmentMap;
 SamplerState EnvironmentSampler;
 
@@ -38,6 +44,6 @@ VSOutput MileVS(in VSInput input)
 
 float4 MilePS(in PSInput input) : SV_Target0
 {
-	float3 color = EnvironmentMap.Sample(EnvironmentSampler, input.PositionLS).rgb;
+	float3 color = EnvironmentMap.Sample(EnvironmentSampler, input.PositionLS).rgb * PreExposedIBLIntensity;
 	return float4(color, 1.0f);
 }

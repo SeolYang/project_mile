@@ -23,9 +23,8 @@ struct PSInput
 cbuffer AmbientParamsBuffer
 {
 	float3 CameraPos;
-	float  AmbientIntensity;
+	float PreExposedIBLIntensity;
 	float MaxReflectionLod;
-	float EV100;
 	unsigned int SSAOEnabled;
 };
 
@@ -68,7 +67,6 @@ float4 MilePS(in PSInput input) : SV_Target0
 	{
 		ao *= ssaoInput.Sample(SSAOSampler, input.TexCoord).r;
 	}
-	ao *= AmbientIntensity;
 
 	float3 N = normalize(normalBuffer.Sample(LinearClampSampler, input.TexCoord).xyz);
 	float3 V = normalize(CameraPos - worldPos);
@@ -88,7 +86,7 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float2 brdf = brdfLUT.Sample(LinearClampSampler, float2(max(dot(N, V), 0.0f), roughness)).rg;
 	float3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
-	float3 ambient = (kD * diffuse + specular) * ao;
+	float3 ambient = (kD * diffuse + specular) * ao * PreExposedIBLIntensity;
 	float3 color = ambient + (emissive.rgb * emissive.a);
 	return float4(color, 1.0);
 }

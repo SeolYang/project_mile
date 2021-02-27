@@ -71,7 +71,7 @@ namespace Mile
 
       void BindTextures(ID3D11DeviceContext& context, unsigned int bindSlot, EShaderType shaderType);
       void UnbindTextures(ID3D11DeviceContext& context, unsigned int boundSlot, EShaderType shaderType);
-      void UpdateConstantBuffer(ID3D11DeviceContext& context, ConstantBufferDX11* buffer) const;
+      void UpdateConstantBuffer(ID3D11DeviceContext& context, ConstantBufferDX11* buffer, float exposure = 1.0f) const;
 
    private:
       EMaterialType m_materialType;
