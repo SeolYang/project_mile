@@ -80,9 +80,11 @@ namespace Mile
       float m_nearPlane;
       float m_farPlane;
 
+      bool m_bPhysicalCamera;
       float m_aperture;
       float m_shutterSpeed;
       float m_sensitivity;
+      float m_exposure;
 
       Vector4 m_clearColor;
 
