@@ -647,6 +647,8 @@ namespace Mile
       MEAPI bool FloatInput(const std::string& name, float& target, float speed = 0.1f, float _min = -FLT_MAX, float _max = FLT_MAX, bool enableLog = false, const char* format = "%0.3f");
       MEAPI bool Checkbox(const std::string& name, bool& value);
       MEAPI bool Combobox(const std::string& name, const std::vector<std::string>& items, const std::string& currentItem, unsigned int& enumValue);
+      MEAPI bool TreeNode(const std::string& name, bool bOpened);
+      static void TreePop() { ImGui::TreePop(); }
 
       static ImVector<ImRect> s_GroupPanelLabelStack;
 

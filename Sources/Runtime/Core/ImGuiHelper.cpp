@@ -97,5 +97,13 @@ namespace Mile
 
          return false;
       }
+
+      MEAPI bool TreeNode(const std::string& name, bool bOpened)
+      {
+         ImGui::TableNextRow();
+         ImGui::TableSetColumnIndex(0);
+         bool ret = ImGui::TreeNodeEx(name.c_str(), bOpened ? ImGuiTreeNodeFlags_DefaultOpen : ImGuiTreeNodeFlags_None);
+         return ret;
+      }
    }
 }
