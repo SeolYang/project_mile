@@ -4,6 +4,13 @@
 
 namespace Mile
 {
+   enum class MEAPI EMeteringMode
+   {
+      Manual,
+      AutoExposureBasic,
+      AutoExposureHistogram
+   };
+
    class RenderTexture;
    /**
     * @brief	카메라의 속성들을 가지고 있는 컴포넌트 입니다.
@@ -71,7 +78,13 @@ namespace Mile
       float Sensitivity() const { return m_sensitivity; }
       float& Sensitivity() { return m_sensitivity; }
 
-      float GetExposureNormalizationFactor() const;
+      EMeteringMode& MeteringMode() { return m_meteringMode; }
+      EMeteringMode MeteringMode() const { return m_meteringMode; }
+
+      float& ExposureCompoensation() { return m_expComp; }
+      float ExposureCompoensation() const { return m_expComp; }
+
+      float Exposure() const;
 
       void OnGUI() override;
 
@@ -80,11 +93,11 @@ namespace Mile
       float m_nearPlane;
       float m_farPlane;
 
-      bool m_bPhysicalCamera;
+      EMeteringMode m_meteringMode;
       float m_aperture;
       float m_shutterSpeed;
       float m_sensitivity;
-      float m_exposure;
+      float m_expComp;
 
       Vector4 m_clearColor;
 

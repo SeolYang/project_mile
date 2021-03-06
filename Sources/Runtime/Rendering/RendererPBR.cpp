@@ -1482,7 +1482,7 @@ namespace Mile
                Vector3 lightPosition = lightTransform->GetPosition(ETransformSpace::World);
                Vector3 lightDirection = lightTransform->GetForward(ETransformSpace::World);
                Vector3 lightRadiance = lightComponent->GetColor();
-               float lightIntensity = lightComponent->GetLuminousIntensity() * camera->GetExposureNormalizationFactor();
+               float lightIntensity = lightComponent->GetLuminousIntensity() * camera->Exposure();
                float lightRadius = lightComponent->GetRadius();
                float lightInnerAngle = lightComponent->GetInnerAngleAsRadians();
                float lightOuterAngle = lightComponent->GetOuterAngleAsRadians();
@@ -2032,11 +2032,11 @@ namespace Mile
             /** Update Constant Buffer */
             auto camTransform = camera->GetTransform();
             auto paramsBuffer = data.ParamsBuffer->GetActual();
-            float ev100 = camera->GetExposureNormalizationFactor();
+            float exposure = camera->Exposure();
             float preExposedIBLIntensity = 0.0f;
             if (skyLight != nullptr)
             {
-               preExposedIBLIntensity = skyLight->InensityScale() * ev100;
+               preExposedIBLIntensity = skyLight->InensityScale() * exposure;
             }
 
             auto mappedParamsBuffer = paramsBuffer->Map<AmbientParamsConstantBuffer>(context);
@@ -2186,7 +2186,7 @@ namespace Mile
             float preExposedIBLIntensity = 1.0f;
             if (skyLight != nullptr)
             {
-               preExposedIBLIntensity = skyLight->IntensityScale() * camera->GetExposureNormalizationFactor();
+               preExposedIBLIntensity = skyLight->IntensityScale() * camera->Exposure();
             }
             auto mappedParamsBuffer = paramsBuffer->Map<OneFloatConstantBuffer>(context);
             (*mappedParamsBuffer) = OneFloatConstantBuffer{ preExposedIBLIntensity };
@@ -2293,8 +2293,8 @@ namespace Mile
 
             /** Update Constant Buffers */
             auto mappedParamsBuffer = paramsBuffer->Map<OneVector2ConstantBuffer>(context);
-            float ev100 = EV100(camera->Aperture(), camera->ShutterSpeed(), camera->Sensitivity());
-            (*mappedParamsBuffer) = OneVector2ConstantBuffer{ Vector2(ExposureNormalizationFactor(ev100), params->GammaFactor) };
+            float exposure = camera->Exposure();
+            (*mappedParamsBuffer) = OneVector2ConstantBuffer{ Vector2(exposure, params->GammaFactor) };
             paramsBuffer->UnMap(context);
 
             /** Render */
@@ -2702,7 +2702,7 @@ namespace Mile
                {
                   material = meshMaterial;
                   material->BindTextures(context, 0, EShaderType::PixelShader);
-                  material->UpdateConstantBuffer(context, materialParamsBuffer, camera->GetExposureNormalizationFactor());
+                  material->UpdateConstantBuffer(context, materialParamsBuffer, camera->Exposure());
                }
 
                /** Render Mesh */

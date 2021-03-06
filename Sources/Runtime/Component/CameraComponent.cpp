@@ -18,8 +18,8 @@ namespace Mile
       m_sensitivity(100.0f),
       m_clearColor(Vector4(0.133f, 0.137f, 0.15f, 1.0f)),
       m_renderTexture(nullptr),
-      m_bPhysicalCamera(true),
-      m_exposure(1.0f),
+      m_meteringMode(EMeteringMode::Manual),
+      m_expComp(0.0f),
       Component(entity)
    {
       m_bCanEverUpdate = false;
@@ -35,8 +35,8 @@ namespace Mile
       serialized["Aperture"] = m_aperture;
       serialized["ShutterSpeed"] = m_shutterSpeed;
       serialized["Sensitivity"] = m_sensitivity;
-      serialized["PhysicalCamera"] = m_bPhysicalCamera;
-      serialized["Exposure"] = m_exposure;
+      serialized["MeteringMode"] = static_cast<unsigned int>(m_meteringMode);
+      serialized["ExpComp"] = m_expComp;
       if (m_renderTexture == nullptr)
       {
          serialized["RenderTexture"] = NULL_TEXT_STD;
@@ -56,17 +56,12 @@ namespace Mile
       m_nearPlane = GetValueSafelyFromJson(jsonData, "NearPlane", 1.0f);
       m_farPlane = GetValueSafelyFromJson(jsonData, "FarPlane", 500.0f);
       m_clearColor.DeSerialize(jsonData["ClearColor"]);
-      m_bPhysicalCamera = GetValueSafelyFromJson(jsonData, "PhysicalCamera", true);
-      if (m_bPhysicalCamera)
-      {
-         m_aperture = GetValueSafelyFromJson(jsonData, "Aperture", 1.0f);
-         m_shutterSpeed = GetValueSafelyFromJson(jsonData, "ShutterSpeed", 0.001f);
-         m_sensitivity = GetValueSafelyFromJson(jsonData, "Sensitivity", 100.0f);
-      }
-      else
-      {
-         m_exposure = GetValueSafelyFromJson(jsonData, "Exposure", 1.0f);
-      }
+
+      m_meteringMode = static_cast<EMeteringMode>(GetValueSafelyFromJson(jsonData, "MeteringMode", (unsigned int)0));
+      m_aperture = GetValueSafelyFromJson(jsonData, "Aperture", 1.0f);
+      m_shutterSpeed = GetValueSafelyFromJson(jsonData, "ShutterSpeed", 0.001f);
+      m_sensitivity = GetValueSafelyFromJson(jsonData, "Sensitivity", 100.0f);
+      m_expComp = GetValueSafelyFromJson(jsonData, "ExpComp", 0.0f);
 
       std::string renderTexture = GetValueSafelyFromJson(jsonData, "RenderTexture", std::string());
       if (renderTexture == NULL_TEXT_STD)
@@ -83,15 +78,10 @@ namespace Mile
       }
    }
 
-   float CameraComponent::GetExposureNormalizationFactor() const
+   float CameraComponent::Exposure() const
    {
-      float ev100 = -m_exposure;
-      if (m_bPhysicalCamera)
-      {
-         ev100 = EV100(m_aperture, m_shutterSpeed, m_sensitivity);
-      }
-
-      return ExposureNormalizationFactor(ev100);
+      float exposure = EV100(m_aperture, m_shutterSpeed, m_sensitivity) - m_expComp;
+      return ExposureNormalizationFactor(exposure);
    }
 
    void CameraComponent::OnGUI()
@@ -101,16 +91,28 @@ namespace Mile
       GUI::FloatInput("Near Plane", m_nearPlane, 1.0f, 0.0f, FLT_MAX);
       GUI::FloatInput("Far Plane", m_farPlane, 1.0f, 0.0f, FLT_MAX);
       GUI::Vector4Input("Clear Color", m_clearColor, 0.1f, 0.0f, 1.0f);
-      GUI::Checkbox("Physically Based Camera", m_bPhysicalCamera);
-      if (m_bPhysicalCamera)
+
+      if (GUI::TreeNode("Exposure", true))
       {
-         GUI::FloatInput("Aperture", m_aperture, 0.1f, 1.0f, 16.0f, false, "f/%.03f");
-         GUI::FloatInput("Shutter Speed", m_shutterSpeed, 0.1f, 0.0f, FLT_MAX, false, "%0.5f seconds");
-         GUI::FloatInput("Sensitivity", m_sensitivity, 0.1f, 0.0f, FLT_MAX, false, "%0.3f ISO");
-      }
-      else
-      {
-         GUI::FloatInput("Exposure", m_exposure, 0.1f, -200.0f, 200.0f);
+         std::vector<std::string> meteringModeItems = { "Manual", "Auto Exposure Basic", "Auto Exposure Histogram" };
+         unsigned int meteringModeIdx = static_cast<unsigned int>(m_meteringMode);
+         if (GUI::Combobox("Metering Mode", meteringModeItems, meteringModeItems[meteringModeIdx], meteringModeIdx))
+         {
+            m_meteringMode = static_cast<EMeteringMode>(meteringModeIdx);
+         }
+
+         switch (m_meteringMode)
+         {
+         case EMeteringMode::Manual:
+
+            GUI::FloatInput("Aperture", m_aperture, 0.1f, 1.0f, 16.0f, false, "f/%.03f");
+            GUI::FloatInput("Shutter Speed", m_shutterSpeed, 0.1f, 0.0f, FLT_MAX, false, "%0.5f seconds");
+            GUI::FloatInput("Sensitivity", m_sensitivity, 0.1f, 0.0f, FLT_MAX, false, "%0.3f ISO");
+            break;
+         }
+
+         GUI::FloatInput("Exposure Compoensation", m_expComp, 0.1f, -200.0f, 200.0f);
+         GUI::TreePop();
       }
    }
 }
