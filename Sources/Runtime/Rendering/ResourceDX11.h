@@ -27,6 +27,7 @@ namespace Mile
          m_srv(nullptr),
          m_uav(nullptr),
          m_bIsMapped(false),
+         m_uavCount(0),
          RenderObject(renderer)
       {
       }
@@ -86,7 +87,7 @@ namespace Mile
 
       bool BindShaderResourceView(ID3D11DeviceContext& deviceContext, unsigned int bindSlot, EShaderType bindShader)
       {
-         if (RenderObject::IsBindable())
+         if (m_srv != nullptr)
          {
             switch (bindShader)
             {
@@ -115,7 +116,7 @@ namespace Mile
 
       void UnbindShaderResourceView(ID3D11DeviceContext& deviceContext, unsigned int boundSlot, EShaderType boundShader)
       {
-         if (RenderObject::IsBindable())
+         if (m_srv != nullptr)
          {
             ID3D11ShaderResourceView* nullSRV = nullptr;
             switch (boundShader)
@@ -136,6 +137,23 @@ namespace Mile
                deviceContext.PSSetShaderResources(boundSlot, 1, &nullSRV);
                break;
             }
+         }
+      }
+
+      bool BindUnorderedAccessView(ID3D11DeviceContext& deviceContext, unsigned int bindSlot)
+      {
+         if (m_uav != nullptr)
+         {
+            deviceContext.CSSetUnorderedAccessViews(bindSlot, 1, &m_uav, &m_uavCount);
+         }
+      }
+
+      void UnbindUnorderedAccessView(ID3D11DeviceContext& deviceContext, unsigned int boundSlot)
+      {
+         if (m_uav != nullptr)
+         {
+            ID3D11UnorderedAccessView* nullView = nullptr;
+            deviceContext.CSSetUnorderedAccessViews(boundSlot, 1, &nullView, nullptr);
          }
       }
 
@@ -160,6 +178,7 @@ namespace Mile
       ID3D11Resource* m_resource;
       ID3D11ShaderResourceView* m_srv;
       ID3D11UnorderedAccessView* m_uav;
+      unsigned int m_uavCount;
       bool m_bIsMapped;
 
    };
