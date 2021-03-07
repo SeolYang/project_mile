@@ -288,6 +288,7 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
     <ClInclude Include="..\Sources\Runtime\Rendering\ResourceDX11.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\SamplerDX11.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\ShaderDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\StructuredBufferDX11.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\Texture2DBaseDX11.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\Texture2dDX11.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\VertexBufferDX11.h" />

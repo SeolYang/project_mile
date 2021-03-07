@@ -27,7 +27,6 @@ namespace Mile
          m_srv(nullptr),
          m_uav(nullptr),
          m_bIsMapped(false),
-         m_uavCount(0),
          RenderObject(renderer)
       {
       }
@@ -144,7 +143,7 @@ namespace Mile
       {
          if (m_uav != nullptr)
          {
-            deviceContext.CSSetUnorderedAccessViews(bindSlot, 1, &m_uav, &m_uavCount);
+            deviceContext.CSSetUnorderedAccessViews(bindSlot, 1, &m_uav, nullptr);
          }
       }
 
@@ -160,7 +159,7 @@ namespace Mile
    protected:
       bool InitShaderResourceView(D3D11_SHADER_RESOURCE_VIEW_DESC desc)
       {
-         if (RenderObject::IsInitializable())
+         if (m_srv == nullptr)
          {
             RendererDX11* renderer = GetRenderer();
             auto& device = renderer->GetDevice();
@@ -174,11 +173,26 @@ namespace Mile
          return false;
       }
 
+      bool InitUnorderedAccessView(D3D11_UNORDERED_ACCESS_VIEW_DESC desc)
+      {
+         if (m_uav == nullptr)
+         {
+            RendererDX11* renderer = GetRenderer();
+            ID3D11Device& device = renderer->GetDevice();
+            HRESULT result = device.CreateUnorderedAccessView(m_resource, &desc, &m_uav);
+            if (!FAILED(result))
+            {
+               return true;
+            }
+
+            return false;
+         }
+      }
+
    protected:
       ID3D11Resource* m_resource;
       ID3D11ShaderResourceView* m_srv;
       ID3D11UnorderedAccessView* m_uav;
-      unsigned int m_uavCount;
       bool m_bIsMapped;
 
    };

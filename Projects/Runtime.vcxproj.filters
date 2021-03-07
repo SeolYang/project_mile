@@ -585,6 +585,9 @@
     <ClInclude Include="..\Sources\Runtime\Component\SkyLightComponent.h">
       <Filter>Sources\Component</Filter>
     </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\StructuredBufferDX11.h">
+      <Filter>Sources\Rendering\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Sources\Runtime\Component\CameraComponent.cpp">
