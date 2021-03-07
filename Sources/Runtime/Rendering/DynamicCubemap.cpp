@@ -43,7 +43,7 @@ namespace Mile
          desc.SampleDesc.Count = 1;
          desc.SampleDesc.Quality = 0;
 
-         auto result = device.CreateTexture2D(&desc, nullptr, &m_texture);
+         auto result = device.CreateTexture2D(&desc, nullptr, reinterpret_cast<ID3D11Texture2D**>(&m_resource));
          if (!FAILED(result))
          {
             D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
@@ -60,7 +60,7 @@ namespace Mile
                for (unsigned int mipLevel = 0; mipLevel <= m_maxMipLevels; ++mipLevel)
                {
                   rtvDesc.Texture2DArray.MipSlice = mipLevel;
-                  result = device.CreateRenderTargetView(m_texture, &rtvDesc, &m_rtvs[idx][mipLevel]);
+                  result = device.CreateRenderTargetView(m_resource, &rtvDesc, &m_rtvs[idx][mipLevel]);
                   if (FAILED(result))
                   {
                      return false;
@@ -82,7 +82,7 @@ namespace Mile
       return false;
    }
 
-   bool DynamicCubemap::BindAsRenderTarget(ID3D11DeviceContext& deviceContext, unsigned int faceIdx, unsigned int mipLevel)
+   bool DynamicCubemap::BindRenderTargetView(ID3D11DeviceContext& deviceContext, unsigned int faceIdx, unsigned int mipLevel)
    {
       if (RenderObject::IsBindable())
       {
@@ -96,7 +96,7 @@ namespace Mile
       return false;
    }
 
-   void DynamicCubemap::UnbindAsRenderTarget(ID3D11DeviceContext& deviceContext)
+   void DynamicCubemap::UnbindRenderTargetView(ID3D11DeviceContext& deviceContext)
    {
       if (RenderObject::IsBindable())
       {

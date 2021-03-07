@@ -26,10 +26,10 @@ namespace Mile
       Texture2dDX11* GetTexture() const { return m_texture; }
       ID3D11RenderTargetView* GetRTV() const { return m_rtv; }
 
-      bool BindAsRenderTarget(ID3D11DeviceContext& deviceContext);
-      bool BindAsShaderResource(ID3D11DeviceContext& deviceContext, unsigned int bindSlot, EShaderType bindShader);
-      void UnbindRenderTarget(ID3D11DeviceContext& deviceContext);
-      void UnbindShaderResource(ID3D11DeviceContext& deviceContext, unsigned int boundSlot, EShaderType boundShader);
+      bool BindRenderTargetView(ID3D11DeviceContext& deviceContext);
+      bool BindShaderResourceView(ID3D11DeviceContext& deviceContext, unsigned int bindSlot, EShaderType bindShader);
+      void UnbindRenderTargetView(ID3D11DeviceContext& deviceContext);
+      void UnbindShaderResourceView(ID3D11DeviceContext& deviceContext, unsigned int boundSlot, EShaderType boundShader);
       void Clear(ID3D11DeviceContext& deviceContext, const Vector4& clearColor);
 
       void SetDepthStencilBuffer(DepthStencilBufferDX11* buffer) { this->m_depthStencilBuffer = buffer; }

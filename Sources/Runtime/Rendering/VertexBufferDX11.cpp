@@ -13,7 +13,7 @@ namespace Mile
       if (RenderObject::IsBindable())
       {
          unsigned int offset = 0;
-         deviceContext.IASetVertexBuffers(startSlot, 1, &m_buffer, &m_stride, &offset);
+         deviceContext.IASetVertexBuffers(startSlot, 1, reinterpret_cast<ID3D11Buffer**>(&m_resource), &m_stride, &offset);
 
          return true;
       }

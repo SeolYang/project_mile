@@ -26,7 +26,7 @@ namespace Mile
          subResource.pSysMem = indicies.data();
 
          RendererDX11* renderer = GetRenderer();
-         auto result = renderer->GetDevice().CreateBuffer(&desc, &subResource, &m_buffer);
+         auto result = renderer->GetDevice().CreateBuffer(&desc, &subResource, reinterpret_cast<ID3D11Buffer**>(&m_resource));
          if (!FAILED(result))
          {
             m_desc = desc;
@@ -42,7 +42,7 @@ namespace Mile
    {
       if (RenderObject::IsBindable())
       {
-         deviceContext.IASetIndexBuffer(m_buffer, DXGI_FORMAT_R32_UINT, 0);
+         deviceContext.IASetIndexBuffer(reinterpret_cast<ID3D11Buffer*>(m_resource), DXGI_FORMAT_R32_UINT, 0);
          return true;
       }
 

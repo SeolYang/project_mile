@@ -19,11 +19,11 @@ namespace Mile
       bool Init(unsigned int size);
       virtual ERenderResourceType GetResourceType() const override { return ERenderResourceType::DynamicCubemap; }
 
-      bool BindAsRenderTarget(ID3D11DeviceContext& deviceContext, unsigned int faceIdx, unsigned int mipLevel = 0);
+      bool BindRenderTargetView(ID3D11DeviceContext& deviceContext, unsigned int faceIdx, unsigned int mipLevel = 0);
       /* 
       * @warn  실제로 Cubemap이 렌더 타겟으로 바인드 되어있는지 여부를 따지지 않고 무조건 unbind 합니다.
       **/
-      void UnbindAsRenderTarget(ID3D11DeviceContext& deviceContext);
+      void UnbindRenderTargetView(ID3D11DeviceContext& deviceContext);
 
       unsigned int GetMaxMipLevels() const { return m_maxMipLevels; }
 

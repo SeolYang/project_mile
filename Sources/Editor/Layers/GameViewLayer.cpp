@@ -47,7 +47,7 @@ namespace Mile
             auto renderTarget = m_editorCameraRenderTex->GetRenderTarget();
             Vector2 imageRes{ (float)renderTarget->GetWidth(), (float)renderTarget->GetHeight() };
 
-            GUI::ImageRelativeToWindow(m_editorCameraRenderTex->GetRenderTarget()->GetTexture()->GetSRV(), imageRes);
+            GUI::ImageRelativeToWindow(m_editorCameraRenderTex->GetRenderTarget()->GetTexture()->GetShaderResourceView(), imageRes);
 
             Vector2 renderRes = renderer->GetRenderResolution();
             m_editorCameraRenderTex->SetWidth((UINT32)renderRes.x);

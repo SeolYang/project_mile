@@ -83,24 +83,24 @@ namespace Mile
                      switch (m_selected)
                      {
                      case Mile::Editor::EGraphicsDebug::Position:
-                        outputSRV = gBuffer->GetPositionBuffer()->GetTexture()->GetSRV();
+                        outputSRV = gBuffer->GetPositionBuffer()->GetTexture()->GetShaderResourceView();
                         break;
                      case Mile::Editor::EGraphicsDebug::Albedo:
-                        outputSRV = gBuffer->GetAlbedoBuffer()->GetTexture()->GetSRV();
+                        outputSRV = gBuffer->GetAlbedoBuffer()->GetTexture()->GetShaderResourceView();
                         break;
                      case Mile::Editor::EGraphicsDebug::Normal:
-                        outputSRV = gBuffer->GetNormalBuffer()->GetTexture()->GetSRV();
+                        outputSRV = gBuffer->GetNormalBuffer()->GetTexture()->GetShaderResourceView();
                         break;
                      case Mile::Editor::EGraphicsDebug::Depth:
-                        outputSRV = rendererPBR->GetDebugDepthBuffer()->GetTexture()->GetSRV();
+                        outputSRV = rendererPBR->GetDebugDepthBuffer()->GetTexture()->GetShaderResourceView();
                         break;
                      case Mile::Editor::EGraphicsDebug::Lighting:
-                        outputSRV = rendererPBR->GetDebugLightingBuffer()->GetTexture()->GetSRV();
+                        outputSRV = rendererPBR->GetDebugLightingBuffer()->GetTexture()->GetShaderResourceView();
                         break;
                      case Mile::Editor::EGraphicsDebug::SSAO:
                         if (ssaoBuffer != nullptr)
                         {
-                           outputSRV = rendererPBR->GetDebugSSAOBuffer()->GetTexture()->GetSRV();
+                           outputSRV = rendererPBR->GetDebugSSAOBuffer()->GetTexture()->GetShaderResourceView();
                         }
                         break;
                      }

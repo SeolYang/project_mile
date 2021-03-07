@@ -29,7 +29,7 @@ namespace Mile
             subResource.pSysMem = verticies.data();
 
             RendererDX11* renderer = GetRenderer();
-            auto result = renderer->GetDevice().CreateBuffer(&desc, &subResource, &m_buffer);
+            auto result = renderer->GetDevice().CreateBuffer(&desc, &subResource, reinterpret_cast<ID3D11Buffer**>(&m_resource));
             if (!FAILED(result))
             {
                ResourceDX11::ConfirmInit();

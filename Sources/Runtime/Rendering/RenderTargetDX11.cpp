@@ -133,7 +133,7 @@ namespace Mile
       }
    }
 
-   bool RenderTargetDX11::BindAsRenderTarget(ID3D11DeviceContext& deviceContext)
+   bool RenderTargetDX11::BindRenderTargetView(ID3D11DeviceContext& deviceContext)
    {
       if (RenderObject::IsBindable())
       {
@@ -150,17 +150,17 @@ namespace Mile
       return false;
    }
 
-   bool RenderTargetDX11::BindAsShaderResource(ID3D11DeviceContext& deviceContext, unsigned int bindSlot, EShaderType bindShader)
+   bool RenderTargetDX11::BindShaderResourceView(ID3D11DeviceContext& deviceContext, unsigned int bindSlot, EShaderType bindShader)
    {
       if (RenderObject::IsBindable())
       {
-         return m_texture->Bind(deviceContext, bindSlot, bindShader);
+         return m_texture->BindShaderResourceView(deviceContext, bindSlot, bindShader);
       }
 
       return false;
    }
 
-   void RenderTargetDX11::UnbindRenderTarget(ID3D11DeviceContext& deviceContext)
+   void RenderTargetDX11::UnbindRenderTargetView(ID3D11DeviceContext& deviceContext)
    {
       if (RenderObject::IsBindable())
       {
@@ -169,11 +169,11 @@ namespace Mile
       }
    }
 
-   void RenderTargetDX11::UnbindShaderResource(ID3D11DeviceContext& deviceContext, unsigned int boundSlot, EShaderType boundShader)
+   void RenderTargetDX11::UnbindShaderResourceView(ID3D11DeviceContext& deviceContext, unsigned int boundSlot, EShaderType boundShader)
    {
       if (RenderObject::IsBindable())
       {
-         m_texture->Unbind(deviceContext, boundSlot, boundShader);
+         m_texture->UnbindShaderResourceView(deviceContext, boundSlot, boundShader);
       }
    }
 

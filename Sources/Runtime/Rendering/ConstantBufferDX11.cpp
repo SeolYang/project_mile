@@ -26,46 +26,13 @@ namespace Mile
          desc.MiscFlags = 0;
 
          RendererDX11* renderer = GetRenderer();
-         auto result = renderer->GetDevice().CreateBuffer(&desc, nullptr, &m_buffer);
+         auto result = renderer->GetDevice().CreateBuffer(&desc, nullptr, reinterpret_cast<ID3D11Buffer**>(&m_resource));
          if (!FAILED(result))
          {
             m_desc = desc;
             ResourceDX11::ConfirmInit();
             return true;
          }
-      }
-
-      return false;
-   }
-
-   void* ConstantBufferDX11::Map(ID3D11DeviceContext& deviceContext)
-   {
-      bool bIsReadyToMap = RenderObject::IsBindable() && (!IsMapped());
-      if (bIsReadyToMap)
-      {
-         D3D11_MAPPED_SUBRESOURCE resource;
-         auto result = deviceContext.Map(
-            m_buffer,
-            0, D3D11_MAP_WRITE_DISCARD, 0,
-            &resource);
-
-         if (!FAILED(result))
-         {
-            m_bIsMapped = true;
-            return resource.pData;
-         }
-      }
-
-      return nullptr;
-   }
-
-   bool ConstantBufferDX11::UnMap(ID3D11DeviceContext& deviceContext)
-   {
-      if (IsMapped())
-      {
-         deviceContext.Unmap(m_buffer, 0);
-         m_bIsMapped = false;
-         return true;
       }
 
       return false;
@@ -78,19 +45,19 @@ namespace Mile
          switch (bindShader)
          {
          case EShaderType::VertexShader:
-            deviceContext.VSSetConstantBuffers(bindSlot, 1, &m_buffer);
+            deviceContext.VSSetConstantBuffers(bindSlot, 1, reinterpret_cast<ID3D11Buffer**>(&m_resource));
             break;
          case EShaderType::HullShader:
-            deviceContext.HSSetConstantBuffers(bindSlot, 1, &m_buffer);
+            deviceContext.HSSetConstantBuffers(bindSlot, 1, reinterpret_cast<ID3D11Buffer**>(&m_resource));
             break;
          case EShaderType::DomainShader:
-            deviceContext.DSSetConstantBuffers(bindSlot, 1, &m_buffer);
+            deviceContext.DSSetConstantBuffers(bindSlot, 1, reinterpret_cast<ID3D11Buffer**>(&m_resource));
             break;
          case EShaderType::GeometryShader:
-            deviceContext.GSSetConstantBuffers(bindSlot, 1, &m_buffer);
+            deviceContext.GSSetConstantBuffers(bindSlot, 1, reinterpret_cast<ID3D11Buffer**>(&m_resource));
             break;
          case EShaderType::PixelShader:
-            deviceContext.PSSetConstantBuffers(bindSlot, 1, &m_buffer);
+            deviceContext.PSSetConstantBuffers(bindSlot, 1, reinterpret_cast<ID3D11Buffer**>(&m_resource));
             break;
          default:
             return false;

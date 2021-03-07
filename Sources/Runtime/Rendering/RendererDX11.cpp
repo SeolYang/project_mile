@@ -278,7 +278,7 @@ namespace Mile
 
    void RendererDX11::SetBackBufferAsRenderTarget(ID3D11DeviceContext& deviceContext)
    {
-      m_backBuffer->BindAsRenderTarget(deviceContext);
+      m_backBuffer->BindRenderTargetView(deviceContext);
    }
 
    const GPUProfiler& RendererDX11::GetProfiler() const

@@ -8,10 +8,6 @@ namespace Mile
    {
    }
 
-   Texture2dDX11::~Texture2dDX11()
-   {
-   }
-
    bool Texture2dDX11::Init(unsigned int width, unsigned int height, unsigned int channels, unsigned char* data, DXGI_FORMAT format)
    {
       if (RenderObject::IsInitializable())
@@ -49,7 +45,7 @@ namespace Mile
          resource.SysMemPitch = (width * channels) * bytePerChannel;
          resource.SysMemSlicePitch = (width * height * channels) * bytePerChannel;
 
-         auto result = device.CreateTexture2D(&desc, &resource, &m_texture);
+         auto result = device.CreateTexture2D(&desc, &resource, reinterpret_cast<ID3D11Texture2D**>(&m_resource));
          if (!FAILED(result))
          {
             if (InitSRV(desc))
@@ -58,11 +54,6 @@ namespace Mile
                m_height = height;
                ResourceDX11::ConfirmInit();
                return true;
-            }
-            else
-            {
-               /* Failed to Init Shader Resource View! **/
-               SafeRelease(m_texture);
             }
          }
       }
@@ -75,10 +66,10 @@ namespace Mile
       bool bValidParams = texture != nullptr;
       if (RenderObject::IsInitializable() && bValidParams)
       {
-         m_texture = texture;
+         m_resource = static_cast<ID3D11Resource*>(texture);
 
          D3D11_TEXTURE2D_DESC desc;
-         m_texture->GetDesc(&desc);
+         texture->GetDesc(&desc);
 
          m_width = desc.Width;
          m_height = desc.Height;
@@ -87,10 +78,6 @@ namespace Mile
          {
             ResourceDX11::ConfirmInit();
             return true;
-         }
-         else
-         {
-            SafeRelease(m_texture);
          }
       }
 

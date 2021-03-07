@@ -295,20 +295,20 @@ namespace Mile
 
    void Material::BindTextures(ID3D11DeviceContext& context, unsigned int bindSlot, EShaderType shaderType)
    {
-      SAFE_TEX_BIND(m_baseColor == nullptr ? nullptr : m_baseColor->GetRawTexture(), context, 0, shaderType);
-      SAFE_TEX_BIND(m_emissive == nullptr ? nullptr : m_emissive->GetRawTexture(), context, 1, shaderType);
-      SAFE_TEX_BIND(m_metallicRoughness == nullptr ? nullptr : m_metallicRoughness->GetRawTexture(), context, 2, shaderType);
-      SAFE_TEX_BIND(m_ao == nullptr ? nullptr : m_ao->GetRawTexture(), context, 3, shaderType);
-      SAFE_TEX_BIND(m_normal == nullptr ? nullptr : m_normal->GetRawTexture(), context, 4, shaderType);
+      SAFE_SHADER_RESOURCE_VIEW_BIND(m_baseColor == nullptr ? nullptr : m_baseColor->GetRawTexture(), context, 0, shaderType);
+      SAFE_SHADER_RESOURCE_VIEW_BIND(m_emissive == nullptr ? nullptr : m_emissive->GetRawTexture(), context, 1, shaderType);
+      SAFE_SHADER_RESOURCE_VIEW_BIND(m_metallicRoughness == nullptr ? nullptr : m_metallicRoughness->GetRawTexture(), context, 2, shaderType);
+      SAFE_SHADER_RESOURCE_VIEW_BIND(m_ao == nullptr ? nullptr : m_ao->GetRawTexture(), context, 3, shaderType);
+      SAFE_SHADER_RESOURCE_VIEW_BIND(m_normal == nullptr ? nullptr : m_normal->GetRawTexture(), context, 4, shaderType);
    }
 
    void Material::UnbindTextures(ID3D11DeviceContext& context, unsigned int boundSlot, EShaderType shaderType)
    {
-      SAFE_TEX_UNBIND(m_baseColor == nullptr ? nullptr : m_baseColor->GetRawTexture(), context, 0, shaderType);
-      SAFE_TEX_UNBIND(m_emissive == nullptr ? nullptr : m_emissive->GetRawTexture(), context, 1, shaderType);
-      SAFE_TEX_UNBIND(m_metallicRoughness == nullptr ? nullptr : m_metallicRoughness->GetRawTexture(), context, 2, shaderType);
-      SAFE_TEX_UNBIND(m_ao == nullptr ? nullptr : m_ao->GetRawTexture(), context, 3, shaderType);
-      SAFE_TEX_UNBIND(m_normal == nullptr ? nullptr : m_normal->GetRawTexture(), context, 4, shaderType);
+      SAFE_SHADER_RESOURCE_VIEW_UNBIND(m_baseColor == nullptr ? nullptr : m_baseColor->GetRawTexture(), context, 0, shaderType);
+      SAFE_SHADER_RESOURCE_VIEW_UNBIND(m_emissive == nullptr ? nullptr : m_emissive->GetRawTexture(), context, 1, shaderType);
+      SAFE_SHADER_RESOURCE_VIEW_UNBIND(m_metallicRoughness == nullptr ? nullptr : m_metallicRoughness->GetRawTexture(), context, 2, shaderType);
+      SAFE_SHADER_RESOURCE_VIEW_UNBIND(m_ao == nullptr ? nullptr : m_ao->GetRawTexture(), context, 3, shaderType);
+      SAFE_SHADER_RESOURCE_VIEW_UNBIND(m_normal == nullptr ? nullptr : m_normal->GetRawTexture(), context, 4, shaderType);
    }
 
    void Material::UpdateConstantBuffer(ID3D11DeviceContext& context, ConstantBufferDX11* buffer, float exposure) const

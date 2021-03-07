@@ -64,7 +64,7 @@ namespace Mile
       return false;
    }
 
-   bool GBuffer::BindAsRenderTarget(ID3D11DeviceContext& deviceContext, bool clearRenderTargets, bool clearDepthStencil)
+   bool GBuffer::BindRenderTargetView(ID3D11DeviceContext& deviceContext, bool clearRenderTargets, bool clearDepthStencil)
    {
       if (RenderObject::IsBindable())
       {
@@ -112,7 +112,7 @@ namespace Mile
       return false;
    }
 
-   bool GBuffer::BindAsShaderResource(ID3D11DeviceContext& deviceContext, unsigned int bindSlot, EShaderType bindShader, bool bBindDepthStencil)
+   bool GBuffer::BindShaderResourceView(ID3D11DeviceContext& deviceContext, unsigned int bindSlot, EShaderType bindShader, bool bBindDepthStencil)
    {
       if (RenderObject::IsBindable())
       {
@@ -125,7 +125,7 @@ namespace Mile
 
          for (unsigned int idx = 0; idx < GBUFFER_RENDER_TARGET_NUM; ++idx)
          {
-            if (!targets[idx]->BindAsShaderResource(deviceContext, bindSlot + idx, bindShader))
+            if (!targets[idx]->BindShaderResourceView(deviceContext, bindSlot + idx, bindShader))
             {
                return false;
             }
@@ -133,7 +133,7 @@ namespace Mile
 
          if (bBindDepthStencil)
          {
-            m_depthStencilBuffer->BindAsShaderResource(deviceContext, bindSlot + GBUFFER_RENDER_TARGET_NUM, bindShader);
+            m_depthStencilBuffer->BindShaderResourceView(deviceContext, bindSlot + GBUFFER_RENDER_TARGET_NUM, bindShader);
          }
 
          return true;
@@ -142,19 +142,19 @@ namespace Mile
       return false;
    }
 
-   void GBuffer::UnbindShaderResource(ID3D11DeviceContext& deviceContext, unsigned int boundSlot, EShaderType boundShader, bool bBoundDepthStencil)
+   void GBuffer::UnbindShaderResourceView(ID3D11DeviceContext& deviceContext, unsigned int boundSlot, EShaderType boundShader, bool bBoundDepthStencil)
    {
       if (RenderObject::IsBindable())
       {
-         m_positionBuffer->UnbindShaderResource(deviceContext, boundSlot, boundShader);
-         m_albedoBuffer->UnbindShaderResource(deviceContext, boundSlot, boundShader);
-         m_emissiveAOBuffer->UnbindShaderResource(deviceContext, boundSlot, boundShader);
-         m_normalBuffer->UnbindShaderResource(deviceContext, boundSlot, boundShader);
-         m_extraComponents->UnbindShaderResource(deviceContext, boundSlot, boundShader);
+         m_positionBuffer->UnbindShaderResourceView(deviceContext, boundSlot, boundShader);
+         m_albedoBuffer->UnbindShaderResourceView(deviceContext, boundSlot, boundShader);
+         m_emissiveAOBuffer->UnbindShaderResourceView(deviceContext, boundSlot, boundShader);
+         m_normalBuffer->UnbindShaderResourceView(deviceContext, boundSlot, boundShader);
+         m_extraComponents->UnbindShaderResourceView(deviceContext, boundSlot, boundShader);
 
          if (bBoundDepthStencil)
          {
-            m_depthStencilBuffer->UnbindShaderResource(deviceContext, boundSlot, boundShader);
+            m_depthStencilBuffer->UnbindShaderResourceView(deviceContext, boundSlot, boundShader);
          }
       }
    }
@@ -201,13 +201,13 @@ namespace Mile
       {
          if (m_tempRenderTarget != nullptr)
          {
-            m_tempRenderTarget->UnbindRenderTarget(deviceContext);
+            m_tempRenderTarget->UnbindRenderTargetView(deviceContext);
             m_tempRenderTarget = nullptr;
          }
       }
    }
 
-   void GBuffer::UnbindRenderTarget(ID3D11DeviceContext& deviceContext)
+   void GBuffer::UnbindRenderTargetView(ID3D11DeviceContext& deviceContext)
    {
       if (RenderObject::IsBindable())
       {

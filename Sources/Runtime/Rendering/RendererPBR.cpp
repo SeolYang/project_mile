@@ -734,8 +734,8 @@ namespace Mile
             profiler.Begin("GeometryPass");
             /** Clear GBuffer */
             ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
-            gBuffer->BindAsRenderTarget(immediateContext);
-            gBuffer->UnbindRenderTarget(immediateContext);
+            gBuffer->BindRenderTargetView(immediateContext);
+            gBuffer->UnbindRenderTargetView(immediateContext);
             while (!renderTaskQueue.empty())
             {
                auto renderTask{ std::move(renderTaskQueue.front()) };
@@ -907,7 +907,7 @@ namespace Mile
                   rawSkyTexture = skyTexture->GetRawTexture();
                   if (rawSkyTexture != nullptr)
                   {
-                     rawSkyTexture->Bind(immediateContext, 0, EShaderType::PixelShader);
+                     rawSkyTexture->BindShaderResourceView(immediateContext, 0, EShaderType::PixelShader);
                   }
                }
 
@@ -922,19 +922,19 @@ namespace Mile
                auto captureViews = data.CaptureViews;
                for (unsigned int faceIdx = 0; faceIdx < CUBE_FACES; ++faceIdx)
                {
-                  outputEnvMap->BindAsRenderTarget(immediateContext, faceIdx);
+                  outputEnvMap->BindRenderTargetView(immediateContext, faceIdx);
                   auto mappedTrasnformBuffer = transformBuffer->Map<OneMatrixConstantBuffer>(immediateContext);
                   (*mappedTrasnformBuffer) = OneMatrixConstantBuffer{ *captureViews[faceIdx]->GetActual() };
                   transformBuffer->UnMap(immediateContext);
                   data.Renderer->DrawIndexed(cubeMesh->GetVertexCount(), cubeMesh->GetIndexCount());
-                  outputEnvMap->UnbindAsRenderTarget(immediateContext);
+                  outputEnvMap->UnbindRenderTargetView(immediateContext);
                }
                outputEnvMap->GenerateMips(immediateContext);
 
                /** Unbinds */
                if (rawSkyTexture != nullptr)
                {
-                  rawSkyTexture->Unbind(immediateContext, 0, EShaderType::PixelShader);
+                  rawSkyTexture->UnbindShaderResourceView(immediateContext, 0, EShaderType::PixelShader);
                }
                sampler->Unbind(immediateContext, 0);
                pixelShader->Unbind(immediateContext);
@@ -1042,23 +1042,23 @@ namespace Mile
                depthLessEqualState->Bind(immediateContext);
                noCullingState->Bind(immediateContext);
                transformBuffer->Bind(immediateContext, 0, EShaderType::VertexShader);
-               envMap->Bind(immediateContext, 0, EShaderType::PixelShader);
+               envMap->BindShaderResourceView(immediateContext, 0, EShaderType::PixelShader);
                cubeMesh->Bind(immediateContext, 0);
 
                /** Render */
                for (unsigned int faceIdx = 0; faceIdx < CUBE_FACES; ++faceIdx)
                {
-                  outputIrradianceMap->BindAsRenderTarget(immediateContext, faceIdx);
+                  outputIrradianceMap->BindRenderTargetView(immediateContext, faceIdx);
                   auto mappedTrasnformBuffer = transformBuffer->Map<OneMatrixConstantBuffer>(immediateContext);
                   (*mappedTrasnformBuffer) = OneMatrixConstantBuffer{ *data.CaptureViews[faceIdx]->GetActual() };
                   transformBuffer->UnMap(immediateContext);
                   data.Renderer->DrawIndexed(cubeMesh->GetVertexCount(), cubeMesh->GetIndexCount());
-                  outputIrradianceMap->UnbindAsRenderTarget(immediateContext);
+                  outputIrradianceMap->UnbindRenderTargetView(immediateContext);
                }
                outputIrradianceMap->GenerateMips(immediateContext);
 
                /** Unbinds */
-               envMap->Unbind(immediateContext, 0, EShaderType::PixelShader);
+               envMap->UnbindShaderResourceView(immediateContext, 0, EShaderType::PixelShader);
                transformBuffer->Unbind(immediateContext, 0, EShaderType::VertexShader);
                sampler->Unbind(immediateContext, 0);
                pixelShader->Unbind(immediateContext);
@@ -1183,7 +1183,7 @@ namespace Mile
                noCullingState->Bind(immediateContext);
                transformBuffer->Bind(immediateContext, 0, EShaderType::VertexShader);
                paramsBuffer->Bind(immediateContext, 0, EShaderType::PixelShader);
-               envMap->Bind(immediateContext, 0, EShaderType::PixelShader);
+               envMap->BindShaderResourceView(immediateContext, 0, EShaderType::PixelShader);
                cubeMesh->Bind(immediateContext, 0);
 
                /** Render */
@@ -1202,13 +1202,13 @@ namespace Mile
                   (*mappedTrasnformBuffer) = OneMatrixConstantBuffer{ *data.CaptureViews[targetCubeFace]->GetActual() };
                   transformBuffer->UnMap(immediateContext);
 
-                  outputPrefilteredEnvMap->BindAsRenderTarget(immediateContext, targetCubeFace, mipLevel);
+                  outputPrefilteredEnvMap->BindRenderTargetView(immediateContext, targetCubeFace, mipLevel);
                   data.Renderer->DrawIndexed(cubeMesh->GetVertexCount(), cubeMesh->GetIndexCount());
-                  outputPrefilteredEnvMap->UnbindAsRenderTarget(immediateContext);
+                  outputPrefilteredEnvMap->UnbindRenderTargetView(immediateContext);
                }
 
                /** Unbinds */
-               envMap->Unbind(immediateContext, 0, EShaderType::PixelShader);
+               envMap->UnbindShaderResourceView(immediateContext, 0, EShaderType::PixelShader);
                paramsBuffer->Unbind(immediateContext, 0, EShaderType::PixelShader);
                transformBuffer->Unbind(immediateContext, 0, EShaderType::VertexShader);
                sampler->Unbind(immediateContext, 0);
@@ -1317,13 +1317,13 @@ namespace Mile
                viewport->Bind(immediateContext);
                quadMesh->Bind(immediateContext, 0);
                outputBrdfLUT->Clear(immediateContext, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
-               outputBrdfLUT->BindAsRenderTarget(immediateContext);
+               outputBrdfLUT->BindRenderTargetView(immediateContext);
 
                /** Render */
                data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
 
                /** Unbinds */
-               outputBrdfLUT->UnbindRenderTarget(immediateContext);
+               outputBrdfLUT->UnbindRenderTargetView(immediateContext);
                sampler->Unbind(immediateContext, 0);
                pixelShader->Unbind(immediateContext);
                vertexShader->Unbind(immediateContext);
@@ -1464,11 +1464,11 @@ namespace Mile
             additiveBlendState->Bind(immediateContext);
             camParamsBuffer->Bind(immediateContext, 0, EShaderType::PixelShader);
             lightParamsBuffer->Bind(immediateContext, 1, EShaderType::PixelShader);
-            gBuffer->BindAsShaderResource(immediateContext, 0, EShaderType::PixelShader);
+            gBuffer->BindShaderResourceView(immediateContext, 0, EShaderType::PixelShader);
             viewport->Bind(immediateContext);
             quadMesh->Bind(immediateContext, 0);
             outputHDRBuffer->Clear(immediateContext, Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-            outputHDRBuffer->BindAsRenderTarget(immediateContext);
+            outputHDRBuffer->BindRenderTargetView(immediateContext);
 
             /** Render */
             Transform* camTransform = camera->GetTransform();
@@ -1501,8 +1501,8 @@ namespace Mile
             }
 
             /** Unbinds */
-            outputHDRBuffer->UnbindRenderTarget(immediateContext);
-            gBuffer->UnbindShaderResource(immediateContext, 0, EShaderType::PixelShader);
+            outputHDRBuffer->UnbindRenderTargetView(immediateContext);
+            gBuffer->UnbindShaderResourceView(immediateContext, 0, EShaderType::PixelShader);
             lightParamsBuffer->Unbind(immediateContext, 1, EShaderType::PixelShader);
             camParamsBuffer->Unbind(immediateContext, 0, EShaderType::PixelShader);
             pixelShader->Unbind(immediateContext);
@@ -1522,11 +1522,11 @@ namespace Mile
             debugParamsBuffer->UnMap(immediateContext);
 
             debugOutput->Clear(immediateContext, Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-            debugOutput->BindAsRenderTarget(immediateContext);
-            outputHDRBuffer->BindAsShaderResource(immediateContext, 0, EShaderType::PixelShader);
+            debugOutput->BindRenderTargetView(immediateContext);
+            outputHDRBuffer->BindShaderResourceView(immediateContext, 0, EShaderType::PixelShader);
             data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
-            outputHDRBuffer->UnbindShaderResource(immediateContext, 0, EShaderType::PixelShader);
-            debugOutput->UnbindRenderTarget(immediateContext);
+            outputHDRBuffer->UnbindShaderResourceView(immediateContext, 0, EShaderType::PixelShader);
+            debugOutput->UnbindRenderTargetView(immediateContext);
 
             sampler->Unbind(immediateContext, 0);
             debugParamsBuffer->Unbind(immediateContext, 0, EShaderType::PixelShader);
@@ -1626,8 +1626,8 @@ namespace Mile
             viewport->Bind(immediateContext);
             quadMesh->Bind(immediateContext, 0);
             depthDisableState->Bind(immediateContext);
-            sourceGBuffer->BindAsShaderResource(immediateContext, 0, EShaderType::PixelShader, true);
-            convertedGBuffer->BindAsRenderTarget(immediateContext);
+            sourceGBuffer->BindShaderResourceView(immediateContext, 0, EShaderType::PixelShader, true);
+            convertedGBuffer->BindRenderTargetView(immediateContext);
 
             /** Render */
             auto camTransform = camera->GetTransform();
@@ -1643,8 +1643,8 @@ namespace Mile
             data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
 
             /** Unbinds */
-            convertedGBuffer->UnbindRenderTarget(immediateContext);
-            sourceGBuffer->UnbindShaderResource(immediateContext, 0, EShaderType::PixelShader, true);
+            convertedGBuffer->UnbindRenderTargetView(immediateContext);
+            sourceGBuffer->UnbindShaderResourceView(immediateContext, 0, EShaderType::PixelShader, true);
             convertParamsBuffer->Unbind(immediateContext, 0, EShaderType::PixelShader);
             sampler->Unbind(immediateContext, 0);
             pixelShader->Unbind(immediateContext);
@@ -1771,12 +1771,12 @@ namespace Mile
                depthDisableState->Bind(immediateContext);
                ssaoBaseDataBuffer->Bind(immediateContext, 0, EShaderType::PixelShader);
                ssaoParamsBuffer->Bind(immediateContext, 1, EShaderType::PixelShader);
-               viewspaceGBuffer->BindAsShaderResource(immediateContext, 0, EShaderType::PixelShader);
-               noiseTexture->Bind(immediateContext, 5, EShaderType::PixelShader);
-               depthBuffer->BindAsShaderResource(immediateContext, 6, EShaderType::PixelShader);
+               viewspaceGBuffer->BindShaderResourceView(immediateContext, 0, EShaderType::PixelShader);
+               noiseTexture->BindShaderResourceView(immediateContext, 5, EShaderType::PixelShader);
+               depthBuffer->BindShaderResourceView(immediateContext, 6, EShaderType::PixelShader);
                quadMesh->Bind(immediateContext, 0);
                output->Clear(immediateContext, Vector4::Zero());
-               output->BindAsRenderTarget(immediateContext);
+               output->BindRenderTargetView(immediateContext);
 
                /** Render */
                auto camTransform = camera->GetTransform();
@@ -1795,10 +1795,10 @@ namespace Mile
                data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
 
                /** Unbinds */
-               output->UnbindRenderTarget(immediateContext);
-               viewspaceGBuffer->UnbindShaderResource(immediateContext, 0, EShaderType::PixelShader);
-               depthBuffer->UnbindShaderResource(immediateContext, 6, EShaderType::PixelShader);
-               noiseTexture->Unbind(immediateContext, 5, EShaderType::PixelShader);
+               output->UnbindRenderTargetView(immediateContext);
+               viewspaceGBuffer->UnbindShaderResourceView(immediateContext, 0, EShaderType::PixelShader);
+               depthBuffer->UnbindShaderResourceView(immediateContext, 6, EShaderType::PixelShader);
+               noiseTexture->UnbindShaderResourceView(immediateContext, 5, EShaderType::PixelShader);
                ssaoParamsBuffer->Unbind(immediateContext, 1, EShaderType::PixelShader);
                ssaoBaseDataBuffer->Unbind(immediateContext, 0, EShaderType::PixelShader);
                noiseSampler->Unbind(immediateContext, 1);
@@ -1885,18 +1885,18 @@ namespace Mile
 
                /** Render */
                output->Clear(context, Vector4::Zero());
-               output->BindAsRenderTarget(context);
-               source->BindAsShaderResource(context, 0, EShaderType::PixelShader);
+               output->BindRenderTargetView(context);
+               source->BindShaderResourceView(context, 0, EShaderType::PixelShader);
                data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
-               output->UnbindRenderTarget(context);
-               source->UnbindShaderResource(context, 0, EShaderType::PixelShader);
+               output->UnbindRenderTargetView(context);
+               source->UnbindShaderResourceView(context, 0, EShaderType::PixelShader);
 
                source->Clear(context, Vector4::Zero());
-               source->BindAsRenderTarget(context);
-               output->BindAsShaderResource(context, 0, EShaderType::PixelShader);
+               source->BindRenderTargetView(context);
+               output->BindShaderResourceView(context, 0, EShaderType::PixelShader);
                data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
-               source->UnbindRenderTarget(context);
-               output->UnbindShaderResource(context, 0, EShaderType::PixelShader);
+               source->UnbindRenderTargetView(context);
+               output->UnbindShaderResourceView(context, 0, EShaderType::PixelShader);
 
                /** Unbinds */
                sampler->Unbind(context, 0);
@@ -2018,16 +2018,16 @@ namespace Mile
             anisoSampler->Bind(context, 0);
             linearClampSampler->Bind(context, 1);
             ssaoSampler->Bind(context, 2);
-            gBuffer->BindAsShaderResource(context, 0, EShaderType::PixelShader);
-            irraidianceMap->Bind(context, 5, EShaderType::PixelShader);
-            prefilteredMap->Bind(context, 6, EShaderType::PixelShader);
-            brdfLUT->BindAsShaderResource(context, 7, EShaderType::PixelShader);
+            gBuffer->BindShaderResourceView(context, 0, EShaderType::PixelShader);
+            irraidianceMap->BindShaderResourceView(context, 5, EShaderType::PixelShader);
+            prefilteredMap->BindShaderResourceView(context, 6, EShaderType::PixelShader);
+            brdfLUT->BindShaderResourceView(context, 7, EShaderType::PixelShader);
             if (bSSAOEnabled)
             {
-               blurredSSAO->BindAsShaderResource(context, 8, EShaderType::PixelShader);
+               blurredSSAO->BindShaderResourceView(context, 8, EShaderType::PixelShader);
             }
             quadMesh->Bind(context, 0);
-            output->BindAsRenderTarget(context);
+            output->BindRenderTargetView(context);
 
             /** Update Constant Buffer */
             auto camTransform = camera->GetTransform();
@@ -2051,12 +2051,12 @@ namespace Mile
             data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
 
             /** Unbinds */
-            output->UnbindRenderTarget(context);
-            blurredSSAO->UnbindShaderResource(context, 8, EShaderType::PixelShader);
-            brdfLUT->UnbindShaderResource(context, 7, EShaderType::PixelShader);
-            prefilteredMap->Unbind(context, 6, EShaderType::PixelShader);
-            irraidianceMap->Unbind(context, 5, EShaderType::PixelShader);
-            gBuffer->UnbindShaderResource(context, 0, EShaderType::PixelShader);
+            output->UnbindRenderTargetView(context);
+            blurredSSAO->UnbindShaderResourceView(context, 8, EShaderType::PixelShader);
+            brdfLUT->UnbindShaderResourceView(context, 7, EShaderType::PixelShader);
+            prefilteredMap->UnbindShaderResourceView(context, 6, EShaderType::PixelShader);
+            irraidianceMap->UnbindShaderResourceView(context, 5, EShaderType::PixelShader);
+            gBuffer->UnbindShaderResourceView(context, 0, EShaderType::PixelShader);
             ssaoSampler->Unbind(context, 2);
             linearClampSampler->Unbind(context, 1);
             anisoSampler->Unbind(context, 0);
@@ -2162,16 +2162,16 @@ namespace Mile
             viewport->Bind(context);
             auto gBufferDepthStencil = gBuffer->GetDepthStencilBufferDX11();
             output->SetDepthStencilBuffer(gBufferDepthStencil);
-            output->BindAsRenderTarget(context);
+            output->BindRenderTargetView(context);
 
             switch (skyboxType)
             {
             case ESkyboxType::IrradianceMap:
-               irrdianceMap->Bind(context, 0, EShaderType::PixelShader);
+               irrdianceMap->BindShaderResourceView(context, 0, EShaderType::PixelShader);
                break;
             case ESkyboxType::EnvironmentMap:
             default:
-               envMap->Bind(context, 0, EShaderType::PixelShader);
+               envMap->BindShaderResourceView(context, 0, EShaderType::PixelShader);
             }
 
             /** Upload Constant Buffer datas */
@@ -2199,15 +2199,15 @@ namespace Mile
             switch (skyboxType)
             {
             case ESkyboxType::IrradianceMap:
-               irrdianceMap->Unbind(context, 0, EShaderType::PixelShader);
+               irrdianceMap->UnbindShaderResourceView(context, 0, EShaderType::PixelShader);
                break;
             case ESkyboxType::EnvironmentMap:
             default:
-               envMap->Unbind(context, 0, EShaderType::PixelShader);
+               envMap->UnbindShaderResourceView(context, 0, EShaderType::PixelShader);
                break;
             }
 
-            output->UnbindRenderTarget(context);
+            output->UnbindRenderTargetView(context);
             output->SetDepthStencilBuffer(nullptr);
             paramsBuffer->Unbind(context, 0, EShaderType::PixelShader);
             transformBuffer->Unbind(context, 0, EShaderType::VertexShader);
@@ -2288,8 +2288,8 @@ namespace Mile
             depthDisableState->Bind(context);
             paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
             quadMesh->Bind(context, 0);
-            input->BindAsShaderResource(context, 0, EShaderType::PixelShader);
-            output->BindAsRenderTarget(context);
+            input->BindShaderResourceView(context, 0, EShaderType::PixelShader);
+            output->BindRenderTargetView(context);
 
             /** Update Constant Buffers */
             auto mappedParamsBuffer = paramsBuffer->Map<OneVector2ConstantBuffer>(context);
@@ -2301,8 +2301,8 @@ namespace Mile
             data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
 
             /** Unbinds */
-            output->UnbindRenderTarget(context);
-            input->UnbindShaderResource(context, 0, EShaderType::PixelShader);
+            output->UnbindRenderTargetView(context);
+            input->UnbindShaderResourceView(context, 0, EShaderType::PixelShader);
             paramsBuffer->Unbind(context, 0, EShaderType::PixelShader);
             sampler->Unbind(context, 0);
             pixelShader->Unbind(context);
@@ -2391,21 +2391,21 @@ namespace Mile
             (*mappedBuffer) = DebugDepthSSAOConstantBuffer{ 0, Vector2(camera->GetNearPlane(), camera->GetFarPlane()) };
             debugTypeBuffer->UnMap(context);
 
-            outputDepth->BindAsRenderTarget(context);
-            depthStencilBuffer->BindAsShaderResource(context, 0, EShaderType::PixelShader);
+            outputDepth->BindRenderTargetView(context);
+            depthStencilBuffer->BindShaderResourceView(context, 0, EShaderType::PixelShader);
             data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
-            depthStencilBuffer->UnbindShaderResource(context, 0, EShaderType::PixelShader);
-            outputDepth->UnbindRenderTarget(context);
+            depthStencilBuffer->UnbindShaderResourceView(context, 0, EShaderType::PixelShader);
+            outputDepth->UnbindRenderTargetView(context);
 
             mappedBuffer = debugTypeBuffer->Map<DebugDepthSSAOConstantBuffer>(context);
             (*mappedBuffer) = DebugDepthSSAOConstantBuffer{ 1 };
             debugTypeBuffer->UnMap(context);
 
-            outputSSAO->BindAsRenderTarget(context);
-            ssao->BindAsShaderResource(context, 0, EShaderType::PixelShader);
+            outputSSAO->BindRenderTargetView(context);
+            ssao->BindShaderResourceView(context, 0, EShaderType::PixelShader);
             data.Renderer->DrawIndexed(quadMesh->GetVertexCount(), quadMesh->GetIndexCount());
-            ssao->UnbindShaderResource(context, 0, EShaderType::PixelShader);
-            outputSSAO->UnbindRenderTarget(context);
+            ssao->UnbindShaderResourceView(context, 0, EShaderType::PixelShader);
+            outputSSAO->UnbindRenderTargetView(context);
 
             /** Unbinds */
             debugTypeBuffer->Unbind(context, 0, EShaderType::PixelShader);
@@ -2673,7 +2673,7 @@ namespace Mile
          pixelShader->Bind(context);
          sampler->Bind(context, 0);
 
-         gBuffer->BindAsRenderTarget(context, bClearGBuffer, bClearGBuffer);
+         gBuffer->BindRenderTargetView(context, bClearGBuffer, bClearGBuffer);
          transformBuffer->Bind(context, 0, EShaderType::VertexShader);
          materialParamsBuffer->Bind(context, 0, EShaderType::PixelShader);
 
@@ -2727,7 +2727,7 @@ namespace Mile
             }
          }
 
-         gBuffer->UnbindRenderTarget(context);
+         gBuffer->UnbindRenderTargetView(context);
          transformBuffer->Unbind(context, 0, EShaderType::VertexShader);
          materialParamsBuffer->Unbind(context, 0, EShaderType::PixelShader);
 
