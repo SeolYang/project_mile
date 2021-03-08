@@ -265,6 +265,7 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
     <ClInclude Include="..\Sources\Runtime\MT\ThreadPool.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\BlendState.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\BufferDX11.h" />
+    <ClInclude Include="..\Sources\Runtime\Rendering\ComputeShaderDX11.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\ConstantBufferDX11.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\Cube.h" />
     <ClInclude Include="..\Sources\Runtime\Rendering\DepthStencilBufferDX11.h" />
@@ -425,6 +426,7 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
     <ClCompile Include="..\Sources\Runtime\MT\ThreadPool.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\BlendState.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\BufferDX11.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\ComputeShaderDX11.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\ConstantBufferDX11.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\Cube.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\DepthStencilBufferDX11.cpp" />

@@ -1,27 +1,27 @@
-#include "Rendering/PixelShaderDX11.h"
+#include "Rendering/ComputeShaderDX11.h"
 
 namespace Mile
 {
-   PixelShaderDX11::PixelShaderDX11(RendererDX11* renderer) :
+   ComputeShaderDX11::ComputeShaderDX11(RendererDX11* renderer) :
       m_shader(nullptr),
       ShaderDX11(renderer)
    {
    }
 
-   PixelShaderDX11::~PixelShaderDX11()
+   ComputeShaderDX11::~ComputeShaderDX11()
    {
       SafeRelease(m_shader);
    }
 
-   bool PixelShaderDX11::Init(const String& shaderPath)
+   bool ComputeShaderDX11::Init(const String& shaderPath)
    {
-      if (RenderObject::IsInitializable())
+      if (m_shader != nullptr)
       {
-         if (Compile(shaderPath, EShaderType::PixelShader))
+         if (Compile(shaderPath, EShaderType::ComputeShader))
          {
             RendererDX11* renderer = GetRenderer();
             auto& device = renderer->GetDevice();
-            auto result = device.CreatePixelShader(
+            HRESULT result = device.CreateComputeShader(
                m_blob->GetBufferPointer(),
                m_blob->GetBufferSize(),
                nullptr,
@@ -38,11 +38,11 @@ namespace Mile
       return false;
    }
 
-   bool PixelShaderDX11::Bind(ID3D11DeviceContext& deviceContext)
+   bool ComputeShaderDX11::Bind(ID3D11DeviceContext& deviceContext)
    {
       if (RenderObject::IsBindable())
       {
-         deviceContext.PSSetShader(m_shader,
+         deviceContext.CSSetShader(m_shader,
             nullptr,
             0);
 
@@ -52,11 +52,11 @@ namespace Mile
       return false;
    }
 
-   void PixelShaderDX11::Unbind(ID3D11DeviceContext& deviceContext)
+   void ComputeShaderDX11::Unbind(ID3D11DeviceContext& deviceContext)
    {
       if (RenderObject::IsBindable())
       {
-         deviceContext.PSSetShader(nullptr, nullptr, 0);
+         deviceContext.CSSetShader(nullptr, nullptr, 0);
       }
    }
 }

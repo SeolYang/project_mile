@@ -42,6 +42,7 @@ namespace Mile
       DomainShader,
       GeometryShader,
       PixelShader,
+      ComputeShader,
       EnumSize
    };
 

@@ -2217,6 +2217,8 @@ namespace Mile
          });
 
       const auto& skyboxPassData = skyboxPass->GetData();
+      
+      /** HDR Buffer -> 다운 스케일 -> 여러 그룹들로 부터 출력된 Avg luminance -> 다시 한개의 값으로 다운 스케일 */
 
       /** Tone Mapping Pass */
       struct ToneMappingPassData : public RenderPassDataBase

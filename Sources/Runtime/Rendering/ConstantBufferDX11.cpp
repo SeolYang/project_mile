@@ -8,10 +8,6 @@ namespace Mile
    {
    }
 
-   ConstantBufferDX11::~ConstantBufferDX11()
-   {
-   }
-
    bool ConstantBufferDX11::Init(unsigned int size)
    {
       if (size > 0 && RenderObject::IsInitializable())
@@ -59,8 +55,9 @@ namespace Mile
          case EShaderType::PixelShader:
             deviceContext.PSSetConstantBuffers(bindSlot, 1, reinterpret_cast<ID3D11Buffer**>(&m_resource));
             break;
-         default:
-            return false;
+         case EShaderType::ComputeShader:
+            deviceContext.CSSetConstantBuffers(bindSlot, 1, reinterpret_cast<ID3D11Buffer**>(&m_resource));
+            break;
          }
 
          return true;
@@ -91,8 +88,9 @@ namespace Mile
          case EShaderType::PixelShader:
             deviceContext.PSSetConstantBuffers(boundSlot, 1, &nullBuffer);
             break;
-         default:
-            return;
+         case EShaderType::ComputeShader:
+            deviceContext.CSSetConstantBuffers(boundSlot, 1, &nullBuffer);
+            break;
          }
       }
    }

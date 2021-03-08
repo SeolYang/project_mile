@@ -68,6 +68,9 @@ namespace Mile
          case Mile::EShaderType::PixelShader:
             deviceContext.PSSetSamplers(bindSlot, 1, &m_sampler);
             break;
+         case Mile::EShaderType::ComputeShader:
+            deviceContext.CSSetSamplers(bindSlot, 1, &m_sampler);
+            break;
          }
          return true;
       }
@@ -97,6 +100,9 @@ namespace Mile
          default:
          case Mile::EShaderType::PixelShader:
             deviceContext.PSSetSamplers(boundSlot, 1, &nullSampler);
+            break;
+         case Mile::EShaderType::ComputeShader:
+            deviceContext.CSSetSamplers(boundSlot, 1, &nullSampler);
             break;
          }
       }

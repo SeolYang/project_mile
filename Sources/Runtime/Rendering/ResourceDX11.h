@@ -105,6 +105,9 @@ namespace Mile
             case EShaderType::PixelShader:
                deviceContext.PSSetShaderResources(bindSlot, 1, &m_srv);
                break;
+            case EShaderType::ComputeShader:
+               deviceContext.CSSetShaderResources(bindSlot, 1, &m_srv);
+               break;
             }
 
             return true;
@@ -134,6 +137,9 @@ namespace Mile
                break;
             case EShaderType::PixelShader:
                deviceContext.PSSetShaderResources(boundSlot, 1, &nullSRV);
+               break;
+            case EShaderType::ComputeShader:
+               deviceContext.CSSetShaderResources(boundSlot, 1, &nullSRV);
                break;
             }
          }
