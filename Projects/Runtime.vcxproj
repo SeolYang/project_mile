@@ -450,6 +450,7 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
     <ClCompile Include="..\Sources\Runtime\Rendering\RenderTargetDX11.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\SamplerDX11.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\ShaderDX11.cpp" />
+    <ClCompile Include="..\Sources\Runtime\Rendering\StructuredBufferDX11.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\Texture2DBaseDX11.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\Texture2dDX11.cpp" />
     <ClCompile Include="..\Sources\Runtime\Rendering\VertexBufferDX11.cpp" />

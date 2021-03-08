@@ -73,6 +73,18 @@
     <Filter Include="Sources\Rendering\Profiler">
       <UniqueIdentifier>{41236297-c561-4088-8418-9bf199018f71}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Rendering\Resources\Buffers">
+      <UniqueIdentifier>{7b534794-1c11-43d2-93f6-54597675b28e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Rendering\Resources\Textures">
+      <UniqueIdentifier>{440ce5d5-dadb-406a-bd26-72bc48dfa0d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Rendering\Resources\Shaders">
+      <UniqueIdentifier>{9e147bb0-449b-4c3a-b670-7fa9e2997006}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Rendering\Resources\Meshes">
+      <UniqueIdentifier>{b1e4e327-7cc2-40a3-895a-8f28c5fa2139}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ThirdParty\json\src\json.hpp">
@@ -417,61 +429,7 @@
     <ClInclude Include="..\Sources\Runtime\Rendering\RenderObject.h">
       <Filter>Sources\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\BufferDX11.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\ConstantBufferDX11.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\Cube.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\DepthStencilBufferDX11.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\DynamicCubemap.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\GBuffer.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\IndexBufferDX11.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\InputLayoutDX11.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\Mesh.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\Quad.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\PixelShaderDX11.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\RenderTargetDX11.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
     <ClInclude Include="..\Sources\Runtime\Rendering\ResourceDX11.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\SamplerDX11.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\ShaderDX11.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\Texture2DBaseDX11.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\Texture2dDX11.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\VertexBufferDX11.h">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Sources\Runtime\Rendering\VertexShaderDX11.h">
       <Filter>Sources\Rendering\Resources</Filter>
     </ClInclude>
     <ClInclude Include="..\Sources\Runtime\Rendering\Viewport.h">
@@ -585,8 +543,62 @@
     <ClInclude Include="..\Sources\Runtime\Component\SkyLightComponent.h">
       <Filter>Sources\Component</Filter>
     </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\BufferDX11.h">
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\ConstantBufferDX11.h">
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\DepthStencilBufferDX11.h">
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\IndexBufferDX11.h">
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
+    </ClInclude>
     <ClInclude Include="..\Sources\Runtime\Rendering\StructuredBufferDX11.h">
-      <Filter>Sources\Rendering\Resources</Filter>
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\VertexBufferDX11.h">
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\DynamicCubemap.h">
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\GBuffer.h">
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\RenderTargetDX11.h">
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\Texture2DBaseDX11.h">
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\Texture2dDX11.h">
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\ShaderDX11.h">
+      <Filter>Sources\Rendering\Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\VertexShaderDX11.h">
+      <Filter>Sources\Rendering\Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\PixelShaderDX11.h">
+      <Filter>Sources\Rendering\Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\InputLayoutDX11.h">
+      <Filter>Sources\Rendering\Resources\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\SamplerDX11.h">
+      <Filter>Sources\Rendering\States</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\Cube.h">
+      <Filter>Sources\Rendering\Resources\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\Mesh.h">
+      <Filter>Sources\Rendering\Resources\Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Sources\Runtime\Rendering\Quad.h">
+      <Filter>Sources\Rendering\Resources\Meshes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -668,57 +680,6 @@
     <ClCompile Include="..\Sources\Runtime\Rendering\RenderObject.cpp">
       <Filter>Sources\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\BufferDX11.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\ConstantBufferDX11.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\Cube.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\DepthStencilBufferDX11.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\GBuffer.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\IndexBufferDX11.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\InputLayoutDX11.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\Mesh.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\Quad.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\PixelShaderDX11.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\RenderTargetDX11.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\SamplerDX11.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\ShaderDX11.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\Texture2DBaseDX11.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\Texture2dDX11.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\VertexBufferDX11.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\VertexShaderDX11.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="..\Sources\Runtime\Rendering\Viewport.cpp">
       <Filter>Sources\Rendering\States</Filter>
     </ClCompile>
@@ -739,9 +700,6 @@
     </ClCompile>
     <ClCompile Include="..\Sources\Runtime\Resource\ResourceManager.cpp">
       <Filter>Sources\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Sources\Runtime\Rendering\DynamicCubemap.cpp">
-      <Filter>Sources\Rendering\Resources</Filter>
     </ClCompile>
     <ClCompile Include="..\Sources\Runtime\Resource\TextureLoader.cpp">
       <Filter>Sources\Resource\Loader</Filter>
@@ -802,6 +760,63 @@
     </ClCompile>
     <ClCompile Include="..\Sources\Runtime\Component\SkyLightComponent.cpp">
       <Filter>Sources\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\BufferDX11.cpp">
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\ConstantBufferDX11.cpp">
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\DepthStencilBufferDX11.cpp">
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\IndexBufferDX11.cpp">
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\StructuredBufferDX11.cpp">
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\VertexBufferDX11.cpp">
+      <Filter>Sources\Rendering\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\DynamicCubemap.cpp">
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\GBuffer.cpp">
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\RenderTargetDX11.cpp">
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\Texture2dDX11.cpp">
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\Texture2DBaseDX11.cpp">
+      <Filter>Sources\Rendering\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\ShaderDX11.cpp">
+      <Filter>Sources\Rendering\Resources\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\VertexShaderDX11.cpp">
+      <Filter>Sources\Rendering\Resources\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\PixelShaderDX11.cpp">
+      <Filter>Sources\Rendering\Resources\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\InputLayoutDX11.cpp">
+      <Filter>Sources\Rendering\Resources\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\SamplerDX11.cpp">
+      <Filter>Sources\Rendering\States</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\Cube.cpp">
+      <Filter>Sources\Rendering\Resources\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\Mesh.cpp">
+      <Filter>Sources\Rendering\Resources\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sources\Runtime\Rendering\Quad.cpp">
+      <Filter>Sources\Rendering\Resources\Meshes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
