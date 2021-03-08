@@ -144,7 +144,10 @@ namespace Mile
          if (m_uav != nullptr)
          {
             deviceContext.CSSetUnorderedAccessViews(bindSlot, 1, &m_uav, nullptr);
+            return true;
          }
+
+         return false;
       }
 
       void UnbindUnorderedAccessView(ID3D11DeviceContext& deviceContext, unsigned int boundSlot)
@@ -184,9 +187,9 @@ namespace Mile
             {
                return true;
             }
-
-            return false;
          }
+
+         return false;
       }
 
    protected:
