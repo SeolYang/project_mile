@@ -36,6 +36,9 @@ namespace Mile
                entryPoint += "PS";
                target = "ps" + target;
                break;
+            case EShaderType::ComputeShader:
+               entryPoint += "CS";
+               target = "cs" + target;
             }
 
             auto compileFlags = D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_OPTIMIZATION_LEVEL3;
