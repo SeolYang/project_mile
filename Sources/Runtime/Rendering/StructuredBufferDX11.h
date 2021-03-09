@@ -10,10 +10,10 @@ namespace Mile
       {
       }
 
-      bool Init(unsigned int count, unsigned int structSize, bool bCPUWritable, bool bGPUWritable, D3D11_SUBRESOURCE_DATA* data);
+      bool Init(unsigned int count, unsigned int structSize, bool bCPUWritable, bool bGPUWritable, const D3D11_SUBRESOURCE_DATA*);
 
       template <typename Struct>
-      bool Init(unsigned int count, bool bCPUWritable, bool bGPUWritable, D3D11_SUBRESOURCE_DATA* data)
+      bool Init(unsigned int count, bool bCPUWritable, bool bGPUWritable, const D3D11_SUBRESOURCE_DATA*)
       {
          return Init(count, sizeof(Struct), bCPUWritable, bGPUWritable, data);
       }

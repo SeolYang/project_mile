@@ -2,7 +2,7 @@
 
 namespace Mile
 {
-   bool StructuredBufferDX11::Init(unsigned int count, unsigned int structSize, bool bCPUWritable, bool bGPUWritable, D3D11_SUBRESOURCE_DATA* data)
+   bool StructuredBufferDX11::Init(unsigned int count, unsigned int structSize, bool bCPUWritable, bool bGPUWritable, const D3D11_SUBRESOURCE_DATA* data)
    {
       D3D11_BUFFER_DESC desc;
       ZeroMemory(&desc, sizeof(desc));
@@ -56,6 +56,7 @@ namespace Mile
       ZeroMemory(&srvDesc, sizeof(srvDesc));
       srvDesc.Format = DXGI_FORMAT_UNKNOWN;
       srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+      srvDesc.Buffer.ElementWidth = count;
       if (!ResourceDX11::InitShaderResourceView(srvDesc))
       {
          return false;

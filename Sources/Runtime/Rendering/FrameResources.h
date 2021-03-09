@@ -282,6 +282,11 @@ namespace Mile
       bool bCPUWritable = false;
       bool bGPUWritable = true;
       D3D11_SUBRESOURCE_DATA Data;
+
+      StructuredBufferDescriptor()
+      {
+         ZeroMemory(&Data, sizeof(D3D11_SUBRESOURCE_DATA));
+      }
    };
 
    struct StructuredBufferRefDescriptor
