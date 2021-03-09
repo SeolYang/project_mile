@@ -102,8 +102,9 @@ namespace Mile
       const GPUProfiler& GetProfiler() const;
       GPUProfiler& GetProfiler();
 
-      void DrawIndexed(UINT vertexCount, UINT indexCount, UINT startIndexLocation = 0, UINT basedVertexLocation = 0);
       void ThreadSafeDrawIndexed(size_t threadIdx, UINT vertexCount, UINT indexCount, UINT startIndexLocation = 0, UINT basedVertexLocation = 0);
+      void DrawIndexed(UINT vertexCount, UINT indexCount, UINT startIndexLocation = 0, UINT basedVertexLocation = 0);
+      void Dispatch(UINT threadGroupCountX, UINT threadGroupCountY, UINT threadGroupCountZ);
 
       void OnWindowReiszeCallback(unsigned int width, unsigned int height);
 
