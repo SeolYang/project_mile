@@ -30,6 +30,11 @@ namespace Mile
          return false;
       }
 
+      bool BindShaderResourceView(ID3D11DeviceContext& deviceContext, unsigned int bindSlot, EShaderType bindShader) = delete;
+      void UnbindShaderResourceView(ID3D11DeviceContext& deviceContext, unsigned int boundSlot, EShaderType boundShader) = delete;
+      bool BindUnorderedAccessView(ID3D11DeviceContext& deviceContext, unsigned int bindSlot) = delete;
+      void UnbindShaderResourceView(ID3D11DeviceContext& deviceContext, unsigned int boundSlot, EShaderType boundShader) = delete;
+
       bool Bind(ID3D11DeviceContext& deviceContext, unsigned int bindSlot, EShaderType bindShader);
       void Unbind(ID3D11DeviceContext& deviceContext, unsigned int boundSlot, EShaderType boundShader);
 
