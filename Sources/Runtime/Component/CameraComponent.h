@@ -86,6 +86,30 @@ namespace Mile
 
       float Exposure() const;
 
+      float GetLightAdaptionSpeed() const { return m_lightAdaptionSpeed; }
+      void SetLightAdaptionSpeed(float newSpeed)
+      {
+         m_lightAdaptionSpeed = std::max(newSpeed, 0.0001f);
+      }
+
+      float GetDarkAdaptionSpeed() const { return m_darkAdaptionSpeed; }
+      void SetDarkAdaptionSpeed(float newSpeed)
+      {
+         m_darkAdaptionSpeed = std::max(newSpeed, 0.0001f);
+      }
+
+      float GetMinBrightness() const { return m_minBrightness; }
+      void SetMinBrightness(float brightness)
+      {
+         m_minBrightness = std::max(brightness, 0.0f);
+      }
+
+      float GetMaxBrightness() const { return m_maxBrightness; }
+      void SetMaxBrightness(float brightness)
+      {
+         m_maxBrightness = std::max(brightness, 0.0f);
+      }
+
       void OnGUI() override;
 
    private:
@@ -98,6 +122,11 @@ namespace Mile
       float m_shutterSpeed;
       float m_sensitivity;
       float m_expComp;
+
+      float m_lightAdaptionSpeed;
+      float m_darkAdaptionSpeed;
+      float m_minBrightness;
+      float m_maxBrightness;
 
       Vector4 m_clearColor;
 
