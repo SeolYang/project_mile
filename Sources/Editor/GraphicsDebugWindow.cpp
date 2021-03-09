@@ -22,99 +22,101 @@ namespace Mile
          /** @todo: code clean up */
          ImGuiWindowFlags windowFlag = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
          ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
-         ImGui::Begin("Graphics Debugger", nullptr, windowFlag);
-
-         RendererDX11* renderer = Engine::GetRenderer();
-         if (renderer != nullptr)
+         if (ImGui::Begin("Graphics Debugger", nullptr, windowFlag))
          {
-            Vector2 renderRes = renderer->GetRenderResolution();
-            ID3D11ShaderResourceView* outputSRV = nullptr;
-            RendererPBR* rendererPBR = dynamic_cast<RendererPBR*>(renderer);
-
-            if (rendererPBR != nullptr)
+            RendererDX11* renderer = Engine::GetRenderer();
+            if (renderer != nullptr)
             {
-               GBuffer* gBuffer = rendererPBR->GetGBuffer();
-               RenderTargetDX11* ssaoBuffer = rendererPBR->GetSSAOBuffer();
+               Vector2 renderRes = renderer->GetRenderResolution();
+               ID3D11ShaderResourceView* outputSRV = nullptr;
+               RendererPBR* rendererPBR = dynamic_cast<RendererPBR*>(renderer);
 
-               if (gBuffer != nullptr)
+               if (rendererPBR != nullptr)
                {
-                  if (ImGui::BeginMenuBar())
+                  GBuffer* gBuffer = rendererPBR->GetGBuffer();
+                  RenderTargetDX11* ssaoBuffer = rendererPBR->GetSSAOBuffer();
+
+                  if (gBuffer != nullptr)
                   {
-                     if (ImGui::BeginMenu("Views"))
+                     if (ImGui::BeginMenuBar())
                      {
-                        bool bSelected = false;
-                        if (gBuffer != nullptr)
+                        if (ImGui::BeginMenu("Views"))
                         {
-                           bSelected = EGraphicsDebug::Position == m_selected;
-                           if (ImGui::MenuItem("Position", nullptr, &bSelected, !bSelected))
+                           bool bSelected = false;
+                           if (gBuffer != nullptr)
                            {
-                              m_selected = EGraphicsDebug::Position;
+                              bSelected = EGraphicsDebug::Position == m_selected;
+                              if (ImGui::MenuItem("Position", nullptr, &bSelected, !bSelected))
+                              {
+                                 m_selected = EGraphicsDebug::Position;
+                              }
+                              bSelected = EGraphicsDebug::Albedo == m_selected;
+                              if (ImGui::MenuItem("Albedo", nullptr, &bSelected, !bSelected))
+                              {
+                                 m_selected = EGraphicsDebug::Albedo;
+                              }
+                              bSelected = EGraphicsDebug::Normal == m_selected;
+                              if (ImGui::MenuItem("Normal", nullptr, &bSelected, !bSelected))
+                              {
+                                 m_selected = EGraphicsDebug::Normal;
+                              }
+                              bSelected = EGraphicsDebug::Depth == m_selected;
+                              if (ImGui::MenuItem("Depth", nullptr, &bSelected, !bSelected))
+                              {
+                                 m_selected = EGraphicsDebug::Depth;
+                              }
+                              bSelected = EGraphicsDebug::SSAO == m_selected;
+                              if (ImGui::MenuItem("SSAO", nullptr, &bSelected, !bSelected))
+                              {
+                                 m_selected = EGraphicsDebug::SSAO;
+                              }
+                              bSelected = EGraphicsDebug::Lighting == m_selected;
+                              if (ImGui::MenuItem("Lighting", nullptr, &bSelected, !bSelected))
+                              {
+                                 m_selected = EGraphicsDebug::Lighting;
+                              }
                            }
-                           bSelected = EGraphicsDebug::Albedo == m_selected;
-                           if (ImGui::MenuItem("Albedo", nullptr, &bSelected, !bSelected))
-                           {
-                              m_selected = EGraphicsDebug::Albedo;
-                           }
-                           bSelected = EGraphicsDebug::Normal == m_selected;
-                           if (ImGui::MenuItem("Normal", nullptr, &bSelected, !bSelected))
-                           {
-                              m_selected = EGraphicsDebug::Normal;
-                           }
-                           bSelected = EGraphicsDebug::Depth == m_selected;
-                           if (ImGui::MenuItem("Depth", nullptr, &bSelected, !bSelected))
-                           {
-                              m_selected = EGraphicsDebug::Depth;
-                           }
-                           bSelected = EGraphicsDebug::SSAO == m_selected;
-                           if (ImGui::MenuItem("SSAO", nullptr, &bSelected, !bSelected))
-                           {
-                              m_selected = EGraphicsDebug::SSAO;
-                           }
-                           bSelected = EGraphicsDebug::Lighting == m_selected;
-                           if (ImGui::MenuItem("Lighting", nullptr, &bSelected, !bSelected))
-                           {
-                              m_selected = EGraphicsDebug::Lighting;
-                           }
+                           ImGui::EndMenu();
                         }
-                        ImGui::EndMenu();
-                     }
-                     ImGui::EndMenuBar();
+                        ImGui::EndMenuBar();
 
-                     switch (m_selected)
-                     {
-                     case Mile::Editor::EGraphicsDebug::Position:
-                        outputSRV = gBuffer->GetPositionBuffer()->GetTexture()->GetShaderResourceView();
-                        break;
-                     case Mile::Editor::EGraphicsDebug::Albedo:
-                        outputSRV = gBuffer->GetAlbedoBuffer()->GetTexture()->GetShaderResourceView();
-                        break;
-                     case Mile::Editor::EGraphicsDebug::Normal:
-                        outputSRV = gBuffer->GetNormalBuffer()->GetTexture()->GetShaderResourceView();
-                        break;
-                     case Mile::Editor::EGraphicsDebug::Depth:
-                        outputSRV = rendererPBR->GetDebugDepthBuffer()->GetTexture()->GetShaderResourceView();
-                        break;
-                     case Mile::Editor::EGraphicsDebug::Lighting:
-                        outputSRV = rendererPBR->GetDebugLightingBuffer()->GetTexture()->GetShaderResourceView();
-                        break;
-                     case Mile::Editor::EGraphicsDebug::SSAO:
-                        if (ssaoBuffer != nullptr)
+                        switch (m_selected)
                         {
-                           outputSRV = rendererPBR->GetDebugSSAOBuffer()->GetTexture()->GetShaderResourceView();
+                        case Mile::Editor::EGraphicsDebug::Position:
+                           outputSRV = gBuffer->GetPositionBuffer()->GetTexture()->GetShaderResourceView();
+                           break;
+                        case Mile::Editor::EGraphicsDebug::Albedo:
+                           outputSRV = gBuffer->GetAlbedoBuffer()->GetTexture()->GetShaderResourceView();
+                           break;
+                        case Mile::Editor::EGraphicsDebug::Normal:
+                           outputSRV = gBuffer->GetNormalBuffer()->GetTexture()->GetShaderResourceView();
+                           break;
+                        case Mile::Editor::EGraphicsDebug::Depth:
+                           outputSRV = rendererPBR->GetDebugDepthBuffer()->GetTexture()->GetShaderResourceView();
+                           break;
+                        case Mile::Editor::EGraphicsDebug::Lighting:
+                           outputSRV = rendererPBR->GetDebugLightingBuffer()->GetTexture()->GetShaderResourceView();
+                           break;
+                        case Mile::Editor::EGraphicsDebug::SSAO:
+                           if (ssaoBuffer != nullptr)
+                           {
+                              outputSRV = rendererPBR->GetDebugSSAOBuffer()->GetTexture()->GetShaderResourceView();
+                           }
+                           break;
                         }
-                        break;
-                     }
 
-                     if (outputSRV != nullptr)
-                     {
-                        GUI::ImageRelativeToWindow(outputSRV, renderer->GetRenderResolution());
+                        if (outputSRV != nullptr)
+                        {
+                           GUI::ImageRelativeToWindow(outputSRV, renderer->GetRenderResolution());
+                        }
                      }
                   }
                }
             }
-         }
 
-         ImGui::End();
+            ImGui::End();
+         }
+         
          ImGui::PopStyleColor();
       }
    }
