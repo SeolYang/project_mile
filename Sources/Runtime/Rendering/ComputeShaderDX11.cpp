@@ -15,7 +15,7 @@ namespace Mile
 
    bool ComputeShaderDX11::Init(const String& shaderPath)
    {
-      if (m_shader != nullptr)
+      if (m_shader == nullptr)
       {
          if (Compile(shaderPath, EShaderType::ComputeShader))
          {
