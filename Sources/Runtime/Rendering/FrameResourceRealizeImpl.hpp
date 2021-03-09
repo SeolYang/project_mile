@@ -224,7 +224,7 @@ namespace Elaina
    StructuredBufferDX11* Realize(const StructuredBufferDescriptor& desc)
    {
       StructuredBufferDX11* buffer = new StructuredBufferDX11(desc.Renderer);
-      if (!buffer->Init(desc.Count, desc.StructSize, desc.bCPUWritable, desc.bGPUWritable, desc.Data))
+      if (!buffer->Init(desc.Count, desc.StructSize, desc.bCPUWritable, desc.bGPUWritable, &desc.Data))
       {
          Elaina::SafeDelete(buffer);
       }

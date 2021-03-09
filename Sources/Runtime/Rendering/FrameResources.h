@@ -281,7 +281,7 @@ namespace Mile
       unsigned int StructSize = 0;
       bool bCPUWritable = false;
       bool bGPUWritable = true;
-      D3D11_SUBRESOURCE_DATA* Data = nullptr;
+      D3D11_SUBRESOURCE_DATA Data;
    };
 
    struct StructuredBufferRefDescriptor
