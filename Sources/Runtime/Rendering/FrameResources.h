@@ -273,8 +273,8 @@ namespace Mile
    using VoidRefResource = Elaina::FrameResource<VoidRefDescriptor, VoidRef>;
 
    class StructuredBufferDX11;
-   using StructuredBufferDX11Ref = StructuredBufferDX11*;
-   struct StructuredBufferDX11Descriptor
+   using StructuredBufferRef = StructuredBufferDX11*;
+   struct StructuredBufferDescriptor
    {
       RendererDX11* Renderer = nullptr;
       unsigned int Count = 0;
@@ -284,11 +284,11 @@ namespace Mile
       D3D11_SUBRESOURCE_DATA* Data = nullptr;
    };
 
-   struct StructuredBufferDX11RefDescriptor
+   struct StructuredBufferRefDescriptor
    {
-      StructuredBufferDX11Ref Reference = nullptr;
+      StructuredBufferRef Reference = nullptr;
    };
 
-   using StructuredBufferDX11Resource = Elaina::FrameResource<StructuredBufferDX11Descriptor, StructuredBufferDX11>;
-   using StructuredBufferDX11RefResource = Elaina::FrameResource<StructuredBufferDX11RefDescriptor, StructuredBufferDX11Ref>;
+   using StructuredBufferResource = Elaina::FrameResource<StructuredBufferDescriptor, StructuredBufferDX11>;
+   using StructuredBufferRefResource = Elaina::FrameResource<StructuredBufferRefDescriptor, StructuredBufferRef>;
 }
