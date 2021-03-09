@@ -113,10 +113,9 @@ namespace Mile
                   }
                }
             }
-
-            ImGui::End();
          }
-         
+
+         ImGui::End();
          ImGui::PopStyleColor();
       }
    }
