@@ -18,5 +18,7 @@ namespace Mile
          return Init(count, sizeof(Struct), bCPUWritable, bGPUWritable, data);
       }
 
+      ERenderResourceType GetResourceType() const override { return ERenderResourceType::StructuredBuffer; }
+
    };
 }
