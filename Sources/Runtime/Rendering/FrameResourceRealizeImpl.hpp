@@ -7,6 +7,7 @@
 #include "Rendering/SamplerDX11.h"
 #include "Rendering/DepthStencilBufferDX11.h"
 #include "Rendering/ConstantBufferDX11.h"
+#include "Rendering/StructuredBufferDX11.h"
 #include "Rendering/GBuffer.h"
 #include "Rendering/Viewport.h"
 #include "Rendering/RasterizerState.h"
@@ -217,6 +218,24 @@ namespace Elaina
    ConstantBufferRef* Realize(const ConstantBufferRefDescriptor& desc)
    {
       return new ConstantBufferRef(desc.Reference);
+   }
+
+   template<>
+   StructuredBufferDX11* Realize(const StructuredBufferDescriptor& desc)
+   {
+      StructuredBufferDX11* buffer = new StructuredBufferDX11(desc.Renderer);
+      if (!buffer->Init(desc.Count, desc.StructSize, desc.bCPUWritable, desc.bGPUWritable, desc.Data))
+      {
+         Elaina::SafeDelete(buffer);
+      }
+
+      return buffer;
+   }
+
+   template<>
+   StructuredBufferRef* Realize(const StructuredBufferRefDescriptor& desc)
+   {
+      return new StructuredBufferRef(desc.Reference);
    }
 
    template<>
