@@ -3,6 +3,7 @@
 #include "Rendering/RenderTargetDX11.h"
 #include "Rendering/VertexShaderDX11.h"
 #include "Rendering/PixelShaderDX11.h"
+#include "Rendering/ComputeShaderDX11.h"
 #include "Rendering/SamplerDX11.h"
 #include "Rendering/DepthStencilBufferDX11.h"
 #include "Rendering/ConstantBufferDX11.h"
@@ -168,6 +169,18 @@ namespace Elaina
    PixelShaderDX11* Realize(const ShaderDescriptor& desc)
    {
       PixelShaderDX11* shader = new PixelShaderDX11(desc.Renderer);
+      if (!shader->Init(desc.FilePath))
+      {
+         Elaina::SafeDelete(shader);
+      }
+
+      return shader;
+   }
+
+   template<>
+   ComputeShaderDX11* Realize(const ShaderDescriptor& desc)
+   {
+      ComputeShaderDX11* shader = new ComputeShaderDX11(desc.Renderer);
       if (!shader->Init(desc.FilePath))
       {
          Elaina::SafeDelete(shader);

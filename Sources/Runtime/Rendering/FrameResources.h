@@ -77,6 +77,7 @@ namespace Mile
 
    class VertexShaderDX11;
    class PixelShaderDX11;
+   class ComputeShaderDX11;
    struct ShaderDescriptor
    {
       RendererDX11* Renderer = nullptr;
@@ -84,6 +85,7 @@ namespace Mile
    };
    using VertexShaderResource = Elaina::FrameResource<ShaderDescriptor, VertexShaderDX11>;
    using PixelShaderResource = Elaina::FrameResource<ShaderDescriptor, PixelShaderDX11>;
+   using ComputeShaderResource = Elaina::FrameResource<ShaderDescriptor, ComputeShaderDX11>;
 
    class SamplerDX11;
    struct SamplerDescriptor
