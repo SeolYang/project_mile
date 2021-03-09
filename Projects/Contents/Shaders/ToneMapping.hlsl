@@ -25,6 +25,7 @@ cbuffer ToneMappingParams : register(b0)
 {
 	float ExposureCompensation	: packoffset(c0);
 	float GammaFactor		: packoffset(c0.y);
+	uint AutoExposureEnable : packoffset(c1);
 };
 
 /* Textures & Samplers */
@@ -46,8 +47,11 @@ float4 MilePS(in PSInput input) : SV_Target0
 	float3 mappedColor;
 
 	/** Exposure Tone Mapping */
-	//mappedColor = float3(1.0f, 1.0f, 1.0f) - exp(-color * ExposureFactor);
-	mappedColor = (color / AvgLum[0]) * ExposureCompensation;
+	if (AutoExposureEnable == 1)
+	{
+		//mappedColor = float3(1.0f, 1.0f, 1.0f) - exp(-color * ExposureFactor);
+		mappedColor = color * Exposure(log2(8.0 * AvgLum[0]) - ExposureCompensation);
+	}
 
 	/** Gamma Correction */
 	mappedColor = pow(mappedColor, (1.0f / GammaFactor));

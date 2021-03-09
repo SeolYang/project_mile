@@ -72,4 +72,9 @@ float LinearizeDepth(float z, float near, float far)
    return (2.0 * near) / (far + near - z * (far - near));
 }
 
+float Exposure(float ev100)
+{
+   return 1.0 / (pow(2.0, ev100) * 1.2);
+}
+
 #endif

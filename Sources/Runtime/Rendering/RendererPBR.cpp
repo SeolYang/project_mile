@@ -101,6 +101,12 @@ namespace Mile
       Vector4 AdaptionParams = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
    };
 
+   DEFINE_CONSTANT_BUFFER(ToneMappingConstantBuffer)
+   {
+      Vector2 Params;
+      unsigned int EnableAutoExposure;
+   };
+
    RendererPBR::RendererPBR(Context* context, size_t maximumThreads) :
       RendererDX11(context, maximumThreads),
       m_targetCamera(nullptr),
@@ -2441,7 +2447,7 @@ namespace Mile
 
             ConstantBufferDescriptor toneMappingBufferDesc;
             toneMappingBufferDesc.Renderer = this;
-            toneMappingBufferDesc.Size = sizeof(OneVector2ConstantBuffer);
+            toneMappingBufferDesc.Size = sizeof(ToneMappingConstantBuffer);
             data.ParamsBuffer = builder.Create<ConstantBufferResource>("ToneMappingConstantBuffer", toneMappingBufferDesc);
 
             data.AvgLum = builder.Read(downScaleToScalarPassData.FinalAvgLum);
@@ -2485,9 +2491,8 @@ namespace Mile
             output->BindRenderTargetView(context);
 
             /** Update Constant Buffers */
-            auto mappedParamsBuffer = paramsBuffer->Map<OneVector2ConstantBuffer>(context);
-            float exposureCompensation = camera->MeteringMode() == EMeteringMode::AutoExposureBasic ? ExposureNormalizationFactor(-camera->ExposureCompensation()) : 1.0f;
-            (*mappedParamsBuffer) = OneVector2ConstantBuffer{ Vector2(exposureCompensation, params->GammaFactor) };
+            auto mappedParamsBuffer = paramsBuffer->Map<ToneMappingConstantBuffer>(context);
+            (*mappedParamsBuffer) = ToneMappingConstantBuffer{ Vector2(camera->ExposureCompensation(), params->GammaFactor), (unsigned int)((camera->MeteringMode() == EMeteringMode::Manual) ? 0 : 1) };
             paramsBuffer->UnMap(context);
 
             /** Render */
