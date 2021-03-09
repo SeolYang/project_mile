@@ -507,6 +507,18 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorRelease|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="Contents\Shaders\Compute.DownScaleTo1D.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorRelease|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\Compute.DownScaleToScalar.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorRelease|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="Contents\Shaders\DebugDepthSSAO.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'">4.0</ShaderModel>
@@ -684,6 +696,12 @@ copy "..\ThirdParty\optick\dlls\Release" "..\Binaries\$(Configuration)\";</Comma
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorRelease|x64'">true</ExcludedFromBuild>
+    </None>
+    <None Include="Contents\Shaders\DownScale.hlsli">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorRelease|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EditorDebug|x64'">true</ExcludedFromBuild>
     </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

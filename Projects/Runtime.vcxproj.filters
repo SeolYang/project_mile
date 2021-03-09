@@ -880,6 +880,12 @@
     <FxCompile Include="Contents\Shaders\PrecomputeBRDFIntegrationMap.hlsl">
       <Filter>Shaders\PBS</Filter>
     </FxCompile>
+    <FxCompile Include="Contents\Shaders\Compute.DownScaleToScalar.hlsl">
+      <Filter>Shaders\PBS</Filter>
+    </FxCompile>
+    <FxCompile Include="Contents\Shaders\Compute.DownScaleTo1D.hlsl">
+      <Filter>Shaders\PBS</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ThirdParty\assimp\include\assimp\color4.inl">
@@ -911,6 +917,9 @@
     </None>
     <None Include="Contents\Shaders\BRDFs.hlsli">
       <Filter>Shaders\PBS</Filter>
+    </None>
+    <None Include="Contents\Shaders\DownScale.hlsli">
+      <Filter>Shaders\PostProcess</Filter>
     </None>
   </ItemGroup>
 </Project>

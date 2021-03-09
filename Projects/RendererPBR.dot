@@ -39,6 +39,12 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "SkyboxPass" [label="SkyboxPass
 \nDistribution Group : 0
 \nRefs : 1", style=filled, fillcolor=darkorange];
+"DownScaleTo1DPass" [label="DownScaleTo1DPass
+\nDistribution Group : 0
+\nRefs : 2", style=filled, fillcolor=darkorange];
+"DownScaleToScalarPass" [label="DownScaleToScalarPass
+\nDistribution Group : 0
+\nRefs : 2", style=filled, fillcolor=darkorange];
 "ToneMappingPass" [label="ToneMappingPass
 \nDistribution Group : 0
 \nRefs : 1", style=filled, fillcolor=darkorange];
@@ -47,7 +53,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nRefs : 2", style=filled, fillcolor=darkorange];
 "CameraRef" [label="CameraRef
 \nID : 0
-\nRefs : 8
+\nRefs : 10
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "Lights" [label="Lights
 \nID : 1
@@ -383,7 +389,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "HDRBufferRef" [label="HDRBufferRef
 \nID : 84
-\nRefs : 1
+\nRefs : 2
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "LightingDebugBufferRef" [label="LightingDebugBufferRef
 \nID : 85
@@ -505,40 +511,64 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 \nID : 114
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
-"ToneMappingVertexShader" [label="ToneMappingVertexShader
+"DownScaleTo1DPassComputeShader" [label="DownScaleTo1DPassComputeShader
 \nID : 115
 \nRefs : 1
 \nExternal Permanent", style=filled, fillcolor=palegreen]
-"ToneMappingPixelShader" [label="ToneMappingPixelShader
+"AvgLum1DBufferRef" [label="AvgLum1DBufferRef
 \nID : 116
 \nRefs : 1
 \nExternal Permanent", style=filled, fillcolor=palegreen]
-"ToneMappingParams" [label="ToneMappingParams
+"DownScaleConstantsBuffer" [label="DownScaleConstantsBuffer
 \nID : 117
+\nRefs : 1
+\nTransient", style=filled, fillcolor=peachpuff]
+"DownScaleToScalarPassComputeShader" [label="DownScaleToScalarPassComputeShader
+\nID : 118
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"PrevAvgLumRef" [label="PrevAvgLumRef
+\nID : 119
+\nRefs : 0
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"FinalAvgLum" [label="FinalAvgLum
+\nID : 120
+\nRefs : 1
+\nTransient", style=filled, fillcolor=peachpuff]
+"ToneMappingVertexShader" [label="ToneMappingVertexShader
+\nID : 121
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"ToneMappingPixelShader" [label="ToneMappingPixelShader
+\nID : 122
+\nRefs : 1
+\nExternal Permanent", style=filled, fillcolor=palegreen]
+"ToneMappingParams" [label="ToneMappingParams
+\nID : 123
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
 "ToneMappingConstantBuffer" [label="ToneMappingConstantBuffer
-\nID : 118
+\nID : 124
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
 "DebugDepthSSAOVertexShader" [label="DebugDepthSSAOVertexShader
-\nID : 119
+\nID : 125
 \nRefs : 1
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "DebugDepthSSAOPixelShader" [label="DebugDepthSSAOPixelShader
-\nID : 120
+\nID : 126
 \nRefs : 1
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "DebugDepthRef" [label="DebugDepthRef
-\nID : 121
+\nID : 127
 \nRefs : 0
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "DebugDepthRef" [label="DebugDepthRef
-\nID : 122
+\nID : 128
 \nRefs : 0
 \nExternal Permanent", style=filled, fillcolor=palegreen]
 "DebugTypeBuffer" [label="DebugTypeBuffer
-\nID : 123
+\nID : 129
 \nRefs : 0
 \nTransient", style=filled, fillcolor=peachpuff]
 "Geometry Pass" -> { "AnisoWrapAlwaysSampler" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "GeometryPassTransformConstantBuffers" "GeometryPassPackedMaterialParamsConstantBuffers" "Viewport" "HalfViewport" "DefaultRasterizerState" } [color=aquamarine]
@@ -563,12 +593,16 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "AmbientEmissivePass" -> { "HDRBufferRef" } [color=firebrick1]
 "SkyboxPass" -> { "SkyboxType" "PreExposedIBLIntensity" } [color=aquamarine]
 "SkyboxPass" -> { "OneMatrixConstantBuffer" "HDRBufferRef" } [color=firebrick1]
+"DownScaleTo1DPass" -> { "DownScaleConstantsBuffer" } [color=aquamarine]
+"DownScaleTo1DPass" -> { "AvgLum1DBufferRef" } [color=firebrick1]
+"DownScaleToScalarPass" -> { "FinalAvgLum" } [color=aquamarine]
+"DownScaleToScalarPass" -> { "PrevAvgLumRef" } [color=firebrick1]
 "ToneMappingPass" -> { "ToneMappingParams" "ToneMappingConstantBuffer" } [color=aquamarine]
 "ToneMappingPass" -> { "FinalOutputRef" } [color=firebrick1]
 "DebugDepthSSAOPass" -> { "DebugTypeBuffer" } [color=aquamarine]
 "DebugDepthSSAOPass" -> { "DebugDepthRef" "DebugDepthRef" } [color=firebrick1]
 
-"CameraRef" -> { "Geometry Pass" "LightingPass" "ConvertGBufferToViewSpacePass" "SSAOPass" "AmbientEmissivePass" "SkyboxPass" "ToneMappingPass" "DebugDepthSSAOPass" } [color=yellow]
+"CameraRef" -> { "Geometry Pass" "LightingPass" "ConvertGBufferToViewSpacePass" "SSAOPass" "AmbientEmissivePass" "SkyboxPass" "DownScaleTo1DPass" "DownScaleToScalarPass" "ToneMappingPass" "DebugDepthSSAOPass" } [color=yellow]
 "Lights" -> { } [color=yellow]
 "Meshes" -> { } [color=yellow]
 "MaterialMap" -> { "Geometry Pass" } [color=yellow]
@@ -652,7 +686,7 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "LightsData" -> { "LightingPass" } [color=yellow]
 "PrintTextureVertexShader" -> { "LightingPass" } [color=yellow]
 "PrintTexturePixelShader" -> { "LightingPass" } [color=yellow]
-"HDRBufferRef" -> { "ToneMappingPass" } [color=yellow]
+"HDRBufferRef" -> { "DownScaleTo1DPass" "ToneMappingPass" } [color=yellow]
 "LightingDebugBufferRef" -> { } [color=yellow]
 "AnistropicBorderSampler" -> { "ToneMappingPass" "DebugDepthSSAOPass" } [color=yellow]
 "CameraParamsConstantBuffer" -> { } [color=yellow]
@@ -683,6 +717,12 @@ edge [fontname="arial", fontsize=12, fontcolor=white]
 "SkyboxPassPixelShader" -> { "SkyboxPass" } [color=yellow]
 "SkyboxType" -> { } [color=yellow]
 "PreExposedIBLIntensity" -> { } [color=yellow]
+"DownScaleTo1DPassComputeShader" -> { "DownScaleTo1DPass" } [color=yellow]
+"AvgLum1DBufferRef" -> { "DownScaleToScalarPass" } [color=yellow]
+"DownScaleConstantsBuffer" -> { "DownScaleToScalarPass" } [color=yellow]
+"DownScaleToScalarPassComputeShader" -> { "DownScaleToScalarPass" } [color=yellow]
+"PrevAvgLumRef" -> { } [color=yellow]
+"FinalAvgLum" -> { "ToneMappingPass" } [color=yellow]
 "ToneMappingVertexShader" -> { "ToneMappingPass" } [color=yellow]
 "ToneMappingPixelShader" -> { "ToneMappingPass" } [color=yellow]
 "ToneMappingParams" -> { } [color=yellow]

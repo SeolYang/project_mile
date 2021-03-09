@@ -17,6 +17,7 @@
 #include "Rendering/GPUProfiler.h"
 #include "Core/Context.h"
 #include "Core/Engine.h"
+#include "Core/Timer.h"
 #include "GameFramework/World.h"
 #include "GameFramework/Transform.h"
 #include "Component/CameraComponent.h"
@@ -94,6 +95,12 @@ namespace Mile
       Vector2 nearFar = Vector2(0.1f, 1000.0f);
    };
 
+   DEFINE_CONSTANT_BUFFER(DownScaleConstantsBuffer)
+   {
+      std::array<unsigned int, 4> DownScaleParams = { 0, };
+      Vector4 AdaptionParams = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+   };
+
    RendererPBR::RendererPBR(Context* context, size_t maximumThreads) :
       RendererDX11(context, maximumThreads),
       m_targetCamera(nullptr),
@@ -137,6 +144,8 @@ namespace Mile
       m_gaussBloomPassPS(nullptr),
       m_printTextureVS(nullptr),
       m_printTexturePS(nullptr),
+      m_downScaleTo1DPassCS(nullptr),
+      m_downScaleToScalarCS(nullptr),
       m_toneMappingVS(nullptr),
       m_toneMappingPS(nullptr),
       m_gBuffer(nullptr),
@@ -152,7 +161,9 @@ namespace Mile
       m_debugDepthSSAOVS(nullptr),
       m_debugDepthSSAOPS(nullptr),
       m_lightingDebugBuffer(nullptr),
-      m_iblStage(0)
+      m_iblStage(0),
+      m_avgLum1DBuffer(nullptr),
+      m_prevAvgLumBuffer(nullptr)
    {
    }
 
@@ -171,6 +182,8 @@ namespace Mile
          SafeDelete(pingPongBuffer);
       }
       SafeDelete(m_extractedBrightness);
+      SafeDelete(m_prevAvgLumBuffer);
+      SafeDelete(m_avgLum1DBuffer);
       SafeDelete(m_hdrBuffer);
       SafeDelete(m_gBuffer);
       SafeDelete(m_debugDepthSSAOPS);
@@ -434,6 +447,27 @@ namespace Mile
       if (m_ambientEmissivePassPS == nullptr)
       {
          ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load skybox pass pixel shader!"));
+         return false;
+      }
+
+      /** Downscale Pass Shaders */
+      ShaderDescriptor downScaleTo1DPassDesc;
+      downScaleTo1DPassDesc.Renderer = this;
+      downScaleTo1DPassDesc.FilePath = TEXT("Contents/Shaders/Compute.DownScaleTo1D.hlsl");
+      m_downScaleTo1DPassCS = Elaina::Realize<ShaderDescriptor, ComputeShaderDX11>(downScaleTo1DPassDesc);
+      if (m_downScaleTo1DPassCS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load downscale to 1D pass compute shader!"));
+         return false;
+      }
+
+      ShaderDescriptor downScaleToScalarPassDesc;
+      downScaleToScalarPassDesc.Renderer = this;
+      downScaleToScalarPassDesc.FilePath = TEXT("Contents/Shaders/Compute.DownScaleToScalar.hlsl");
+      m_downScaleToScalarCS = Elaina::Realize<ShaderDescriptor, ComputeShaderDX11>(downScaleToScalarPassDesc);
+      if (m_downScaleToScalarCS == nullptr)
+      {
+         ME_LOG(MileRendererPBR, Fatal, TEXT("Failed to load downscale to scalar compute shader!"));
          return false;
       }
 
@@ -2221,8 +2255,155 @@ namespace Mile
       /** HDR Buffer -> 다운 스케일 -> 여러 그룹들로 부터 출력된 Avg luminance -> 다시 한개의 값으로 다운 스케일 */
       struct DownScaleTo1DPassData : public RenderPassDataBase
       {
-         RenderTargetRefResource* HDRInput = nullptr;
+         CameraRefResource* CamRef = nullptr;
+         RenderTargetRefResource* HDRInputRef = nullptr;
+         StructuredBufferRefResource* AvgLum1DRef = nullptr;
+         ConstantBufferResource* ParamsBuffer = nullptr;
       };
+
+      auto downScaleTo1DPassCSRes = m_frameGraph.AddExternalPermanentResource("DownScaleTo1DPassComputeShader", ShaderDescriptor(), m_downScaleTo1DPassCS);
+      auto avgLum1DBufferRefRes = m_frameGraph.AddExternalPermanentResource("AvgLum1DBufferRef", StructuredBufferRefDescriptor(), &m_avgLum1DBuffer);
+
+      auto downScaleTo1DPass = m_frameGraph.AddCallbackPass<DownScaleTo1DPassData>(
+         "DownScaleTo1DPass",
+         [&](Elaina::RenderPassBuilder& builder, DownScaleTo1DPassData& data)
+         {
+            data.Renderer = this;
+            data.ComputeShader = builder.Read(downScaleTo1DPassCSRes);
+            data.CamRef = builder.Read(skyboxPassData.CamRef);
+
+            data.HDRInputRef = builder.Read(skyboxPassData.OutputRef);
+            data.AvgLum1DRef = builder.Write(avgLum1DBufferRefRes);
+
+            ConstantBufferDescriptor downScaleConstantsBufferDesc;
+            downScaleConstantsBufferDesc.Renderer = this;
+            downScaleConstantsBufferDesc.Size = sizeof(DownScaleConstantsBuffer);
+            data.ParamsBuffer = builder.Create<ConstantBufferResource>("DownScaleConstantsBuffer", downScaleConstantsBufferDesc);
+         },
+         [](const DownScaleTo1DPassData& data)
+         {
+            auto camera = *data.CamRef->GetActual();
+            if (camera->MeteringMode() == EMeteringMode::AutoExposureBasic)
+            {
+               OPTICK_EVENT("ExecuteDownScaleTo1DPass");
+               auto& profiler = data.Renderer->GetProfiler();
+               ScopedGPUProfile profile(profiler, "DownScaleTo1DPass");
+
+               auto shader = data.ComputeShader->GetActual();
+               auto hdrInput = *data.HDRInputRef->GetActual();
+               auto avgLum1DBuffer = *data.AvgLum1DRef->GetActual();
+               auto paramsBuffer = data.ParamsBuffer->GetActual();
+
+               ID3D11DeviceContext& immediateContext = data.Renderer->GetImmediateContext();
+               shader->Bind(immediateContext);
+               hdrInput->BindShaderResourceView(immediateContext, 0, EShaderType::ComputeShader);
+               avgLum1DBuffer->BindUnorderedAccessView(immediateContext, 0);
+               paramsBuffer->Bind(immediateContext, 0, EShaderType::ComputeShader);
+
+               /** Update Params Buffer */
+               auto renderRes = data.Renderer->GetRenderResolution();
+               unsigned int downScaledResX = renderRes.x / 4;
+               unsigned int downScaledResY = renderRes.y / 4;
+               unsigned int downScaledDomain = (renderRes.x * renderRes.y) / 16;
+               unsigned int groupSize = downScaledDomain / 1024;
+
+               auto timer = Engine::GetTimer();
+               auto mappedParamsBuffer = paramsBuffer->Map<DownScaleConstantsBuffer>(immediateContext);
+               (*mappedParamsBuffer) = DownScaleConstantsBuffer{
+                  { downScaledResX, downScaledResY, downScaledDomain, groupSize },
+                  Vector4(camera->GetLightAdaptionSpeed() * timer->GetDeltaTime(), camera->GetDarkAdaptionSpeed() * timer->GetDeltaTime(), camera->GetMinBrightness(), camera->GetMaxBrightness())
+               };
+               paramsBuffer->UnMap(immediateContext);
+
+               /** Dispatch */
+               data.Renderer->Dispatch(groupSize, 1, 1);
+
+               paramsBuffer->Unbind(immediateContext, 0, EShaderType::ComputeShader);
+               avgLum1DBuffer->UnbindUnorderedAccessView(immediateContext, 0);
+               hdrInput->UnbindShaderResourceView(immediateContext, 0, EShaderType::ComputeShader);
+            }
+         });
+
+      struct DownScaleToScalarPassData : public RenderPassDataBase
+      {
+         CameraRefResource* CamRef = nullptr;
+         StructuredBufferRefResource* AvgLum1DRef = nullptr;
+         StructuredBufferResource* FinalAvgLum = nullptr;
+         StructuredBufferRefResource* PrevAvgLumRef = nullptr;
+         ConstantBufferResource* ParamsBuffer = nullptr;
+      };
+
+      auto downScaleTo1DPassData = downScaleTo1DPass->GetData();
+
+      auto downScaleToScalarPassCSRes = m_frameGraph.AddExternalPermanentResource("DownScaleToScalarPassComputeShader", ShaderDescriptor(), m_downScaleToScalarCS);
+
+      StructuredBufferDescriptor prevAvgLumBufferDesc;
+      prevAvgLumBufferDesc.Renderer = this;
+      prevAvgLumBufferDesc.bCPUWritable = false;
+      prevAvgLumBufferDesc.bGPUWritable = true;
+      prevAvgLumBufferDesc.Count = 1;
+      prevAvgLumBufferDesc.StructSize = sizeof(float);
+      m_prevAvgLumBuffer = Elaina::Realize<StructuredBufferDescriptor, StructuredBufferDX11>(prevAvgLumBufferDesc);
+      auto prevAvgLumBufferRefRes = m_frameGraph.AddExternalPermanentResource("PrevAvgLumRef", StructuredBufferRefDescriptor(), &m_prevAvgLumBuffer);
+
+      auto downScaleToScalarPass = m_frameGraph.AddCallbackPass<DownScaleToScalarPassData>(
+         "DownScaleToScalarPass",
+         [&](Elaina::RenderPassBuilder& builder, DownScaleToScalarPassData& data)
+         {
+            data.Renderer = this;
+            data.ComputeShader = builder.Read(downScaleToScalarPassCSRes);
+            data.CamRef = builder.Read(downScaleTo1DPassData.CamRef);
+
+            data.AvgLum1DRef = builder.Read(downScaleTo1DPassData.AvgLum1DRef);
+
+            StructuredBufferDescriptor finalAvgLumDesc;
+            finalAvgLumDesc.Renderer = this;
+            finalAvgLumDesc.bCPUWritable = false;
+            finalAvgLumDesc.bGPUWritable = true;
+            finalAvgLumDesc.Count = 1;
+            finalAvgLumDesc.StructSize = sizeof(float);
+            D3D11_SUBRESOURCE_DATA finalAvgLumInit;
+            ZeroMemory(&finalAvgLumInit, sizeof(D3D11_SUBRESOURCE_DATA));
+            finalAvgLumInit.pSysMem = &m_avgLumScalarInitialValue;
+            finalAvgLumDesc.Data = finalAvgLumInit;
+            data.FinalAvgLum = builder.Create<StructuredBufferResource>("FinalAvgLum", finalAvgLumDesc);
+
+            data.PrevAvgLumRef = builder.Write(prevAvgLumBufferRefRes);
+
+            data.ParamsBuffer = builder.Read(downScaleTo1DPassData.ParamsBuffer);
+         },
+         [](const DownScaleToScalarPassData& data)
+         {
+            auto camera = *data.CamRef->GetActual();
+            if (camera->MeteringMode() == EMeteringMode::AutoExposureBasic)
+            {
+               OPTICK_EVENT("ExecuteDownScaleToScalarPass");
+               auto& profiler = data.Renderer->GetProfiler();
+               ScopedGPUProfile profile(profiler, "DownScaleToScalarPass");
+
+               auto shader = data.ComputeShader->GetActual();
+               auto avgLum1DBuffer = *data.AvgLum1DRef->GetActual();
+               auto finalAvgLum = data.FinalAvgLum->GetActual();
+               auto prevAvgLum = *data.PrevAvgLumRef->GetActual();
+               auto paramsBuffer = data.ParamsBuffer->GetActual();
+
+               ID3D11DeviceContext& immeidiateContext = data.Renderer->GetImmediateContext();
+               shader->Bind(immeidiateContext);
+               avgLum1DBuffer->BindShaderResourceView(immeidiateContext, 0, EShaderType::ComputeShader);
+               finalAvgLum->BindUnorderedAccessView(immeidiateContext, 0);
+               prevAvgLum->BindUnorderedAccessView(immeidiateContext, 1);
+               paramsBuffer->Bind(immeidiateContext, 0, EShaderType::ComputeShader);
+
+               data.Renderer->Dispatch(1, 1, 1);
+
+               paramsBuffer->Unbind(immeidiateContext, 0, EShaderType::ComputeShader);
+               prevAvgLum->UnbindUnorderedAccessView(immeidiateContext, 1);
+               finalAvgLum->UnbindUnorderedAccessView(immeidiateContext, 0);
+               avgLum1DBuffer->UnbindShaderResourceView(immeidiateContext, 0, EShaderType::ComputeShader);
+            }
+         });
+
+      auto downScaleToScalarPassData = downScaleToScalarPass->GetData();
 
       /** Tone Mapping Pass */
       struct ToneMappingPassData : public RenderPassDataBase
@@ -2233,6 +2414,7 @@ namespace Mile
          VoidRefResource* Params = nullptr;
          CameraRefResource* CamRef = nullptr;
          ConstantBufferResource* ParamsBuffer = nullptr;
+         StructuredBufferResource* AvgLum = nullptr;
          MeshRefResource* QuadMeshRef = nullptr;
          RenderTargetRefResource* InputRef = nullptr;
          RenderTargetRefResource* OutputRef = nullptr;
@@ -2261,6 +2443,9 @@ namespace Mile
             toneMappingBufferDesc.Renderer = this;
             toneMappingBufferDesc.Size = sizeof(OneVector2ConstantBuffer);
             data.ParamsBuffer = builder.Create<ConstantBufferResource>("ToneMappingConstantBuffer", toneMappingBufferDesc);
+
+            data.AvgLum = builder.Read(downScaleToScalarPassData.FinalAvgLum);
+
             data.QuadMeshRef = builder.Read(lightingPassData.QuadMeshRef);
             data.InputRef = builder.Read(skyboxPassData.OutputRef);
             data.OutputRef = builder.Write(outputRenderTargetRefRes);
@@ -2281,6 +2466,7 @@ namespace Mile
             auto depthDisableState = data.DepthDisableState->GetActual();
             auto paramsBuffer = data.ParamsBuffer->GetActual();
             auto params = (ToneMappingParams*)(*data.Params->GetActual());
+            auto avgLum = data.AvgLum->GetActual();
             auto quadMesh = *data.QuadMeshRef->GetActual();
             auto input = *data.InputRef->GetActual();
             auto output = *data.OutputRef->GetActual();
@@ -2295,12 +2481,13 @@ namespace Mile
             paramsBuffer->Bind(context, 0, EShaderType::PixelShader);
             quadMesh->Bind(context, 0);
             input->BindShaderResourceView(context, 0, EShaderType::PixelShader);
+            avgLum->BindShaderResourceView(context, 1, EShaderType::PixelShader);
             output->BindRenderTargetView(context);
 
             /** Update Constant Buffers */
             auto mappedParamsBuffer = paramsBuffer->Map<OneVector2ConstantBuffer>(context);
-            float exposure = camera->Exposure();
-            (*mappedParamsBuffer) = OneVector2ConstantBuffer{ Vector2(exposure, params->GammaFactor) };
+            float exposureCompensation = camera->MeteringMode() == EMeteringMode::AutoExposureBasic ? ExposureNormalizationFactor(-camera->ExposureCompensation()) : 1.0f;
+            (*mappedParamsBuffer) = OneVector2ConstantBuffer{ Vector2(exposureCompensation, params->GammaFactor) };
             paramsBuffer->UnMap(context);
 
             /** Render */
@@ -2308,6 +2495,7 @@ namespace Mile
 
             /** Unbinds */
             output->UnbindRenderTargetView(context);
+            avgLum->UnbindShaderResourceView(context, 1, EShaderType::PixelShader);
             input->UnbindShaderResourceView(context, 0, EShaderType::PixelShader);
             paramsBuffer->Unbind(context, 0, EShaderType::PixelShader);
             sampler->Unbind(context, 0);
@@ -2546,6 +2734,7 @@ namespace Mile
       SafeDelete(m_depthDebugBuffer);
       SafeDelete(m_ssaoDebugBuffer);
       SafeDelete(m_lightingDebugBuffer);
+      SafeDelete(m_avgLum1DBuffer);
 
       auto renderRes = this->GetRenderResolution();
       GBufferDescriptor gBufferDesc;
@@ -2560,6 +2749,14 @@ namespace Mile
       outputHDRBufferDesc.Height = (unsigned int)renderRes.y;
       outputHDRBufferDesc.Format = EColorFormat::R16G16B16A16_FLOAT;
       m_hdrBuffer = Elaina::Realize<RenderTargetDescriptor, RenderTargetDX11>(outputHDRBufferDesc);
+
+      StructuredBufferDescriptor avgLum1DDesc;
+      avgLum1DDesc.Renderer = this;
+      avgLum1DDesc.bCPUWritable = false;
+      avgLum1DDesc.bGPUWritable = true;
+      avgLum1DDesc.StructSize = sizeof(float);
+      avgLum1DDesc.Count = (renderRes.x * renderRes.y) / (16 * 1024);
+      m_avgLum1DBuffer = Elaina::Realize<StructuredBufferDescriptor, StructuredBufferDX11>(avgLum1DDesc);
 
       RenderTargetDescriptor brightnessRenderTargetDesc;
       brightnessRenderTargetDesc.Renderer = this;

@@ -20,10 +20,10 @@ namespace Mile
       m_renderTexture(nullptr),
       m_meteringMode(EMeteringMode::Manual),
       m_expComp(0.0f),
-      m_lightAdaptionSpeed(0.2f),
-      m_darkAdaptionSpeed(0.5f),
-      m_minBrightness(0.2f),
-      m_maxBrightness(10.f),
+      m_lightAdaptionSpeed(3.0f),
+      m_darkAdaptionSpeed(1.0f),
+      m_minBrightness(0.03f),
+      m_maxBrightness(2.f),
       Component(entity)
    {
       m_bCanEverUpdate = false;
@@ -71,10 +71,10 @@ namespace Mile
       m_shutterSpeed = GetValueSafelyFromJson(jsonData, "ShutterSpeed", 0.001f);
       m_sensitivity = GetValueSafelyFromJson(jsonData, "Sensitivity", 100.0f);
 
-      m_lightAdaptionSpeed = GetValueSafelyFromJson(jsonData, "LightAdaptionSpeed", 0.2f);
-      m_darkAdaptionSpeed = GetValueSafelyFromJson(jsonData, "DarkAdaptionSpeed", 0.5f);
-      m_minBrightness = GetValueSafelyFromJson(jsonData, "MinBrightness", 0.2f);
-      m_maxBrightness = GetValueSafelyFromJson(jsonData, "MaxBrightness", 10.0f);
+      m_lightAdaptionSpeed = GetValueSafelyFromJson(jsonData, "LightAdaptionSpeed", 3.0f);
+      m_darkAdaptionSpeed = GetValueSafelyFromJson(jsonData, "DarkAdaptionSpeed", 1.0f);
+      m_minBrightness = GetValueSafelyFromJson(jsonData, "MinBrightness", 0.03f);
+      m_maxBrightness = GetValueSafelyFromJson(jsonData, "MaxBrightness", 2.0f);
 
       m_expComp = GetValueSafelyFromJson(jsonData, "ExpComp", 0.0f);
 
@@ -96,6 +96,10 @@ namespace Mile
    float CameraComponent::Exposure() const
    {
       float exposure = EV100(m_aperture, m_shutterSpeed, m_sensitivity) - m_expComp;
+      if (m_meteringMode == EMeteringMode::AutoExposureBasic)
+      {
+         return 1.0f;
+      }
       return ExposureNormalizationFactor(exposure);
    }
 
@@ -118,21 +122,20 @@ namespace Mile
 
          switch (m_meteringMode)
          {
-         case EMeteringMode::Manual:
-            GUI::FloatInput("Aperture", m_aperture, 0.1f, 1.0f, 16.0f, false, "f/%.03f");
-            GUI::FloatInput("Shutter Speed", m_shutterSpeed, 0.1f, 0.0f, FLT_MAX, false, "%0.5f seconds");
-            GUI::FloatInput("Sensitivity", m_sensitivity, 0.1f, 0.0f, FLT_MAX, false, "%0.3f ISO");
-            break;
-
          case EMeteringMode::AutoExposureBasic:
             GUI::FloatInput("Light Adaption Speed", m_lightAdaptionSpeed, 0.1f, 0.0001f);
             GUI::FloatInput("Dark Adaption Speed", m_darkAdaptionSpeed, 0.1f, 0.0001f);
             GUI::FloatInput("Min Brightness", m_minBrightness, 0.1f, 0.0f);
             GUI::FloatInput("Max Brightness", m_maxBrightness, 0.1f, 0.0f);
             break;
+         case EMeteringMode::Manual:
+            GUI::FloatInput("Aperture", m_aperture, 0.1f, 1.0f, 16.0f, false, "f/%.03f");
+            GUI::FloatInput("Shutter Speed", m_shutterSpeed, 0.1f, 0.0f, FLT_MAX, false, "%0.5f seconds");
+            GUI::FloatInput("Sensitivity", m_sensitivity, 0.1f, 0.0f, FLT_MAX, false, "%0.3f ISO");
+            break;
          }
 
-         GUI::FloatInput("Exposure Compoensation", m_expComp, 0.1f, -200.0f, 200.0f);
+         GUI::FloatInput("Exposure Compensation", m_expComp, 0.1f, -20.0f, 20.0f);
          GUI::TreePop();
       }
    }

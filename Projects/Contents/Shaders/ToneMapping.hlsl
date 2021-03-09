@@ -23,12 +23,13 @@ struct PSInput
 /* Constant Buffers (Pixel Shader) */
 cbuffer ToneMappingParams : register(b0)
 {
-	float ExposureFactor	: packoffset(c0);
+	float ExposureCompensation	: packoffset(c0);
 	float GammaFactor		: packoffset(c0.y);
 };
 
 /* Textures & Samplers */
 Texture2D renderBuffer					: register(t0);
+StructuredBuffer<float> AvgLum		: register(t1);
 SamplerState AnisoSampler				: register(s0);
 
 VSOutput MileVS(in VSInput input)
@@ -46,7 +47,7 @@ float4 MilePS(in PSInput input) : SV_Target0
 
 	/** Exposure Tone Mapping */
 	//mappedColor = float3(1.0f, 1.0f, 1.0f) - exp(-color * ExposureFactor);
-	mappedColor = color * 1.0f;
+	mappedColor = (color / AvgLum[0]) * ExposureCompensation;
 
 	/** Gamma Correction */
 	mappedColor = pow(mappedColor, (1.0f / GammaFactor));

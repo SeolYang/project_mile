@@ -81,8 +81,8 @@ namespace Mile
       EMeteringMode& MeteringMode() { return m_meteringMode; }
       EMeteringMode MeteringMode() const { return m_meteringMode; }
 
-      float& ExposureCompoensation() { return m_expComp; }
-      float ExposureCompoensation() const { return m_expComp; }
+      float& ExposureCompensation() { return m_expComp; }
+      float ExposureCompensation() const { return m_expComp; }
 
       float Exposure() const;
 

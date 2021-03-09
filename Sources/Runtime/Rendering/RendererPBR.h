@@ -22,6 +22,7 @@ namespace Mile
       RendererDX11* Renderer = nullptr;
       VertexShaderResource* VertexShader = nullptr;
       PixelShaderResource* PixelShader = nullptr;
+      ComputeShaderResource* ComputeShader = nullptr;
    };
 
    DEFINE_CONSTANT_BUFFER(SSAOBaseData)
@@ -163,6 +164,9 @@ namespace Mile
       VertexShaderDX11* m_printTextureVS;
       PixelShaderDX11* m_printTexturePS;
 
+      ComputeShaderDX11* m_downScaleTo1DPassCS;
+      ComputeShaderDX11* m_downScaleToScalarCS;
+
       VertexShaderDX11* m_toneMappingVS;
       PixelShaderDX11* m_toneMappingPS;
 
@@ -210,7 +214,12 @@ namespace Mile
       ESkyboxType m_renderSkyboxType;
 
       BloomParams m_bloomParams;
+
+      StructuredBufferDX11* m_avgLum1DBuffer;
+      StructuredBufferDX11* m_prevAvgLumBuffer;
+      float m_avgLumScalarInitialValue = 1.0f;
       ToneMappingParams m_toneMappingParams;
+
       RenderTargetDX11* m_extractedBrightness;
       std::array<RenderTargetDX11*, 2> m_pingPongBuffers;
 
