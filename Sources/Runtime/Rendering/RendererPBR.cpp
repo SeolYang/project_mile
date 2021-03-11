@@ -176,6 +176,8 @@ namespace Mile
    RendererPBR::~RendererPBR()
    {
       m_frameGraph.Clear();
+      SafeDelete(m_downScaleTo1DPassCS);
+      SafeDelete(m_downScaleToScalarCS);
       SafeDelete(m_lightingDebugBuffer);
       SafeDelete(m_depthDebugBuffer);
       SafeDelete(m_ssaoDebugBuffer);
