@@ -120,6 +120,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>..\Sources\Editor;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Sources\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui_lib\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -136,6 +137,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>..\Sources\Editor;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Sources\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui_lib\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -154,6 +156,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>..\Sources\Editor;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Sources\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui_lib\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -174,6 +177,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>..\Sources\Editor;..\ThirdParty\FreeImage\include;..\ThirdParty\assimp\include;..\Sources\Runtime;..\ThirdParty\json\src;..\ThirdParty\imgui_lib\include;..\ThirdParty\optick\src</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
