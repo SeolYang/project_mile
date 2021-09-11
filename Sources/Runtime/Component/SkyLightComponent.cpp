@@ -62,5 +62,6 @@ namespace Mile
    {
       GUI::FloatInput("Intensity Scale", m_intensityScale, 1000.f, 0.0f, 1000.0f, true);
       GUI::Checkbox("Real Time Capture", m_bRealtime);
+      GUI::Texture("HDR Skybox", m_skybox);
    }
 }
