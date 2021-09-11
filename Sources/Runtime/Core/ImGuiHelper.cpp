@@ -1,9 +1,57 @@
 #include "Core/ImGuiHelper.h"
+#include "Core/Engine.h"
+#include "Core/Window.h"
+#include "Resource/ResourceManager.h"
+#include "Resource/Texture2D.h"
 
 namespace Mile
 {
    namespace GUI
    {
+      String SearchFile(Window* window, const std::vector<std::pair<String, String>>& extensions)
+      {
+         if (window != nullptr)
+         {
+            String filter;
+            for (const auto& ext : extensions)
+            {
+               filter.append(ext.first);
+               filter.append(TEXT("|*"));
+               filter.append(ext.second);
+               filter.append(TEXT("|"));
+            }
+            filter += (TEXT("All|*.*|"));
+            std::replace_if(filter.begin(), filter.end(),
+               [](wchar_t chr)
+               {
+                  return chr == '|';
+               },
+               '\0');
+
+            OPENFILENAME openFileName;
+            TCHAR szFile[MAX_FILE_LENGTH] = { 0 };
+            ZeroMemory(&openFileName, sizeof(openFileName));
+            openFileName.lStructSize = sizeof(openFileName);
+            openFileName.hwndOwner = (HWND)window->GetHandle();
+            openFileName.lpstrTitle = TEXT("Select world file to open.");
+            openFileName.lpstrFile = szFile;
+            openFileName.nMaxFile = sizeof(szFile);
+            openFileName.lpstrFilter = filter.c_str();
+            openFileName.nFilterIndex = 1;
+            openFileName.nMaxFileTitle = 0;
+            openFileName.lpstrInitialDir = NULL;
+            openFileName.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+
+            if (GetOpenFileName(&openFileName) == TRUE)
+            {
+               String filePath = String(openFileName.lpstrFile);
+               return filePath;
+            }
+         }
+
+         return String();
+      }
+
       MEAPI void ImageRelativeToWindow(ID3D11ShaderResourceView* srv, const Vector2& resolution)
       {
          auto contentRegion = ImGui::GetContentRegionAvail();
@@ -104,6 +152,36 @@ namespace Mile
          ImGui::TableSetColumnIndex(0);
          bool ret = ImGui::TreeNodeEx(name.c_str(), bOpened ? ImGuiTreeNodeFlags_DefaultOpen : ImGuiTreeNodeFlags_None);
          return ret;
+      }
+
+      void Texture(const std::string& name, Texture2D*& ref)
+      {
+         ImGui::TableNextRow();
+         ImGui::TableSetColumnIndex(0);
+         ImGui::Text(name.c_str());
+         ImGui::TableSetColumnIndex(1);
+         ImGui::Text(ref != nullptr ?
+            Mile::WString2String(ref->GetRelativePath()).c_str() :
+            "None");
+         ImGui::TableNextRow();
+         ImGui::TableSetColumnIndex(1);
+         if (ImGui::Button("Load Texture"))
+         {
+            const auto newFilePath = SearchFile(Engine::GetWindow(),
+               {
+                  std::make_pair(TEXT("HDR Files (.hdr)"), TEXT(".hdr")),
+                  std::make_pair(TEXT("PNG Files (.png)"), TEXT(".png")),
+                  std::make_pair(TEXT("JPG Files (.jpg)"), TEXT(".jpg")) });
+
+            if (!newFilePath.empty())
+            {
+               auto resManager = Engine::GetResourceManager();
+               if (resManager != nullptr)
+               {
+                  ref = resManager->Load<Texture2D>(newFilePath);
+               }
+            }
+         }
       }
    }
 }

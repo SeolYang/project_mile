@@ -639,8 +639,12 @@ namespace Mile
    class Vector3;
    class Vector4;
    class Transform;
+   class Texture2D;
+   class Window;
    namespace GUI
    {
+      /* 1st element of pair : Extension Name; 2nd element of pair : File Extension */
+      MEAPI String SearchFile(Window* window, const std::vector<std::pair<String, String>>& extensions);
       MEAPI void ImageRelativeToWindow(ID3D11ShaderResourceView* srv, const Vector2& resolution);
       MEAPI bool Vector3Input(const std::string& name, Vector3& target, float speed = 0.1f, float _min = -FLT_MAX, float _max = FLT_MAX, bool enableLog = false, const char* format = "%0.3f");
       MEAPI bool Vector4Input(const std::string& name, Vector4& target, float speed = 0.1f, float _min = -FLT_MAX, float _max = FLT_MAX, bool enableLog = false, const char* format = "%0.3f");
@@ -649,6 +653,7 @@ namespace Mile
       MEAPI bool Combobox(const std::string& name, const std::vector<std::string>& items, const std::string& currentItem, unsigned int& enumValue);
       MEAPI bool TreeNode(const std::string& name, bool bOpened);
       static void TreePop() { ImGui::TreePop(); }
+      MEAPI void Texture(const std::string& name, Texture2D*& ref);
 
       static ImVector<ImRect> s_GroupPanelLabelStack;
 
