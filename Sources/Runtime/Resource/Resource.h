@@ -54,6 +54,7 @@ namespace Mile
       String GetName() const { return m_name; }
       String GetFolder() const { return m_folder; }
       String GetPath() const { return m_path; }
+      String GetRelativePath() const;
       String GetExt() const { return m_ext; }
       String GetMetaPath() const { String path = m_folder; return (path.append(m_name).append(TEXT(".meta"))); }
       unsigned int GetID() const { return m_id; }

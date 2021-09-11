@@ -14,6 +14,32 @@ namespace Mile
       ++ResCount;
    }
 
+   String Resource::GetRelativePath() const
+   {
+      String res;
+      auto splitPath = std::move(SplitStr(m_path, '/'));
+      if (splitPath.size() == 1)
+      {
+         splitPath = SplitStr(m_path, '\\');
+      }
+
+      bool bFoundContentsFolder = false;
+      for (const auto& token : splitPath)
+      {
+         if (token == TEXT("Contents"))
+         {
+            bFoundContentsFolder = true;
+         }
+
+         if (bFoundContentsFolder)
+         {
+            res.append(TEXT("/"));
+            res.append(token);
+         }
+      }
+      return res;
+   }
+
    String Resource::GetFileNameFromPath(const String& filePath, bool includeExt)
    {
       auto splitPath = std::move(SplitStr(filePath, '/'));
